@@ -16,6 +16,7 @@ class TblPartition extends Element
 {
 
     const IDENTIFIER_CERTIFICATE_STORAGE = 'CERTIFICATE_STORAGE';
+    const IDENTIFIER_IMPORT_STORAGE = 'IMPORT_STORAGE';
 
     const ATTR_IDENTIFIER = 'Identifier';
     const ATTR_IS_LOCKED = 'IsLocked';

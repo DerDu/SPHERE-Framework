@@ -8,7 +8,9 @@ use SPHERE\Application\Transfer\Import\Coswig\Coswig;
 use SPHERE\Application\Transfer\Import\FuxMedia\FuxSchool;
 use SPHERE\Application\Transfer\Import\Herrnhut\Herrnhut;
 use SPHERE\Application\Transfer\Import\Hormersdorf\Hormersdorf;
+use SPHERE\Application\Transfer\Import\Indiware\Indiware;
 use SPHERE\Application\Transfer\Import\Muldental\Muldental;
+use SPHERE\Common\Frontend\Icon\Repository\Upload;
 use SPHERE\Common\Main;
 use SPHERE\Common\Window\Navigation\Link;
 use SPHERE\Common\Window\Stage;
@@ -25,6 +27,7 @@ class Import implements IApplicationInterface
     {
 
         FuxSchool::registerModule();
+        Indiware::registerModule();
 
         $consumerAcronym = Consumer::useService()->getConsumerBySession()->getAcronym();
         if ($consumerAcronym == 'ESZC') {
@@ -40,7 +43,7 @@ class Import implements IApplicationInterface
         }
 
         Main::getDisplay()->addApplicationNavigation(
-            new Link(new Link\Route(__NAMESPACE__), new Link\Name('Daten importieren'))
+            new Link(new Link\Route(__NAMESPACE__), new Link\Name('Daten importieren'), new Link\Icon(new Upload()))
         );
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
             __NAMESPACE__, __CLASS__.'::frontendDashboard'

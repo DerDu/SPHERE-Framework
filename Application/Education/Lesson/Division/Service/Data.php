@@ -266,20 +266,6 @@ class Data extends AbstractData
     /**
      * @param TblDivisionSubject $tblDivisionSubject
      *
-     * @return bool|TblSubjectStudent[]
-     */
-    public function getSubjectStudentByDivisionSubject(TblDivisionSubject $tblDivisionSubject)
-    {
-
-        return $this->getCachedEntityListBy(__Method__, $this->getConnection()->getEntityManager(), 'TblSubjectStudent',
-            array(
-                TblSubjectStudent::ATTR_TBL_DIVISION_SUBJECT => $tblDivisionSubject->getId()
-            ));
-    }
-
-    /**
-     * @param TblDivisionSubject $tblDivisionSubject
-     *
      * @return bool|TblPerson[]
      */
     public function getStudentByDivisionSubject(TblDivisionSubject $tblDivisionSubject)
@@ -297,6 +283,20 @@ class Data extends AbstractData
             }
         }
         return empty( $EntityList ) ? false : $EntityList;
+    }
+
+    /**
+     * @param TblDivisionSubject $tblDivisionSubject
+     *
+     * @return bool|TblSubjectStudent[]
+     */
+    public function getSubjectStudentByDivisionSubject(TblDivisionSubject $tblDivisionSubject)
+    {
+
+        return $this->getCachedEntityListBy(__Method__, $this->getConnection()->getEntityManager(), 'TblSubjectStudent',
+            array(
+                TblSubjectStudent::ATTR_TBL_DIVISION_SUBJECT => $tblDivisionSubject->getId()
+            ));
     }
 
     /**
@@ -361,6 +361,38 @@ class Data extends AbstractData
         return false;
     }
 
+    /**
+     * @param string        $Name
+     * @param TblLevel|null $tblLevel
+     *
+     * @return false|Element[]
+     */
+    public function getDivisionAllByNameAndLevel($Name, TblLevel $tblLevel = null)
+    {
+
+        return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblDivision',
+            array(
+                TblDivision::ATTR_NAME  => $Name,
+                TblDivision::ATTR_LEVEL => ( $tblLevel ? $tblLevel->getId() : null ),
+            ));
+    }
+
+    /**
+     * @param string       $Name
+     * @param TblYear|null $tblYear
+     *
+     * @return false|Element[]
+     */
+    public function getDivisionAllByNameAndYear($Name, TblYear $tblYear = null)
+    {
+
+        return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblDivision',
+            array(
+                TblDivision::ATTR_NAME => $Name,
+                TblDivision::ATTR_YEAR => ( $tblYear ? $tblYear->getId() : null ),
+            ));
+    }
+    
     /**
      * @param               $Name
      * @param TblLevel|null $tblLevel

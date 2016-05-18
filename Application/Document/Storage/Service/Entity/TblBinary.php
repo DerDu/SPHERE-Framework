@@ -31,7 +31,11 @@ class TblBinary extends Element
     public function getBinaryBlob()
     {
 
-        return $this->BinaryBlob;
+        if (is_resource($this->BinaryBlob)) {
+            return stream_get_contents($this->BinaryBlob);
+        } else {
+            return $this->BinaryBlob;
+        }
     }
 
     /**

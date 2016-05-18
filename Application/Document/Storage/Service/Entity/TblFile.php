@@ -5,6 +5,7 @@ use Doctrine\ORM\Mapping\Cache;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
+use SPHERE\Application\Document\Storage\DummyFile;
 use SPHERE\Application\Document\Storage\Storage;
 use SPHERE\System\Database\Fitting\Element;
 
@@ -69,25 +70,52 @@ class TblFile extends Element
     }
 
     /**
-     * @return bool|TblBinary
+     * @return bool
      */
-    public function getTblBinary()
+    public function isLocked()
     {
 
-        if (null === $this->tblBinary) {
-            return false;
-        } else {
-            return Storage::useService()->getBinaryById($this->tblBinary);
-        }
+        return (bool)$this->IsLocked;
     }
 
     /**
-     * @param null|TblBinary $tblBinary
+     * @param bool $IsLocked
      */
-    public function setTblBinary(TblBinary $tblBinary = null)
+    public function setLocked($IsLocked)
     {
 
-        $this->tblBinary = ( null === $tblBinary ? null : $tblBinary->getId() );
+        $this->IsLocked = (bool)$IsLocked;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+
+        return $this->Description;
+    }
+
+    /**
+     * @param string $Description
+     */
+    public function setDescription($Description)
+    {
+
+        $this->Description = $Description;
+    }
+
+    /**
+     * @return DummyFile
+     */
+    public function getDummyFile()
+    {
+
+        $Dummy = new DummyFile($this->getTblFileType()->getExtension(), $this->getName());
+        $Dummy->setFileContent($this->getTblBinary()->getBinaryBlob());
+        $Dummy->saveFile();
+
+        return $Dummy;
     }
 
     /**
@@ -113,24 +141,6 @@ class TblFile extends Element
     }
 
     /**
-     * @return bool
-     */
-    public function isLocked()
-    {
-
-        return (bool)$this->IsLocked;
-    }
-
-    /**
-     * @param bool $IsLocked
-     */
-    public function setLocked($IsLocked)
-    {
-
-        $this->IsLocked = (bool)$IsLocked;
-    }
-
-    /**
      * @return string
      */
     public function getName()
@@ -149,20 +159,24 @@ class TblFile extends Element
     }
 
     /**
-     * @return string
+     * @return bool|TblBinary
      */
-    public function getDescription()
+    public function getTblBinary()
     {
 
-        return $this->Description;
+        if (null === $this->tblBinary) {
+            return false;
+        } else {
+            return Storage::useService()->getBinaryById($this->tblBinary);
+        }
     }
 
     /**
-     * @param string $Description
+     * @param null|TblBinary $tblBinary
      */
-    public function setDescription($Description)
+    public function setTblBinary(TblBinary $tblBinary = null)
     {
 
-        $this->Description = $Description;
+        $this->tblBinary = ( null === $tblBinary ? null : $tblBinary->getId() );
     }
 }

@@ -24,7 +24,10 @@ class Data extends AbstractData
      */
     public function setupDatabaseContent()
     {
-
+        $this->createPartition(
+            'Import-Dateien', 'temporäre Speicherung von Dateien für Importe', true,
+            TblPartition::IDENTIFIER_IMPORT_STORAGE
+        );
         $this->createPartition(
             'Zeugnisse', 'revisionssichere Archivierung', true, TblPartition::IDENTIFIER_CERTIFICATE_STORAGE
         );
@@ -34,6 +37,9 @@ class Data extends AbstractData
 
         // Documents
         $this->createFileType('PDF-Datei', 'pdf', 'application/pdf', $FileCategoryDOCUMENT);
+        $this->createFileType('CSV-Datei', 'csv', 'text/comma-separated-values', $FileCategoryDOCUMENT);
+        $this->createFileType('CSV-Datei', 'csv', 'text/csv', $FileCategoryDOCUMENT);
+        $this->createFileType('CSV-Datei', 'csv', 'text/plain', $FileCategoryDOCUMENT);
         // Images
         $this->createFileType('PNG-Datei', 'png', 'image/png', $FileCategoryIMAGE);
     }
@@ -228,7 +234,15 @@ class Data extends AbstractData
     public function getBinaryById($Id)
     {
 
-        return $this->getCachedEntityById(__METHOD__, $this->getConnection()->getEntityManager(), 'TblBinary', $Id);
+        // MUST NOT BE CACHED! Contains Resource-Id (un-cacheable)
+        if (( $Entity = $this->getConnection()->getEntityManager()->getEntity('TblBinary')->findOneBy(array(
+            TblBinary::ENTITY_ID     => $Id,
+            TblBinary::ENTITY_REMOVE => null
+        )) )
+        ) {
+            return $Entity;
+        }
+        return false;
     }
 
     /**
@@ -261,6 +275,20 @@ class Data extends AbstractData
     }
 
     /**
+     * @param null|TblDirectory $tblDirectory
+     *
+     * @return false|TblFile[]
+     */
+    public function getFileAllByDirectory(TblDirectory $tblDirectory = null)
+    {
+
+        return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblFile',
+            array(
+                TblFile::ATTR_TBL_DIRECTORY => ( $tblDirectory ? $tblDirectory->getId() : null )
+            ));
+    }
+
+    /**
      * @param int $Id
      *
      * @return false|TblDirectory
@@ -269,6 +297,33 @@ class Data extends AbstractData
     {
 
         return $this->getCachedEntityById(__METHOD__, $this->getConnection()->getEntityManager(), 'TblDirectory', $Id);
+    }
+
+    /**
+     * @param string $Identifier
+     *
+     * @return false|TblDirectory
+     */
+    public function getDirectoryByIdentifier($Identifier)
+    {
+
+        return $this->getCachedEntityBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblDirectory', array(
+            TblDirectory::ATTR_IDENTIFIER => strtoupper($Identifier)
+        ));
+    }
+
+    /**
+     * @param null|TblPartition $tblPartition
+     *
+     * @return false|TblDirectory[]
+     */
+    public function getDirectoryAllByPartition(TblPartition $tblPartition = null)
+    {
+
+        return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblDirectory',
+            array(
+                TblDirectory::ATTR_TBL_PARTITION => ( $tblPartition ? $tblPartition->getId() : null )
+            ));
     }
 
     /**

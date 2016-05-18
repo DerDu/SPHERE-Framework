@@ -25,7 +25,7 @@ class Export implements IApplicationInterface
         Datev::registerModule();
 
         Main::getDisplay()->addApplicationNavigation(
-            new Link(new Link\Route(__NAMESPACE__), new Link\Name('Daten exportieren'))
+            new Link(new Link\Route(__NAMESPACE__), new Link\Name('Daten exportieren'), new Link\Icon(new Download()))
         );
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
             __NAMESPACE__, __CLASS__.'::frontendDashboard'

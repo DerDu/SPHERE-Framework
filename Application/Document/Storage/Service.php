@@ -51,6 +51,39 @@ class Service extends AbstractService
     }
 
     /**
+     * @param null|TblPartition $tblPartition
+     *
+     * @return false|TblDirectory[]
+     */
+    public function getDirectoryAllByPartition(TblPartition $tblPartition = null)
+    {
+
+        return (new Data($this->getBinding()))->getDirectoryAllByPartition($tblPartition);
+    }
+
+    /**
+     * @param null|TblDirectory $tblDirectory
+     *
+     * @return false|TblDirectory[]
+     */
+    public function getDirectoryAllByParent(TblDirectory $tblDirectory = null)
+    {
+
+        return (new Data($this->getBinding()))->getDirectoryAllByParent($tblDirectory);
+    }
+
+    /**
+     * @param null|TblDirectory $tblDirectory
+     *
+     * @return false|TblFile[]
+     */
+    public function getFileAllByDirectory(TblDirectory $tblDirectory = null)
+    {
+
+        return (new Data($this->getBinding()))->getFileAllByDirectory($tblDirectory);
+    }
+
+    /**
      * @param int $Id
      *
      * @return false|TblFile
