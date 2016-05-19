@@ -4,14 +4,13 @@ namespace SPHERE\Common\Frontend\Message\Repository;
 use MOC\V\Component\Template\Component\IBridgeInterface;
 use SPHERE\Common\Frontend\Icon\IIconInterface;
 use SPHERE\Common\Frontend\Message\IMessageInterface;
-use SPHERE\System\Extension\Extension;
 
 /**
  * Class Warning
  *
  * @package SPHERE\Common\Frontend\Message\Repository
  */
-class Warning extends Extension implements IMessageInterface
+class Warning extends AbstractMessage implements IMessageInterface
 {
 
     /** @var IBridgeInterface $Template */

@@ -66,10 +66,13 @@ abstract class AbstractConverter extends Sanitizer
     /**
      * @param int      $Offset
      * @param null|int $Length
+     *
+     * @return array
      */
     final public function scanFile($Offset, $Length = null)
     {
 
+        $ScanResult = array();
         for ($RunHeight = ( 1 + $Offset ); $RunHeight <= ( $Length ? ( $Offset + $Length ) : $this->SizeHeight ); $RunHeight++) {
 
             $Payload = array();
@@ -87,7 +90,7 @@ abstract class AbstractConverter extends Sanitizer
                             // Always-Default
                             if( isset( $this->SanitizeChain['#'] ) ) {
                                 foreach ((array)$this->SanitizeChain['#'] as $Sanitizer) {
-                                    $SanitizedValue = $Sanitizer($SanitizedValue);
+                                    $SanitizedValue = $Sanitizer($SanitizedValue, $Payload);
                                 }
                             }
                         } else {
@@ -96,27 +99,28 @@ abstract class AbstractConverter extends Sanitizer
                             // Always-Default
                             if( isset( $this->SanitizeChain['#'] ) ) {
                                 foreach ((array)$this->SanitizeChain['#'] as $Sanitizer) {
-                                    $SanitizedValue = $Sanitizer($SanitizedValue);
+                                    $SanitizedValue = $Sanitizer($SanitizedValue, $Payload);
                                 }
                             }
                             // Field-Bound
                             if( isset( $this->SanitizeChain[$Field] ) ) {
                                 foreach ((array)$this->SanitizeChain[$Field] as $Sanitizer) {
-                                    $SanitizedValue = $Sanitizer($SanitizedValue);
+                                    $SanitizedValue = $Sanitizer($SanitizedValue, $Payload);
                                 }
                             }
                             // Current Sanitizer
                             if( isset( $this->SanitizePointer[$Column][$Field] ) ) {
                                 $Sanitize = $this->SanitizePointer[$Column][$Field];
-                                $SanitizedValue = $Sanitize($SanitizedValue);
+                                $SanitizedValue = $Sanitize($SanitizedValue, $Payload);
                             }
                         }
                         $Payload[$Pointer->getColumn()][$Pointer->getField()] = $SanitizedValue;
                     }
                 }
             }
-            $this->runConvert($Payload);
+            $ScanResult[$RunHeight] = $this->runConvert($Payload);
         }
+        return array_filter($ScanResult);
     }
 
     /**
@@ -133,6 +137,18 @@ abstract class AbstractConverter extends Sanitizer
     {
 
         return $this->Structure;
+    }
+
+    /**
+     * @param AbstractStructure $Structure
+     *
+     * @return $this
+     */
+    final protected function setStructure(AbstractStructure $Structure)
+    {
+
+        $this->Structure = $Structure;
+        return $this;
     }
 
     /**
@@ -164,18 +180,6 @@ abstract class AbstractConverter extends Sanitizer
         } else {
             throw new \Exception( 'Sanitizer not available: '.end($Callback) );
         }
-        return $this;
-    }
-
-    /**
-     * @param AbstractStructure $Structure
-     *
-     * @return $this
-     */
-    final protected function setStructure(AbstractStructure $Structure)
-    {
-
-        $this->Structure = $Structure;
         return $this;
     }
 }

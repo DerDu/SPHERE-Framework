@@ -65,4 +65,16 @@ class LayoutColumn extends Extension implements ILayoutInterface
 
         return $this->Frontend;
     }
+
+    /**
+     * @param string|IFrontendInterface $Frontend
+     *
+     * @return LayoutColumn
+     */
+    public function addFrontend($Frontend)
+    {
+
+        array_push($this->Frontend, $Frontend);
+        return $this;
+    }
 }

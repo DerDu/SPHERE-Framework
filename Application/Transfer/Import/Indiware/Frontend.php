@@ -18,6 +18,7 @@ use SPHERE\Common\Frontend\Icon\Repository\ChevronRight;
 use SPHERE\Common\Frontend\Icon\Repository\PlusSign;
 use SPHERE\Common\Frontend\Icon\Repository\Upload;
 use SPHERE\Common\Frontend\IFrontendInterface;
+use SPHERE\Common\Frontend\Layout\Repository\Panel;
 use SPHERE\Common\Frontend\Layout\Repository\Title;
 use SPHERE\Common\Frontend\Layout\Structure\Layout;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutColumn;
@@ -26,8 +27,8 @@ use SPHERE\Common\Frontend\Layout\Structure\LayoutRow;
 use SPHERE\Common\Frontend\Link\Repository\Standard;
 use SPHERE\Common\Frontend\Table\Structure\TableData;
 use SPHERE\Common\Frontend\Text\Repository\Muted;
+use SPHERE\Common\Frontend\Text\Repository\Small;
 use SPHERE\Common\Window\Stage;
-use SPHERE\System\Extension\Repository\Debugger;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
@@ -111,9 +112,34 @@ class Frontend implements IFrontendInterface
         $Dummy = $tblFile->getDummyFile();
 
         $tblYear = Term::useService()->getYearById(3);
-        Debugger::screenDump($tblYear);
+        $Stage->setMessage(
+            'Schuljahr: '.$tblYear->getDisplayName()
+            .'<br/>'
+            .'Datei: '.$tblFile->getName()
+        );
 
         $Converter = new PrepareIndiwareLectureship($Dummy->getRealPath(), $tblYear);
+
+        // TODO: Improve Result
+        $Protocol = $Converter->scanFile(1);
+        $Layout = new Layout(new LayoutGroup(new LayoutRow(array(
+            $Column1 = new LayoutColumn(array(), 2),
+            $Column2 = new LayoutColumn(array(), 2),
+            $Column3 = new LayoutColumn(array(), 2),
+            $Column4 = new LayoutColumn(array(), 2),
+            $Column5 = new LayoutColumn(array(), 2),
+            $Column6 = new LayoutColumn(array(), 2),
+        ))));
+        $StepColumn = 1;
+        foreach ($Protocol as $Index => $Row) {
+            if ($StepColumn > 6) {
+                $StepColumn = 1;
+            }
+            ${'Column'.$StepColumn}->addFrontend(new Panel(new Small('Zeile: '.$Index), $Row, Panel::PANEL_TYPE_INFO));
+
+            $StepColumn++;
+        }
+        $Stage->setContent($Layout);
 
         return $Stage;
     }
