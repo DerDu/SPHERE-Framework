@@ -3,13 +3,17 @@ namespace SPHERE\Application\Transfer\Gateway\Operation;
 
 use SPHERE\Application\Education\Lesson\Division\Division;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
+use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectGroup;
 use SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject;
 use SPHERE\Application\Education\Lesson\Subject\Subject;
 use SPHERE\Application\Education\Lesson\Term\Service\Entity\TblYear;
+use SPHERE\Application\People\Meta\Teacher\Teacher;
+use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Transfer\Gateway\Converter\AbstractConverter;
 use SPHERE\Application\Transfer\Gateway\Converter\Error;
 use SPHERE\Application\Transfer\Gateway\Converter\FieldPointer;
 use SPHERE\Common\Frontend\Icon\Repository\Ok;
+use SPHERE\Common\Frontend\Layout\Repository\Panel;
 use SPHERE\Common\Frontend\Text\Repository\Bold;
 use SPHERE\Common\Frontend\Text\Repository\Small;
 use SPHERE\Common\Frontend\Text\Repository\Success;
@@ -18,6 +22,8 @@ use SPHERE\System\Database\Fitting\Element;
 class PrepareIndiwareLectureship extends AbstractConverter
 {
 
+    /** @var int $RowCount */
+    private static $RowCount = 0;
     /** @var null|TblYear $tblYear */
     private $tblYear = null;
 
@@ -88,15 +94,22 @@ class PrepareIndiwareLectureship extends AbstractConverter
     public function runConvert($Row)
     {
 
+        self::$RowCount++;
+
         $ErrorList = array();
         $WarningList = array();
         $SuccessList = array();
+        $InfoList = array();
         foreach ($Row as $Col) {
             $Col = current($Col);
             if ($Col instanceof Error) {
                 // Minimum Level to Show
-                if ($Col->getLevel() > Error::ERROR_LEVEL_INFO_0) {
+                if ($Col->getLevel() > Error::ERROR_LEVEL_INFO_3) {
                     array_push($ErrorList, new Small($Col));
+                } else {
+                    if ($Col->getLevel() > Error::ERROR_LEVEL_INFO_1) {
+                        array_push($InfoList, new Small($Col));
+                    }
                 }
             } else {
                 if ($Col instanceof Element) {
@@ -108,8 +121,13 @@ class PrepareIndiwareLectureship extends AbstractConverter
                             array_push($SuccessList,
                                 new Small(new Success(new Ok().new Bold(' Fach ').$Col->getAcronym().' ('.$Col->getName().')')));
                         } else {
-                            array_push($SuccessList,
-                                new Small(new Success(new Ok().' '.get_class($Col).': '.json_encode($Col->__toArray()))));
+                            if ($Col instanceof TblPerson) {
+                                array_push($SuccessList,
+                                    new Small(new Success(new Ok().new Bold(' Person ').$Col->getFullName())));
+                            } else {
+                                array_push($SuccessList,
+                                    new Small(new Success(new Ok().' '.get_class($Col).': '.json_encode($Col->__toArray()))));
+                            }
                         }
                     }
                 } else {
@@ -117,6 +135,17 @@ class PrepareIndiwareLectureship extends AbstractConverter
                         foreach ($Col as $Item) {
                             if ($Item instanceof Error) {
                                 array_push($WarningList, $Item->getImpactGui());
+                            } else {
+                                if (is_array($Item)) {
+                                    foreach ($Item as $Element) {
+                                        if ($Element instanceof TblSubjectGroup) {
+                                            array_push($SuccessList,
+                                                new Small(new Success(new Ok().new Bold(' Gruppe ').$Element->getName())));
+                                        }
+                                    }
+                                    array_push($InfoList,
+                                        new Error(count($Col), Error::ERROR_LEVEL_INFO_0, 'Kombination(en)'));
+                                }
                             }
                         }
                     }
@@ -126,54 +155,58 @@ class PrepareIndiwareLectureship extends AbstractConverter
 
         if (empty( $ErrorList ) && empty( $WarningList )) {
             // DO IT
-            return $SuccessList;
+//            return new Panel(new Small('Zeile: '.self::$RowCount), array_merge($SuccessList, $InfoList),
+//                Panel::PANEL_TYPE_SUCCESS);
         } else {
+            if (empty( $ErrorList )) {
+                // DO IT
+                return new Panel(new Small('Zeile: '.self::$RowCount),
+                    array_merge($WarningList, $SuccessList, $InfoList), Panel::PANEL_TYPE_WARNING);
+            } else {
 //            return array_merge($ErrorList, $WarningList);
-            return array_merge($ErrorList, $WarningList, $SuccessList);
+                return new Panel(new Small('Zeile: '.self::$RowCount),
+                    array_merge($ErrorList, $WarningList, $SuccessList, $InfoList), Panel::PANEL_TYPE_DANGER);
+            }
         }
     }
 
     /**
      * @param $Value
      *
-     * @return string
-     * @throws \Exception
+     * @return TblSubject|Error
      */
-    protected function sanitizeTblSubject($Value)
+    final protected function sanitizeTblSubject($Value)
     {
 
         if (empty( $Value )) {
             return new Error($Value, Error::ERROR_LEVEL_DANGER_1, 'Es muss ein Fach angegeben sein!');
         }
 
-        // ACRONYM to Upper !
-        $Value = strtoupper($Value);
-        // ACRONYM Exists?
-        if (( $tblSubject = Subject::useService()->getSubjectByAcronym($Value) )) {
+        if (( $tblSubject = Subject::useService()->getSubjectByAcronym(strtoupper($Value)) )) {
             return $tblSubject;
-        } else {
-            return new Error($Value, Error::ERROR_LEVEL_DANGER_0, 'Das Fach ist in KREDA nicht vorhanden');
         }
+
+        return new Error($Value, Error::ERROR_LEVEL_DANGER_0, 'Das Fach ist in KREDA nicht vorhanden');
     }
 
     /**
      * @param $Value
      *
-     * @return string
-     * @throws \Exception
+     * @return TblPerson|Error
      */
-    protected function sanitizeTblPerson($Value)
+    final protected function sanitizeTblPerson($Value)
     {
 
         if (empty( $Value )) {
             return new Error($Value, Error::ERROR_LEVEL_INFO_0, 'Lehrer nicht angegeben');
         }
 
-        if (in_array($Value, array('Mey', 'La'))) {
-            return $Value;
+        if (( $tblTeacher = Teacher::useService()->getTeacherByAcronym($Value) )) {
+            if (( $tblPerson = $tblTeacher->getServiceTblPerson() )) {
+                return $tblPerson;
+            }
         }
 
-        // TODO: Meta-Kürzel -> Person-Entity
         return new Error($Value, Error::ERROR_LEVEL_DANGER_0, 'Der Lehrer ist in KREDA nicht vorhanden');
     }
 
@@ -188,54 +221,169 @@ class PrepareIndiwareLectureship extends AbstractConverter
 
         $MultipleResultList = array();
 
-        if (empty( $Value )) {
-            return new Error($Value, Error::ERROR_LEVEL_INFO_1, 'Gruppe nicht angegeben');
-        }
-
         $SanitizedSubjectList = array_slice($Payload, 0, 1, true);
-        /** @var TblSubject $Subject */
+        /** @var TblSubject|Error $Subject */
         $Subject = current(current($SanitizedSubjectList));
 
-        if ($Subject instanceof Element) {
+        if (empty( $Value )) {
 
-            $SanitizedTeacherList = array_slice($Payload, 1, 3, true);
-            foreach ($SanitizedTeacherList as $TeacherList) {
-                foreach ($TeacherList as $Teacher) {
-                    // Skip Error Messages, Only use Elements
-                    if ($Teacher instanceof Error || empty( $Teacher )) {
-                        continue;
+            if ($Subject instanceof Element) {
+
+                $SanitizedDivisionList = array_slice($Payload, 4, 20, true);
+                foreach ($SanitizedDivisionList as $DivisionList) {
+                    /** @var TblDivision|Error $Division */
+                    foreach ($DivisionList as $Division) {
+                        // Skip Error Messages, Use valid Elements only
+                        if ($Division instanceof Error || empty( $Division )) {
+                            continue;
+                        }
+
+                        /**
+                         * ADD Division-Subject, if non exists
+                         */
+                        if (!Division::useService()->getDivisionSubjectBySubjectAndDivision($Subject, $Division)) {
+                            Division::useService()->addSubjectToDivision($Division, $Subject);
+                        }
+
+                        if (( $tblDivisionSubjectAll = Division::useService()->getDivisionSubjectBySubjectAndDivision(
+                            $Subject, $Division
+                        ) )
+                        ) {
+
+                            $SanitizedTeacherList = array_slice($Payload, 1, 3, true);
+                            foreach ($SanitizedTeacherList as $TeacherList) {
+                                /** @var TblPerson|Error $Division */
+                                foreach ($TeacherList as $Teacher) {
+                                    // Skip Error Messages, Use valid Elements only
+                                    if ($Teacher instanceof Error || empty( $Teacher )) {
+                                        continue;
+                                    }
+
+                                    $MultipleResultList[] = array(
+                                        'TblSubject'  => $Subject,
+                                        'TblPerson'   => $Teacher,
+                                        'TblDivision' => $Division,
+                                    );
+                                }
+                            }
+                        } else {
+                            $MultipleResultList[] = new Error($Division->getDisplayName().' - '.$Subject->getAcronym(),
+                                Error::ERROR_LEVEL_DANGER_3, 'Die Fach-Klasse ist in KREDA nicht vorhanden');
+                        }
                     }
 
-                    foreach ($Payload as $Content) {
-                        foreach ($Content as $Name => $SanitizedValue) {
-                            /** @var TblDivision $SanitizedValue */
-                            if ($Name == 'TblDivision' && $SanitizedValue instanceof Element) {
-                                $MultipleResultList[] = new Error($Subject->getAcronym().' > '.$SanitizedValue->getDisplayName().' > '.$Value.' > '.$Teacher,
-                                    Error::ERROR_LEVEL_WARNING_2, 'TEST');
-//                                Debugger::screenDump($Subject->getAcronym().' > '.$SanitizedValue->getDisplayName().' > '.$Value.' > '.$Teacher);
+                }
+            } else {
+                $MultipleResultList[] = new Error('', Error::ERROR_LEVEL_DANGER_2,
+                    'Es konnte keine gültige Zuweisung erzeugt werden');
+            }
+
+            if (empty( $MultipleResultList )) {
+                return array(
+                    new Error('', Error::ERROR_LEVEL_DANGER_3,
+                        'Es konnte kein gültiger (einzelner) Datensatz erzeugt werden')
+                );
+            } else {
+                return $MultipleResultList;
+            }
+
+        } else {
+
+            if ($Subject instanceof Element) {
+
+                $SanitizedDivisionList = array_slice($Payload, 4, 20, true);
+                foreach ($SanitizedDivisionList as $DivisionList) {
+                    /** @var TblDivision|Error $Division */
+                    foreach ($DivisionList as $Division) {
+                        // Skip Error Messages, Use valid Elements only
+                        if ($Division instanceof Error || empty( $Division )) {
+                            continue;
+                        }
+
+                        /**
+                         * ADD Division-Subject, if non exists
+                         */
+                        if (!Division::useService()->getDivisionSubjectBySubjectAndDivision($Subject, $Division)) {
+                            Division::useService()->addSubjectToDivision($Division, $Subject);
+                        }
+
+                        if (( $tblDivisionSubjectAll = Division::useService()->getDivisionSubjectBySubjectAndDivision(
+                            $Subject, $Division
+                        ) )
+                        ) {
+
+                            $Combination = array();
+
+                            foreach ($tblDivisionSubjectAll as $tblDivisionSubject) {
+                                if (( $tblSubjectGroup = $tblDivisionSubject->getTblSubjectGroup() )) {
+                                    if ($tblSubjectGroup->getName() == $Value) {
+                                        $Combination[$Division->getId()] = $tblDivisionSubject;
+                                    }
+                                } else {
+                                    // ELSE NOT USABLE CAUSE OF TWINS (w/wo GROUP)
+                                }
                             }
+
+                            /**
+                             * ADD Division-Subject/Subject-Group, if non exists
+                             */
+                            if (!isset( $Combination[$Division->getId()] )) {
+                                // TODO: ?? WTF
+                            }
+
+                            if (!isset( $Combination[$Division->getId()] )) {
+                                $MultipleResultList[] = new Error($Division->getDisplayName().' - '.$Subject->getAcronym().' - '.$Value,
+                                    Error::ERROR_LEVEL_DANGER_3,
+                                    'Die Fach-Klassen-Gruppe ist in KREDA nicht vorhanden');
+                            } else {
+
+                                $SanitizedTeacherList = array_slice($Payload, 1, 3, true);
+                                foreach ($SanitizedTeacherList as $TeacherList) {
+                                    /** @var TblPerson|Error $Division */
+                                    foreach ($TeacherList as $Teacher) {
+                                        // Skip Error Messages, Use valid Elements only
+                                        if ($Teacher instanceof Error || empty( $Teacher )) {
+                                            continue;
+                                        }
+
+                                        $MultipleResultList[] = array(
+                                            'TblSubject'      => $Subject,
+                                            'TblPerson'       => $Teacher,
+                                            'TblDivision'     => $Division,
+                                            'TblSubjectGroup' => $Combination[$Division->getId()]->getTblSubjectGroup()
+                                        );
+                                    }
+                                }
+                            }
+                        } else {
+                            $MultipleResultList[] = new Error($Division->getDisplayName().' - '.$Subject->getAcronym(),
+                                Error::ERROR_LEVEL_DANGER_3, 'Die Fach-Klasse ist in KREDA nicht vorhanden');
                         }
                     }
                 }
+            } else {
+                $MultipleResultList[] = new Error('', Error::ERROR_LEVEL_DANGER_2,
+                    'Es konnte keine gültige Zuweisung erzeugt werden');
+            }
+
+            if (empty( $MultipleResultList )) {
+                return array(
+                    new Error('', Error::ERROR_LEVEL_DANGER_3,
+                        'Es konnte kein gültiger (gruppierter) Datensatz erzeugt werden')
+                );
+            } else {
+                return $MultipleResultList;
             }
         }
-        if (empty( $MultipleResultList )) {
-            return new Error($Value, Error::ERROR_LEVEL_DANGER_0,
-                'Die Fach-Klassen Gruppe ist in KREDA nicht vorhanden');
-        } else {
-            return $MultipleResultList;
-        }
-        // TODO: Name -> Group-Entity
-        return new Error($Value, Error::ERROR_LEVEL_DANGER_0, 'Die Fach-Klassen Gruppe ist in KREDA nicht vorhanden');
+
     }
 
     /**
      * @param $Value
      *
-     * @return string
-     * @throws \Exception
+     * @return TblDivision|Error
      */
-    protected function sanitizeTblDivision($Value)
+    final protected function sanitizeTblDivision($Value)
     {
 
         if (empty( $Value )) {
@@ -245,14 +393,13 @@ class PrepareIndiwareLectureship extends AbstractConverter
         $Level = '';
         $Group = '';
         // [0-9]+[a-z]+
+        // TODO: Division: Combined Classes (Year/Group)
         if (preg_match('!^([0-9]+)([a-z]+)?$!is', $Value, $Match)) {
             if (isset( $Match[1] ) && isset( $Match[2] )) {
                 $Level = $Match[1];
                 $Group = $Match[2];
             }
         }
-
-        // TODO: Division: Combined Classes (Year/Group)
         if (empty( $Level ) && empty( $Group )) {
             return new Error($Value, Error::ERROR_LEVEL_DANGER_3, 'Klassenbezeichner kann nicht interpretiert werden');
         }
