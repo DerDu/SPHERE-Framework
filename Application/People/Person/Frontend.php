@@ -11,6 +11,7 @@ use SPHERE\Application\People\Meta\Common\Common;
 use SPHERE\Application\People\Meta\Custody\Custody;
 use SPHERE\Application\People\Meta\Prospect\Prospect;
 use SPHERE\Application\People\Meta\Student\Student;
+use SPHERE\Application\People\Meta\Teacher\Teacher;
 use SPHERE\Application\People\Relationship\Relationship;
 use SPHERE\Common\Frontend\Form\Repository\Button\Primary;
 use SPHERE\Common\Frontend\Form\Repository\Field\AutoCompleter;
@@ -165,6 +166,11 @@ class Frontend extends Extension implements IFrontendInterface
                                 array('Id' => $tblPerson->getId(), 'Group' => $Group)
                             );
                             break;
+                        case 'TEACHER':
+                            $tblGroup = new LayoutTab('Lehrer', $tblGroup->getMetaTable(),
+                                array('Id' => $tblPerson->getId(), 'Group' => $Group)
+                            );
+                            break;
                         default:
                             $tblGroup = false;
                     }
@@ -207,6 +213,9 @@ class Frontend extends Extension implements IFrontendInterface
                         break;
                     case 'CLUB':
                         $MetaTable = Club::useFrontend()->frontendMeta($tblPerson, $Meta, $Group);
+                        break;
+                    case 'TEACHER':
+                        $MetaTable = Teacher::useFrontend()->frontendMeta($tblPerson, $Meta, $Group);
                         break;
                     default:
                         if (!empty($MetaTabs)) {
