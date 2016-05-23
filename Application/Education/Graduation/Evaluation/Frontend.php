@@ -949,7 +949,7 @@ class Frontend extends Extension implements IFrontendInterface
                 . new Redirect($BasicRoute, Redirect::TIMEOUT_ERROR);
             }
 
-            $tblDivisionSubject = Division::useService()->getDivisionSubjectByDivisionAndSubjectAndSubjectGroup(
+            $tblDivisionSubject = Division::useService()->getDivisionSubject(
                 $tblTest->getServiceTblDivision(),
                 $tblTest->getServiceTblSubject(),
                 $tblTest->getServiceTblSubjectGroup() ? $tblTest->getServiceTblSubjectGroup() : null

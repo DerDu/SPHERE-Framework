@@ -1,7 +1,7 @@
 <?php
 namespace SPHERE\System\Extension\Repository;
 
-use SPHERE\System\Extension\Repository\Sorter\AbstractSorter;
+use SPHERE\System\Extension\Repository\Sorter\ISorterInterface;
 use SPHERE\System\Extension\Repository\Sorter\StringNaturalOrderSorter;
 
 /**
@@ -45,13 +45,13 @@ class Sorter
     }
 
     /**
-     * @param string              $Property Entity-Attribute (Getter)
-     * @param AbstractSorter|null $Sorter
-     * @param int                 $Order
+     * @param string                $Property Entity-Attribute (Getter)
+     * @param ISorterInterface|null $Sorter
+     * @param int                   $Order
      *
      * @return array
      */
-    public function sortObjectBy($Property, AbstractSorter $Sorter = null, $Order = Sorter::ORDER_ASC)
+    public function sortObjectBy($Property, ISorterInterface $Sorter = null, $Order = Sorter::ORDER_ASC)
     {
 
         if (null === $Sorter) {

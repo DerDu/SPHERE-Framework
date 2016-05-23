@@ -3,7 +3,6 @@ namespace SPHERE\Application\Transfer\Gateway\Operation;
 
 use SPHERE\Application\Education\Lesson\Division\Division;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
-use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectGroup;
 use SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject;
 use SPHERE\Application\Education\Lesson\Subject\Subject;
 use SPHERE\Application\Education\Lesson\Term\Service\Entity\TblYear;
@@ -12,11 +11,6 @@ use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Transfer\Gateway\Converter\AbstractConverter;
 use SPHERE\Application\Transfer\Gateway\Converter\Error;
 use SPHERE\Application\Transfer\Gateway\Converter\FieldPointer;
-use SPHERE\Common\Frontend\Icon\Repository\Ok;
-use SPHERE\Common\Frontend\Layout\Repository\Panel;
-use SPHERE\Common\Frontend\Text\Repository\Bold;
-use SPHERE\Common\Frontend\Text\Repository\Small;
-use SPHERE\Common\Frontend\Text\Repository\Success;
 use SPHERE\System\Database\Fitting\Element;
 
 class PrepareIndiwareLectureship extends AbstractConverter
@@ -94,80 +88,187 @@ class PrepareIndiwareLectureship extends AbstractConverter
     public function runConvert($Row)
     {
 
-        self::$RowCount++;
+//        Debugger::screenDump($Row);
 
+        $MinErrorLevel = Error::ERROR_LEVEL_INFO_1;
         $ErrorList = array();
-        $WarningList = array();
         $SuccessList = array();
-        $InfoList = array();
-        foreach ($Row as $Col) {
-            $Col = current($Col);
-            if ($Col instanceof Error) {
-                // Minimum Level to Show
-                if ($Col->getLevel() > Error::ERROR_LEVEL_INFO_3) {
-                    array_push($ErrorList, new Small($Col));
-                } else {
-                    if ($Col->getLevel() > Error::ERROR_LEVEL_INFO_1) {
-                        array_push($InfoList, new Small($Col));
+        $DebugList = array();
+        // Run Single Row
+        foreach ($Row as $RowIndex => $Col) {
+            // Get Pointer Content
+            $Payload = current($Col);
+            // Multiple Objects?
+            if (is_array($Payload)) {
+                // Every Object
+                foreach ($Payload as $Element) {
+                    //
+                    if ($Element instanceof Error) {
+                        if ($Element->getLevel() >= $MinErrorLevel) {
+                            $ErrorList[] = $Element;
+                        } else {
+                            $DebugList[] = $Element;
+                        }
+                    } else {
+                        // Is Valid Element for Import
+                        $SuccessList[] = $Element;
                     }
                 }
             } else {
-                if ($Col instanceof Element) {
-                    if ($Col instanceof TblDivision) {
-                        array_push($SuccessList,
-                            new Small(new Success(new Ok().new Bold(' Klasse ').$Col->getDisplayName().' ('.$Col->getTypeName().')')));
+                // Single Object
+                $Element = $Payload;
+                //
+                if ($Element instanceof Error) {
+                    if ($Element->getLevel() >= $MinErrorLevel) {
+                        $ErrorList[] = $Element;
                     } else {
-                        if ($Col instanceof TblSubject) {
-                            array_push($SuccessList,
-                                new Small(new Success(new Ok().new Bold(' Fach ').$Col->getAcronym().' ('.$Col->getName().')')));
-                        } else {
-                            if ($Col instanceof TblPerson) {
-                                array_push($SuccessList,
-                                    new Small(new Success(new Ok().new Bold(' Person ').$Col->getFullName())));
-                            } else {
-                                array_push($SuccessList,
-                                    new Small(new Success(new Ok().' '.get_class($Col).': '.json_encode($Col->__toArray()))));
-                            }
-                        }
+                        $DebugList[] = $Element;
                     }
                 } else {
-                    if (is_array($Col)) {
-                        foreach ($Col as $Item) {
-                            if ($Item instanceof Error) {
-                                array_push($WarningList, $Item->getImpactGui());
+                    // Is Valid Element for Import
+                    $SuccessList[] = $Element;
+                }
+            }
+        }
+
+//        Debugger::screenDump($ErrorList);
+//        Debugger::screenDump($DebugList);
+
+        if (!empty( $ErrorList )) {
+            return array('ERROR' => $ErrorList, 'DEBUG' => $DebugList, 'SUCCESS' => $SuccessList);
+        } else {
+            return array('VALID' => $Row['AF']['TblSubjectGroup']);
+        }
+
+        /*
+                self::$RowCount++;
+        
+                $ErrorList = array();
+                $WarningList = array();
+                $SuccessList = array();
+                $InfoList = array();
+                foreach ($Row as $Col) {
+                    $Col = current($Col);
+                    if ($Col instanceof Error) {
+                        // Minimum Level to Show
+                        if ($Col->getLevel() > Error::ERROR_LEVEL_INFO_3) {
+                            array_push($ErrorList, new Small($Col));
+                        } else {
+                            if ($Col->getLevel() > Error::ERROR_LEVEL_INFO_1) {
+                                array_push($InfoList, new Small($Col));
+                            }
+                        }
+                    } else {
+                        if ($Col instanceof Element) {
+                            if ($Col instanceof TblDivision) {
+                                array_push($SuccessList,
+                                    new Small(new Success(new Bold(' Klasse ').$Col->getDisplayName().' ('.$Col->getTypeName().')')));
                             } else {
-                                if (is_array($Item)) {
-                                    foreach ($Item as $Element) {
-                                        if ($Element instanceof TblSubjectGroup) {
-                                            array_push($SuccessList,
-                                                new Small(new Success(new Ok().new Bold(' Gruppe ').$Element->getName())));
+                                if ($Col instanceof TblSubject) {
+                                    array_push($SuccessList,
+                                        new Small(new Success(new Bold(' Fach ').$Col->getAcronym().' ('.$Col->getName().')')));
+                                } else {
+                                    if ($Col instanceof TblPerson) {
+                                        array_push($SuccessList,
+                                            new Small(new Success(new Bold(' Person ').$Col->getFullName())));
+                                    } else {
+                                        array_push($SuccessList,
+                                            new Small(new Success(new Ok().' '.get_class($Col).': '.json_encode($Col->__toArray()))));
+                                    }
+                                }
+                            }
+                        } else {
+                            if (is_array($Col)) {
+                                foreach ($Col as $Item) {
+                                    if ($Item instanceof Error) {
+                                        array_push($WarningList, $Item->getImpactGui());
+                                    } else {
+                                        if (is_array($Item)) {
+                                            foreach ($Item as $Element) {
+                                                if ($Element instanceof TblSubjectGroup) {
+                                                    array_push($SuccessList,
+                                                        new Small(new Success(new Bold(' Gruppe ').$Element->getName())));
+                                                }
+                                            }
                                         }
                                     }
-                                    array_push($InfoList,
-                                        new Error(count($Col), Error::ERROR_LEVEL_INFO_0, 'Kombination(en)'));
                                 }
                             }
                         }
                     }
                 }
-            }
-        }
-
-        if (empty( $ErrorList ) && empty( $WarningList )) {
-            // DO IT
-//            return new Panel(new Small('Zeile: '.self::$RowCount), array_merge($SuccessList, $InfoList),
-//                Panel::PANEL_TYPE_SUCCESS);
-        } else {
-            if (empty( $ErrorList )) {
-                // DO IT
-                return new Panel(new Small('Zeile: '.self::$RowCount),
-                    array_merge($WarningList, $SuccessList, $InfoList), Panel::PANEL_TYPE_WARNING);
-            } else {
-//            return array_merge($ErrorList, $WarningList);
-                return new Panel(new Small('Zeile: '.self::$RowCount),
-                    array_merge($ErrorList, $WarningList, $SuccessList, $InfoList), Panel::PANEL_TYPE_DANGER);
-            }
-        }
+        
+                $SuccessList = array(
+                    implode(', ', $SuccessList )
+                );
+        
+                if (empty( $ErrorList ) && empty( $WarningList )) {
+                    $LectureshipList = $Row['AF']['TblSubjectGroup'];
+                    foreach ($LectureshipList as $Lectureship) {
+                        // Division-Teacher
+                        if (count($Lectureship) == 3) {
+                            // Teacher not in Division-Subject? -> ADD
+                            if( !Division::useService()->checkSubjectTeacherExists(
+                                $Lectureship['TblDivision'],
+                                $Lectureship['TblSubject'],
+                                $Lectureship['TblPerson'],
+                                null
+                            )) {
+                                if(($tblDivisionSubject = Division::useService()->getDivisionSubject(
+                                    $Lectureship['TblDivision'],
+                                    $Lectureship['TblSubject'],
+                                    null
+                                ))) {
+                                    Division::useService()->createSubjectTeacher(
+                                        $tblDivisionSubject,
+                                        $Lectureship['TblPerson']
+                                    );
+                                    $SuccessList[] = new Error( new Transfer().' Fach-Verknüpfung angelegt', Error::ERROR_LEVEL_INFO_2);
+                                }
+                            } else {
+                                $SuccessList[] = new Error( new Transfer().' Fach-Verknüpfung bereits vorhanden', Error::ERROR_LEVEL_INFO_2);
+                            }
+                        // Division-Group-Teacher
+                        } else {
+                            // Teacher not in Division-Subject-Group? -> ADD
+                            if( !Division::useService()->checkSubjectTeacherExists(
+                                $Lectureship['TblDivision'],
+                                $Lectureship['TblSubject'],
+                                $Lectureship['TblPerson'],
+                                $Lectureship['TblSubjectGroup']
+                            )) {
+                                if(($tblDivisionSubject = Division::useService()->getDivisionSubject(
+                                    $Lectureship['TblDivision'],
+                                    $Lectureship['TblSubject'],
+                                    $Lectureship['TblSubjectGroup']
+                                ))) {
+                                    Division::useService()->createSubjectTeacher(
+                                        $tblDivisionSubject,
+                                        $Lectureship['TblPerson']
+                                    );
+                                    $SuccessList[] = new Error( new Transfer().' Gruppen-Verknüpfung angelegt', Error::ERROR_LEVEL_INFO_2);
+                                }
+                            } else {
+                                $SuccessList[] = new Error( new Transfer().' Gruppen-Verknüpfung bereits vorhanden', Error::ERROR_LEVEL_INFO_2);
+                            }
+                        }
+                    }
+        
+                    // DO IT
+                    return new Panel(new Small('Zeile: '.self::$RowCount), array_merge($SuccessList, $InfoList),
+                        Panel::PANEL_TYPE_SUCCESS);
+                } else {
+                    if (empty( $ErrorList )) {
+                        // DO IT
+                        return new Panel(new Small('Zeile: '.self::$RowCount),
+                            array_merge($WarningList, $SuccessList, $InfoList), Panel::PANEL_TYPE_WARNING);
+                    } else {
+        //            return array_merge($ErrorList, $WarningList);
+                        return new Panel(new Small('Zeile: '.self::$RowCount),
+                            array_merge($ErrorList, $WarningList, $SuccessList, $InfoList), Panel::PANEL_TYPE_DANGER);
+                    }
+                }
+        */
     }
 
     /**
@@ -328,7 +429,26 @@ class PrepareIndiwareLectureship extends AbstractConverter
                              * ADD Division-Subject/Subject-Group, if non exists
                              */
                             if (!isset( $Combination[$Division->getId()] )) {
-                                // TODO: ?? WTF
+                                $tblSubjectGroup = Division::useService()->createSubjectGroup($Value);
+                                Division::useService()->createDivisionSubjectGroup($Division, $Subject,
+                                    $tblSubjectGroup);
+
+                                if (( $tblDivisionSubjectAll = Division::useService()->getDivisionSubjectBySubjectAndDivision(
+                                    $Subject, $Division
+                                ) )
+                                ) {
+
+                                    $Combination = array();
+                                    foreach ($tblDivisionSubjectAll as $tblDivisionSubject) {
+                                        if (( $tblSubjectGroup = $tblDivisionSubject->getTblSubjectGroup() )) {
+                                            if ($tblSubjectGroup->getName() == $Value) {
+                                                $Combination[$Division->getId()] = $tblDivisionSubject;
+                                            }
+                                        } else {
+                                            // ELSE NOT USABLE CAUSE OF TWINS (w/wo GROUP)
+                                        }
+                                    }
+                                }
                             }
 
                             if (!isset( $Combination[$Division->getId()] )) {

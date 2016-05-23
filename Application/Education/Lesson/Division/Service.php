@@ -317,6 +317,18 @@ class Service extends AbstractService
     }
 
     /**
+     * @param string $Name
+     * @param string $Description
+     *
+     * @return TblSubjectGroup
+     */
+    public function createSubjectGroup($Name, $Description = '')
+    {
+
+        return (new Data($this->getBinding()))->createSubjectGroup($Name, $Description);
+    }
+
+    /**
      * @param TblDivision $tblDivision
      * @param TblPerson $tblPerson
      *
@@ -360,15 +372,48 @@ class Service extends AbstractService
     }
 
     /**
+     * @param TblDivision          $tblDivision
+     * @param TblSubject           $tblSubject
+     * @param TblPerson            $tblPerson
+     * @param null|TblSubjectGroup $tblSubjectGroup
+     *
+     * @return bool
+     */
+    public function checkSubjectTeacherExists(
+        TblDivision $tblDivision,
+        TblSubject $tblSubject,
+        TblPerson $tblPerson,
+        TblSubjectGroup $tblSubjectGroup = null
+    ) {
+
+        return (new Data($this->getBinding()))->checkSubjectTeacherExists($tblDivision, $tblSubject, $tblPerson,
+            $tblSubjectGroup);
+
+    }
+
+    /**
      * @param TblDivision $tblDivision
      * @param TblPerson $tblPerson
      *
      * @return bool
+     * @deprecated use removeDivisionTeacher()
      */
     public function removeTeacherToDivision(TblDivision $tblDivision, TblPerson $tblPerson)
     {
 
-        return (new Data($this->getBinding()))->removeTeacherToDivision($tblDivision, $tblPerson);
+        return $this->removeDivisionTeacher($tblDivision, $tblPerson);
+    }
+
+    /**
+     * @param TblDivision $tblDivision
+     * @param TblPerson   $tblPerson
+     *
+     * @return bool
+     */
+    public function removeDivisionTeacher(TblDivision $tblDivision, TblPerson $tblPerson)
+    {
+
+        return (new Data($this->getBinding()))->removeDivisionTeacher($tblDivision, $tblPerson);
     }
 
     /**
@@ -485,6 +530,22 @@ class Service extends AbstractService
     {
 
         return (new Data($this->getBinding()))->addDivisionSubject($tblDivision, $tblSubject);
+    }
+
+    /**
+     * @param TblDivision     $tblDivision
+     * @param TblSubject      $tblSubject
+     * @param TblSubjectGroup $tblSubjectGroup
+     *
+     * @return TblDivisionSubject
+     */
+    public function createDivisionSubjectGroup(
+        TblDivision $tblDivision,
+        TblSubject $tblSubject,
+        TblSubjectGroup $tblSubjectGroup
+    ) {
+
+        return (new Data($this->getBinding()))->addDivisionSubject($tblDivision, $tblSubject, $tblSubjectGroup);
     }
 
     /**
@@ -674,6 +735,18 @@ class Service extends AbstractService
     {
 
         return (new Data($this->getBinding()))->getDivisionStudentById($Id);
+    }
+
+    /**
+     * @param TblDivisionSubject $tblDivisionSubject
+     * @param TblPerson          $tblPerson
+     *
+     * @return TblSubjectTeacher
+     */
+    public function createSubjectTeacher(TblDivisionSubject $tblDivisionSubject, TblPerson $tblPerson)
+    {
+
+        return (new Data($this->getBinding()))->addSubjectTeacher($tblDivisionSubject, $tblPerson);
     }
 
     /**
@@ -1178,6 +1251,7 @@ class Service extends AbstractService
      * @param TblSubjectGroup|null $tblSubjectGroup
      *
      * @return bool|TblDivisionSubject
+     * @deprecated use getDivisionSubject()
      */
     public function getDivisionSubjectByDivisionAndSubjectAndSubjectGroup(
         TblDivision $tblDivision,
@@ -1185,8 +1259,23 @@ class Service extends AbstractService
         TblSubjectGroup $tblSubjectGroup = null
     ) {
 
-        return (new Data($this->getBinding()))->getDivisionSubjectByDivisionAndSubjectAndSubjectGroup($tblDivision,
-            $tblSubject, $tblSubjectGroup);
+        return $this->getDivisionSubject($tblDivision, $tblSubject, $tblSubjectGroup);
+    }
+
+    /**
+     * @param TblDivision          $tblDivision
+     * @param TblSubject           $tblSubject
+     * @param null|TblSubjectGroup $tblSubjectGroup
+     *
+     * @return false|TblDivisionSubject
+     */
+    public function getDivisionSubject(
+        TblDivision $tblDivision,
+        TblSubject $tblSubject,
+        TblSubjectGroup $tblSubjectGroup = null
+    ) {
+
+        return (new Data($this->getBinding()))->getDivisionSubject($tblDivision, $tblSubject, $tblSubjectGroup);
     }
 
     /**

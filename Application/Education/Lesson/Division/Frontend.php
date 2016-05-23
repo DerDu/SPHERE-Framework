@@ -659,7 +659,7 @@ class Frontend extends Extension implements IFrontendInterface
 
         if ($tblDivision && null !== $TeacherId && ( $tblPerson = \SPHERE\Application\People\Person\Person::useService()->getPersonById($TeacherId) )) {
             if ($Remove) {
-                Division::useService()->removeTeacherToDivision($tblDivision, $tblPerson);
+                Division::useService()->removeDivisionTeacher($tblDivision, $tblPerson);
                 $Stage->setContent(
                     new Success('Klassenlehrer erfolgreich entfernt')
                     .new Redirect('/Education/Lesson/Division/Teacher/Add', Redirect::TIMEOUT_SUCCESS,
