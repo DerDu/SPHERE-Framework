@@ -3,6 +3,7 @@ namespace SPHERE\Application\Platform\Gatekeeper\Authentication;
 
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Account;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Token\Token;
+use SPHERE\Application\Platform\System\Database\Database;
 use SPHERE\Common\Frontend\Form\Repository\Button\Primary;
 use SPHERE\Common\Frontend\Form\Repository\Field\PasswordField;
 use SPHERE\Common\Frontend\Form\Repository\Field\TextField;
@@ -10,12 +11,15 @@ use SPHERE\Common\Frontend\Form\Structure\Form;
 use SPHERE\Common\Frontend\Form\Structure\FormColumn;
 use SPHERE\Common\Frontend\Form\Structure\FormGroup;
 use SPHERE\Common\Frontend\Form\Structure\FormRow;
+use SPHERE\Common\Frontend\Icon\Repository\Hospital;
 use SPHERE\Common\Frontend\Icon\Repository\Lock;
 use SPHERE\Common\Frontend\Icon\Repository\Person;
+use SPHERE\Common\Frontend\Icon\Repository\Shield;
 use SPHERE\Common\Frontend\Icon\Repository\Transfer;
 use SPHERE\Common\Frontend\Icon\Repository\YubiKey;
 use SPHERE\Common\Frontend\IFrontendInterface;
 use SPHERE\Common\Frontend\Layout\Repository\Panel;
+use SPHERE\Common\Frontend\Layout\Repository\PullRight;
 use SPHERE\Common\Frontend\Layout\Repository\Well;
 use SPHERE\Common\Frontend\Layout\Structure\Layout;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutColumn;
@@ -23,6 +27,8 @@ use SPHERE\Common\Frontend\Layout\Structure\LayoutGroup;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutRow;
 use SPHERE\Common\Frontend\Link\Repository\Backward;
 use SPHERE\Common\Frontend\Link\Repository\Standard;
+use SPHERE\Common\Frontend\Message\Repository\Info;
+use SPHERE\Common\Frontend\Text\Repository\Danger;
 use SPHERE\Common\Frontend\Text\Repository\Small;
 use SPHERE\Common\Window\Redirect;
 use SPHERE\Common\Window\Stage;
@@ -113,6 +119,33 @@ class Frontend extends Extension implements IFrontendInterface
             }
         } else {
             $Identification = Account::useService()->getIdentificationByName('Credential');
+        }
+
+        if (!$Identification) {
+            $Protocol = (new Database())->frontendSetup(false, true);
+
+            $Stage = new Stage(new Danger(new Hospital()).' Installation', 'Erster Aufruf der Anwendung');
+            $Stage->setMessage('Dieser Schritt wird automatisch ausgeführt wenn die Datenbank nicht die notwendigen Einträge aufweist. Üblicherweise beim ersten Aufruf.');
+            $Stage->setContent(
+                new Layout(
+                    new LayoutGroup(
+                        new LayoutRow(
+                            new LayoutColumn(array(
+                                new Panel('Was ist das?', array(
+                                    (new Info(new Shield().' Es wird eine automatische Installation der Datenbank und eine Überprüfung der Daten durchgeführt')),
+                                ), Panel::PANEL_TYPE_PRIMARY,
+                                    new PullRight(strip_tags((new Redirect(self::getRequest()->getPathInfo(), 110)),
+                                        '<div><a><script><span>'))
+                                ),
+                                new Panel('Protokoll', array(
+                                    $Protocol
+                                ))
+                            ))
+                        )
+                    )
+                )
+            );
+            return $Stage;
         }
 
         // Create Form

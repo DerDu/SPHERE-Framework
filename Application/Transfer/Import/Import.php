@@ -29,7 +29,7 @@ class Import implements IApplicationInterface
         FuxSchool::registerModule();
         Indiware::registerModule();
 
-        $consumerAcronym = Consumer::useService()->getConsumerBySession()->getAcronym();
+        $consumerAcronym = ( Consumer::useService()->getConsumerBySession() ? Consumer::useService()->getConsumerBySession()->getAcronym() : '' );
         if ($consumerAcronym == 'ESZC') {
             Chemnitz::registerModule();
         } elseif ($consumerAcronym === 'FEGH' || $consumerAcronym === 'FESH') {

@@ -20,7 +20,7 @@ class Custom implements IApplicationInterface
     public static function registerApplication()
     {
 
-        $consumerAcronym = Consumer::useService()->getConsumerBySession()->getAcronym();
+        $consumerAcronym = ( Consumer::useService()->getConsumerBySession() ? Consumer::useService()->getConsumerBySession()->getAcronym() : '' );
         if ($consumerAcronym === 'ESZC' || $consumerAcronym === 'DEMO') {
             ChemnitzPerson::registerModule();
         }

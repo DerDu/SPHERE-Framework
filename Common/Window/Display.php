@@ -363,7 +363,11 @@ class Display extends Extension implements ITemplateInterface
 
         // Read RoadMap-Version
         try {
-            $Map = (new Roadmap())->getRoadmap();
+            if ($this->getCache(new MemcachedHandler()) instanceof MemcachedHandler) {
+                $Map = (new Roadmap())->getRoadmap();
+            } else {
+                $Map = null;
+            }
         } catch (\Exception $Exception) {
             $Map = null;
         }

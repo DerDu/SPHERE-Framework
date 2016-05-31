@@ -20,102 +20,108 @@ class Evaluation implements IModuleInterface
     public static function registerModule()
     {
 
+        /**
+         * Navigation
+         */
         Main::getDisplay()->addModuleNavigation(
-            new Link(new Link\Route(__NAMESPACE__.'\Test'), new Link\Name('Leistungsüberprüfung'),
+            new Link(new Link\Route(__NAMESPACE__.'\Test'),
+                new Link\Name('Leistungsüberprüfung'),
                 new Link\Icon(new Document()))
         );
         Main::getDisplay()->addModuleNavigation(
-            new Link(new Link\Route(__NAMESPACE__.'\Headmaster\Test'), new Link\Name('Leistungsüberprüfung'),
-                new Link\Icon(new Document()))
-        );
-        Main::getDisplay()->addModuleNavigation(
-            new Link(new Link\Route(__NAMESPACE__.'\DivisionTeacher\Task'),
-                new Link\Name('Notenaufträge'),
-                new Link\Icon(new ClipBoard()))
-        );
-        Main::getDisplay()->addModuleNavigation(
-            new Link(new Link\Route(__NAMESPACE__.'\Headmaster\Task'),
+            new Link(new Link\Route(__NAMESPACE__.'\Task'),
                 new Link\Name('Notenaufträge'),
                 new Link\Icon(new ClipBoard()))
         );
 
+        /**
+         * Route
+         */
         Main::getDispatcher()->registerRoute(
             Main::getDispatcher()->createRoute(__NAMESPACE__.'\Test',
                 __NAMESPACE__.'\Frontend::frontendTest')
         );
         Main::getDispatcher()->registerRoute(
-            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Test\Selected',
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Task',
+                __NAMESPACE__.'\Frontend::frontendTask')
+        );
+
+        /**
+         * Teacher
+         */
+        Main::getDispatcher()->registerRoute(
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Test\Teacher',
+                __NAMESPACE__.'\Frontend::frontendTestTeacher')
+        );
+        Main::getDispatcher()->registerRoute(
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Test\Teacher\Selected',
                 __NAMESPACE__.'\Frontend::frontendTestSelected')
         );
         Main::getDispatcher()->registerRoute(
-            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Test\Edit',
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Test\Teacher\Edit',
                 __NAMESPACE__.'\Frontend::frontendEditTest')
         );
         Main::getDispatcher()->registerRoute(
-            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Test\Destroy',
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Test\Teacher\Destroy',
                 __NAMESPACE__.'\Frontend::frontendDestroyTest')
+        );
+        Main::getDispatcher()->registerRoute(
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Test\Teacher\Grade\Edit',
+                __NAMESPACE__.'\Frontend::frontendEditTestGrade')
         );
 
         Main::getDispatcher()->registerRoute(
-            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Test\Grade\Edit',
-                __NAMESPACE__.'\Frontend::frontendEditTestGrade')
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Task\Teacher',
+                __NAMESPACE__.'\Frontend::frontendDivisionTeacherTask')
+        );
+        Main::getDispatcher()->registerRoute(
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Task\Teacher\Grades',
+                __NAMESPACE__.'\Frontend::frontendDivisionTeacherTaskGrades')
         );
 
         /*
          * Headmaster
          */
         Main::getDispatcher()->registerRoute(
-            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Headmaster\Test',
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Test\Headmaster',
                 __NAMESPACE__.'\Frontend::frontendHeadmasterTest')
         );
         Main::getDispatcher()->registerRoute(
-            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Headmaster\Test\Selected',
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Test\Headmaster\Selected',
                 __NAMESPACE__.'\Frontend::frontendHeadmasterTestSelected')
         );
         Main::getDispatcher()->registerRoute(
-            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Headmaster\Test\Edit',
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Test\Headmaster\Edit',
                 __NAMESPACE__.'\Frontend::frontendHeadmasterEditTest')
         );
         Main::getDispatcher()->registerRoute(
-            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Headmaster\Test\Destroy',
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Test\Headmaster\Destroy',
                 __NAMESPACE__.'\Frontend::frontendHeadmasterDestroyTest')
         );
         Main::getDispatcher()->registerRoute(
-            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Headmaster\Test\Grade\Edit',
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Test\Headmaster\Grade\Edit',
                 __NAMESPACE__.'\Frontend::frontendHeadmasterEditTestGrade')
         );
 
         Main::getDispatcher()->registerRoute(
-            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Headmaster\Task',
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Task\Headmaster',
                 __NAMESPACE__.'\Frontend::frontendHeadmasterTask')
         );
         Main::getDispatcher()->registerRoute(
-            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Headmaster\Task\Edit',
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Task\Headmaster\Edit',
                 __NAMESPACE__.'\Frontend::frontendHeadmasterTaskEdit')
         );
         Main::getDispatcher()->registerRoute(
-            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Headmaster\Task\Destroy',
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Task\Headmaster\Destroy',
                 __NAMESPACE__.'\Frontend::frontendHeadmasterTaskDestroy')
         );
         Main::getDispatcher()->registerRoute(
-            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Headmaster\Task\Division',
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Task\Headmaster\Division',
                 __NAMESPACE__.'\Frontend::frontendHeadmasterTaskDivision')
         );
         Main::getDispatcher()->registerRoute(
-            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Headmaster\Task\Grades',
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Task\Headmaster\Grades',
                 __NAMESPACE__.'\Frontend::frontendHeadmasterTaskGrades')
-        );
-
-        /**
-         * DivisionTeacher
-         */
-        Main::getDispatcher()->registerRoute(
-            Main::getDispatcher()->createRoute(__NAMESPACE__.'\DivisionTeacher\Task',
-                __NAMESPACE__.'\Frontend::frontendDivisionTeacherTask')
-        );
-        Main::getDispatcher()->registerRoute(
-            Main::getDispatcher()->createRoute(__NAMESPACE__.'\DivisionTeacher\Task\Grades',
-                __NAMESPACE__.'\Frontend::frontendDivisionTeacherTaskGrades')
         );
 
     }

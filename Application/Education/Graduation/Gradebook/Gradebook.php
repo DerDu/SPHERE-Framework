@@ -6,6 +6,7 @@ use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Consumer;
 use SPHERE\Common\Frontend\Icon\Repository\Book;
 use SPHERE\Common\Frontend\Icon\Repository\Family;
 use SPHERE\Common\Frontend\Icon\Repository\Pencil;
+use SPHERE\Common\Frontend\Icon\Repository\Quantity;
 use SPHERE\Common\Frontend\Icon\Repository\Tag;
 use SPHERE\Common\Main;
 use SPHERE\Common\Window\Navigation\Link;
@@ -31,13 +32,17 @@ class Gradebook implements IModuleInterface
                 new Link\Icon(new Pencil()))
         );
         Main::getDisplay()->addModuleNavigation(
+            new Link(new Link\Route(__NAMESPACE__.'\Type'), new Link\Name('Bewertungssystem'),
+                new Link\Icon(new Quantity()))
+        );
+        Main::getDisplay()->addModuleNavigation(
             new Link(new Link\Route(__NAMESPACE__.'\Gradebook'), new Link\Name('Notenbuch'),
                 new Link\Icon(new Book()))
         );
-        Main::getDisplay()->addModuleNavigation(
-            new Link(new Link\Route(__NAMESPACE__.'\Headmaster\Gradebook'), new Link\Name('Notenbuch'),
-                new Link\Icon(new Book()))
-        );
+//        Main::getDisplay()->addModuleNavigation(
+//            new Link(new Link\Route(__NAMESPACE__.'\Headmaster\Gradebook'), new Link\Name('Notenbuch'),
+//                new Link\Icon(new Book()))
+//        );
         Main::getDisplay()->addModuleNavigation(
             new Link(new Link\Route(__NAMESPACE__.'\Student\Gradebook'), new Link\Name('Notenübersicht'),
                 new Link\Icon(new Family()))
@@ -61,9 +66,14 @@ class Gradebook implements IModuleInterface
                 __NAMESPACE__.'\Frontend::frontendGradebook')
         );
         Main::getDispatcher()->registerRoute(
-            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Gradebook\Selected',
-                __NAMESPACE__.'\Frontend::frontendSelectedGradebook')
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Gradebook\Teacher',
+                __NAMESPACE__.'\Frontend::frontendTeacherGradebook')
         );
+        Main::getDispatcher()->registerRoute(
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Gradebook\Teacher\Selected',
+                __NAMESPACE__.'\Frontend::frontendTeacherSelectedGradebook')
+        );
+
         Main::getDispatcher()->registerRoute(
             Main::getDispatcher()->createRoute(__NAMESPACE__.'\Student\Gradebook',
                 __NAMESPACE__.'\Frontend::frontendStudentGradebook')
@@ -73,11 +83,11 @@ class Gradebook implements IModuleInterface
          * Headmaster
          */
         Main::getDispatcher()->registerRoute(
-            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Headmaster\Gradebook',
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Gradebook\Headmaster',
                 __NAMESPACE__.'\Frontend::frontendHeadmasterGradebook')
         );
         Main::getDispatcher()->registerRoute(
-            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Headmaster\Gradebook\Selected',
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Gradebook\Headmaster\Selected',
                 __NAMESPACE__.'\Frontend::frontendHeadmasterSelectedGradebook')
         );
 
@@ -159,6 +169,18 @@ class Gradebook implements IModuleInterface
         Main::getDispatcher()->registerRoute(
             Main::getDispatcher()->createRoute(__NAMESPACE__.'\Score\Division',
                 __NAMESPACE__.'\Frontend::frontendScoreDivision')
+        );
+
+        /*
+         * ScoreType
+         */
+        Main::getDispatcher()->registerRoute(
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Type',
+                __NAMESPACE__.'\Frontend::frontendScoreType')
+        );
+        Main::getDispatcher()->registerRoute(
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Type\Select',
+                __NAMESPACE__.'\Frontend::frontendScoreTypeSelect')
         );
     }
 

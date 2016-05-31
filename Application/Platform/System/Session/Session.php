@@ -75,7 +75,22 @@ class Session extends Extension implements IModuleInterface
 
                 $tblAccount = $tblSession->getTblAccount();
 
-                $Interval = $tblSession->getEntityUpdate()->getTimestamp() - $tblSession->getEntityCreate()->getTimestamp();
+                if ($tblSession->getEntityUpdate() && $tblSession->getEntityCreate()) {
+                    $Interval = $tblSession->getEntityUpdate()->getTimestamp() - $tblSession->getEntityCreate()->getTimestamp();
+                } else {
+                    if (!$tblSession->getEntityUpdate() && $tblSession->getEntityCreate()) {
+                        $Interval = time() - $tblSession->getEntityCreate()->getTimestamp();
+                    } else {
+                        $Interval = 0;
+                    }
+                }
+
+                if (( $Activity = Protocol::useService()->getProtocolLastActivity($tblAccount) )) {
+                    $Activity = current($Activity)->getEntityCreate();
+                } else {
+                    $Activity = '-NA-';
+                }
+                
 
                 array_push($Result, array(
                     'Id'         => $tblSession->getId(),
@@ -88,7 +103,7 @@ class Session extends Extension implements IModuleInterface
                     'TTL'        => gmdate("H:i:s", $tblSession->getTimeout() - time()),
                     'ActiveTime' => gmdate('H:i:s', $Interval),
                     'LoginTime'  => $tblSession->getEntityCreate(),
-                    'LastAction' => $tblSession->getEntityUpdate(),
+                    'LastAction' => $Activity,
                     'Identifier' => strtoupper($tblSession->getSession())
                 ));
 

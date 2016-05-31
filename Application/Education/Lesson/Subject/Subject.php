@@ -148,30 +148,32 @@ class Subject implements IModuleInterface
                 ))
             )));
             $tblCategoryAll = $this->useService()->getCategoryAllByGroup($tblGroup);
-            array_walk($tblCategoryAll, function (TblCategory $tblCategory) use (&$Content, $tblGroup) {
+            if ($tblCategoryAll) {
+                array_walk($tblCategoryAll, function (TblCategory $tblCategory) use (&$Content, $tblGroup) {
 
-                $tblSubjectAll = $this->useService()->getSubjectAllByCategory($tblCategory);
-                if (is_array($tblSubjectAll)) {
-                    array_walk($tblSubjectAll, function (TblSubject &$tblSubject) {
+                    $tblSubjectAll = $this->useService()->getSubjectAllByCategory($tblCategory);
+                    if (is_array($tblSubjectAll)) {
+                        array_walk($tblSubjectAll, function (TblSubject &$tblSubject) {
 
-                        $tblSubject = new Bold($tblSubject->getAcronym()).' - '
-                            .$tblSubject->getName().' '
-                            .new Small(new Muted($tblSubject->getDescription()));
-                    });
-                }
+                            $tblSubject = new Bold($tblSubject->getAcronym()).' - '
+                                .$tblSubject->getName().' '
+                                .new Small(new Muted($tblSubject->getDescription()));
+                        });
+                    }
 
-                $Height = floor(( ( count($tblSubjectAll) + 2 ) / 3 ) + 1);
-                Main::getDispatcher()->registerWidget($tblGroup->getIdentifier(),
-                    new Panel(
-                        $tblCategory->getName().' '.$tblCategory->getDescription(),
-                        $tblSubjectAll,
-                        ( $tblCategory->isLocked() ? Panel::PANEL_TYPE_INFO : Panel::PANEL_TYPE_DEFAULT ),
-                        new Standard('Zuweisen von Fächern', __NAMESPACE__.'\Link\Subject', new Transfer(),
-                            array('Id' => $tblCategory->getId())
+                    $Height = floor(( ( count($tblSubjectAll) + 2 ) / 3 ) + 1);
+                    Main::getDispatcher()->registerWidget($tblGroup->getIdentifier(),
+                        new Panel(
+                            $tblCategory->getName().' '.$tblCategory->getDescription(),
+                            $tblSubjectAll,
+                            ( $tblCategory->isLocked() ? Panel::PANEL_TYPE_INFO : Panel::PANEL_TYPE_DEFAULT ),
+                            new Standard('Zuweisen von Fächern', __NAMESPACE__.'\Link\Subject', new Transfer(),
+                                array('Id' => $tblCategory->getId())
+                            )
                         )
-                    )
-                    , 2, ( $Height ? $Height : $Height + 2 ));
-            });
+                        , 2, ( $Height ? $Height : $Height + 2 ));
+                });
+            }
             array_push($Content, new LayoutRow(array(
                 new LayoutColumn(Main::getDispatcher()->fetchDashboard($tblGroup->getIdentifier()))
             )));

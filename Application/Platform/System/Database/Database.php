@@ -208,7 +208,7 @@ class Database extends Extension implements IModuleInterface
             array(), 'Durchführen von Strukturänderungen und einspielen zugehöriger Daten'
         ));
         $Stage->addButton(new External('phpMyAdmin',
-            $this->getRequest()->getPathBase().'/UnitTest/Console/phpMyAdmin-4.3.12'));
+            $this->getRequest()->getPathBase().'/UnitTest/Console/phpMyAdmin-4.6.1'));
     }
 
     /**
@@ -387,6 +387,13 @@ class Database extends Extension implements IModuleInterface
         self::$ServiceRegister = array_merge(
             self::$ServiceRegister, array_diff($ClassList, self::$ServiceRegister)
         );
+
+        array_unshift(self::$ServiceRegister, 'SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Account');
+        array_unshift(self::$ServiceRegister, 'SPHERE\Application\Platform\Gatekeeper\Authorization\Access\Access');
+        array_unshift(self::$ServiceRegister, 'SPHERE\Application\Platform\Gatekeeper\Authorization\Token\Token');
+        array_unshift(self::$ServiceRegister, 'SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Consumer');
+
+        self::$ServiceRegister = array_unique(self::$ServiceRegister);
 
         $Stage = new Stage('Database', 'Setup');
         if (!$Heal) {

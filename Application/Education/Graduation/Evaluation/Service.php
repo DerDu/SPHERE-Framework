@@ -339,7 +339,7 @@ class Service extends AbstractService
             );
             $Stage .= new Success('Notenauftrag erfolgreich angelegt',
                     new \SPHERE\Common\Frontend\Icon\Repository\Success())
-                . new Redirect('/Education/Graduation/Evaluation/Headmaster/Task', Redirect::TIMEOUT_SUCCESS);
+                . new Redirect('/Education/Graduation/Evaluation/Task/Headmaster', Redirect::TIMEOUT_SUCCESS);
         }
 
         return $Stage;
@@ -423,7 +423,7 @@ class Service extends AbstractService
 
             $Stage .= new Success('Notenauftrag erfolgreich geändert',
                     new \SPHERE\Common\Frontend\Icon\Repository\Success())
-                . new Redirect('/Education/Graduation/Evaluation/Headmaster/Task', Redirect::TIMEOUT_SUCCESS);
+                . new Redirect('/Education/Graduation/Evaluation/Task/Headmaster', Redirect::TIMEOUT_SUCCESS);
 
         }
 
@@ -776,7 +776,7 @@ class Service extends AbstractService
             return $Stage;
         }
 
-        return new Redirect('/Education/Graduation/Evaluation/Headmaster/Task', Redirect::TIMEOUT_SUCCESS, array(
+        return new Redirect('/Education/Graduation/Evaluation/Task/Headmaster', Redirect::TIMEOUT_SUCCESS, array(
             'YearId' => $tblYear->getId(),
         ));
     }

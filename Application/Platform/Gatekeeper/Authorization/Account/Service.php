@@ -210,7 +210,9 @@ class Service extends AbstractService
             return false;
         } else {
             if (false === $TokenString) {
-                session_regenerate_id();
+                if (session_status() == PHP_SESSION_ACTIVE) {
+                    session_regenerate_id();
+                }
                 $this->createSession($tblAccount, session_id());
                 return true;
             } else {
@@ -220,7 +222,9 @@ class Service extends AbstractService
                             return null;
                         } else {
                             if ($Token->getIdentifier() == substr($TokenString, 0, 12)) {
-                                session_regenerate_id();
+                                if (session_status() == PHP_SESSION_ACTIVE) {
+                                    session_regenerate_id();
+                                }
                                 $this->createSession($tblAccount, session_id());
                                 return true;
                             } else {

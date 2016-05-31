@@ -69,6 +69,8 @@ class MemcachedHandler extends AbstractHandler implements HandlerInterface
                     ->addLog(__METHOD__.' Error: Configuration not available -> Fallback');
             }
         }
+        (new DebuggerFactory())->createLogger(new ErrorLogger())
+            ->addLog(__METHOD__.' Error: Memcached not available -> Fallback');
         return (new CacheFactory())->createHandler(new DefaultHandler());
     }
 
@@ -84,7 +86,7 @@ class MemcachedHandler extends AbstractHandler implements HandlerInterface
     {
 
         if ($this->isValid()) {
-            $this->Connection->set($this->getSlotRegion($Region).'#'.$Key, $Value,
+            $this->Connection->set(preg_replace('!\s+!is', '', $this->getSlotRegion($Region).'#'.$Key), $Value,
                 ( !$Timeout ? null : time() + $Timeout ));
             // 0 = MEMCACHED_SUCCESS
             if (0 == ( $Code = $this->Connection->getResultCode() )) {
@@ -143,7 +145,7 @@ class MemcachedHandler extends AbstractHandler implements HandlerInterface
     {
 
         if ($this->isValid()) {
-            $Value = $this->Connection->get($this->getSlotRegion($Region).'#'.$Key);
+            $Value = $this->Connection->get(preg_replace('!\s+!is', '', $this->getSlotRegion($Region).'#'.$Key));
             // 0 = MEMCACHED_SUCCESS
             if (0 == ( $Code = $this->Connection->getResultCode() )) {
                 return $Value;
@@ -177,6 +179,16 @@ class MemcachedHandler extends AbstractHandler implements HandlerInterface
         (new DebuggerFactory())->createLogger(new BenchmarkLogger())->addLog('Clear MemCached');
         if ($this->isValid()) {
             $this->Connection->flush();
+            // 0 = MEMCACHED_SUCCESS
+            if (0 == ( $Code = $this->Connection->getResultCode() )) {
+                return $this;
+            } else {
+                (new DebuggerFactory())->createLogger(new ErrorLogger())
+                    ->addLog(__METHOD__.' Error: '
+                        .$Code.' - '
+                        .$this->Connection->getResultMessage()
+                    );
+            }
         }
         return $this;
     }
@@ -186,7 +198,9 @@ class MemcachedHandler extends AbstractHandler implements HandlerInterface
 
         (new DebuggerFactory())->createLogger(new CacheLogger())->addLog('Requested Memcached-Slot-Clear: '.$Slot);
         $Pattern = '!^'.preg_quote($Slot, '!').':!is';
-        $CacheList = $this->fetchKeys();
+        if (!( $CacheList = $this->fetchKeys() )) {
+            $CacheList = array();
+        }
         $KeyList = preg_grep($Pattern, $CacheList);
         if (!empty( $KeyList )) {
             $this->removeKeys($KeyList);
@@ -205,7 +219,18 @@ class MemcachedHandler extends AbstractHandler implements HandlerInterface
     public function fetchKeys()
     {
 
-        return $this->Connection->getAllKeys();
+        $List = $this->Connection->getAllKeys();
+        // 0 = MEMCACHED_SUCCESS
+        if (0 == ( $Code = $this->Connection->getResultCode() )) {
+            return $List;
+        } else {
+            (new DebuggerFactory())->createLogger(new ErrorLogger())
+                ->addLog(__METHOD__.' Error: '
+                    .$Code.' - '
+                    .$this->Connection->getResultMessage()
+                );
+        }
+        return array();
     }
 
     /**
@@ -214,11 +239,24 @@ class MemcachedHandler extends AbstractHandler implements HandlerInterface
      * Remove cache by Key
      *
      * @param $List
+     *
+     * @return MemcachedHandler
      */
     public function removeKeys($List)
     {
 
         $this->Connection->deleteMulti($List);
+        // 0 = MEMCACHED_SUCCESS
+        if (0 == ( $Code = $this->Connection->getResultCode() )) {
+            return $this;
+        } else {
+            (new DebuggerFactory())->createLogger(new ErrorLogger())
+                ->addLog(__METHOD__.' Error: '
+                    .$Code.' - '
+                    .$this->Connection->getResultMessage()
+                );
+        }
+        return $this;
     }
 
     /**

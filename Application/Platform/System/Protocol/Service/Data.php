@@ -171,4 +171,51 @@ class Data extends AbstractData
         $EntityList = $Query->getResult();
         return ( empty( $EntityList ) ? false : $EntityList );
     }
+
+    /**
+     * @param TblAccount $tblAccount
+     *
+     * @return bool|TblProtocol[]
+     */
+    public function getProtocolLastActivity(TblAccount $tblAccount)
+    {
+
+        $Manager = $this->getConnection()->getEntityManager();
+
+        $Builder = $Manager->getQueryBuilder();
+
+        $Query = $Builder
+            ->select('P')
+            ->from(__NAMESPACE__.'\Entity\TblProtocol', 'P')
+            ->andWhere(
+                $Builder->expr()->like('P.serviceTblAccount', '?1')
+            )->andWhere(
+                $Builder->expr()->gte('P.EntityCreate', '?2')
+            )
+            ->setParameter(1, $tblAccount->getId())
+            ->setParameter(2, $this->getProtocolTimestamp())
+            ->orderBy('P.EntityCreate', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery();
+
+        $EntityList = $Query->getResult();
+        return ( empty( $EntityList ) ? false : $EntityList );
+    }
+
+    private function getProtocolTimestamp()
+    {
+
+        $OneMonthAgo = new \DateTime(date("Ymd"));
+        $OneMonthAgo->sub(new \DateInterval('P'.abs(( 7 - date("N") - 31 )).'D'));
+        $FourWeeksAgo = new \DateTime(date("Ymd"));
+        $FourWeeksAgo->sub(new \DateInterval('P'.abs(( 7 - date("N") - 28 )).'D'));
+        $TwoWeeksAgo = new \DateTime(date("Ymd"));
+        $TwoWeeksAgo->sub(new \DateInterval('P'.abs(( 7 - date("N") - 14 )).'D'));
+        $LastWeek = new \DateTime(date("Ymd"));
+        $LastWeek->sub(new \DateInterval('P'.abs(( 7 - date("N") - 7 )).'D'));
+        $ThisWeek = new \DateTime(date("Ymd"));
+        $ThisWeek->add(new \DateInterval('P'.abs(( 7 - date("N") )).'D'));
+
+        return $OneMonthAgo;
+    } 
 }

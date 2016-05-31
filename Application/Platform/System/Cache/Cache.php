@@ -4,6 +4,8 @@ namespace SPHERE\Application\Platform\System\Cache;
 use SPHERE\Application\IModuleInterface;
 use SPHERE\Application\IServiceInterface;
 use SPHERE\Application\Platform\System\Cache\Frontend\Status;
+use SPHERE\Common\Frontend\Icon\Repository\Disable;
+use SPHERE\Common\Frontend\Icon\Repository\Enable;
 use SPHERE\Common\Frontend\IFrontendInterface;
 use SPHERE\Common\Frontend\Layout\Repository\Title;
 use SPHERE\Common\Frontend\Layout\Structure\Layout;
@@ -12,9 +14,12 @@ use SPHERE\Common\Frontend\Layout\Structure\LayoutGroup;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutRow;
 use SPHERE\Common\Frontend\Link\Repository\External;
 use SPHERE\Common\Frontend\Link\Repository\Standard;
+use SPHERE\Common\Frontend\Text\Repository\Danger;
+use SPHERE\Common\Frontend\Text\Repository\Success;
 use SPHERE\Common\Main;
 use SPHERE\Common\Window\Navigation\Link;
 use SPHERE\Common\Window\Stage;
+use SPHERE\System\Cache\Handler\AbstractHandler;
 use SPHERE\System\Cache\Handler\APCuHandler;
 use SPHERE\System\Cache\Handler\CookieHandler;
 use SPHERE\System\Cache\Handler\MemcachedHandler;
@@ -82,53 +87,41 @@ class Cache extends Extension implements IModuleInterface
         $Stage->addButton(new External('phpMemcachedAdmin',
             $this->getRequest()->getPathBase().'/UnitTest/Console/phpMemcachedAdmin-1.2.2'));
 
+        $CacheStack = array(
+            'Cookie'    => $this->getCache(new CookieHandler()),
+            'Memcached' => $this->getCache(new MemcachedHandler()),
+            'APCu'      => $this->getCache(new APCuHandler()),
+            'Memory'    => $this->getCache(new MemoryHandler()),
+            'OpCache'   => $this->getCache(new OpCacheHandler()),
+            'Twig'      => $this->getCache(new TwigHandler()),
+            'Smarty'    => $this->getCache(new SmartyHandler()),
+        );
+
         if ($Clear) {
-            $this->getCache(new CookieHandler())->clearCache();
-            $this->getCache(new MemcachedHandler())->clearCache();
-            $this->getCache(new APCuHandler())->clearCache();
-            $this->getCache(new MemoryHandler())->clearCache();
-            $this->getCache(new OpCacheHandler())->clearCache();
-            $this->getCache(new TwigHandler())->clearCache();
-            $this->getCache(new SmartyHandler())->clearCache();
+            /** @var AbstractHandler $Cache */
+            foreach ($CacheStack as $Cache) {
+                $Cache->clearCache();
+            }
         }
+
+        $CacheStatus = array();
+        /** @var AbstractHandler $Cache */
+        foreach ($CacheStack as $Name => $Cache) {
+            $CacheStatus[] = new LayoutGroup(new LayoutRow(
+                new LayoutColumn(new Status(
+                    $Cache->getStatus()
+                ))
+            ), ( false === strpos(get_class($Cache), $Name.'Handler')
+                ? new Title(new Danger(new Disable()).' '.$Name,
+                    new Danger('Not available (Fallback: '.substr(strrchr(get_class($Cache), '\\'), 1).')'))
+                : new Title(new Success(new Enable()).' '.$Name, new Success('Active'))
+            ));
+        }
+
         $Stage->setContent(
-            new Layout(array(
-                new LayoutGroup(new LayoutRow(
-                    new LayoutColumn(new Status(
-                        $this->getCache(new CookieHandler())->getStatus()
-                    ))
-                ), new Title('Cookie')),
-                new LayoutGroup(new LayoutRow(
-                    new LayoutColumn(new Status(
-                        $this->getCache(new MemcachedHandler())->getStatus()
-                    ))
-                ), new Title('Memcached')),
-                new LayoutGroup(new LayoutRow(
-                    new LayoutColumn(new Status(
-                        $this->getCache(new APCuHandler())->getStatus()
-                    ))
-                ), new Title('APCu')),
-                new LayoutGroup(new LayoutRow(
-                    new LayoutColumn(new Status(
-                        $this->getCache(new MemoryHandler())->getStatus()
-                    ))
-                ), new Title('Memory')),
-                new LayoutGroup(new LayoutRow(
-                    new LayoutColumn(new Status(
-                        $this->getCache(new OpCacheHandler())->getStatus()
-                    ))
-                ), new Title('Zend OpCache')),
-                new LayoutGroup(new LayoutRow(
-                    new LayoutColumn(new Status(
-                        $this->getCache(new TwigHandler())->getStatus()
-                    ))
-                ), new Title('Template: Twig')),
-                new LayoutGroup(new LayoutRow(
-                    new LayoutColumn(new Status(
-                        $this->getCache(new SmartyHandler())->getStatus()
-                    ))
-                ), new Title('Template: Smarty')),
-            ))
+            new Layout(
+                $CacheStatus
+            )
         );
         return $Stage;
     }

@@ -121,19 +121,19 @@ class Frontend extends Extension implements IFrontendInterface
     public function formSubject(TblSubject $tblSubject = null)
     {
 
-        $tblSubjectAll = Subject::useService()->getSubjectAll();
         $acAcronymAll = array();
         $acNameAll = array();
-        array_walk($tblSubjectAll, function (TblSubject $tblSubject) use (&$acAcronymAll, &$acNameAll) {
+        if (( $tblSubjectAll = Subject::useService()->getSubjectAll() )) {
+            array_walk($tblSubjectAll, function (TblSubject $tblSubject) use (&$acAcronymAll, &$acNameAll) {
 
-            if (!in_array($tblSubject->getAcronym(), $acAcronymAll)) {
-                array_push($acAcronymAll, $tblSubject->getAcronym());
-            }
-            if (!in_array($tblSubject->getName(), $acNameAll)) {
-                array_push($acNameAll, $tblSubject->getName());
-            }
-        });
-
+                if (!in_array($tblSubject->getAcronym(), $acAcronymAll)) {
+                    array_push($acAcronymAll, $tblSubject->getAcronym());
+                }
+                if (!in_array($tblSubject->getName(), $acNameAll)) {
+                    array_push($acNameAll, $tblSubject->getName());
+                }
+            });
+        }
         $Global = $this->getGlobal();
         if (!isset($Global->POST['Subject']) && $tblSubject) {
             $Global->POST['Subject']['Acronym'] = $tblSubject->getAcronym();

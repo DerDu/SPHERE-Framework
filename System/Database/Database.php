@@ -1,7 +1,6 @@
 <?php
 namespace SPHERE\System\Database;
 
-use Doctrine\Common\Cache\ApcCache;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\MemcachedCache;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -28,6 +27,7 @@ use SPHERE\System\Cache\Handler\MemcachedHandler;
 use SPHERE\System\Cache\Handler\MemoryHandler;
 use SPHERE\System\Config\ConfigFactory;
 use SPHERE\System\Config\Reader\IniReader;
+use SPHERE\System\Database\Fitting\ApcCache;
 use SPHERE\System\Database\Fitting\ColumnHydrator;
 use SPHERE\System\Database\Fitting\IdHydrator;
 use SPHERE\System\Database\Fitting\Logger;

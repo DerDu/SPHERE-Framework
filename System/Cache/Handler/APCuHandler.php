@@ -25,7 +25,10 @@ class APCuHandler extends AbstractHandler implements HandlerInterface
     public function setConfig($Name, ReaderInterface $Config = null)
     {
 
-        if (function_exists('apc_clear_cache')) {
+        if (
+            function_exists('apc_clear_cache')
+            || function_exists('apcu_clear_cache')
+        ) {
             return $this;
         }
         (new DebuggerFactory())->createLogger(new ErrorLogger())
@@ -72,7 +75,15 @@ class APCuHandler extends AbstractHandler implements HandlerInterface
     {
 
         (new DebuggerFactory())->createLogger(new BenchmarkLogger())->addLog('Clear APCu');
-        apc_clear_cache();
+        if (function_exists('apc_clear_cache')) {
+            apc_clear_cache();
+            return $this;
+        }
+        if (function_exists('apcu_clear_cache')) {
+            apcu_clear_cache();
+            return $this;
+        }
+        (new DebuggerFactory())->createLogger(new ErrorLogger())->addLog('Clear APCu: Failed');
         return $this;
     }
 
@@ -84,10 +95,22 @@ class APCuHandler extends AbstractHandler implements HandlerInterface
 
         (new DebuggerFactory())->createLogger(new BenchmarkLogger())->addLog('Status APCu');
         $Status = array();
-        $Status += apc_sma_info(true);
-        $Status += apc_cache_info('user', true);
+        if (function_exists('apc_sma_info')) {
+            $Status += apc_sma_info(true);
+        }
+        if (function_exists('apcu_sma_info')) {
+            $Status += apcu_sma_info(true);
+        }
+        if (function_exists('apc_cache_info')) {
+            $Status += apc_cache_info('user', true);
+        }
+        if (function_exists('apcu_cache_info')) {
+            $Status += apcu_cache_info(true);
+        }
         return new CacheStatus(
-            $Status['nhits'], $Status['nmisses'], $Status['seg_size'],
+            ( isset( $Status['nhits'] ) ? $Status['nhits'] : $Status['num_hits'] ),
+            ( isset( $Status['nmisses'] ) ? $Status['nmisses'] : $Status['num_misses'] ),
+            $Status['seg_size'],
             $Status['seg_size'] - $Status['avail_mem'], $Status['avail_mem'], 0
         );
     }

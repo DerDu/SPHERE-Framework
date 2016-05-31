@@ -18,7 +18,7 @@ class Custom implements IModuleInterface
     public static function registerModule()
     {
 
-        $consumerAcronym = Consumer::useService()->getConsumerBySession()->getAcronym();
+        $consumerAcronym = ( Consumer::useService()->getConsumerBySession() ? Consumer::useService()->getConsumerBySession()->getAcronym() : '' );
 
         /*
          * Chemnitz

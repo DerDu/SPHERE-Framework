@@ -3,7 +3,6 @@ namespace SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service;
 
 use SPHERE\Application\People\Person\Person;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
-use SPHERE\Application\Platform\Gatekeeper\Authorization\Access\Access;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Access\Service\Entity\TblRole;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\TblAccount;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\TblAuthentication;
@@ -12,10 +11,8 @@ use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\TblSession;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\TblSetting;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\TblUser;
-use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Consumer;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Service\Entity\TblConsumer;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Token\Service\Entity\TblToken;
-use SPHERE\Application\Platform\Gatekeeper\Authorization\Token\Token;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
 use SPHERE\System\Cache\Handler\MemcachedHandler;
 use SPHERE\System\Cache\Handler\MemoryHandler;
@@ -36,58 +33,68 @@ class Data extends AbstractData
     {
 
         // Identification
-        $this->createIdentification('Credential', 'Benutzername / Passwort');
-        $this->createIdentification('Token', 'Benutzername / Passwort & Hardware-Schlüssel');
-        $this->createIdentification('System', 'Benutzername / Passwort & Hardware-Schlüssel');
+        $this->createIdentification('Credential', 'Benutzername / Passwort', true);
+        $this->createIdentification('Token', 'Benutzername / Passwort & Hardware-Schlüssel', true);
+        $this->createIdentification('System', 'Benutzername / Passwort & Hardware-Schlüssel', true);
 
-        $tblConsumer = Consumer::useService()->getConsumerById(1);
-        $tblIdentification = $this->getIdentificationByName('System');
-        $tblRole = Access::useService()->getRoleByName('Administrator');
+//        $tblConsumer = Consumer::useService()->getConsumerById(1);
+//        $tblIdentification = $this->getIdentificationByName('Credential');
+//        $tblRole = Access::useService()->getRoleByName('Administrator');
+//
+//        // Install Administrator
+//        $tblAccount = $this->createAccount('root', 'sphere', null, $tblConsumer);
+//        $this->addAccountAuthentication($tblAccount, $tblIdentification);
+//        $this->addAccountAuthorization($tblAccount, $tblRole);
+//        if (!$this->getSettingByAccount($tblAccount, 'Surface')) {
+//            $this->setSettingByAccount($tblAccount, 'Surface', 1);
+//        }
+        /*
+                // System (Gerd)
+                $tblToken = Token::useService()->getTokenByIdentifier('ccccccdilkui');
+                $tblAccount = $this->createAccount('System', 'System', $tblToken, $tblConsumer);
+                $this->addAccountAuthentication($tblAccount, $tblIdentification);
+                $this->addAccountAuthorization($tblAccount, $tblRole);
+                if (!$this->getSettingByAccount($tblAccount, 'Surface')) {
+                    $this->setSettingByAccount($tblAccount, 'Surface', 1);
+                }
 
-        // System (Gerd)
-        $tblToken = Token::useService()->getTokenByIdentifier('ccccccdilkui');
-        $tblAccount = $this->createAccount('System', 'System', $tblToken, $tblConsumer);
-        $this->addAccountAuthentication($tblAccount, $tblIdentification);
-        $this->addAccountAuthorization($tblAccount, $tblRole);
-        if (!$this->getSettingByAccount($tblAccount, 'Surface')) {
-            $this->setSettingByAccount($tblAccount, 'Surface', 1);
-        }
+                // System (Jens)
+                $tblToken = Token::useService()->getTokenByIdentifier('ccccccectjge');
+                $tblAccount = $this->createAccount('Kmiezik', 'System', $tblToken, $tblConsumer);
+                $this->addAccountAuthentication($tblAccount, $tblIdentification);
+                $this->addAccountAuthorization($tblAccount, $tblRole);
+                if (!$this->getSettingByAccount($tblAccount, 'Surface')) {
+                    $this->setSettingByAccount($tblAccount, 'Surface', 1);
+                }
 
-        // System (Jens)
-        $tblToken = Token::useService()->getTokenByIdentifier('ccccccectjge');
-        $tblAccount = $this->createAccount('Kmiezik', 'System', $tblToken, $tblConsumer);
-        $this->addAccountAuthentication($tblAccount, $tblIdentification);
-        $this->addAccountAuthorization($tblAccount, $tblRole);
-        if (!$this->getSettingByAccount($tblAccount, 'Surface')) {
-            $this->setSettingByAccount($tblAccount, 'Surface', 1);
-        }
+                // System (Sidney)
+                $tblToken = Token::useService()->getTokenByIdentifier('ccccccectjgt');
+                $tblAccount = $this->createAccount('Rackel', 'System', $tblToken, $tblConsumer);
+                $this->addAccountAuthentication($tblAccount, $tblIdentification);
+                $this->addAccountAuthorization($tblAccount, $tblRole);
+                if (!$this->getSettingByAccount($tblAccount, 'Surface')) {
+                    $this->setSettingByAccount($tblAccount, 'Surface', 1);
+                }
 
-        // System (Sidney)
-        $tblToken = Token::useService()->getTokenByIdentifier('ccccccectjgt');
-        $tblAccount = $this->createAccount('Rackel', 'System', $tblToken, $tblConsumer);
-        $this->addAccountAuthentication($tblAccount, $tblIdentification);
-        $this->addAccountAuthorization($tblAccount, $tblRole);
-        if (!$this->getSettingByAccount($tblAccount, 'Surface')) {
-            $this->setSettingByAccount($tblAccount, 'Surface', 1);
-        }
-
-        // System (Johannes)
-        $tblToken = Token::useService()->getTokenByIdentifier('ccccccectjgr');
-        $tblAccount = $this->createAccount('Kauschke', 'System', $tblToken, $tblConsumer);
-        $this->addAccountAuthentication($tblAccount, $tblIdentification);
-        $this->addAccountAuthorization($tblAccount, $tblRole);
-        if (!$this->getSettingByAccount($tblAccount, 'Surface')) {
-            $this->setSettingByAccount($tblAccount, 'Surface', 1);
-        }
+                // System (Johannes)
+                $tblToken = Token::useService()->getTokenByIdentifier('ccccccectjgr');
+                $tblAccount = $this->createAccount('Kauschke', 'System', $tblToken, $tblConsumer);
+                $this->addAccountAuthentication($tblAccount, $tblIdentification);
+                $this->addAccountAuthorization($tblAccount, $tblRole);
+                if (!$this->getSettingByAccount($tblAccount, 'Surface')) {
+                    $this->setSettingByAccount($tblAccount, 'Surface', 1);
+                }
+        */
     }
 
     /**
      * @param string $Name
      * @param string $Description
+     * @param bool   $IsActive
      *
      * @return TblIdentification
      */
-    public function createIdentification($Name, $Description = '')
+    public function createIdentification($Name, $Description = '', $IsActive = true)
     {
 
         $Manager = $this->getConnection()->getEntityManager();
@@ -95,6 +102,7 @@ class Data extends AbstractData
         if (null === $Entity) {
             $Entity = new TblIdentification($Name);
             $Entity->setDescription($Description);
+            $Entity->setActive($IsActive);
             $Manager->saveEntity($Entity);
             Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(), $Entity);
         }
@@ -692,7 +700,7 @@ class Data extends AbstractData
 
         if (null !== $Entity) {
             // Skip till half of Timeout
-            $Gap = ( ( time() + $Timeout ) - ( $Timeout / 3 ) );
+            $Gap = ( ( time() + $Timeout ) - ( $Timeout / 10 ) );
 
             if ($Gap > $Entity->getTimeout()) {
                 $Entity->setTimeout(time() + $Timeout);
@@ -780,11 +788,11 @@ class Data extends AbstractData
                     $tblPerson = false;
                 }
             });
-            $EntityList = array_filter($tblPersonAll);
+            $EntityList = array_values(array_filter($tblPersonAll));
         } else {
             $EntityList = null;
         }
-        return ( null === $EntityList ? false : $EntityList );
+        return ( empty( $EntityList ) ? false : $EntityList );
     }
 
     /**
@@ -802,12 +810,11 @@ class Data extends AbstractData
 
                 $tblUser = $tblUser->getServiceTblPerson();
             });
-            $tblUserAll = array_filter($tblUserAll);
-            $EntityList = $tblUserAll;
+            $EntityList = array_values(array_filter($tblUserAll));
         } else {
             $EntityList = null;
         }
-        return ( null === $EntityList ? false : $EntityList );
+        return ( empty( $EntityList ) ? false : $EntityList );
     }
 
     /**

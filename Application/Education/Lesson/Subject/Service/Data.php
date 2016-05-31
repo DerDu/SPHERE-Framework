@@ -536,8 +536,8 @@ class Data extends AbstractData
                     $V = false;
                 }
             });
+            $EntityList = array_filter($EntityList);
         }
-        $EntityList = array_filter($EntityList);
         return ( null === $EntityList ? false : $EntityList );
     }
 

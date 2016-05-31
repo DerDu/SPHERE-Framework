@@ -2,6 +2,7 @@
 namespace SPHERE\Application\Platform\System\Protocol;
 
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Account;
+use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\TblAccount;
 use SPHERE\Application\Platform\System\Archive\Archive;
 use SPHERE\Application\Platform\System\Archive\Service\Entity\TblArchive;
 use SPHERE\Application\Platform\System\Protocol\Service\Data;
@@ -43,6 +44,17 @@ class Service extends AbstractService
         return (new Data($this->getBinding()))->getProtocolAll();
     }
 
+    /**
+     * @param TblAccount $tblAccount
+     *
+     * @return bool|TblProtocol[]
+     */
+    public function getProtocolLastActivity(TblAccount $tblAccount)
+    {
+
+        return (new Data($this->getBinding()))->getProtocolLastActivity($tblAccount);
+    }
+    
     /**
      * @return TblProtocol[]|bool
      */

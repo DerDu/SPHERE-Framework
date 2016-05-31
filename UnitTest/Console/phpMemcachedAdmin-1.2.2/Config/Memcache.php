@@ -16,11 +16,11 @@ return array (
   'file_path' => 'Temp/',
   'servers' =>
   array (
-    'KREDA-Cache' =>
+    'SPHERE-Cache Development' =>
     array (
-      '192.168.10.180:11211' =>
+      '127.0.0.1:11211' =>
       array (
-        'hostname' => '192.168.10.180',
+        'hostname' => '127.0.0.1',
         'port' => '11211',
       ),
     ),
