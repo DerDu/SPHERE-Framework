@@ -4,6 +4,9 @@ namespace SPHERE\Common\Window;
 use MOC\V\Component\Template\Component\IBridgeInterface;
 use SPHERE\Common\Frontend\ITemplateInterface;
 use SPHERE\Common\Frontend\Link\ILinkInterface;
+use SPHERE\Common\Frontend\Link\Repository\AbstractLink;
+use SPHERE\Common\Frontend\Text\Repository\Bold;
+use SPHERE\Common\Frontend\Text\Repository\Info;
 use SPHERE\Common\Frontend\Text\Repository\Muted;
 use SPHERE\System\Extension\Extension;
 
@@ -26,8 +29,10 @@ class Stage extends Extension implements ITemplateInterface
     private $Message = '';
     /** @var string $Content */
     private $Content = '';
-    /** @var array $Menu */
+    /** @var ILinkInterface[] $Menu */
     private $Menu = array();
+    /** @var array $MaskMenu Highlight current Path-Button if only one exists */
+    private $MaskMenu = array();
 
     /**
      * @param null|string $Title
@@ -89,7 +94,12 @@ class Stage extends Extension implements ITemplateInterface
     public function addButton(ILinkInterface $Button)
     {
 
-        $this->Menu[] = $Button->__toString();
+        if ($Button instanceof AbstractLink) {
+            $this->MaskMenu[] = $Button->getLink();
+        } else {
+            $this->MaskMenu[] = '';
+        }
+        $this->Menu[] = $Button;//->__toString();
         return $this;
     }
 
@@ -112,6 +122,28 @@ class Stage extends Extension implements ITemplateInterface
         $this->Template->setVariable('StageDescription', $this->Description);
         $this->Template->setVariable('StageMessage', $this->Message);
         $this->Template->setVariable('StageContent', $this->Content);
+
+        // Highlight current Route-Stage-Button
+        if (!empty( $this->Menu )) {
+            $HighlightButton = array_keys($this->MaskMenu, $this->getRequest()->getUrl());
+            if (count($HighlightButton) == 1) {
+                switch ($this->Menu[current($HighlightButton)]->getType()) {
+                    case AbstractLink::TYPE_PRIMARY:
+                    case AbstractLink::TYPE_DANGER:
+                    case AbstractLink::TYPE_WARNING:
+                    case AbstractLink::TYPE_SUCCESS:
+                    case AbstractLink::TYPE_LINK:
+                        $this->Menu[current($HighlightButton)]->setName(
+                            (new Bold($this->Menu[current($HighlightButton)]->getName()))
+                        );
+                        break;
+                    default:
+                        $this->Menu[current($HighlightButton)]->setName(
+                            new Info(new Bold($this->Menu[current($HighlightButton)]->getName()))
+                        );
+                }
+            }
+        }
         $this->Template->setVariable('StageMenu', $this->Menu);
 
         return $this->Template->getContent();

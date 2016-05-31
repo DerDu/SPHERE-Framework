@@ -750,65 +750,15 @@ class Service extends AbstractService
     }
 
     /**
-     * @param IFormInterface $Form
-     * @param array $SubjectTeacher
-     * @param int $DivisionId
-     * @param int $DivisionSubjectId
+     * @param TblDivisionSubject $tblDivisionSubject
+     * @param TblPerson          $tblPerson
      *
-     * @return IFormInterface|string
+     * @return TblSubjectTeacher
      */
-    public function addSubjectTeacher(IFormInterface $Form, $SubjectTeacher, $DivisionId, $DivisionSubjectId)
+    public function addSubjectTeacher(TblDivisionSubject $tblDivisionSubject, TblPerson $tblPerson)
     {
 
-        $Global = $this->getGlobal();
-
-        /**
-         * Skip to Frontend
-         */
-        if (!isset($Global->POST['Button']['Submit'])) {
-            return $Form;
-        }
-
-        $Error = false;
-
-        if (!$Error) {
-
-            // Remove old Link
-            $tblDivisionSubject = Division::useService()->getDivisionSubjectById($DivisionSubjectId);
-            $tblSubjectTeacherAll = Division::useService()->getSubjectTeacherByDivisionSubject($tblDivisionSubject);
-            if (is_array($tblSubjectTeacherAll)) {
-                array_walk($tblSubjectTeacherAll, function (TblSubjectTeacher $tblSubjectTeacher) {
-
-                    if (!$this->removeSubjectTeacher($tblSubjectTeacher)) {
-                    }
-                });
-            }
-
-            // Add new Link
-            if (is_array($SubjectTeacher)) {
-                array_walk($SubjectTeacher, function ($SubjectTeacher) use ($tblDivisionSubject, &$Error) {
-
-                    if (($Person = Person::useService()->getPersonById($SubjectTeacher))) {
-                        if (!(new Data($this->getBinding()))->addSubjectTeacher($tblDivisionSubject, $Person)
-                        ) {
-                            $Error = true;
-                        }
-                    } else {
-                        $Error = true;
-                    }
-                });
-            }
-
-            if (!$Error) {
-                return new Success('Fachlehrerzuweisung erfolgreich ausgewählt')
-                . new Redirect('/Education/Lesson/Division/Show', Redirect::TIMEOUT_SUCCESS,
-                    array('Id' => $DivisionId));
-            } else {
-                return new Danger('Einige Fachlehrer konnten für das Fach nicht ausgewählt werden')
-                . new Redirect('/Education/Lesson/Division/Show', Redirect::TIMEOUT_ERROR, array('Id' => $DivisionId));
-            }
-        }
-        return $Form;
+        return (new Data($this->getBinding()))->addSubjectTeacher($tblDivisionSubject, $tblPerson);
     }
 
     /**
