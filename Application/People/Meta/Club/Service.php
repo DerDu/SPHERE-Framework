@@ -87,4 +87,39 @@ class Service extends AbstractService
 
         return (new Data($this->getBinding()))->getClubByPerson($tblPerson);
     }
+
+    /**
+     * @param TblPerson $tblPerson
+     * @param $Identifier
+     * @param string $EntryDate
+     * @param string $ExitDate
+     * @param string $Remark
+     */
+    public function insertMeta(
+        TblPerson $tblPerson,
+        $Identifier,
+        $EntryDate = '',
+        $ExitDate = '',
+        $Remark = ''
+    ) {
+
+        $tblClub = $this->getClubByPerson($tblPerson);
+        if ($tblClub) {
+            (new Data($this->getBinding()))->updateClub(
+                $tblClub,
+                $Identifier,
+                $EntryDate,
+                $ExitDate,
+                $Remark
+            );
+        } else {
+            (new Data($this->getBinding()))->createClub(
+                $tblPerson,
+                $Identifier,
+                $EntryDate,
+                $ExitDate,
+                $Remark
+            );
+        }
+    }
 }

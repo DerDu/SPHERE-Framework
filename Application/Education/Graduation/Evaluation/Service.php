@@ -156,6 +156,10 @@ class Service extends AbstractService
             $Stage->setError('Test[GradeType]', 'Bitte wählen Sie einen Zensuren-Typ aus');
             $Error = true;
         }
+        if (isset($Test['Date']) && empty($Test['Date'])) {
+            $Stage->setError('Test[Date]', 'Bitte geben Sie ein Datum an');
+            $Error = true;
+        }
         if ($Error) {
             return $Stage;
         }

@@ -52,6 +52,9 @@ class Group implements IApplicationInterface, IModuleInterface
             ->setParameterDefault('Id', null)
             ->setParameterDefault('Confirm', false)
         );
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__.'/Person/Add', __NAMESPACE__.'\Frontend::frontendGroupPersonAdd'
+        ));
     }
 
     /**

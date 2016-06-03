@@ -4,9 +4,12 @@ namespace SPHERE\Application\People\Meta\Student;
 use SPHERE\Application\Corporation\Company\Company;
 use SPHERE\Application\Corporation\Company\Service\Entity\TblCompany;
 use SPHERE\Application\Education\Lesson\Division\Division;
+use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
 use SPHERE\Application\Education\Lesson\Subject\Subject;
+use SPHERE\Application\Education\Lesson\Term\Term;
 use SPHERE\Application\Education\School\Course\Course;
 use SPHERE\Application\Education\School\Type\Type;
+use SPHERE\Application\People\Group\Group;
 use SPHERE\Application\People\Meta\Student\Service\Data;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudent;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentAgreementType;
@@ -701,5 +704,45 @@ class Service extends Integration
     {
 
         return (new Data($this->getBinding()))->getStudentReleaseById($Id);
+    }
+
+    /**
+     * @param TblPerson $tblPerson
+     *
+     * @return bool|TblDivision
+     */
+    public function getCurrentDivisionByPerson(TblPerson $tblPerson)
+    {
+
+        $tblDivision = false;
+        if (Group::useService()->existsGroupPerson(Group::useService()->getGroupByMetaTable('STUDENT'),
+            $tblPerson)
+        ) {
+            $tblYearList = Term::useService()->getYearByNow();
+            if ($tblYearList) {
+                $tblDivisionStudentList = Division::useService()->getDivisionStudentAllByPerson($tblPerson);
+                if ($tblDivisionStudentList) {
+                    foreach ($tblDivisionStudentList as $tblDivisionStudent) {
+                        foreach ($tblYearList as $tblYear) {
+                            if ($tblDivisionStudent->getTblDivision()) {
+                                $divisionYear = $tblDivisionStudent->getTblDivision()->getServiceTblYear();
+                                if ($divisionYear && $divisionYear->getId() == $tblYear->getId()) {
+                                    $tblDivision = $tblDivisionStudent->getTblDivision();
+                                    //break;
+
+                                    return $tblDivision;
+                                }
+                            }
+                        }
+
+//                        if ($tblDivision) {
+//                            break;
+//                        }
+                    }
+                }
+            }
+        }
+
+        return $tblDivision;
     }
 }

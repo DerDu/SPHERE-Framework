@@ -9,6 +9,7 @@ use SPHERE\Application\Transfer\Import\FuxMedia\FuxSchool;
 use SPHERE\Application\Transfer\Import\Herrnhut\Herrnhut;
 use SPHERE\Application\Transfer\Import\Hormersdorf\Hormersdorf;
 use SPHERE\Application\Transfer\Import\Indiware\Indiware;
+use SPHERE\Application\Transfer\Import\LebensweltZwenkau\Zwenkau;
 use SPHERE\Application\Transfer\Import\Muldental\Muldental;
 use SPHERE\Common\Frontend\Icon\Repository\Upload;
 use SPHERE\Common\Main;
@@ -30,16 +31,18 @@ class Import implements IApplicationInterface
         Indiware::registerModule();
 
         $consumerAcronym = ( Consumer::useService()->getConsumerBySession() ? Consumer::useService()->getConsumerBySession()->getAcronym() : '' );
-        if ($consumerAcronym == 'ESZC') {
+        if ($consumerAcronym == 'ESZC' || $consumerAcronym == 'DEMO') {
             Chemnitz::registerModule();
-        } elseif ($consumerAcronym === 'FEGH' || $consumerAcronym === 'FESH') {
+        } elseif ($consumerAcronym === 'FEGH' || $consumerAcronym === 'FESH' || $consumerAcronym == 'DEMO') {
             Hormersdorf::registerModule();
-        } elseif ($consumerAcronym === 'EVSC'){
+        } elseif ($consumerAcronym === 'EVSC' || $consumerAcronym == 'DEMO'){
             Coswig::registerModule();
-        } elseif ($consumerAcronym === 'EVAMTL'){
+        } elseif ($consumerAcronym === 'EVAMTL' || $consumerAcronym == 'DEMO'){
             Muldental::registerModule();
-        } elseif ($consumerAcronym === 'EZGH'){
+        } elseif ($consumerAcronym === 'EZGH' || $consumerAcronym == 'DEMO'){
             Herrnhut::registerModule();
+        } elseif ($consumerAcronym === 'LWSZ' || $consumerAcronym == 'DEMO'){
+            Zwenkau::registerModule();
         }
 
         Main::getDisplay()->addApplicationNavigation(

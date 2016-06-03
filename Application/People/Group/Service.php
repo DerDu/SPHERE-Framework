@@ -1,10 +1,14 @@
 <?php
 namespace SPHERE\Application\People\Group;
 
+use SPHERE\Application\Education\Lesson\Division\Division;
+use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
 use SPHERE\Application\People\Group\Service\Data;
 use SPHERE\Application\People\Group\Service\Entity\TblGroup;
 use SPHERE\Application\People\Group\Service\Entity\TblMember;
 use SPHERE\Application\People\Group\Service\Setup;
+use SPHERE\Application\People\Meta\Student\Student;
+use SPHERE\Application\People\Person\Person;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Common\Frontend\Form\IFormInterface;
 use SPHERE\Common\Frontend\Icon\Repository\Ban;
@@ -56,9 +60,9 @@ class Service extends AbstractService
         $lockedList = array();
         $customList = array();
         $tblGroupAll = $this->getGroupAll();
-        if ($tblGroupAll){
-            foreach ($tblGroupAll as $tblGroup){
-                if ($tblGroup->isLocked()){
+        if ($tblGroupAll) {
+            foreach ($tblGroupAll as $tblGroup) {
+                if ($tblGroup->isLocked()) {
                     $lockedList[$tblGroup->getId()] = $tblGroup;
                 } else {
                     $customList[$tblGroup->getId()] = $tblGroup;
@@ -102,7 +106,7 @@ class Service extends AbstractService
 
         return (new Data($this->getBinding()))->getMemberById($Id);
     }
-    
+
     /**
      * @param IFormInterface $Form
      * @param array $Group
@@ -250,7 +254,7 @@ class Service extends AbstractService
 
     /**
      * @deprecated countPersonAllByGroup -> countMemberAllByGroup
-     *             
+     *
      * @param TblGroup $tblGroup
      *
      * @return int
@@ -271,7 +275,7 @@ class Service extends AbstractService
 
         return $this->countEntityList((new Data($this->getBinding()))->getMemberAllByGroup($tblGroup));
     }
-    
+
     /**
      *
      * @param TblPerson $tblPerson
@@ -349,11 +353,161 @@ class Service extends AbstractService
      *
      * @return TblGroup
      */
-    public function insertGroup($Name, $Description = '', $Remark = ''){
+    public function insertGroup($Name, $Description = '', $Remark = '')
+    {
 
         return (new Data($this->getBinding()))->createGroup(
             $Name, $Description, $Remark
         );
+    }
+
+    /**
+     * @param IFormInterface $Form
+     * @param TblGroup $tblGroup
+     * @param null $DataAddPerson
+     * @param null $DataRemovePerson
+     * @param TblGroup|null $tblFilterGroup
+     * @param TblDivision|null $tblFilterDivision
+     *
+     * @return IFormInterface|string
+     */
+    public function addPersonsToGroup(
+        IFormInterface $Form,
+        TblGroup $tblGroup,
+        $DataAddPerson = null,
+        $DataRemovePerson = null,
+        TblGroup $tblFilterGroup = null,
+        TblDivision $tblFilterDivision = null
+    ) {
+
+        /**
+         * Skip to Frontend
+         */
+        $Global = $this->getGlobal();
+        if (!isset($Global->POST['Button']['Submit'])) {
+            return $Form;
+        }
+
+        // entfernen
+        if ($DataRemovePerson !== null){
+            $this->removePersonListFromGroup($tblGroup, $DataRemovePerson);
+        }
+
+        // hinzufügen
+        if ($DataAddPerson !== null) {
+            $this->addPersonListToGroup($tblGroup, $DataAddPerson);
+        }
+
+        return new Success('Daten erfolgreich gespeichert', new \SPHERE\Common\Frontend\Icon\Repository\Success())
+        . new Redirect('/People/Group/Person/Add', Redirect::TIMEOUT_SUCCESS, array(
+            'Id' => $tblGroup->getId(),
+            'FilterGroupId' => $tblFilterGroup ? $tblFilterGroup->getId() : null,
+            'FilterDivisionId' => $tblFilterDivision ? $tblFilterDivision->getId() : null,
+        ));
+    }
+
+    /**
+     * @param IFormInterface $Form
+     * @param TblGroup $tblGroup
+     * @param null $Filter
+     *
+     * @return IFormInterface|Success
+     */
+    public function getFilter(IFormInterface $Form, TblGroup $tblGroup, $Filter = null)
+    {
+
+        /**
+         * Skip to Frontend
+         */
+        if ($Filter === null) {
+            return $Form;
+        }
+
+        $tblFilterGroup = false;
+        $tblDivision = false;
+        if (isset($Filter['Group'])) {
+            $tblFilterGroup = $this->getGroupById($Filter['Group']);
+        }
+        if (isset($Filter['Division'])) {
+            $tblDivision = Division::useService()->getDivisionById($Filter['Division']);
+        }
+
+        return new Success('Die verfügbaren Personen werden gefiltert.',
+            new \SPHERE\Common\Frontend\Icon\Repository\Success())
+        . new Redirect('/People/Group/Person/Add', Redirect::TIMEOUT_SUCCESS, array(
+            'Id' => $tblGroup->getId(),
+            'FilterGroupId' => $tblFilterGroup ? $tblFilterGroup->getId() : null,
+            'FilterDivisionId' => $tblDivision ? $tblDivision->getId() : null,
+        ));
+    }
+
+    /**
+     * @param $tblPersonList
+     * @param TblGroup|null $tblGroup
+     * @param TblDivision|null $tblDivision
+     * @return false|TblPerson[]
+     */
+    public function filterPersonListByGroupAndDivision(
+        $tblPersonList,
+        TblGroup $tblGroup = null,
+        TblDivision $tblDivision = null
+    ) {
+
+        if (is_array($tblPersonList)) {
+            $resultPersonList = array();
+            /** @var TblPerson $tblPerson */
+            foreach ($tblPersonList as $tblPerson) {
+                if ($tblGroup && $tblDivision) {
+                    $tblPersonDivision = Student::useService()->getCurrentDivisionByPerson($tblPerson);
+                    if ($this->existsGroupPerson($tblGroup, $tblPerson)
+                        && $tblPersonDivision && $tblPersonDivision->getId() == $tblDivision->getId()
+                    ) {
+                        $resultPersonList[$tblPerson->getId()] = $tblPerson;
+                    }
+                } elseif ($tblGroup) {
+                    if ($this->existsGroupPerson($tblGroup, $tblPerson)) {
+                        $resultPersonList[$tblPerson->getId()] = $tblPerson;
+                    }
+                } elseif ($tblDivision) {
+                    $tblPersonDivision = Student::useService()->getCurrentDivisionByPerson($tblPerson);
+                    if ($tblPersonDivision && $tblPersonDivision->getId() == $tblDivision->getId()) {
+                        $resultPersonList[$tblPerson->getId()] = $tblPerson;
+                    }
+                }
+            }
+
+            return empty($resultPersonList) ? false : $resultPersonList;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param TblGroup $tblGroup
+     * @param $DataAddPerson
+     */
+    private function addPersonListToGroup(TblGroup $tblGroup, $DataAddPerson)
+    {
+        foreach ($DataAddPerson as $personId => $value) {
+            $tblPerson = Person::useService()->getPersonById($personId);
+            if ($tblPerson && !$this->existsGroupPerson($tblGroup, $tblPerson)) {
+                $this->addGroupPerson($tblGroup, $tblPerson);
+            }
+        }
+    }
+
+    /**
+     * @param TblGroup $tblGroup
+     * @param $DataRemovePerson
+     */
+    private function removePersonListFromGroup(TblGroup $tblGroup, $DataRemovePerson)
+    {
+        foreach ($DataRemovePerson as $personId => $value) {
+            $tblPerson = Person::useService()->getPersonById($personId);
+            if ($tblPerson) {
+                $this->removeGroupPerson($tblGroup, $tblPerson);
+            }
+        }
     }
 
 }

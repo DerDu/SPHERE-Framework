@@ -165,6 +165,25 @@ class Service extends AbstractService
     }
 
     /**
+     * @param TblCompany $tblCompany
+     * @param $Address
+     * @param TblType $tblType
+     * @param $Remark
+     *
+     * @return TblToCompany
+     */
+    public function insertMailToCompany(
+        TblCompany $tblCompany,
+        $Address,
+        TblType $tblType,
+        $Remark
+    ) {
+
+        $tblMail = (new Data($this->getBinding()))->createMail($Address);
+        return (new Data($this->getBinding()))->addMailToCompany($tblCompany, $tblMail, $tblType, $Remark);
+    }
+
+    /**
      * @param integer $Id
      *
      * @return bool|TblType

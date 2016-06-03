@@ -335,13 +335,14 @@ class Service extends AbstractService
                 $gradeValue = str_replace(',', '.', trim($value['Grade']));
                 $tblPerson = Person::useService()->getPersonById($personId);
                 $tblGrade = Gradebook::useService()->getGradeByTestAndStudent($tblTest, $tblPerson);
-                if ($tblGrade && $gradeValue && empty($value['Comment']) && $gradeValue != $tblGrade->getGrade()) {
+                if ($tblGrade && $gradeValue && empty($value['Comment'])
+                    && ($gradeValue != $tblGrade->getGrade() || $value['Trend'] != $tblGrade->getTrend())
+                ) {
                     $errorEdit = true;
                     break;
                 }
             }
         }
-
 
         if ($errorRange || $errorEdit) {
             if ($errorRange) {
