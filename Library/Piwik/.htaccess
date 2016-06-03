@@ -1,0 +1,4 @@
+<FilesMatch "(piwik\.php|\.html)$">
+    Order Allow,Deny
+    Allow from All
+</FilesMatch>
