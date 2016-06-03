@@ -336,7 +336,7 @@ class Service extends AbstractService
                 $tblPerson = Person::useService()->getPersonById($personId);
                 $tblGrade = Gradebook::useService()->getGradeByTestAndStudent($tblTest, $tblPerson);
                 if ($tblGrade && $gradeValue && empty($value['Comment'])
-                    && ($gradeValue != $tblGrade->getGrade() || $value['Trend'] != $tblGrade->getTrend())
+                    && ($gradeValue != $tblGrade->getGrade() || (isset($value['Trend']) && $value['Trend'] != $tblGrade->getTrend()))
                 ) {
                     $errorEdit = true;
                     break;

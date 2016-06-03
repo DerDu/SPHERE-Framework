@@ -1932,7 +1932,7 @@ class Frontend extends Extension implements IFrontendInterface
                 $tableColumns['PreviewsGrade'] = 'Letzte Zensur';
                 $tableColumns['Grade'] = 'Zensur';
                 if ($tblScoreType && $tblScoreType->getIdentifier() == 'GRADES') {
-                    $columnDefinition['Trend'] = 'Tendenz';
+                    $tableColumns['Trend'] = 'Tendenz';
                 }
                 $tableColumns['Comment'] = 'Vermerk Notenänderung';
             }
@@ -1994,7 +1994,57 @@ class Frontend extends Extension implements IFrontendInterface
                 )
             );
         } else {
+            if ($tblTask && !$IsEdit && $tblTask->isAfterEditPeriod())
+            if (isset($tableColumns['Trend'])){
+                unset($tableColumns['Trend']);
+            }
             $tableData = new TableData($studentList, null, $tableColumns, null);
+        }
+
+        /*
+         * Content
+         */
+        $serviceForm = Gradebook::useService()->updateGradeToTest(
+            new Form(
+                new FormGroup(array(
+                    new FormRow(
+                        new FormColumn(
+                            $tableData
+                        )
+                    ),
+                ))
+                , new Primary('Speichern', new Save()))
+            , $tblTest->getId(), $Grade, $BasicRoute, $minRange, $maxRange
+        );
+        $warningNoScoreType = new \SPHERE\Common\Frontend\Message\Repository\Warning('Kein Bewertungssystem hinterlegt.
+                                Zensuren können erst vergeben werden nachdem für diese Fach-Klasse ein Bewertungssystem
+                                hinterlegt wurde.', new Ban());
+        if ($tblTask) {
+            if ($tblTask->isBeforeEditPeriod()) {
+                $content = new \SPHERE\Common\Frontend\Message\Repository\Warning(
+                        'Zensuren können erst ab erreichen des Bearbeitungszeitraums vergeben werden.',
+                        new Exclamation()
+                    )
+                    . ($tblScoreType ? '' : $warningNoScoreType);
+            } elseif ($tblTask->isAfterEditPeriod()) {
+                if ($IsEdit) {
+                    $content = $tblScoreType ? $serviceForm : $warningNoScoreType;
+                } else {
+                    $content = new \SPHERE\Common\Frontend\Message\Repository\Warning(
+                            'Zensuren können von Ihnen nur innerhalb des Bearbeitungszeitraums vergeben werden. Zur Nachträglichen Bearbeitung der Zensuren
+                             wenden Sie sich bitte an den Klassenlehrer oder die Schulleitung.',
+                            new Exclamation()
+                        )
+                        . ($tblScoreType ? '' : $warningNoScoreType)
+                        . $tableData
+                    ;
+                }
+            } else {
+                $content = $tblScoreType ? $serviceForm : $warningNoScoreType;
+            }
+
+        } else {
+            $content = $tblScoreType ? $serviceForm : $warningNoScoreType;
         }
 
         $Stage->setContent(
@@ -2063,22 +2113,7 @@ class Frontend extends Extension implements IFrontendInterface
                 new LayoutGroup(array(
                     new LayoutRow(array(
                         new LayoutColumn(
-                            $tblScoreType ?
-                                Gradebook::useService()->updateGradeToTest(
-                                    new Form(
-                                        new FormGroup(array(
-                                            new FormRow(
-                                                new FormColumn(
-                                                    $tableData
-                                                )
-                                            ),
-                                        ))
-                                        , new Primary('Speichern', new Save()))
-                                    , $tblTest->getId(), $Grade, $BasicRoute, $minRange, $maxRange
-                                )
-                                : new \SPHERE\Common\Frontend\Message\Repository\Warning('Kein Bewertungssystem hinterlegt.
-                                Zensuren können erst vergeben werden nachdem für diese Fach-Klasse ein Bewertungssystem
-                                hinterlegt wurde.', new Ban())
+                            $content
                         )
                     ))
                 ))
@@ -2118,12 +2153,15 @@ class Frontend extends Extension implements IFrontendInterface
         }
 
         if (!$IsEdit && !$IsTaskAndInPeriod) {
-            $student = $this->setGradeDisabled($tblPerson, $student);
+            /** @var TblGrade $tblGrade */
+            $student[$tblPerson->getId()]['Grade'] = $tblGrade ? $tblGrade->getDisplayGrade(): '';
+            $student[$tblPerson->getId()]['Comment'] = $tblGrade ? $tblGrade->getComment(): '';
         } else {
             if ($tblScoreType) {
                 if ($tblScoreType->getIdentifier() == 'VERBAL') {
                     $student[$tblPerson->getId()]['Grade']
-                        = (new TextField('Grade[' . $tblPerson->getId() . '][Grade]', '', '', new Quote()))->setTabIndex(1);
+                        = (new TextField('Grade[' . $tblPerson->getId() . '][Grade]', '', '',
+                        new Quote()))->setTabIndex(1);
                 } elseif ($tblScoreType->getIdentifier() == 'GRADES_V1') {
                     $student[$tblPerson->getId()]['Grade']
                         = (new TextField('Grade[' . $tblPerson->getId() . '][Grade]', '', ''))->setTabIndex(1);
@@ -2137,7 +2175,8 @@ class Frontend extends Extension implements IFrontendInterface
                 $student = $this->setFieldsForGradesWithTrend($student, $tblPerson);
             }
             $student[$tblPerson->getId()]['Comment']
-                = (new TextField('Grade[' . $tblPerson->getId() . '][Comment]', '', $labelComment, new Comment()))->setTabIndex(3);
+                = (new TextField('Grade[' . $tblPerson->getId() . '][Comment]', '', $labelComment,
+                new Comment()))->setTabIndex(3);
             $student[$tblPerson->getId()]['Attendance'] =
                 (new CheckBox('Grade[' . $tblPerson->getId() . '][Attendance]', ' ', 1))->setTabIndex(4);
         }
@@ -2163,25 +2202,8 @@ class Frontend extends Extension implements IFrontendInterface
             = (new NumberField('Grade[' . $tblPerson->getId() . '][Grade]', '', ''))->setTabIndex(1);
         $student[$tblPerson->getId()]['Trend']
             = (new SelectBox('Grade[' . $tblPerson->getId() . '][Trend]', '', $selectBoxContent,
-                new ResizeVertical()))->setTabIndex(2);
+            new ResizeVertical()))->setTabIndex(2);
 
-        return $student;
-    }
-
-    /**
-     * @param TblPerson $tblPerson
-     * @param $student
-     * @return mixed
-     */
-    private function setGradeDisabled(TblPerson $tblPerson, $student)
-    {
-
-        $student[$tblPerson->getId()]['Grade']
-            = (new TextField('Grade[' . $tblPerson->getId() . '][Grade]', '', ''))->setDisabled();
-        $student[$tblPerson->getId()]['Comment']
-            = (new TextField('Grade[' . $tblPerson->getId() . '][Comment]', '', '', new Comment()))->setDisabled();
-        $student[$tblPerson->getId()]['Attendance'] =
-            (new CheckBox('Grade[' . $tblPerson->getId() . '][Attendance]', ' ', 1))->setDisabled();
         return $student;
     }
 

@@ -184,6 +184,54 @@ class TblTask extends Element
     }
 
     /**
+     * @return bool
+     */
+    public function isBeforeEditPeriod()
+    {
+
+        if ($this->getFromDate()){
+            $fromDate = $this->FromDate;
+            if ($fromDate instanceof \DateTime) {
+                $fromDate = $fromDate->format('Y-m-d');
+            }
+
+            if ($fromDate){
+                $now = (new \DateTime('now'))->format("Y-m-d");
+
+                if ($fromDate > $now){
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAfterEditPeriod()
+    {
+
+        if ($this->getFromDate()){
+            $toDate = $this->ToDate;
+            if ($toDate instanceof \DateTime) {
+                $toDate = $toDate->format('Y-m-d');
+            }
+
+            if ($toDate){
+                $now = (new \DateTime('now'))->format("Y-m-d");
+
+                if ($toDate < $now){
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * @return string
      */
     public function getFromDate()

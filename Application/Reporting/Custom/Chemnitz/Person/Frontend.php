@@ -955,7 +955,7 @@ class Frontend extends Extension implements IFrontendInterface
                                         'Birthday'     => 'Geb.-Datum',
                                         'Address'      => 'Adresse',
                                         'PhoneNumbers' => 'Telefonnummer',
-                                        'Group'        => 'Gruppe',
+                                        'Group'        => 'Schüler&shy;gruppe',
                                         'Orientation'  => 'Profil/NK/VK',
                                         'Education'    => 'Bildungsgang',
                                     ),

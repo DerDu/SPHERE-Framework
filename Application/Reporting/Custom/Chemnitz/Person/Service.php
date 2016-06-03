@@ -16,7 +16,7 @@ use SPHERE\Application\People\Meta\Prospect\Prospect;
 use SPHERE\Application\People\Meta\Student\Student;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\People\Relationship\Relationship;
-use SPHERE\Application\People\Search\Group\Group;
+use SPHERE\Application\People\Group\Group;
 
 /**
  * Class Service
@@ -987,8 +987,10 @@ class Service
 
         $tblPersonList = Division::useService()->getStudentAllByDivision($tblDivision);
         $TableContent = array();
+        $tblStudentGroup1 = \SPHERE\Application\People\Group\Group::useService()->getGroupByMetaTable('STUDENT_GROUP_1');
+        $tblStudentGroup2 = \SPHERE\Application\People\Group\Group::useService()->getGroupByMetaTable('STUDENT_GROUP_2');
         if (!empty($tblPersonList)) {
-            array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent) {
+            array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent, $tblStudentGroup1, $tblStudentGroup2) {
 
                 $Item['Orientation'] = '';
                 $Item['Education'] = '';
@@ -1006,6 +1008,14 @@ class Service
                 $mother = null;
                 $fatherPhoneList = false;
                 $motherPhoneList = false;
+
+                if ($tblStudentGroup1
+                    && Group::useService()->existsGroupPerson($tblStudentGroup1, $tblPerson)){
+                    $Item['Group'] = 1;
+                } elseif ($tblStudentGroup2
+                    && Group::useService()->existsGroupPerson($tblStudentGroup2, $tblPerson)){
+                    $Item['Group'] = 2;
+                }
 
                 $guardianList = Relationship::useService()->getPersonRelationshipAllByPerson($tblPerson);
                 if ($guardianList) {
@@ -1162,7 +1172,6 @@ class Service
                 }
 
                 array_push($TableContent, $Item);
-                // ToDo JohK zusammenfassung am Ende
             });
         }
 
