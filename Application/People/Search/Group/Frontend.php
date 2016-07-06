@@ -3,7 +3,6 @@ namespace SPHERE\Application\People\Search\Group;
 
 use SPHERE\Application\Contact\Address\Service\Entity\TblAddress;
 use SPHERE\Application\Contact\Address\Service\Entity\TblToPerson;
-use SPHERE\Application\Education\Lesson\Division\Division;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionStudent;
 use SPHERE\Application\Education\Lesson\Term\Term;
@@ -107,29 +106,10 @@ class Frontend extends Extension implements IFrontendInterface
                         function (TblPerson &$tblPerson) use ($tblGroup, &$Result, $Acronym, $tblYearList) {
 
                             // Division && Identification
-                            $tblDivision = false;
+                            $displayDivisionList = false;
                             $identification = '';
                             if ($tblGroup->getMetaTable() == 'STUDENT') {
-                                if ($tblYearList) {
-                                    $tblDivisionStudentList = Division::useService()->getDivisionStudentAllByPerson($tblPerson);
-                                    if ($tblDivisionStudentList) {
-                                        foreach ($tblDivisionStudentList as $tblDivisionStudent) {
-                                            foreach ($tblYearList as $tblYear) {
-                                                if ($tblDivisionStudent->getTblDivision()) {
-                                                    $divisionYear = $tblDivisionStudent->getTblDivision()->getServiceTblYear();
-                                                    if ($divisionYear && $divisionYear->getId() == $tblYear->getId()) {
-                                                        $tblDivision = $tblDivisionStudent->getTblDivision();
-                                                        break;
-                                                    }
-                                                }
-                                            }
-
-                                            if ($tblDivision) {
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
+                                $displayDivisionList = Student::useService()->getDisplayCurrentDivisionListByPerson($tblPerson);
 
                                 $tblStudent = Student::useService()->getStudentByPerson($tblPerson);
                                 if ($tblStudent) {
@@ -181,7 +161,7 @@ class Frontend extends Extension implements IFrontendInterface
                                     ? (($Common = Common::useService()->getCommonByPerson($tblPerson)) ? $Common->getRemark() : '')
                                     : ''
                                 ),
-                                'Division'       => ($tblDivision ? $tblDivision->getDisplayName() : ''),
+                                'Division'       => ($displayDivisionList ? $displayDivisionList : ''),
                                 'Identification' => $identification,
                                 'Year'           => ($year ? $year : ''),
                                 'Level'          => ($level ? $level : ''),

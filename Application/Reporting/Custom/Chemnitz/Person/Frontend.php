@@ -958,6 +958,7 @@ class Frontend extends Extension implements IFrontendInterface
                                         'Group'        => 'Schüler&shy;gruppe',
                                         'Orientation'  => 'Profil/NK/VK',
                                         'Education'    => 'Bildungsgang',
+                                        'Elective'    => 'Wahlfach',
                                     ),
                                     array(
                                         "pageLength" => -1,

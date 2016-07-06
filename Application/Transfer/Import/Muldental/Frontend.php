@@ -19,7 +19,7 @@ use SPHERE\Common\Frontend\Text\Repository\Warning;
 use SPHERE\Common\Window\Stage;
 use SPHERE\System\Extension\Extension;
 
-class Frontend  extends Extension implements IFrontendInterface
+class Frontend extends Extension implements IFrontendInterface
 {
 
     /**
@@ -96,6 +96,49 @@ class Frontend  extends Extension implements IFrontendInterface
                                 )
                                 ,
                                 new Warning('Erlaubte Dateitypen: Excel (XLS,XLSX)', new Exclamation())
+                            )
+                        ))
+                    )
+                )
+            )
+        );
+
+        return $View;
+    }
+
+    /**
+     * @param null $File
+     *
+     * @return Stage
+     */
+    public function frontendCompanyImport($File = null)
+    {
+
+        $View = new Stage();
+        $View->setTitle('FuxSchool Import');
+        $View->setDescription('Firmendaten');
+        $View->setContent(
+            new Layout(
+                new LayoutGroup(
+                    new LayoutRow(
+                        new LayoutColumn(array(
+                            new Well(
+                                Muldental::useService()->createCompaniesFromFile(
+                                    new Form(
+                                        new FormGroup(
+                                            new FormRow(
+                                                new FormColumn(
+                                                    new FileUpload('File', 'Datei auswählen', 'Datei auswählen',
+                                                        null,
+                                                        array('showPreview' => false))
+                                                )
+                                            )
+                                        )
+                                        , new Primary('Hochladen')
+                                    ), $File
+                                )
+                                ,
+                                new Warning('Erlaubte Dateitypen: Excel (XLS,XLSX)')
                             )
                         ))
                     )

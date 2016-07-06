@@ -329,4 +329,25 @@ class TblTask extends Element
         $this->serviceTblYear = ( null === $tblYear ? null : $tblYear->getId() );
     }
 
+    /**
+     * Bestimmt ob zum Notenauftrag bereits Noten vergeben sind
+     *
+     * @return bool
+     */
+    public function isLocked()
+    {
+
+        $tblTestAllByTask = Evaluation::useService()->getTestAllByTask($this);
+        if ($tblTestAllByTask){
+            foreach ($tblTestAllByTask as $tblTest){
+                $tblGradeListByTest = Gradebook::useService()->getGradeAllByTest($tblTest);
+                if ($tblGradeListByTest){
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
 }

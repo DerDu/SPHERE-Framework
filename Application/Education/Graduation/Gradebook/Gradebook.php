@@ -23,6 +23,9 @@ class Gradebook implements IModuleInterface
     public static function registerModule()
     {
 
+        /**
+         * Navigation
+         */
         Main::getDisplay()->addModuleNavigation(
             new Link(new Link\Route(__NAMESPACE__.'\GradeType'), new Link\Name('Zensuren-Typ'),
                 new Link\Icon(new Tag()))
@@ -39,15 +42,14 @@ class Gradebook implements IModuleInterface
             new Link(new Link\Route(__NAMESPACE__.'\Gradebook'), new Link\Name('Notenbuch'),
                 new Link\Icon(new Book()))
         );
-//        Main::getDisplay()->addModuleNavigation(
-//            new Link(new Link\Route(__NAMESPACE__.'\Headmaster\Gradebook'), new Link\Name('Notenbuch'),
-//                new Link\Icon(new Book()))
-//        );
         Main::getDisplay()->addModuleNavigation(
             new Link(new Link\Route(__NAMESPACE__.'\Student\Gradebook'), new Link\Name('Notenübersicht'),
                 new Link\Icon(new Family()))
         );
 
+        /**
+         * Route
+         */
         Main::getDispatcher()->registerRoute(
             Main::getDispatcher()->createRoute(__NAMESPACE__.'\GradeType',
                 __NAMESPACE__.'\Frontend::frontendGradeType')
@@ -92,7 +94,7 @@ class Gradebook implements IModuleInterface
         );
 
         /*
-         * Score
+         * ScoreRule
          */
         Main::getDispatcher()->registerRoute(
             Main::getDispatcher()->createRoute(__NAMESPACE__.'\Score',
@@ -169,6 +171,10 @@ class Gradebook implements IModuleInterface
         Main::getDispatcher()->registerRoute(
             Main::getDispatcher()->createRoute(__NAMESPACE__.'\Score\Division',
                 __NAMESPACE__.'\Frontend::frontendScoreDivision')
+        );
+        Main::getDispatcher()->registerRoute(
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\Score\SubjectGroup',
+                __NAMESPACE__.'\Frontend::frontendScoreSubjectGroup')
         );
 
         /*

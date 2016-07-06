@@ -82,7 +82,7 @@ class Setup extends AbstractSetup
         if (!$this->getConnection()->hasColumn('tblDivision', 'serviceTblYear')) {
             $Table->addColumn('serviceTblYear', 'bigint', array('notnull' => false));
         }
-        $this->getConnection()->addForeignKey($Table, $tblLevel, true);
+        $this->getConnection()->addForeignKey($Table, $tblLevel);
         return $Table;
     }
 

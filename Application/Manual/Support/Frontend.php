@@ -143,6 +143,7 @@ class Frontend extends Extension implements IFrontendInterface
                         new Panel('Feedback oder Support-Anfrage', array(
                             new TextField('Ticket[Mail]', 'meine@email.de', 'Ihre Email-Adresse'.new Danger(' *')),
                             new TextField('Ticket[Subject]', 'Thema', 'Betreff der Anfrage'.new Danger(' *')),
+                            new TextField('Ticket[CallBackNumber]', 'Vorwahl/Telefonnummer', 'Rückrufnummer'),
                             new TextArea('Ticket[Body]', 'Meine Frage oder mein Problem',
                                 'Inhalt der Nachricht'.new Danger(' *')),
                             new FileUpload('Attachment', 'z.B. ein Screenshot', 'Optionaler Datei-Anhang'),

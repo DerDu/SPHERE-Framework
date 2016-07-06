@@ -458,20 +458,30 @@ class Service extends AbstractService
             /** @var TblPerson $tblPerson */
             foreach ($tblPersonList as $tblPerson) {
                 if ($tblGroup && $tblDivision) {
-                    $tblPersonDivision = Student::useService()->getCurrentDivisionByPerson($tblPerson);
+                    $tblPersonDivisionList = Student::useService()->getCurrentDivisionListByPerson($tblPerson);
                     if ($this->existsGroupPerson($tblGroup, $tblPerson)
-                        && $tblPersonDivision && $tblPersonDivision->getId() == $tblDivision->getId()
+                        && $tblPersonDivisionList
                     ) {
-                        $resultPersonList[$tblPerson->getId()] = $tblPerson;
+                        foreach ($tblPersonDivisionList as $division){
+                            if ($division->getId() == $tblDivision->getId()){
+                                $resultPersonList[$tblPerson->getId()] = $tblPerson;
+                                break;
+                            }
+                        }
                     }
                 } elseif ($tblGroup) {
                     if ($this->existsGroupPerson($tblGroup, $tblPerson)) {
                         $resultPersonList[$tblPerson->getId()] = $tblPerson;
                     }
                 } elseif ($tblDivision) {
-                    $tblPersonDivision = Student::useService()->getCurrentDivisionByPerson($tblPerson);
-                    if ($tblPersonDivision && $tblPersonDivision->getId() == $tblDivision->getId()) {
-                        $resultPersonList[$tblPerson->getId()] = $tblPerson;
+                    $tblPersonDivisionList = Student::useService()->getCurrentDivisionListByPerson($tblPerson);
+                    if ($tblPersonDivisionList) {
+                        foreach ($tblPersonDivisionList as $division){
+                            if ($division->getId() == $tblDivision->getId()){
+                                $resultPersonList[$tblPerson->getId()] = $tblPerson;
+                                break;
+                            }
+                        }
                     }
                 }
             }

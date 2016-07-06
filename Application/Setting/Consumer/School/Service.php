@@ -80,7 +80,7 @@ class Service extends AbstractService
             return $Form;
         }
 
-        $Error = true;
+        $Error = false;
         if (!( Type::useService()->getTypeById($Type['Type']) )) {
             $Form->setError('Type[Type]', 'Bitte geben Sie eine Schulart an');
             $Error = true;

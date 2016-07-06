@@ -56,7 +56,16 @@ class TblScoreGroup extends Element
     public function getMultiplier()
     {
 
-        return $this->Multiplier;
+        return str_replace(',', '.', $this->Multiplier);
+    }
+
+    /**
+     * @return string
+     */
+    public function getDisplayMultiplier()
+    {
+
+        return str_replace('.', ',', $this->Multiplier);
     }
 
     /**
@@ -65,7 +74,7 @@ class TblScoreGroup extends Element
     public function setMultiplier($Multiplier)
     {
 
-        $this->Multiplier = $Multiplier;
+        $this->Multiplier = floatval(str_replace(',', '.' , $Multiplier));
     }
 
     /**

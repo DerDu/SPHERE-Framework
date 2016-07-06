@@ -46,6 +46,7 @@ use SPHERE\Common\Frontend\Text\Repository\Bold;
 use SPHERE\Common\Frontend\Text\Repository\Danger;
 use SPHERE\Common\Frontend\Text\Repository\Muted;
 use SPHERE\Common\Frontend\Text\Repository\Small;
+use SPHERE\Common\Frontend\Text\Repository\Warning;
 use SPHERE\Common\Window\Navigation\Link\Route;
 use SPHERE\Common\Window\Stage;
 use SPHERE\System\Extension\Extension;
@@ -80,7 +81,8 @@ class Frontend extends Extension implements IFrontendInterface
                                     new FormColumn(
                                         new Panel('Passwort', array(
                                             new PasswordField('CredentialLock', 'Neues Passwort',
-                                                'Neues Passwort',
+                                                'Neues Passwort &nbsp;&nbsp;'
+                                                . new Small(new Warning('(Das Passwort muss mindestens 8 Zeichen lang sein.)')),
                                                 new Lock()),
                                             new PasswordField('CredentialLockSafety', 'Passwort wiederholen',
                                                 'Passwort wiederholen',

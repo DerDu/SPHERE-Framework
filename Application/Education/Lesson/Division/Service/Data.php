@@ -62,14 +62,14 @@ class Data extends AbstractData
     }
 
     /**
-     * @param TblYear       $tblYear
-     * @param TblLevel|null $tblLevel
-     * @param string        $Name
-     * @param string        $Description
+     * @param TblYear  $tblYear
+     * @param TblLevel $tblLevel
+     * @param string   $Name
+     * @param string   $Description
      *
      * @return null|object|TblDivision
      */
-    public function createDivision(TblYear $tblYear, TblLevel $tblLevel = null, $Name, $Description = '')
+    public function createDivision(TblYear $tblYear, TblLevel $tblLevel, $Name, $Description = '')
     {
 
         $Manager = $this->getConnection()->getEntityManager();

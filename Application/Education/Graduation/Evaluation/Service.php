@@ -639,6 +639,26 @@ class Service extends AbstractService
     }
 
     /**
+     * @param TblTask $tblTask
+     * @return false|TblDivision[]
+     */
+    public function getDivisionAllByTask(TblTask $tblTask)
+    {
+
+        $resultList = array();
+        $tblTestList = $this->getTestAllByTask($tblTask);
+        if ($tblTestList){
+            foreach ($tblTestList as $tblTest){
+                if ($tblTest->getServiceTblDivision()){
+                    $resultList[$tblTest->getServiceTblDivision()->getId()] = $tblTest->getServiceTblDivision();
+                }
+            }
+        }
+
+        return empty($resultList) ? false : $resultList;
+    }
+
+    /**
      * @param TblTask     $tblTask
      * @param TblDivision $tblDivision
      */

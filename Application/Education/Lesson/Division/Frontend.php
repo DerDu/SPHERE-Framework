@@ -1034,7 +1034,7 @@ class Frontend extends Extension implements IFrontendInterface
                                 : new TableData($tblSubjectUsedList, null,
                                     array(
                                         'Acronym'     => 'Kürzel',
-                                        'Name'        => 'Fach',
+                                        'Name'        => 'Name',
                                         'Description' => 'Beschreibung',
                                         'Option'      => ''
                                     ))
@@ -1047,7 +1047,7 @@ class Frontend extends Extension implements IFrontendInterface
                                 : new TableData($tblSubjectAvailable, null,
                                     array(
                                         'Acronym'     => 'Kürzel',
-                                        'Name'        => 'Fach',
+                                        'Name'        => 'Name',
                                         'Description' => 'Beschreibung',
                                         'Option'      => ' '
                                     ))
@@ -1873,7 +1873,12 @@ class Frontend extends Extension implements IFrontendInterface
                     $tblDivisionSubject->Student = '';
 
                     $tblDivisionSubject->Subject = $tblDivisionSubject->getServiceTblSubject() ? new Panel($tblDivisionSubject->getServiceTblSubject()
-                        ? $tblDivisionSubject->getServiceTblSubject()->getName() : '',
+                        ? $tblDivisionSubject->getServiceTblSubject()->getAcronym()
+                        . ' - ' . $tblDivisionSubject->getServiceTblSubject()->getName()
+                        . ($tblDivisionSubject->getServiceTblSubject()->getDescription()
+                            ? ' - ' . new Small($tblDivisionSubject->getServiceTblSubject()->getDescription())
+                            : '')
+                        : '',
                         $StudentTableCount.' / '.$StudentTableCount.' Schüler aus der Klasse',
                         Panel::PANEL_TYPE_INFO) : '';
 
@@ -1957,7 +1962,12 @@ class Frontend extends Extension implements IFrontendInterface
 
                         if ($StudentTableCount > $StudentsGroupCount && $tblDivisionSubject->getServiceTblSubject()) {
                             $tblDivisionSubject->Subject = new Panel($tblDivisionSubject->getServiceTblSubject()
-                                ? $tblDivisionSubject->getServiceTblSubject()->getName() : '',
+                                ? $tblDivisionSubject->getServiceTblSubject()->getAcronym()
+                                . ' - ' . $tblDivisionSubject->getServiceTblSubject()->getName()
+                                . ($tblDivisionSubject->getServiceTblSubject()->getDescription()
+                                    ? ' - ' . new Small($tblDivisionSubject->getServiceTblSubject()->getDescription())
+                                    : '')
+                                :'',
                                 new WarningText($StudentsGroupCount.' / '.$StudentTableCount.' Schüler aus der Klasse'),
                                 Panel::PANEL_TYPE_INFO);
                         }

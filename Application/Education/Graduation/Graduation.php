@@ -67,17 +67,26 @@ class Graduation implements IApplicationInterface
                         'Verwaltung der Berechnungsvorschriften für die automatische Durchschnittsberechnung der Zensuren.'
                     ),
                 )) : null,
-                Access::useService()->hasAuthorization('/Education/Graduation/Gradebook/Gradebook') ? new TableRow(array(
+                Access::useService()->hasAuthorization('/Education/Graduation/Gradebook/Type') ? new TableRow(array(
                     new TableColumn(
-                        new Bold('Notenbuch')
+                        new Bold('Bewertungssystem')
+                    ),
+                    new TableColumn(
+                        'Hier werden alle verfügbaren Bewertungssysteme angezeigt.
+                        Nach der Auswahl eines Bewertungssystems können dem Bewertungssystem die entsprechenden Fach-Klassen zugeordnet werden.'
+                    ),
+                )) : null,
+                Access::useService()->hasAuthorization('/Education/Graduation/Gradebook/Gradebook/Teacher') ? new TableRow(array(
+                    new TableColumn(
+                        new Bold('Notenbuch (Ansicht: Lehrer)')
                     ),
                     new TableColumn(
                         'Anzeige der Notenbücher, wo der angemeldete Lehrer als Fachlehrer oder Klassenlehrer hinterlegt ist.'
                     ),
                 )) : null,
-                Access::useService()->hasAuthorization('/Education/Graduation/Gradebook/Headmaster/Gradebook') ? new TableRow(array(
+                Access::useService()->hasAuthorization('/Education/Graduation/Gradebook/Gradebook/Headmaster') ? new TableRow(array(
                     new TableColumn(
-                        new Bold('Notenbuch')
+                        new Bold('Notenbuch (Ansicht: Leitung)')
                     ),
                     new TableColumn(
                         'Anzeige aller Notenbücher.'
@@ -93,35 +102,35 @@ class Graduation implements IApplicationInterface
                         Der angemeldete Sorgeberechtigte sieht nur die Zensuren seiner Schützlinge. <br>'
                     ),
                 )) : null,
-                Access::useService()->hasAuthorization('/Education/Graduation/Evaluation/Test') ? new TableRow(array(
+                Access::useService()->hasAuthorization('/Education/Graduation/Evaluation/Test/Teacher') ? new TableRow(array(
                     new TableColumn(
-                        new Bold('Leistungsüberprüfung')
+                        new Bold('Leistungsüberprüfung (Ansicht: Lehrer)')
                     ),
                     new TableColumn(
                         'Verwaltung der Leistungsüberprüfungen (inklusive Kopfnoten und Stichtagsnoten)
                         , wo der angemeldete Lehrer als Fachlehrer oder Klassenlehrer hinterlegt ist.'
                     ),
                 )) : null,
-                Access::useService()->hasAuthorization('/Education/Graduation/Evaluation/Headmaster/Test') ? new TableRow(array(
+                Access::useService()->hasAuthorization('/Education/Graduation/Evaluation/Test/Headmaster') ? new TableRow(array(
                     new TableColumn(
-                        new Bold('Leistungsüberprüfung')
+                        new Bold('Leistungsüberprüfung (Ansicht: Leitung)')
                     ),
                     new TableColumn(
                         'Verwaltung aller Leistungsüberprüfungen (inklusive Kopfnoten und Stichtagsnoten).'
                     ),
                 )) : null,
-                Access::useService()->hasAuthorization('/Education/Graduation/Evaluation/DivisionTeacher/Task') ? new TableRow(array(
+                Access::useService()->hasAuthorization('/Education/Graduation/Evaluation/Task/Teacher') ? new TableRow(array(
                     new TableColumn(
-                        new Bold('Notenaufträge')
+                        new Bold('Notenaufträge (Ansicht: Lehrer)')
                     ),
                     new TableColumn(
                         'Anzeige der Kopfnoten- und Stichtagsnotenaufträge (inklusive vergebener Zensuren),
                          wo der angemeldete Lehrer als Klassenlehrer hinterlegt ist.'
                     ),
                 )) : null,
-                Access::useService()->hasAuthorization('/Education/Graduation/Evaluation/Headmaster/Task') ? new TableRow(array(
+                Access::useService()->hasAuthorization('/Education/Graduation/Evaluation/Task/Headmaster') ? new TableRow(array(
                     new TableColumn(
-                        new Bold('Notenaufträge')
+                        new Bold('Notenaufträge (Ansicht: Leitung)')
                     ),
                     new TableColumn(
                         'Verwaltung aller Kopfnoten- und Stichtagsnotenaufträge (inklusive der Anzeige der vergebener Zensuren).'

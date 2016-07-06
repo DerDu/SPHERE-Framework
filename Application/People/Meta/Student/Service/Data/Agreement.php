@@ -12,7 +12,7 @@ use SPHERE\Application\Platform\System\Protocol\Protocol;
  *
  * @package SPHERE\Application\People\Meta\Student\Service\Data
  */
-abstract class Agreement extends Student
+abstract class Agreement extends Liberation
 {
 
     /**

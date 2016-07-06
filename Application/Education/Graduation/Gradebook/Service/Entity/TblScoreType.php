@@ -17,6 +17,7 @@ class TblScoreType extends Element
 
     const ATTR_NAME = 'Name';
     const ATTR_IDENTIFIER = 'Identifier';
+    const ATTR_PATTERN = 'Pattern';
 
     /**
      * @Column(type="string")
@@ -27,6 +28,11 @@ class TblScoreType extends Element
      * @Column(type="string")
      */
     protected $Identifier;
+
+    /**
+     * @Column(type="string")
+     */
+    protected $Pattern;
 
     /**
      * @return string
@@ -62,6 +68,22 @@ class TblScoreType extends Element
     {
 
         $this->Identifier = $Identifier;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPattern()
+    {
+        return $this->Pattern;
+    }
+
+    /**
+     * @param string $Pattern
+     */
+    public function setPattern($Pattern)
+    {
+        $this->Pattern = $Pattern;
     }
 
 }

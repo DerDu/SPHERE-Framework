@@ -14,8 +14,8 @@ use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentAgreementCat
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentAgreementType;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentDisorderType;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentFocusType;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentLiberationCategory;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentMedicalRecord;
-use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentRelease;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentSubject;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentTransfer;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
@@ -413,8 +413,7 @@ class Frontend extends Extension implements IFrontendInterface
      *
      * @return FormGroup
      */
-    private
-    function formGroupGeneral(
+    private function formGroupGeneral(
         TblPerson $tblPerson = null
     ) {
 
@@ -478,10 +477,12 @@ class Frontend extends Extension implements IFrontendInterface
                         }
                     }
 
-                    $tblStudentRelease = $tblStudent->getTblStudentRelease();
-                    if ($tblStudentRelease) {
-                        if ($tblStudentRelease->getSportRelease()) {
-                            $Global->POST['Meta']['Release'] = $tblStudentRelease->getSportRelease();
+                    $tblStudentLiberationAll = Student::useService()->getStudentLiberationAllByStudent($tblStudent);
+                    if ($tblStudentLiberationAll) {
+                        foreach ($tblStudentLiberationAll as $tblStudentLiberation) {
+                            $Global->POST['Meta']['Liberation']
+                            [$tblStudentLiberation->getTblStudentLiberationType()->getTblStudentLiberationCategory()->getId()]
+                                = $tblStudentLiberation->getTblStudentLiberationType()->getId();
                         }
                     }
 
@@ -516,6 +517,25 @@ class Frontend extends Extension implements IFrontendInterface
         );
         $AgreementPanel = new Panel('Einverständniserklärung zur Datennutzung', $AgreementPanel,
             Panel::PANEL_TYPE_INFO);
+
+        /**
+         * Panel: Liberation
+         */
+        $tblLiberationCategoryAll = Student::useService()->getStudentLiberationCategoryAll();
+        $LiberationPanel = array();
+        array_walk($tblLiberationCategoryAll,
+            function (TblStudentLiberationCategory $tblStudentLiberationCategory) use (&$LiberationPanel) {
+
+                $tblLiberationTypeAll = Student::useService()->getStudentLiberationTypeAllByCategory($tblStudentLiberationCategory);
+                array_push($LiberationPanel,
+                    new SelectBox('Meta[Liberation]['.$tblStudentLiberationCategory->getId().']',
+                        $tblStudentLiberationCategory->getName(), array(
+                            '{{ Name }}' => $tblLiberationTypeAll
+                        ))
+                );
+            }
+        );
+        $LiberationPanel = new Panel('Unterichtsbefreihung', $LiberationPanel, Panel::PANEL_TYPE_INFO);
 
         $tblSiblingRankAll = Relationship::useService()->getSiblingRankAll();
         $tblSiblingRankAll[] = new TblSiblingRank();
@@ -574,15 +594,7 @@ class Frontend extends Extension implements IFrontendInterface
                             'Ausstiegshaltestelle', new StopSign()),
                         new TextArea('Meta[Transport][Remark]', 'Bemerkungen', 'Bemerkungen', new Pencil()),
                     ), Panel::PANEL_TYPE_INFO),
-                    new Panel('Schulbefreiung', array(
-                        new SelectBox('Meta[Release]', 'Sport', array(
-                            TblStudentRelease::VALUE_SPORT_RELEASE_NULL => '',
-                            TblStudentRelease::VALUE_SPORT_NO_RELEASE   => 'Nicht befreit',
-                            TblStudentRelease::VALUE_SPORT_PART_RELEASE => 'Teilbefreit',
-                            TblStudentRelease::VALUE_SPORT_FULL_RELEASE => 'Vollbefreit',
-
-                        ))
-                    ), Panel::PANEL_TYPE_INFO)
+                    $LiberationPanel
                 ), 3),
                 new FormColumn($AgreementPanel, 3),
             )),
@@ -594,8 +606,7 @@ class Frontend extends Extension implements IFrontendInterface
      *
      * @return FormGroup
      */
-    private
-    function formGroupSubject(
+    private    function formGroupSubject(
         TblPerson $tblPerson = null
     ) {
 

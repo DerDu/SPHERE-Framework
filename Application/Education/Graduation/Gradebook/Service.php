@@ -16,6 +16,7 @@ use SPHERE\Application\Education\Graduation\Gradebook\Service\Entity\TblScoreGro
 use SPHERE\Application\Education\Graduation\Gradebook\Service\Entity\TblScoreRule;
 use SPHERE\Application\Education\Graduation\Gradebook\Service\Entity\TblScoreRuleConditionList;
 use SPHERE\Application\Education\Graduation\Gradebook\Service\Entity\TblScoreRuleDivisionSubject;
+use SPHERE\Application\Education\Graduation\Gradebook\Service\Entity\TblScoreRuleSubjectGroup;
 use SPHERE\Application\Education\Graduation\Gradebook\Service\Entity\TblScoreType;
 use SPHERE\Application\Education\Graduation\Gradebook\Service\Setup;
 use SPHERE\Application\Education\Lesson\Division\Division;
@@ -51,6 +52,8 @@ use SPHERE\System\Database\Binding\AbstractService;
  */
 class Service extends AbstractService
 {
+
+    const PREG_MATCH_DECIMAL_NUMBER = '!^[0-9]+((\.|,)[0-9]+)?$!is';
 
     /**
      * @param bool $Simulate
@@ -284,22 +287,59 @@ class Service extends AbstractService
     }
 
     /**
+     * @param TblTest $tblTest
+     *
+     * @return bool|float
+     */
+    public function getAverageByTest(TblTest $tblTest)
+    {
+
+        $tblDivision = $tblTest->getServiceTblDivision();
+        $tblSubject = $tblTest->getServiceTblSubject();
+        if ($tblDivision && $tblSubject) {
+            $tblScoreType = $this->getScoreTypeByDivisionAndSubject(
+                $tblDivision,
+                $tblSubject
+            );
+
+            if ($tblScoreType && $tblScoreType->getIdentifier() !== 'VERBAL' ){
+                $tblGradeList = $this->getGradeAllByTest($tblTest);
+                if ($tblGradeList){
+                    $sum = 0;
+                    $count = 0;
+                    foreach ($tblGradeList as $tblGrade){
+                        if ($tblGrade->getGrade() && $tblGrade->getGrade() !== '' && is_numeric($tblGrade->getGrade())) {
+                            $sum += floatval($tblGrade->getGrade());
+                            $count++;
+                        }
+                    }
+
+                    if ($count > 0){
+                        return round($sum / $count, 2);
+                    }
+                }
+            }
+        }
+
+        return false;
+
+    }
+
+    /**
      * @param IFormInterface|null $Stage
      * @param null $TestId
-     * @param                     $Grade
-     * @param string $BasicRoute
-     * @param null|int $minRange
-     * @param null|int $maxRange
+     * @param null $Grade
+     * @param $BasicRoute
+     * @param TblScoreType|null $tblScoreType
      *
-     * @return IFormInterface|Redirect
+     * @return IFormInterface|string
      */
     public function updateGradeToTest(
         IFormInterface $Stage = null,
         $TestId = null,
         $Grade = null,
         $BasicRoute,
-        $minRange = null,
-        $maxRange = null
+        TblScoreType $tblScoreType = null
     ) {
 
         /**
@@ -316,12 +356,12 @@ class Service extends AbstractService
         $tblTest = Evaluation::useService()->getTestById($TestId);
 
         $errorRange = false;
-        // check if grade is in grade range + grund bei Noten-Änderung angeben
-        if ($minRange !== null && $maxRange !== null && !empty($Grade)) {
+        // check if grade has pattern
+        if (!empty($Grade) && $tblScoreType && $tblScoreType->getPattern() !== '') {
             foreach ($Grade as $personId => $value) {
                 $gradeValue = str_replace(',', '.', trim($value['Grade']));
-                if (!isset($value['Attendance']) && $gradeValue !== '') {
-                    if (!is_numeric($gradeValue) || $gradeValue < $minRange || $gradeValue > $maxRange) {
+                if (!isset($value['Attendance']) && $gradeValue !== '' ) {
+                    if (!preg_match('!' . $tblScoreType->getPattern() . '!is', $gradeValue)) {
                         $errorRange = true;
                         break;
                     }
@@ -329,34 +369,46 @@ class Service extends AbstractService
             }
         }
 
+        // grund bei Noten-Änderung angeben
         $errorEdit = false;
+        $errorNoGrade = false;
         if (!empty($Grade)) {
             foreach ($Grade as $personId => $value) {
                 $gradeValue = str_replace(',', '.', trim($value['Grade']));
                 $tblPerson = Person::useService()->getPersonById($personId);
                 $tblGrade = Gradebook::useService()->getGradeByTestAndStudent($tblTest, $tblPerson);
-                if ($tblGrade && $gradeValue && empty($value['Comment'])
-                    && ($gradeValue != $tblGrade->getGrade() || (isset($value['Trend']) && $value['Trend'] != $tblGrade->getTrend()))
+                if ($tblGrade && empty($value['Comment']) && !isset($value['Attendance'])
+                    && ($gradeValue != $tblGrade->getGrade()
+                        || (isset($value['Trend']) && $value['Trend'] != $tblGrade->getTrend()))
                 ) {
                     $errorEdit = true;
-                    break;
+                }
+                if ($tblGrade && !isset($value['Attendance']) && $gradeValue === ''){
+                    $errorNoGrade = true;
                 }
             }
         }
 
-        if ($errorRange || $errorEdit) {
+        if ($errorRange || $errorEdit || $errorNoGrade) {
             if ($errorRange) {
                 $Stage->prependGridGroup(
                     new FormGroup(new FormRow(new FormColumn(new Danger(
                             'Nicht alle eingebenen Zensuren befinden sich im Wertebereich.
-                        Bitte geben sie für die Zensuren eine Zahl zwischen ' . $minRange . ' und ' . $maxRange . ' ein.
                         Die Daten wurden nicht gespeichert.', new Exclamation())
                     ))));
             }
             if ($errorEdit) {
                 $Stage->prependGridGroup(
                     new FormGroup(new FormRow(new FormColumn(new Danger(
-                            'Bei den Notenänderungen wurde nicht in jedem Fall ein Grund angegeben.', new Exclamation())
+                            'Bei den Notenänderungen wurde nicht in jedem Fall ein Grund angegeben.
+                             Die Daten wurden nicht gespeichert.', new Exclamation())
+                    ))));
+            }
+            if ($errorNoGrade) {
+                $Stage->prependGridGroup(
+                    new FormGroup(new FormRow(new FormColumn(new Danger(
+                            'Bereits eingetragene Zensuren können nur über "Nicht teilgenommen" entfernt werden.
+                            Die Daten wurden nicht gespeichert.', new Exclamation())
                     ))));
             }
 
@@ -595,7 +647,10 @@ class Service extends AbstractService
             $Error = true;
         }
         if (isset($ScoreGroup['Multiplier']) && empty($ScoreGroup['Multiplier'])) {
-            $Stage->setError('ScoreGroup[Multiplier]', 'Bitte geben sie einen Faktor in Prozent an');
+            $Stage->setError('ScoreGroup[Multiplier]', 'Bitte geben sie einen Faktor an');
+            $Error = true;
+        } elseif (isset($ScoreGroup['Multiplier']) && !preg_match(self::PREG_MATCH_DECIMAL_NUMBER, $ScoreGroup['Multiplier'])) {
+            $Stage->setError('ScoreGroup[Multiplier]', 'Bitte geben sie eine Zahl als Faktor an');
             $Error = true;
         }
 
@@ -794,6 +849,7 @@ class Service extends AbstractService
      * @param TblPeriod|null $tblPeriod
      * @param TblSubjectGroup|null $tblSubjectGroup
      * @param bool $isStudentView
+     * @param bool $taskDate
      *
      * @return array|bool|float|string
      */
@@ -805,12 +861,29 @@ class Service extends AbstractService
         TblScoreRule $tblScoreRule = null,
         TblPeriod $tblPeriod = null,
         TblSubjectGroup $tblSubjectGroup = null,
-        $isStudentView = false
+        $isStudentView = false,
+        $taskDate = false
     ) {
 
         $tblGradeList = $this->getGradesByStudent(
             $tblPerson, $tblDivision, $tblSubject, $tblTestType, $tblPeriod, $tblSubjectGroup
         );
+
+        // entfernen aller Noten nach dem Stichtag (bei Stichtagsnotenauftäge
+        if ($taskDate && $tblGradeList) {
+            $tempGradeList = array();
+            $taskDate = new \DateTime($taskDate);
+            foreach ($tblGradeList as $item) {
+                if ($item->getServiceTblTest() && $item->getServiceTblTest()->getDate()) {
+                    $testDate = new \DateTime($item->getServiceTblTest()->getDate());
+                    // Noten nur vom vor dem Stichtag
+                    if ($taskDate->format('Y-m-d') >= $testDate->format('Y-m-d')) {
+                        $tempGradeList[] = $item;
+                    }
+                }
+            }
+            $tblGradeList = empty($tempGradeList) ? false : $tempGradeList;
+        }
 
         // filter by Test Return for StudentView
         if ($isStudentView && $tblGradeList) {
@@ -1189,6 +1262,13 @@ class Service extends AbstractService
             $Stage->setError('ScoreGroup[Name]', 'Bitte geben sie einen Namen an');
             $Error = true;
         }
+        if (isset($ScoreGroup['Multiplier']) && empty($ScoreGroup['Multiplier'])) {
+            $Stage->setError('ScoreGroup[Multiplier]', 'Bitte geben sie einen Faktor an');
+            $Error = true;
+        } elseif (isset($ScoreGroup['Multiplier']) && !preg_match(self::PREG_MATCH_DECIMAL_NUMBER, $ScoreGroup['Multiplier'])) {
+            $Stage->setError('ScoreGroup[Multiplier]', 'Bitte geben sie eine Zahl als Faktor an');
+            $Error = true;
+        }
 
         $tblScoreGroup = $this->getScoreGroupById($Id);
         if (!$tblScoreGroup) {
@@ -1396,7 +1476,9 @@ class Service extends AbstractService
                 $tblDivision = $tblScoreRuleDivisionSubject->getServiceTblDivision();
                 $tblSubject = $tblScoreRuleDivisionSubject->getServiceTblSubject();
                 if ($tblDivision && $tblSubject) {
-                    if ($tblDivision->getServiceTblYear()->getId() == $tblYear->getId()) {
+                    if ($tblDivision->getServiceTblYear()
+                        && $tblDivision->getServiceTblYear()->getId() == $tblYear->getId()
+                    ) {
                         if (!isset($Data[$tblDivision->getId()][-1])                // alle Fächer
                             && !isset($Data[$tblDivision->getId()][$tblSubject->getId()])
                         ) {
@@ -1440,6 +1522,79 @@ class Service extends AbstractService
                 $tblDivision, $tblSubject, null, $tblScoreType
             );
         }
+    }
+
+    /**
+     * @param IFormInterface|null $Stage
+     * @param TblScoreRule $tblScoreRule
+     * @param TblYear $tblYear
+     * @param $Data
+     *
+     * @return IFormInterface
+     */
+    public function updateScoreRuleSubjectGroup(
+        IFormInterface $Stage = null,
+        TblScoreRule $tblScoreRule,
+        TblYear $tblYear = null,
+        $Data = null
+    ) {
+
+        /**
+         * Skip to Frontend
+         */
+        $Global = $this->getGlobal();
+        if (!isset($Global->POST['Button']['Submit']) || $tblYear == null) {
+            return $Stage;
+        }
+
+        // add
+        if (is_array($Data)) {
+            foreach ($Data as $divisionId => $subjectList) {
+                $tblDivision = Division::useService()->getDivisionById($divisionId);
+                if ($tblDivision && is_array($subjectList)) {
+                    foreach ($subjectList as $subjectId => $subjectGroupList) {
+                        $tblSubject = Subject::useService()->getSubjectById($subjectId);
+                        if ($tblSubject && is_array($subjectGroupList)) {
+                            foreach ($subjectGroupList as $subjectGroupId => $value) {
+                                $tblSubjectGroup = Division::useService()->getSubjectGroupById($subjectGroupId);
+                                if ($tblSubjectGroup) {
+                                    (new Data($this->getBinding()))->addScoreRuleSubjectGroup(
+                                        $tblDivision,
+                                        $tblSubject,
+                                        $tblSubjectGroup,
+                                        $tblScoreRule
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // remove
+        $tblScoreRuleSubjectGroupList = (new Data($this->getBinding()))->getScoreRuleSubjectGroupAllByScoreRule($tblScoreRule);
+        if ($tblScoreRuleSubjectGroupList) {
+            foreach ($tblScoreRuleSubjectGroupList as $tblScoreRuleSubjectGroup) {
+                if ($tblScoreRuleSubjectGroup->getServiceTblDivision()
+                    && $tblScoreRuleSubjectGroup->getServiceTblSubject()
+                    && $tblScoreRuleSubjectGroup->getServiceTblSubjectGroup()
+                    && !isset($Data[$tblScoreRuleSubjectGroup->getServiceTblDivision()->getId()]
+                        [$tblScoreRuleSubjectGroup->getServiceTblSubject()->getId()]
+                        [$tblScoreRuleSubjectGroup->getServiceTblSubjectGroup()->getId()])
+                    && $tblScoreRuleSubjectGroup->getServiceTblDivision()->getServiceTblYear()
+                    && $tblScoreRuleSubjectGroup->getServiceTblDivision()->getServiceTblYear()->getId() == $tblYear->getId()
+                ) {
+                    (new Data($this->getBinding()))->removeScoreRuleSubjectGroup($tblScoreRuleSubjectGroup);
+                }
+            }
+        }
+
+        return new Success('Erfolgreich gespeichert.', new \SPHERE\Common\Frontend\Icon\Repository\Success())
+        . new Redirect('/Education/Graduation/Gradebook/Score/SubjectGroup', Redirect::TIMEOUT_SUCCESS, array(
+            'Id' => $tblScoreRule->getId(),
+            'YearId' => $tblYear->getId()
+        ));
     }
 
     /**
@@ -1533,6 +1688,85 @@ class Service extends AbstractService
 
         return (new Data($this->getBinding()))->getScoreRuleDivisionSubjectByDivisionAndSubject($tblDivision,
             $tblSubject);
+    }
+
+    /**
+     * @param TblDivision $tblDivision
+     * @param TblSubject $tblSubject
+     * @param TblSubjectGroup|null $tblSubjectGroup
+     *
+     * @return false|TblScoreRule
+     */
+    public function getScoreRuleByDivisionAndSubjectAndGroup(
+        TblDivision $tblDivision,
+        TblSubject $tblSubject,
+        TblSubjectGroup $tblSubjectGroup = null
+    ) {
+
+        if ($tblSubjectGroup !== null) {
+            $tblScoreRuleSubjectGroup = $this->getScoreRuleSubjectGroupByDivisionAndSubjectAndGroup(
+                $tblDivision,
+                $tblSubject,
+                $tblSubjectGroup
+            );
+            if ($tblScoreRuleSubjectGroup) {
+
+                return $tblScoreRuleSubjectGroup->getTblScoreRule();
+            }
+        }
+
+        $tblScoreRuleDivisionSubject = $this->getScoreRuleDivisionSubjectByDivisionAndSubject(
+            $tblDivision,
+            $tblSubject
+        );
+        if ($tblScoreRuleDivisionSubject) {
+
+            return $tblScoreRuleDivisionSubject->getTblScoreRule();
+        }
+
+        return false;
+    }
+
+    /**
+     * @param TblDivision $tblDivision
+     * @param TblSubject $tblSubject
+     * @return false|TblScoreType
+     */
+    public function getScoreTypeByDivisionAndSubject(
+        TblDivision $tblDivision,
+        TblSubject $tblSubject
+    ) {
+
+        $tblScoreRuleDivisionSubject = $this->getScoreRuleDivisionSubjectByDivisionAndSubject(
+            $tblDivision,
+            $tblSubject
+        );
+        if ($tblScoreRuleDivisionSubject) {
+
+            return $tblScoreRuleDivisionSubject->getTblScoreType();
+        }
+
+        return false;
+    }
+
+    /**
+     * @param TblDivision $tblDivision
+     * @param TblSubject $tblSubject
+     * @param TblSubjectGroup $tblSubjectGroup
+     *
+     * @return false|TblScoreRuleSubjectGroup
+     */
+    public function getScoreRuleSubjectGroupByDivisionAndSubjectAndGroup(
+        TblDivision $tblDivision,
+        TblSubject $tblSubject,
+        TblSubjectGroup $tblSubjectGroup
+    ) {
+
+        return (new Data($this->getBinding()))->getScoreRuleSubjectGroupByDivisionAndSubjectAndGroup(
+            $tblDivision,
+            $tblSubject,
+            $tblSubjectGroup
+        );
     }
 
     /**

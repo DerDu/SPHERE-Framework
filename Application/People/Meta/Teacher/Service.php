@@ -79,17 +79,6 @@ class Service extends AbstractService
     }
 
     /**
-     * @param $Acronym
-     *
-     * @return false|TblTeacher
-     */
-    public function getTeacherByAcronym($Acronym)
-    {
-
-        return (new Data($this->getBinding()))->getTeacherByAcronym($Acronym);
-    }
-
-    /**
      *
      * @param TblPerson $tblPerson
      *
@@ -99,5 +88,30 @@ class Service extends AbstractService
     {
 
         return (new Data($this->getBinding()))->getTeacherByPerson($tblPerson);
+    }
+
+    /**
+     * @param $Acronym
+     *
+     * @return false|\SPHERE\System\Database\Fitting\Element
+     */
+    public function getTeacherByAcronym($Acronym)
+    {
+
+        return (new Data($this->getBinding()))->getTeacherByAcronym($Acronym);
+    }
+
+    /**
+     * @param TblPerson $tblPerson
+     * @param $Acronym
+     *
+     * @return TblTeacher
+     */
+    public function insertTeacher(
+        TblPerson $tblPerson,
+        $Acronym
+    ) {
+
+        return (new Data($this->getBinding()))->createTeacher($tblPerson, $Acronym);
     }
 }

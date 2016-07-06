@@ -236,6 +236,7 @@ class Service extends AbstractService
      * @param $PostOfficeBox
      * @param string $County
      * @param string $Nation
+     * @param TblState $tblState
      *
      * @return TblToPerson
      */
@@ -248,11 +249,12 @@ class Service extends AbstractService
         $CityDistrict,
         $PostOfficeBox,
         $County = '',
-        $Nation = ''
+        $Nation = '',
+        TblState $tblState = null
     ) {
 
         $tblCity = (new Data($this->getBinding()))->createCity($CityCode, $CityName, $CityDistrict);
-        $tblState = null;
+//        $tblState = null;
 
         $tblAddress = (new Data($this->getBinding()))->createAddress(
             $tblState,

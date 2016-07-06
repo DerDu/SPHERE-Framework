@@ -25,6 +25,12 @@ class TblStudent extends Element
      * @Column(type="string")
      */
     protected $Identifier;
+
+    /**
+     * @Column(type="datetime")
+     */
+    protected $SchoolAttendanceStartDate;
+
     /**
      * @Column(type="bigint")
      */
@@ -53,10 +59,6 @@ class TblStudent extends Element
      * @Column(type="bigint")
      */
     protected $tblStudentIntegration;
-    /**
-     * @Column(type="bigint")
-     */
-    protected $tblStudentRelease;
 
     /**
      * @return bool|TblStudentMedicalRecord
@@ -231,24 +233,30 @@ class TblStudent extends Element
     }
 
     /**
-     * @return bool|TblStudentRelease
+     * @return string
      */
-    public function getTblStudentRelease()
+    public function getSchoolAttendanceStartDate()
     {
 
-        if (null === $this->tblStudentRelease) {
+        if (null === $this->SchoolAttendanceStartDate) {
             return false;
+        }
+        /** @var \DateTime $SchoolAttendanceStartDate */
+        $SchoolAttendanceStartDate = $this->SchoolAttendanceStartDate;
+        if ($SchoolAttendanceStartDate instanceof \DateTime) {
+            return $SchoolAttendanceStartDate->format('d.m.Y');
         } else {
-            return Student::useService()->getStudentReleaseById($this->tblStudentRelease);
+            return (string)$SchoolAttendanceStartDate;
         }
     }
 
     /**
-     * @param null|TblStudentRelease $tblStudentRelease
+     * @param null|\DateTime $SchoolAttendanceStartDate
      */
-    public function setTblStudentRelease(TblStudentRelease $tblStudentRelease = null)
+    public function setSchoolAttendanceStartDate(\DateTime $SchoolAttendanceStartDate = null)
     {
 
-        $this->tblStudentRelease = ( null === $tblStudentRelease ? null : $tblStudentRelease->getId() );
+        $this->SchoolAttendanceStartDate = $SchoolAttendanceStartDate;
     }
+
 }

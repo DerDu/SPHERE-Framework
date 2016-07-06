@@ -378,6 +378,16 @@ class Service extends AbstractService
     }
 
     /**
+     * @param $Name
+     * @return false|TblType
+     */
+    public function getTypeByName($Name)
+    {
+
+        return (new Data($this->getBinding()))->getTypeByName($Name);
+    }
+
+    /**
      * @param TblToPerson $tblToPerson
      *
      * @return bool

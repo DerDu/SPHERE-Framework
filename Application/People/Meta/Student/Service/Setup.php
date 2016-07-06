@@ -31,11 +31,10 @@ class Setup extends AbstractSetup
         $tblStudentLocker = $this->setTableStudentLocker($Schema);
         $tblStudentBaptism = $this->setTableStudentBaptism($Schema);
         $tblStudentIntegration = $this->setTableStudentIntegration($Schema);
-        $tblStudentRelease = $this->setTableStudentRelease($Schema);
 
         $tblStudent = $this->setTableStudent(
             $Schema, $tblStudentMedicalRecord, $tblStudentTransport,
-            $tblStudentBilling, $tblStudentLocker, $tblStudentBaptism, $tblStudentIntegration, $tblStudentRelease
+            $tblStudentBilling, $tblStudentLocker, $tblStudentBaptism, $tblStudentIntegration
         );
 
         $tblStudentTransferType = $this->setTableStudentTransferType($Schema);
@@ -45,6 +44,10 @@ class Setup extends AbstractSetup
         $tblStudentAgreementType = $this->setTableStudentAgreementType($Schema, $tblStudentAgreementCategory);
         $this->setTableStudentAgreement($Schema, $tblStudent, $tblStudentAgreementType);
 
+        $tblStudentLiberationCategory = $this->setTableStudentLiberationCategory($Schema);
+        $tblStudentLiberationType = $this->setTableStudentLiberationType($Schema, $tblStudentLiberationCategory);
+        $this->setTableStudentLiberation($Schema, $tblStudent, $tblStudentLiberationType);
+        
         $tblStudentSubjectType = $this->setTableStudentSubjectType($Schema);
         $tblStudentSubjectRanking = $this->setTableStudentSubjectRanking($Schema);
         $this->setTableStudentSubject($Schema, $tblStudent, $tblStudentSubjectType, $tblStudentSubjectRanking);
@@ -207,22 +210,6 @@ class Setup extends AbstractSetup
 
     /**
      * @param Schema $Schema
-     *
-     * @return Table
-     */
-    private function setTableStudentRelease(Schema &$Schema)
-    {
-
-        $Table = $this->getConnection()->createTable($Schema, 'tblStudentRelease');
-        if (!$this->getConnection()->hasColumn('tblStudentRelease', 'SportRelease')) {
-            $Table->addColumn('SportRelease', 'smallint', array('notnull' => 0));
-        }
-
-        return $Table;
-    }
-
-    /**
-     * @param Schema $Schema
      * @param Table $tblStudentMedicalRecord
      * @param Table $tblStudentTransport
      * @param Table $tblStudentBilling
@@ -230,7 +217,6 @@ class Setup extends AbstractSetup
      * @param Table $tblStudentBaptism
      * @param Table $tblStudentIntegration
      *
-     * @param Table $tblStudentRelease
      * @return Table
      */
     private function setTableStudent(
@@ -240,8 +226,7 @@ class Setup extends AbstractSetup
         Table $tblStudentBilling,
         Table $tblStudentLocker,
         Table $tblStudentBaptism,
-        Table $tblStudentIntegration,
-        Table $tblStudentRelease
+        Table $tblStudentIntegration
     ) {
 
         $Table = $this->getConnection()->createTable($Schema, 'tblStudent');
@@ -251,13 +236,15 @@ class Setup extends AbstractSetup
         if (!$this->getConnection()->hasColumn('tblStudent', 'Identifier')) {
             $Table->addColumn('Identifier', 'string', array('notnull' => false));
         }
+        if (!$this->getConnection()->hasColumn('tblStudent', 'SchoolAttendanceStartDate')) {
+            $Table->addColumn('SchoolAttendanceStartDate', 'datetime', array('notnull' => false));
+        }
         $this->getConnection()->addForeignKey($Table, $tblStudentMedicalRecord, true);
         $this->getConnection()->addForeignKey($Table, $tblStudentTransport, true);
         $this->getConnection()->addForeignKey($Table, $tblStudentBilling, true);
         $this->getConnection()->addForeignKey($Table, $tblStudentLocker, true);
         $this->getConnection()->addForeignKey($Table, $tblStudentBaptism, true);
         $this->getConnection()->addForeignKey($Table, $tblStudentIntegration, true);
-        $this->getConnection()->addForeignKey($Table, $tblStudentRelease, true);
         return $Table;
     }
 
@@ -370,6 +357,63 @@ class Setup extends AbstractSetup
         return $Table;
     }
 
+    /**
+     * @param Schema $Schema
+     *
+     * @return Table
+     */
+    private function setTableStudentLiberationCategory(Schema &$Schema)
+    {
+
+        $Table = $this->getConnection()->createTable($Schema, 'tblStudentLiberationCategory');
+        if (!$this->getConnection()->hasColumn('tblStudentLiberationCategory', 'Name')) {
+            $Table->addColumn('Name', 'string');
+        }
+        if (!$this->getConnection()->hasColumn('tblStudentLiberationCategory', 'Description')) {
+            $Table->addColumn('Description', 'string');
+        }
+        return $Table;
+    }
+    
+    /**
+     * @param Schema $Schema
+     * @param Table  $tblStudentLiberationCategory
+     *
+     * @return Table
+     */
+    private function setTableStudentLiberationType(Schema &$Schema, Table $tblStudentLiberationCategory)
+    {
+
+        $Table = $this->getConnection()->createTable($Schema, 'tblStudentLiberationType');
+        if (!$this->getConnection()->hasColumn('tblStudentLiberationType', 'Name')) {
+            $Table->addColumn('Name', 'string');
+        }
+        if (!$this->getConnection()->hasColumn('tblStudentLiberationType', 'Description')) {
+            $Table->addColumn('Description', 'string');
+        }
+        $this->getConnection()->addForeignKey($Table, $tblStudentLiberationCategory);
+        return $Table;
+    }
+    
+    /**
+     * @param Schema $Schema
+     * @param Table  $tblStudent
+     * @param Table  $tblStudentLiberationType
+     *
+     * @return Table
+     */
+    private function setTableStudentLiberation(
+        Schema &$Schema,
+        Table $tblStudent,
+        Table $tblStudentLiberationType
+    ) {
+
+        $Table = $this->getConnection()->createTable($Schema, 'tblStudentLiberation');
+        $this->getConnection()->addForeignKey($Table, $tblStudent);
+        $this->getConnection()->addForeignKey($Table, $tblStudentLiberationType);
+        return $Table;
+    }
+    
     /**
      * @param Schema $Schema
      *

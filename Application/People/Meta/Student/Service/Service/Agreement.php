@@ -12,7 +12,7 @@ use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentAgreementTyp
  *
  * @package SPHERE\Application\People\Meta\Student\Service\Service
  */
-abstract class Agreement extends Student
+abstract class Agreement extends Liberation
 {
 
     /**

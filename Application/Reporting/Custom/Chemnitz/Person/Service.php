@@ -8,6 +8,8 @@ use SPHERE\Application\Billing\Accounting\Banking\Banking;
 use SPHERE\Application\Contact\Address\Address;
 use SPHERE\Application\Contact\Mail\Mail;
 use SPHERE\Application\Contact\Phone\Phone;
+use SPHERE\Application\Contact\Phone\Service\Entity\TblToPerson;
+use SPHERE\Application\Contact\Phone\Service\Entity\TblType;
 use SPHERE\Application\Document\Explorer\Storage\Storage;
 use SPHERE\Application\Education\Lesson\Division\Division;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
@@ -179,7 +181,7 @@ class Service
             array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent) {
 
                 $Item['FirstName'] = $tblPerson->getFirstSecondName();
-                $Item['LastName'] = $tblPerson->getFirstSecondName();
+                $Item['LastName'] = $tblPerson->getLastName();
                 $Item['Birthday'] = '';
                 $Item['StreetName'] = $Item['StreetNumber'] = $Item['City'] = $Item['Code'] = '';
                 $Item['Address'] = '';
@@ -574,7 +576,7 @@ class Service
         if (!empty($tblPersonList)) {
             array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent) {
 
-                $Item['FirstName'] = $tblPerson->getFirstName();
+                $Item['FirstName'] = $tblPerson->getFirstSecondName();
                 $Item['LastName'] = $tblPerson->getLastName();
                 $Item['StreetName'] = $Item['StreetNumber'] = $Item['Code'] = $Item['City'] = '';
                 $Item['Address'] = '';
@@ -1003,6 +1005,7 @@ class Service
                 $Item['Orientation'] = '';
                 $Item['Education'] = '';
                 $Item['Group'] = '';
+                $Item['Elective'] = '';
 
                 $father = null;
                 $mother = null;
@@ -1079,33 +1082,22 @@ class Service
                 $phoneList = Phone::useService()->getPhoneAllByPerson($tblPerson);
                 if ($phoneList) {
                     foreach ($phoneList as $phone) {
-                        $phoneNumbers[] = $phone->getTblPhone()->getNumber() . ' ' . $phone->getTblType()->getName();
-                        if ($phone->getRemark()) {
-                            $phoneNumbers[] = $phone->getRemark();
-                        }
+                        $type = $this->getPhoneTypeShort($phone->getTblType());
+                        $phoneNumbers[] = $phone->getTblPhone()->getNumber() . ' ' . $type
+                            . ($phone->getRemark() ? ' ' . $phone->getRemark() : '');
                     }
                 }
                 if ($fatherPhoneList) {
                     foreach ($fatherPhoneList as $phone) {
                         if ($phone->getServiceTblPerson()) {
-                            $type = $phone->getTblType()->getName() == "Geschäftlich" ? "Geschäftl." : $phone->getTblType()->getName();
-                            $phoneNumbers[] = $phone->getTblPhone()->getNumber() . ' ' . $type;
-                            $phoneNumbers[] = $phone->getServiceTblPerson()->getLastFirstName();
-                            if ($phone->getRemark()) {
-                                $phoneNumbers[] = $phone->getRemark();
-                            }
+                            $phoneNumbers[] = $this->getPhoneGuardianString($phone);
                         }
                     }
                 }
                 if ($motherPhoneList) {
                     foreach ($motherPhoneList as $phone) {
                         if ($phone->getServiceTblPerson()) {
-                            $type = $phone->getTblType()->getName() == "Geschäftlich" ? "Geschäftl." : $phone->getTblType()->getName();
-                            $phoneNumbers[] = $phone->getTblPhone()->getNumber() . ' ' . $type;
-                            $phoneNumbers[] = $phone->getServiceTblPerson()->getLastFirstName();
-                            if ($phone->getRemark()) {
-                                $phoneNumbers[] = $phone->getRemark();
-                            }
+                            $phoneNumbers[] = $this->getPhoneGuardianString($phone);
                         }
                     }
                 }
@@ -1150,6 +1142,15 @@ class Service
                         }
                     }
 
+                    // Wahlfach
+                    $tblStudentElective = Student::useService()->getStudentSubjectAllByStudentAndSubjectType(
+                        $tblStudent,
+                        Student::useService()->getStudentSubjectTypeByIdentifier('ELECTIVE')
+                    );
+                    if ($tblStudentElective && ($tblSubject = $tblStudentElective[0]->getServiceTblSubject())){
+                        $Item['Elective'] = $tblSubject->getAcronym();
+                    }
+
                     $tblTransferType = Student::useService()->getStudentTransferTypeByIdentifier('PROCESS');
                     if ($tblTransferType) {
                         $tblStudentTransfer = Student::useService()->getStudentTransferByType($tblStudent,
@@ -1176,6 +1177,48 @@ class Service
         }
 
         return $TableContent;
+    }
+
+    /**
+     * @param TblType $tblType
+     * @return string
+     */
+    private function getPhoneTypeShort(TblType $tblType)
+    {
+
+        if ($tblType->getName() == 'Privat'){
+            return 'p.';
+        } elseif ($tblType->getName() == 'Geschäftlich'){
+            return 'd.';
+        } elseif ($tblType->getName() == 'Notfall'){
+            return 'N.';
+        } elseif ($tblType->getName() == 'Fax'){
+            return 'F.';
+        } else {
+            return '';
+        }
+    }
+
+    /**
+     * @param TblToPerson $tblToPerson
+     * @return string
+     */
+    private function getPhoneGuardianString(TblToPerson $tblToPerson){
+        $type = $this->getPhoneTypeShort($tblToPerson->getTblType());
+        $person = '';
+        $tblGuardianPerson = $tblToPerson->getServiceTblPerson();
+        if ($tblGuardianPerson){
+            if ($tblGuardianPerson->getSalutation() == 'Herr'){
+                $person = 'V.';
+            } elseif ($tblGuardianPerson->getSalutation() == 'Frau'){
+                $person = 'M.';
+            } else {
+                $person = $tblGuardianPerson->getFirstName();
+            }
+        }
+
+        return $tblToPerson->getTblPhone()->getNumber() . ' ' . $type . ' ' . $person
+        . ($tblToPerson->getRemark() ? ' ' . $tblToPerson->getRemark() : '');
     }
 
     /**
@@ -1211,7 +1254,7 @@ class Service
                     }
                 }
 
-                $export->setStyle($export->getCell(0, 0), $export->getCell(6, 0))->setFontBold();
+                $export->setStyle($export->getCell(0, 0), $export->getCell(7, 0))->setFontBold();
                 $export->setValue($export->getCell(0, 0),
                     "Klasse " . $tblDivision->getDisplayName() . (empty($teacherList) ? '' : ' ' . implode(', ',
                             $teacherList)));
@@ -1225,8 +1268,9 @@ class Service
             $export->setValue($export->getCell(4, 1), "Gr");
             $export->setValue($export->getCell(5, 1), "NK");
             $export->setValue($export->getCell(6, 1), "BG");
+            $export->setValue($export->getCell(7, 1), "WF");
             // Header bold
-            $export->setStyle($export->getCell(0, 1), $export->getCell(6, 1))->setFontBold();
+            $export->setStyle($export->getCell(0, 1), $export->getCell(7, 1))->setFontBold();
 
             $Row = 2;
             foreach ($PersonList as $PersonData) {
@@ -1237,6 +1281,7 @@ class Service
                 $export->setValue($export->getCell(4, $Row), $PersonData['Group']);
                 $export->setValue($export->getCell(5, $Row), $PersonData['Orientation']);
                 $export->setValue($export->getCell(6, $Row), $PersonData['Education']);
+                $export->setValue($export->getCell(7, $Row), $PersonData['Elective']);
 
                 $Row++;
                 $export->setValue($export->getCell(0, $Row), $PersonData['ExcelNameRow2']);
@@ -1254,13 +1299,13 @@ class Service
                 }
 
                 // Gittertrennlinie
-                $export->setStyle($export->getCell(0, $Row - 1), $export->getCell(6, $Row - 1))->setBorderBottom();
+                $export->setStyle($export->getCell(0, $Row - 1), $export->getCell(7, $Row - 1))->setBorderBottom();
             }
 
             // Gitterlinien
-            $export->setStyle($export->getCell(0, 1), $export->getCell(6, 1))->setBorderBottom();
-            $export->setStyle($export->getCell(0, 1), $export->getCell(6, $Row - 1))->setBorderVertical();
-            $export->setStyle($export->getCell(0, 1), $export->getCell(6, $Row - 1))->setBorderOutline();
+            $export->setStyle($export->getCell(0, 1), $export->getCell(7, 1))->setBorderBottom();
+            $export->setStyle($export->getCell(0, 1), $export->getCell(7, $Row - 1))->setBorderVertical();
+            $export->setStyle($export->getCell(0, 1), $export->getCell(7, $Row - 1))->setBorderOutline();
 
             // Personenanzahl
             $Row++;
@@ -1278,23 +1323,25 @@ class Service
             $export->setValue($export->getCell(0, $Row), 'Stand: ' . (new \DateTime())->format('d.m.Y'));
 
             // Spaltenbreite
-            $export->setStyle($export->getCell(0, 0), $export->getCell(0, $Row))->setColumnWidth(22);
+            $export->setStyle($export->getCell(0, 0), $export->getCell(0, $Row))->setColumnWidth(20);
             $export->setStyle($export->getCell(1, 0), $export->getCell(1, $Row))->setColumnWidth(10);
-            $export->setStyle($export->getCell(2, 0), $export->getCell(2, $Row))->setColumnWidth(23);
+            $export->setStyle($export->getCell(2, 0), $export->getCell(2, $Row))->setColumnWidth(20);
             $export->setStyle($export->getCell(3, 0), $export->getCell(3, $Row))->setColumnWidth(23);
             $export->setStyle($export->getCell(4, 0), $export->getCell(4, $Row))->setColumnWidth(4);
             $export->setStyle($export->getCell(5, 0), $export->getCell(6, $Row))->setColumnWidth(5);
             $export->setStyle($export->getCell(6, 0), $export->getCell(6, $Row))->setColumnWidth(3.5);
+            $export->setStyle($export->getCell(7, 0), $export->getCell(7, $Row))->setColumnWidth(5);
 
             // Schriftgröße
-            $export->setStyle($export->getCell(0, 0), $export->getCell(6, 0))->setFontSize(12);
-            $export->setStyle($export->getCell(0, 1), $export->getCell(6, $Row))->setFontSize(10);
+            $export->setStyle($export->getCell(0, 0), $export->getCell(7, 0))->setFontSize(12);
+            $export->setStyle($export->getCell(0, 1), $export->getCell(7, $Row))->setFontSize(10);
 
             // Spalten zentriert
             $export->setStyle($export->getCell(1, 0), $export->getCell(1, $Row))->setAlignmentCenter();
             $export->setStyle($export->getCell(4, 0), $export->getCell(4, $Row))->setAlignmentCenter();
             $export->setStyle($export->getCell(5, 0), $export->getCell(5, $Row))->setAlignmentCenter();
             $export->setStyle($export->getCell(6, 0), $export->getCell(6, $Row))->setAlignmentCenter();
+            $export->setStyle($export->getCell(7, 0), $export->getCell(7, $Row))->setAlignmentCenter();
 
             $export->saveFile(new FileParameter($fileLocation->getFileLocation()));
 

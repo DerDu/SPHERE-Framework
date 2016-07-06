@@ -215,13 +215,14 @@ class Service extends AbstractService
      * @param TblType $tblType
      * @param string $Name
      * @param string $Description
+     * @param bool $Checked
      *
      * @return bool|TblLevel
      */
-    public function insertLevel(TblType $tblType, $Name, $Description = '')
+    public function insertLevel(TblType $tblType, $Name, $Description = '', $Checked = false)
     {
 
-        return (new Data($this->getBinding()))->createLevel($tblType, $Name, $Description);
+        return (new Data($this->getBinding()))->createLevel($tblType, $Name, $Description, $Checked);
     }
 
     /**

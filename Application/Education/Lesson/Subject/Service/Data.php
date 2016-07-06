@@ -21,125 +21,138 @@ class Data extends AbstractData
     public function setupDatabaseContent()
     {
 
-        $tblGroupOrientation = $this->createGroup('Neigungskurs', '', true, 'ORIENTATION');
-        $tblGroupAdvanced = $this->createGroup('Vertiefungskurs', '', true, 'ADVANCED');
+        $hasSubjects = $this->getSubjectAll();
+
         $tblGroupElective = $this->createGroup('Wahlfach', '', true, 'ELECTIVE');
         $tblGroupStandard = $this->createGroup('Standardfach', '', true, 'STANDARD');
+
+        // Wahlfach
+        $tblCategoryElective = $this->createCategory('Wahlfach');
+        $this->addGroupCategory($tblGroupElective, $tblCategoryElective);
 
         // Profil
         $tblCategory = $this->createCategory('Profil', '', true, 'PROFILE');
         $this->addGroupCategory($tblGroupStandard, $tblCategory);
-//        $tblSubject = $this->createSubject('KPR', 'Künstlerisches Profil');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $tblSubject = $this->createSubject('SPR', 'Sprachliches Profil');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $tblSubject = $this->createSubject('NPR', 'Naturwissenschaftliches Profil');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $tblSubject = $this->createSubject('GPR', 'Geisteswissenschaftliches Profil');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
+        if (!$hasSubjects) {
+            $tblGroupOrientation = $this->createGroup('Neigungskurs', '', true, 'ORIENTATION');
+            $tblGroupAdvanced = $this->createGroup('Vertiefungskurs', '', true, 'ADVANCED');
 
-        // Neigungskurs
-//        $tblCategory = $this->createCategory('Kunst und Kultur');
-//        $this->addGroupCategory($tblGroupOrientation, $tblCategory);
-//        $this->addGroupCategory($tblGroupAdvanced, $tblCategory);
-//        $tblSubject = $this->createSubject('SZSP', 'Szenisches Spiel');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $tblCategory = $this->createCategory('Soziales und gesellschaftliches Handeln');
-//        $this->addGroupCategory($tblGroupOrientation, $tblCategory);
-//        $this->addGroupCategory($tblGroupAdvanced, $tblCategory);
-//        $tblSubject = $this->createSubject('KRHA', 'Kreatives Handwerken');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $tblCategory = $this->createCategory('Technik');
-//        $this->addGroupCategory($tblGroupOrientation, $tblCategory);
-//        $this->addGroupCategory($tblGroupAdvanced, $tblCategory);
-//        $tblSubject = $this->createSubject('TECH', 'Technik');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $tblSubject = $this->createSubject('SCHW', 'Schrauberwerkstatt');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblSubject = $this->createSubject('KPR', 'Künstlerisches Profil');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblSubject = $this->createSubject('SPR', 'Sprachliches Profil');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblSubject = $this->createSubject('NPR', 'Naturwissenschaftliches Profil');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblSubject = $this->createSubject('GPR', 'Geisteswissenschaftliches Profil');
+            $this->addCategorySubject($tblCategory, $tblSubject);
 
-        // Wahlfach
-        $tblCategoryElective = $tblCategory = $this->createCategory('Wahlfach');
-        $this->addGroupCategory($tblGroupElective, $tblCategoryElective);
+            // Neigungskurs
+            $tblCategory = $this->createCategory('Kunst und Kultur');
+            $this->addGroupCategory($tblGroupOrientation, $tblCategory);
+            $this->addGroupCategory($tblGroupAdvanced, $tblCategory);
+            $tblSubject = $this->createSubject('SZSP', 'Szenisches Spiel');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblCategory = $this->createCategory('Soziales und gesellschaftliches Handeln');
+            $this->addGroupCategory($tblGroupOrientation, $tblCategory);
+            $this->addGroupCategory($tblGroupAdvanced, $tblCategory);
+            $tblSubject = $this->createSubject('KRHA', 'Kreatives Handwerken');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblCategory = $this->createCategory('Technik');
+            $this->addGroupCategory($tblGroupOrientation, $tblCategory);
+            $this->addGroupCategory($tblGroupAdvanced, $tblCategory);
+            $tblSubject = $this->createSubject('TECH', 'Technik');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblSubject = $this->createSubject('SCHW', 'Schrauberwerkstatt');
+            $this->addCategorySubject($tblCategory, $tblSubject);
 
-        // Muttersprache
-//        $tblCategory = $this->createCategory('Muttersprache');
-//        $this->addGroupCategory($tblGroupStandard, $tblCategory);
-//        $tblSubject = $this->createSubject('DE', 'Deutsch');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
+
+            // Muttersprache
+            $tblCategory = $this->createCategory('Muttersprache');
+            $this->addGroupCategory($tblGroupStandard, $tblCategory);
+            $tblSubject = $this->createSubject('DE', 'Deutsch');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+        }
 
         // Fremdsprache
         $tblCategory = $this->createCategory('Fremdsprachen', '', true, 'FOREIGNLANGUAGE');
         $this->addGroupCategory($tblGroupStandard, $tblCategory);
-//        $tblSubject = $this->createSubject('EN', 'Englisch');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $tblSubject = $this->createSubject('LA', 'Latein');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $tblSubject = $this->createSubject('FR', 'Französisch');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $tblSubject = $this->createSubject('RU', 'Russisch');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $tblSubject = $this->createSubject('PO', 'Polnisch');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $tblSubject = $this->createSubject('SP', 'Spanisch');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
 
-        // Musische Fächer
-//        $tblCategory = $this->createCategory('Musische Fächer');
-//        $this->addGroupCategory($tblGroupStandard, $tblCategory);
-//        $tblSubject = $this->createSubject('MU', 'Musik');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $this->addCategorySubject($tblCategoryElective, $tblSubject);
-//        $tblSubject = $this->createSubject('KU', 'Kunst');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $this->addCategorySubject($tblCategoryElective, $tblSubject);
-//        $tblSubject = $this->createSubject('DASP', 'Darstellendes Spiel');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
+        if (!$hasSubjects) {
+            $tblSubject = $this->createSubject('EN', 'Englisch');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblSubject = $this->createSubject('LA', 'Latein');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblSubject = $this->createSubject('FR', 'Französisch');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblSubject = $this->createSubject('RU', 'Russisch');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblSubject = $this->createSubject('PO', 'Polnisch');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblSubject = $this->createSubject('SP', 'Spanisch');
+            $this->addCategorySubject($tblCategory, $tblSubject);
 
-        // Naturwissenschaften/Technik
-//        $tblCategory = $this->createCategory('Naturwissenschaften/Technik');
-//        $this->addGroupCategory($tblGroupStandard, $tblCategory);
-//        $tblSubject = $this->createSubject('MA', 'Mathematik');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $tblSubject = $this->createSubject('IN', 'Informatik');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $tblSubject = $this->createSubject('BI', 'Biologie');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $tblSubject = $this->createSubject('CH', 'Chemie');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $tblSubject = $this->createSubject('PH', 'Physik');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $tblSubject = $this->createSubject('TE', 'Technik');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
+            // Musische Fächer
+            $tblCategory = $this->createCategory('Musische Fächer');
+            $this->addGroupCategory($tblGroupStandard, $tblCategory);
+            $tblSubject = $this->createSubject('MU', 'Musik');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $this->addCategorySubject($tblCategoryElective, $tblSubject);
+            $tblSubject = $this->createSubject('KU', 'Kunst');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $this->addCategorySubject($tblCategoryElective, $tblSubject);
+            $tblSubject = $this->createSubject('DASP', 'Darstellendes Spiel');
+            $this->addCategorySubject($tblCategory, $tblSubject);
 
-        // Gesellschaftswissenschaften
-//        $tblCategory = $this->createCategory('Gesellschaftswissenschaften');
-//        $this->addGroupCategory($tblGroupStandard, $tblCategory);
-//        $tblSubject = $this->createSubject('GE', 'Geschichte');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $this->addCategorySubject($tblCategoryElective, $tblSubject);
-//        $tblSubject = $this->createSubject('GEO', 'Geographie');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $this->addCategorySubject($tblCategoryElective, $tblSubject);
-//        $tblSubject = $this->createSubject('SOP', 'Sozialkunde/Politik');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $tblSubject = $this->createSubject('WI', 'Wirtschaft');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $tblSubject = $this->createSubject('RE', 'Recht');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $tblSubject = $this->createSubject('ER', 'Erziehungswissenschaften');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
+            // Naturwissenschaften/Technik
+            $tblCategory = $this->createCategory('Naturwissenschaften/Technik');
+            $this->addGroupCategory($tblGroupStandard, $tblCategory);
+            $tblSubject = $this->createSubject('MA', 'Mathematik');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblSubject = $this->createSubject('IN', 'Informatik');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblSubject = $this->createSubject('BI', 'Biologie');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblSubject = $this->createSubject('CH', 'Chemie');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblSubject = $this->createSubject('PH', 'Physik');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblSubject = $this->createSubject('TE', 'Technik');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+
+            // Gesellschaftswissenschaften
+            $tblCategory = $this->createCategory('Gesellschaftswissenschaften');
+            $this->addGroupCategory($tblGroupStandard, $tblCategory);
+            $tblSubject = $this->createSubject('GE', 'Geschichte');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $this->addCategorySubject($tblCategoryElective, $tblSubject);
+            $tblSubject = $this->createSubject('GEO', 'Geographie');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $this->addCategorySubject($tblCategoryElective, $tblSubject);
+            $tblSubject = $this->createSubject('SOP', 'Sozialkunde/Politik');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblSubject = $this->createSubject('WI', 'Wirtschaft');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblSubject = $this->createSubject('RE', 'Recht');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblSubject = $this->createSubject('ER', 'Erziehungswissenschaften');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblSubject = $this->createSubject('SPO', 'Sport');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+        }
 
         // Religionsunterricht
         $tblCategory = $this->createCategory('Religionsunterricht', '', true, 'RELIGION');
         $this->addGroupCategory($tblGroupStandard, $tblCategory);
-//        $tblSubject = $this->createSubject('RKA', 'Katholische Religionslehre');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $tblSubject = $this->createSubject('REV', 'Evangelische Religionslehre');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $tblSubject = $this->createSubject('ETH', 'Ethik');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
-//        $tblSubject = $this->createSubject('PHI', 'Philosophie');
-//        $this->addCategorySubject($tblCategory, $tblSubject);
+        if (!$hasSubjects) {
+            $tblSubject = $this->createSubject('RKA', 'Katholische Religionslehre');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblSubject = $this->createSubject('REV', 'Evangelische Religionslehre');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblSubject = $this->createSubject('ETH', 'Ethik');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblSubject = $this->createSubject('PHI', 'Philosophie');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+        }
     }
 
     /**

@@ -219,12 +219,20 @@ class Frontend extends Extension implements IFrontendInterface
                 new LayoutGroup(
                     new LayoutRow(
                         new LayoutColumn(
-                            new TableData($TableContent, null, array(
-                                'Name'        => 'Name',
-                                'Description' => 'Beschreibung',
-                                'Period'      => 'Zeitraum',
-                                'Option'      => '',
-                            ))
+                            new TableData($TableContent, null,
+                                array(
+                                    'Name'        => 'Name',
+                                    'Description' => 'Beschreibung',
+                                    'Period'      => 'Zeitraum',
+                                    'Option'      => '',
+                                ),
+                                array(
+                                    'order' => array(
+                                        array('2', 'desc'),
+                                        array('0', 'asc'),
+                                    )
+                                )
+                            )
                         )
                     ), new Title(new ListingTable().' Übersicht')
                 ),
@@ -389,18 +397,31 @@ class Frontend extends Extension implements IFrontendInterface
             new Layout(
                 new LayoutGroup(
                     new LayoutRow(array(
+                        new LayoutColumn(
+                            new Panel('Schuljahr', $tblYear->getName() .
+                                ($tblYear->getDescription() !== '' ? '&nbsp;&nbsp;'
+                                    . new Muted(new Small($tblYear->getDescription())) : ''),
+                                Panel::PANEL_TYPE_INFO)
+                        ),
                         new LayoutColumn(array(
                             new Title('Zeiträume', 'Zugewiesen'),
                             ( empty( $tblPeriodUsedList )
                                 ? new Warning('Kein Zeitraum zugewiesen')
                                 : new TableData($tblPeriodUsedList, null,
                                     array(
-                                        'Name'        => 'Fach',
+                                        'Name'        => 'Name',
                                         'FromDate'    => 'Von',
                                         'ToDate'      => 'Bis',
                                         'Description' => 'Beschreibung',
                                         'Option'      => ''
-                                    ))
+                                    ),
+                                    array(
+                                        'order' => array(
+                                            array('0', 'asc'),
+                                            array('1', 'asc'),
+                                        )
+                                    )
+                                )
                             )
                         ), 6),
                         new LayoutColumn(array(
@@ -409,12 +430,19 @@ class Frontend extends Extension implements IFrontendInterface
                                 ? new Info('Keine weiteren Zeiträume verfügbar')
                                 : new TableData($tblPeriodAvailable, null,
                                     array(
-                                        'Name'        => 'Fach',
+                                        'Name'        => 'Name',
                                         'FromDate'    => 'Von',
                                         'ToDate'      => 'Bis',
                                         'Description' => 'Beschreibung',
                                         'Option'      => ''
-                                    ))
+                                    ),
+                                    array(
+                                        'order' => array(
+                                            array('0', 'asc'),
+                                            array('1', 'asc'),
+                                        )
+                                    )
+                                )
                             )
                         ), 6)
                     ))
