@@ -43,7 +43,7 @@ class HorJOne extends Certificate
         return (new Frame())->addDocument((new Document())
             ->addPage((new Page())
                 ->addSlice(
-                    $Header
+                    $IsSample ? $Header : new Slice()
                 )
                 ->addSlice((new Slice())
                     ->addSection((new Section())
@@ -215,6 +215,22 @@ class HorJOne extends Certificate
                             ->setContent('Klassenlehrer/in')
                             ->styleAlignCenter()
                             ->styleTextSize('11px')
+                            , '35%')
+                    )
+                    ->addSection((new Section())
+                        ->addElementColumn((new Element())
+                            , '35%')
+                        ->addElementColumn((new Element())
+                            , '30%')
+                        ->addElementColumn((new Element())
+                            ->setContent('{% if(Content.DivisionTeacher.Name is not empty) %}
+                                    {{ Content.DivisionTeacher.Name }}
+                                {% else %}
+                                    &nbsp;
+                                {% endif %}')
+                            ->styleTextSize('11px')
+                            ->stylePaddingTop('2px')
+                            ->styleAlignCenter()
                             , '35%')
                     )
                     ->styleMarginTop('30px')

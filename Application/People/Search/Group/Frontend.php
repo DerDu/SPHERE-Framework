@@ -57,22 +57,7 @@ class Frontend extends Extension implements IFrontendInterface
 
         $Stage = new Stage('Suche', 'nach Gruppe');
         $Stage->addButton( new Backward() );
-
-        $tblGroupAll = Group::useService()->getGroupAllSorted();
-        if (!empty($tblGroupAll)) {
-            /** @noinspection PhpUnusedParameterInspection */
-            array_walk($tblGroupAll, function (TblGroup &$tblGroup) use ($Stage) {
-
-                $Stage->addButton(
-                    new Standard(
-                        $tblGroup->getName().'&nbsp;&nbsp;'.new Label(Group::useService()->countMemberAllByGroup($tblGroup)),
-                        new Route(__NAMESPACE__), new PersonGroup(),
-                        array(
-                            'Id' => $tblGroup->getId()
-                        ), $tblGroup->getDescription())
-                );
-            });
-        }
+        Group::useFrontend()->addGroupSearchStageButton($Stage);
 
         $tblGroup = Group::useService()->getGroupById($Id);
         if ($tblGroup) {
@@ -216,7 +201,14 @@ class Frontend extends Extension implements IFrontendInterface
                     )),
                     new LayoutRow(new LayoutColumn(array(
                         new Headline('Verfügbare Personen', 'in dieser Gruppe'),
-                        new TableData($Result, null, $ColumnArray)
+                        new TableData($Result, null, $ColumnArray, array(
+                            'order'      => array(
+                                array(0, 'asc')
+                            ),
+                            'columnDefs' => array(
+                                array('type' => 'german-string', 'targets' => 0),
+                            )
+                        ))
                     )))
                 )))
             );
@@ -225,5 +217,28 @@ class Frontend extends Extension implements IFrontendInterface
         }
 
         return $Stage;
+    }
+
+    /**
+     * @param Stage $Stage
+     */
+    public function addGroupSearchStageButton(Stage $Stage)
+    {
+
+        $tblGroupAll = Group::useService()->getGroupAllSorted();
+        if (!empty( $tblGroupAll )) {
+            /** @noinspection PhpUnusedParameterInspection */
+            array_walk($tblGroupAll, function (TblGroup &$tblGroup) use ($Stage) {
+
+                $Stage->addButton(
+                    new Standard(
+                        $tblGroup->getName().'&nbsp;&nbsp;'.new Label(Group::useService()->countMemberAllByGroup($tblGroup)),
+                        new Route(__NAMESPACE__), new PersonGroup(),
+                        array(
+                            'Id' => $tblGroup->getId()
+                        ), $tblGroup->getDescription())
+                );
+            });
+        }
     }
 }

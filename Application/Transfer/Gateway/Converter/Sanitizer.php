@@ -1,7 +1,14 @@
 <?php
 namespace SPHERE\Application\Transfer\Gateway\Converter;
 
-class Sanitizer
+use SPHERE\System\Extension\Extension;
+
+/**
+ * Class Sanitizer
+ *
+ * @package SPHERE\Application\Transfer\Gateway\Converter
+ */
+class Sanitizer extends Extension
 {
 
     /**

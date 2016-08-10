@@ -220,7 +220,11 @@ class Frontend extends Extension implements IFrontendInterface
 
         // Find Certificate-Templates
         $tblConsumer = Consumer::useService()->getConsumerBySession();
-        $tblCertificateAll = Generator::useService()->getCertificateAllByConsumer();
+        if ($tblConsumer && $tblConsumer->getAcronym() == 'DEMO'){
+            $tblCertificateAll = Generator::useService()->getCertificateAll();
+        } else {
+            $tblCertificateAll = Generator::useService()->getCertificateAllByConsumer();
+        }
         if ($tblConsumer) {
             $tblCertificateConsumer = Generator::useService()->getCertificateAllByConsumer($tblConsumer);
             if ($tblCertificateConsumer) {
@@ -251,7 +255,7 @@ class Frontend extends Extension implements IFrontendInterface
                 'Description' => 'Beschreibung',
                 'Option'      => 'Option'
             ), array(
-                'order'      => array(array(0, 'asc')),
+                'order'      => array(array(0, 'asc'), array(1, 'asc'), array(2, 'asc')),
                 'columnDefs' => array(
                     array('width' => '1%', 'targets' => 0),
                     array('width' => '1%', 'targets' => 3),

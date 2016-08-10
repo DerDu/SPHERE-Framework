@@ -30,25 +30,23 @@ class Item implements IModuleInterface
         Main::getDispatcher()->registerRoute(
             Main::getDispatcher()->createRoute(__NAMESPACE__,
                 __NAMESPACE__.'\Frontend::frontendItemStatus'
-            )
-        );
-        Main::getDispatcher()->registerRoute(
-            Main::getDispatcher()->createRoute(__NAMESPACE__.'/Create',
-                __NAMESPACE__.'\Frontend::frontendItemCreate'
-            )->setParameterDefault('Item', null)
-        );
-        Main::getDispatcher()->registerRoute(
-            Main::getDispatcher()->createRoute(__NAMESPACE__.'/Destroy',
-                __NAMESPACE__.'\Frontend::frontendItemDestroy'
-            )->setParameterDefault('Id', null)
-                ->setParameterDefault('Confirm', null)
-        );
+            ));
         Main::getDispatcher()->registerRoute(
             Main::getDispatcher()->createRoute(__NAMESPACE__.'/Change',
-                __NAMESPACE__.'\Frontend::frontendItemChange'
-            )->setParameterDefault('Id', null)
-                ->setParameterDefault('Item', null)
-        );
+                __NAMESPACE__.'\Frontend::frontendChangeItem'
+            ));
+        Main::getDispatcher()->registerRoute(
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'/Calculation',
+                __NAMESPACE__.'\Frontend::frontendItemCalculation'
+            ));
+        Main::getDispatcher()->registerRoute(
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'/Calculation/Change',
+                __NAMESPACE__.'\Frontend::frontendChangeCalculation'
+            ));
+        Main::getDispatcher()->registerRoute(
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'/Calculation/Destroy',
+                __NAMESPACE__.'\Frontend::frontendDestroyCalculation'
+            ));
     }
 
     /**

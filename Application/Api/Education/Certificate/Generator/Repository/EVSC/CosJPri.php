@@ -44,7 +44,7 @@ class CosJPri extends Certificate
         return (new Frame())->addDocument((new Document())
             ->addPage((new Page())
                 ->addSlice(
-                    $Header
+                    $IsSample ? $Header : new Slice()
                 )
                 ->addSlice((new Slice())
                     ->addElement((new Element())
@@ -125,68 +125,7 @@ class CosJPri extends Certificate
                             , '18%')
                     )->styleMarginTop('25px')
                 )
-                ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Betragen')
-                            , '39%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Input.KBE is not empty) %}
-                                    {{ Content.Input.KBE }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#F1F1F1')
-                            , '9%')
-                        ->addElementColumn((new Element())
-                            , '4%')
-                        ->addElementColumn((new Element())
-                            ->setContent('Mitarbeit')
-                            , '39%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Input.KMI is not empty) %}
-                                    {{ Content.Input.KMI }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#F1F1F1')
-                            , '9%')
-                    )
-                    ->styleMarginTop('40px')
-                )
-                ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Fleiß')
-                            , '39%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Input.KFL is not empty) %}
-                                    {{ Content.Input.KFL }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#F1F1F1')
-                            , '9%')
-                        ->addElementColumn((new Element())
-                            , '4%')
-                        ->addElementColumn((new Element())
-                            ->setContent('Ordnung')
-                            , '39%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Input.KOR is not empty) %}
-                                    {{ Content.Input.KOR }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#F1F1F1')
-                            , '9%')
-                    )
-                    ->styleMarginTop('17px')
-                )
+                ->addSlice( $this->getGradeLanes() )
                 ->addSlice((new Slice())
                     ->addElement((new Element())
                         ->setContent('Leistung in den einzelnen Fächern')
@@ -194,153 +133,8 @@ class CosJPri extends Certificate
                         ->styleMarginTop('40px')
                     )
                 )
+                ->addSlice( $this->getSubjectLanes() )
                 ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Deutsch')
-                            ->styleMarginTop('22px')
-                            , '39%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.DE is not empty) %}
-                                    {{ Content.Grade.Data.DE }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#F1F1F1')
-                            ->styleMarginTop('22px')
-                            , '9%')
-                        ->addElementColumn((new Element())
-                            , '4%')
-                        ->addElementColumn((new Element())
-                            ->setContent('Mathematik')
-                            ->styleMarginTop('22px')
-                            , '39%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.MA is not empty) %}
-                                    {{ Content.Grade.Data.MA }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#F1F1F1')
-                            ->styleMarginTop('22px')
-                            , '9%')
-                    )
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Sachunterricht')
-                            ->styleMarginTop('17px')
-                            , '39%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.ToDO is not empty) %}
-                                    {{ Content.Grade.Data.ToDO }}
-                                {% else %}
-                                    ---
-                                {% endif %}')// ToDO Sachunterricht ist kein vorgegebenes Fach
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#F1F1F1')
-                            ->styleMarginTop('17px')
-                            , '9%')
-                        ->addElementColumn((new Element())
-                            , '4%')
-                        ->addElementColumn((new Element())
-                            ->setContent('Werken')
-                            ->styleMarginTop('17px')
-                            , '39%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.ToDO is not empty) %}
-                                    {{ Content.Grade.Data.ToDO }}
-                                {% else %}
-                                    ---
-                                {% endif %}')// ToDO Werken ist kein vorgegebenes Fach
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#F1F1F1')
-                            ->styleMarginTop('17px')
-                            , '9%')
-                    )
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Kunst')
-                            ->styleMarginTop('17px')
-                            , '39%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.KU is not empty) %}
-                                    {{ Content.Grade.Data.KU }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#F1F1F1')
-                            ->styleMarginTop('17px')
-                            , '9%')
-                        ->addElementColumn((new Element())
-                            , '4%')
-                        ->addElementColumn((new Element())
-                            ->setContent('Ev. Religion')
-                            ->styleMarginTop('17px')
-                            , '39%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.REV is not empty) %}
-                                    {{ Content.Grade.Data.REV }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#F1F1F1')
-                            ->styleMarginTop('17px')
-                            , '9%')
-                    )
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Musik')
-                            ->styleMarginTop('17px')
-                            , '39%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.MU is not empty) %}
-                                    {{ Content.Grade.Data.MU }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#F1F1F1')
-                            ->styleMarginTop('17px')
-                            , '9%')
-                        ->addElementColumn((new Element())
-                            , '4%')
-                        ->addElementColumn((new Element())
-                            ->setContent('Sport')
-                            ->styleMarginTop('17px')
-                            , '39%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.ToDO is not empty) %}
-                                    {{ Content.Grade.Data.ToDO }}
-                                {% else %}
-                                    ---
-                                {% endif %}')//ToDO Sport ist kein vorgegebenes Fach
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#F1F1F1')
-                            ->styleMarginTop('17px')
-                            , '9%')
-                    )
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Englisch')
-                            ->styleMarginTop('17px')
-                            , '39%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.EN is not empty) %}
-                                    {{ Content.Grade.Data.EN }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#F1F1F1')
-                            ->styleMarginTop('17px')
-                            , '9%')
-                        ->addElementColumn((new Element())
-                            , '52%')
-                    )
                     ->addSection((new Section())
                         ->addElementColumn((new Element())
                             ->setContent('Notenstufen 1 = sehr gut, 2 = gut, 3 = befriedigend, 4 = ausreichend, 5 = mangelhaft, 6 = ungenügend')
@@ -447,6 +241,22 @@ class CosJPri extends Certificate
                         ->addElementColumn((new Element())
                             ->setContent('Klassenleiter/in')
                             ->styleTextSize('11px')
+                            , '35%')
+                    )
+                    ->addSection((new Section())
+                        ->addElementColumn((new Element())
+                            , '35%')
+                        ->addElementColumn((new Element())
+                            , '30%')
+                        ->addElementColumn((new Element())
+                            ->setContent('{% if(Content.DivisionTeacher.Name is not empty) %}
+                                    {{ Content.DivisionTeacher.Name }}
+                                {% else %}
+                                    &nbsp;
+                                {% endif %}')
+                            ->styleTextSize('11px')
+                            ->stylePaddingTop('2px')
+//                            ->styleAlignCenter()
                             , '35%')
                     )
                     ->styleMarginTop('25px')

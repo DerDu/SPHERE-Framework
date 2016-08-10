@@ -81,6 +81,20 @@ class Service extends AbstractService
     }
 
     /**
+     * @param  string                $Identifier (12)
+     * @param TblConsumer|null $tblConsumer
+     *
+     * @return $this
+     */
+    public function insertToken($Identifier, TblConsumer $tblConsumer = null)
+    {
+        if (false === $this->getTokenByIdentifier($Identifier)) {
+            ( new Data($this->getBinding()) )->createToken($Identifier, $tblConsumer);
+        }
+        return $this;
+    }
+
+    /**
      * @param IFormInterface $Form
      * @param string         $CredentialKey
      * @param TblConsumer    $tblConsumer

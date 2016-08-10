@@ -5,7 +5,6 @@ use Doctrine\ORM\Mapping\Cache;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
-use SPHERE\Application\Billing\Accounting\Banking\Banking;
 use SPHERE\Application\People\Person\Person;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\System\Database\Fitting\Element;
@@ -19,24 +18,16 @@ class TblDebtor extends Element
 {
 
     const ATTR_DEBTOR_NUMBER = 'DebtorNumber';
-    const ATTR_SERVICE_MANAGEMENT_PERSON = 'ServiceManagementPerson';
+    const ATTR_SERVICE_TBL_PERSON = 'serviceTblPerson';
 
     /**
      * @Column(type="string")
      */
     protected $DebtorNumber;
     /**
-     * @Column(type="string")
-     */
-    protected $Description;
-    /**
      * @Column(type="bigint")
      */
-    protected $ServiceManagementPerson;
-    /**
-     * @Column(type="bigint")
-     */
-    protected $tblPaymentType;
+    protected $serviceTblPerson;
 
     /**
      * @return string $DebtorNumber
@@ -57,65 +48,24 @@ class TblDebtor extends Element
     }
 
     /**
-     * @return string $Description
+     * @return bool|TblPerson
      */
-    public function getDescription()
+    public function getServiceTblPerson()
     {
 
-        return $this->Description;
-    }
-
-    /**
-     * @param string $Description
-     */
-    public function setDescription($Description)
-    {
-
-        $this->Description = $Description;
-    }
-
-    /**
-     * @return bool|TblPerson $ServiceManagementPerson
-     */
-    public function getServiceManagementPerson()
-    {
-
-        if (null === $this->ServiceManagementPerson) {
+        if (null === $this->serviceTblPerson) {
             return false;
         } else {
-            return Person::useService()->getPersonById($this->ServiceManagementPerson);
+            return Person::useService()->getPersonById($this->serviceTblPerson);
         }
     }
 
     /**
-     * @param null|TblPerson $ServiceManagementPerson
+     * @param TblPerson|null $tblPerson
      */
-    public function setServiceManagementPerson(TblPerson $ServiceManagementPerson)
+    public function setServiceTblPerson(TblPerson $tblPerson = null)
     {
 
-        $this->ServiceManagementPerson = ( null === $ServiceManagementPerson ? null : $ServiceManagementPerson->getId() );
+        $this->serviceTblPerson = ( null === $tblPerson ? null : $tblPerson->getId() );
     }
-
-    /**
-     * @return TblPaymentType $tblPaymentType
-     */
-    public function getPaymentType()
-    {
-
-        if (null === $this->tblPaymentType) {
-            return false;
-        } else {
-            return Banking::useService()->getPaymentTypeById($this->tblPaymentType);
-        }
-    }
-
-    /**
-     * @param TblPaymentType $PaymentType
-     */
-    public function setPaymentType(TblPaymentType $PaymentType)
-    {
-
-        $this->tblPaymentType = ( null === $PaymentType ? null : $PaymentType->getId() );
-    }
-
 }

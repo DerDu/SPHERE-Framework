@@ -2,15 +2,12 @@
 
 namespace SPHERE\Application\Billing\Inventory\Commodity;
 
-use SPHERE\Application\Billing\Accounting\Account\Account;
-use SPHERE\Application\Billing\Accounting\Account\Service\Entity\TblAccount;
+use Doctrine\Common\Cache\ArrayCache;
 use SPHERE\Application\Billing\Inventory\Commodity\Service\Entity\TblCommodity;
 use SPHERE\Application\Billing\Inventory\Commodity\Service\Entity\TblCommodityItem;
 use SPHERE\Application\Billing\Inventory\Item\Item;
 use SPHERE\Application\Billing\Inventory\Item\Service\Entity\TblItem;
-use SPHERE\Application\Billing\Inventory\Item\Service\Entity\TblItemAccount;
 use SPHERE\Common\Frontend\Form\Repository\Button\Primary;
-use SPHERE\Common\Frontend\Form\Repository\Field\SelectBox;
 use SPHERE\Common\Frontend\Form\Repository\Field\TextArea;
 use SPHERE\Common\Frontend\Form\Repository\Field\TextField;
 use SPHERE\Common\Frontend\Form\Structure\Form;
@@ -20,11 +17,11 @@ use SPHERE\Common\Frontend\Form\Structure\FormRow;
 use SPHERE\Common\Frontend\Icon\Repository\ChevronLeft;
 use SPHERE\Common\Frontend\Icon\Repository\Conversation;
 use SPHERE\Common\Frontend\Icon\Repository\Listing;
+use SPHERE\Common\Frontend\Icon\Repository\ListingTable;
 use SPHERE\Common\Frontend\Icon\Repository\Minus;
 use SPHERE\Common\Frontend\Icon\Repository\Pencil;
 use SPHERE\Common\Frontend\Icon\Repository\Plus;
 use SPHERE\Common\Frontend\Icon\Repository\PlusSign;
-use SPHERE\Common\Frontend\Icon\Repository\Quantity;
 use SPHERE\Common\Frontend\Icon\Repository\Save;
 use SPHERE\Common\Frontend\IFrontendInterface;
 use SPHERE\Common\Frontend\Layout\Repository\Panel;
@@ -34,9 +31,11 @@ use SPHERE\Common\Frontend\Layout\Structure\Layout;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutColumn;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutGroup;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutRow;
+use SPHERE\Common\Frontend\Link\Repository\Backward;
 use SPHERE\Common\Frontend\Link\Repository\Standard;
 use SPHERE\Common\Frontend\Message\Repository\Warning;
 use SPHERE\Common\Frontend\Table\Structure\TableData;
+use SPHERE\Common\Window\Redirect;
 use SPHERE\Common\Window\Stage;
 use SPHERE\System\Extension\Extension;
 
@@ -58,14 +57,7 @@ class Frontend extends Extension implements IFrontendInterface
         $Stage = new Stage();
         $Stage->setTitle('Leistungen');
         $Stage->setDescription('Übersicht');
-        // ToDo
-//        $Stage->setMessage('Zeigt die verfügbaren Leistungen an. <br />
-//                            Leistungen sind Zusammenfassungen aller Artikel,
-//                            die unter einem Punkt für den Debitor abgerechnet werden. <br />
-//                            Beispielsweise: Schulgeld, Hortgeld, Klassenfahrt usw.');
-//        $Stage->addButton(
-//            new Standard('Leistung anlegen', '/Billing/Inventory/Commodity/Create', new Plus())
-//        );
+//        new Backward();
 
         $tblCommodityAll = Commodity::useService()->getCommodityAll();
 
@@ -73,24 +65,33 @@ class Frontend extends Extension implements IFrontendInterface
         if (!empty( $tblCommodityAll )) {
             array_walk($tblCommodityAll, function (TblCommodity $tblCommodity) use (&$TableContent) {
 
-                $Temp['Name'] = $tblCommodity->getName();
-                $Temp['Description'] = $tblCommodity->getDescription();
-                $Temp['Type'] = $tblCommodity->getTblCommodityType()->getName();
-                $Temp['ItemCount'] = Commodity::useService()->countItemAllByCommodity($tblCommodity);
-                $Temp['SumPriceItem'] = Commodity::useService()->sumPriceItemAllByCommodity($tblCommodity);
-                $Temp['Option'] = (new Standard('Bearbeiten', '/Billing/Inventory/Commodity/Change',
+                $Item['Name'] = $tblCommodity->getName();
+                $Item['Description'] = $tblCommodity->getDescription();
+                $ItemList = Commodity::useService()->getItemAllByCommodity($tblCommodity);
+                $ItemArray = array();
+                if ($ItemList) {
+                    foreach ($ItemList as $ItemL) {
+                        $ItemArray[] = $ItemL->getName();
+                    }
+                }
+                $ItemStringList = '';
+                if (!empty( $ItemArray )) {
+                    $ItemStringList = implode(', ', $ItemArray);
+                }
+                $Item['ItemList'] = $ItemStringList;
+                $Item['Option'] = (new Standard('', '/Billing/Inventory/Commodity/Change',
                         new Pencil(), array(
                             'Id' => $tblCommodity->getId()
-                        )))->__toString().
-                    (new Standard('Artikel auswählen', '/Billing/Inventory/Commodity/Item/Select',
+                        ), 'Bearbeiten'))->__toString().
+                    (new Standard('', '/Billing/Inventory/Commodity/Item/Select',
                         new Listing(), array(
                             'Id' => $tblCommodity->getId()
-                        )))->__toString();
-//                    .(new Standard('Löschen', '/Billing/Inventory/Commodity/Destroy',     //ToDo bad result for continue
+                        ), 'Artikel auswählen'))->__toString();
+//                    .(new Standard('Löschen', '/Billing/Inventory/Commodity/Destroy',
 //                        new Remove(), array(
 //                            'Id' => $tblCommodity->getId()
 //                        )))->__toString();
-                array_push($TableContent, $Temp);
+                array_push($TableContent, $Item);
             });
         }
         $Form = $this->formCommodity()
@@ -104,16 +105,14 @@ class Frontend extends Extension implements IFrontendInterface
                         new LayoutColumn(
                             new TableData($TableContent, null,
                                 array(
-                                    'Name'         => 'Name',
-                                    'Description'  => 'Beschreibung',
-                                    'Type'         => 'Leistungsart',
-                                    'ItemCount'    => 'Artikelanzahl',
-                                    'SumPriceItem' => 'Gesamtpreis',
-                                    'Option'       => ''
+                                    'Name'        => 'Name',
+                                    'Description' => 'Beschreibung',
+                                    'ItemList'    => 'Artikel',
+                                    'Option'      => ''
                                 )
                             )
                         )
-                    ), new Title(new Listing().' Übersicht')
+                    ), new Title(new ListingTable().' Übersicht')
                 )
             )
             .new Layout(
@@ -130,37 +129,6 @@ class Frontend extends Extension implements IFrontendInterface
         return $Stage;
     }
 
-//    /**
-//     * @param $Commodity
-//     *
-//     * @return Stage
-//     */
-//    public function frontendCreate($Commodity)
-//    {
-//
-//        $Stage = new Stage();
-//        $Stage->setTitle('Leistung');
-//        $Stage->setDescription('Hinzufügen');
-//        $Stage->setMessage(
-//            '<b>Hinweis:</b> <br>
-//            Bei einer Einzelleistung wird für jede Person der gesamten Betrag berechnet. <br>
-//            Hingegen bei einer Sammelleisung bezahlt jede Person einen Teil des gesamten Betrags, abhängig von der
-//            Personenanzahl. <br>
-//            (z.B.: für Klassenfahrten)
-//        ');
-//        $Stage->addButton(new Standard('Zurück', '/Billing/Inventory/Commodity',
-//            new ChevronLeft()
-//        ));
-//
-//        $Form = $this->formCommodity()
-//            ->appendFormButton(new Primary('Hinzufügen'))
-//            ->setConfirm('Eventuelle Änderungen wurden noch nicht gespeichert');
-//
-//        $Stage->setContent(Commodity::useService()->createCommodity($Form, $Commodity));
-//
-//        return $Stage;
-//    }
-
     /**
      * @return Form
      */
@@ -171,9 +139,7 @@ class Frontend extends Extension implements IFrontendInterface
             new FormGroup(array(
                 new FormRow(array(
                     new FormColumn(
-                        new Panel('Leistung', array(new TextField('Commodity[Name]', 'Name', 'Name', new Conversation()),
-                                new SelectBox('Commodity[Type]', 'Leistungsart', array(
-                                    'Name' => Commodity::useService()->getCommodityTypeAll())))
+                        new Panel('Leistung', array(new TextField('Commodity[Name]', 'Name', 'Name', new Conversation()))
                             , Panel::PANEL_TYPE_INFO)
                         , 6),
                     new FormColumn(
@@ -187,438 +153,236 @@ class Frontend extends Extension implements IFrontendInterface
     }
 
     /**
-     * @param $Id
+     * @param null $Id
+     * @param null $Commodity
      *
      * @return Stage
      */
-    public function frontendDestroy($Id)
+    public function frontendChange($Id = null, $Commodity = null)
     {
 
-        $Stage = new Stage();
-        $Stage->setTitle('Leistung');
-        $Stage->setDescription('Entfernen');
-
+        $Stage = new Stage('Leistungen', 'Bearbeiten');
+        $Stage->addButton(new Standard('Zurück', '/Billing/Inventory/Commodity', new ChevronLeft()));
+//        $Stage->addButton(new Backward());
         $tblCommodity = Commodity::useService()->getCommodityById($Id);
-        $Stage->setContent(Commodity::useService()->destroyCommodity($tblCommodity));
+        if (!$tblCommodity) {
+            $Stage->setContent(new Warning('Die Leistung konnte nicht abgerufen werden'));
+            return $Stage.new Redirect('/Billing/Inventory/Commodity', Redirect::TIMEOUT_ERROR);
+        }
+
+        $Global = $this->getGlobal();
+        if (!isset( $Global->POST['Commodity'] )) {
+            $Global->POST['Commodity']['Name'] = $tblCommodity->getName();
+            $Global->POST['Commodity']['Description'] = $tblCommodity->getDescription();
+            $Global->savePost();
+        }
+
+        $PanelValue = array();
+        $PanelValue[0] = $tblCommodity->getName();
+        $PanelValue[1] = $tblCommodity->getDescription();
+        $PanelContent = new Layout(
+            new LayoutGroup(
+                new LayoutRow(array(
+                    new LayoutColumn(
+                        new Panel('Name', $PanelValue[0], Panel::PANEL_TYPE_INFO)
+                        , 6),
+                    new LayoutColumn(
+                        new Panel('Beschreibung', $PanelValue[1], Panel::PANEL_TYPE_INFO)
+                        , 6),
+                ))
+            )
+        );
+
+        $Form = $this->formCommodity()
+            ->appendFormButton(new Primary('Speichern', new Save()))
+            ->setConfirm('Eventuelle Änderungen wurden noch nicht gespeichert');
+
+        $Stage->setContent(
+            new Layout(
+                new LayoutGroup(
+                    new LayoutRow(
+                        new LayoutColumn(
+                            $PanelContent
+                        )
+                    )
+                )
+            )
+            .new Layout(
+                new LayoutGroup(
+                    new LayoutRow(
+                        new LayoutColumn(new Well(
+                            Commodity::useService()->changeCommodity($Form, $tblCommodity, $Commodity)
+                        ))
+                    ), new Title(new Pencil().' Bearbeiten')
+                )
+            )
+        );
 
         return $Stage;
     }
 
     /**
-     * @param $Id
-     * @param $Commodity
+     * @param null $tblCommodityId
+     * @param null $tblItemId
      *
      * @return Stage
      */
-    public function frontendChange($Id, $Commodity)
+    public function frontendAddItem($tblCommodityId = null, $tblItemId = null)
     {
 
-        $Stage = new Stage();
-        $Stage->setTitle('Leistungen');
-        $Stage->setDescription('Bearbeiten');
-//        $Stage->setMessage(
-//            '<b>Hinweis:</b> <br>
-//            Bei einer Einzelleistung wird für jede Person der gesamten Betrag berechnet. <br>
-//            Hingegen bei einer Sammelleisung bezahlt jede Person einen Teil des gesamten Betrags, abhängig von der
-//            Personenanzahl. <br>
-//            (z.B.: für Klassenfahrten)
-//        ');
-        $Stage->addButton(new Standard('Zurück', '/Billing/Inventory/Commodity',
-            new ChevronLeft()
-        ));
+        $Stage = new Stage('Leistung', 'Artikel Hinzufügen');
+        $tblCommodity = Commodity::useService()->getCommodityById($tblCommodityId);
+        $tblItem = Item::useService()->getItemById($tblItemId);
+        if (!$tblCommodity) {
+            $Stage->setContent(new Warning('Leistung nicht gefunden'));
+            return $Stage.new Redirect('/Billing/Inventory/Commodity', Redirect::TIMEOUT_ERROR);
+        }
+        if (!$tblItem) {
+            $Stage->setContent(new Warning('Artikel nicht gefunden'));
+            return $Stage.new Redirect('/Billing/Inventory/Commodity', Redirect::TIMEOUT_ERROR);
+        }
 
-        if (empty( $Id )) {
-            $Stage->setContent(new Warning('Die Daten konnten nicht abgerufen werden'));
+        if (!empty( $tblCommodityId ) && !empty( $tblItemId )) {
+            $Stage->setContent(Commodity::useService()->addItemToCommodity($tblCommodity, $tblItem));
+        }
+
+        return $Stage;
+    }
+
+    /**
+     * @param null $Id
+     *
+     * @return Stage
+     */
+    public function frontendItemSelect($Id = null)
+    {
+
+        $Stage = new Stage('Leistung', 'Artikel auswählen');
+        $Stage->addButton(new Standard('Zurück', '/Billing/Inventory/Commodity', new ChevronLeft()));
+//        $Stage->addButton(new Backward());
+        $tblCommodity = Commodity::useService()->getCommodityById($Id);
+        if (!$tblCommodity) {
+            $Stage->setContent(new Warning('Die Leistung konnte nicht abgerufen werden'));
+            return $Stage.new Redirect('/Billing/Inventory/Commodity', Redirect::TIMEOUT_ERROR);
         } else {
-            $tblCommodity = Commodity::useService()->getCommodityById($Id);
-            if (empty( $tblCommodity )) {
-                $Stage->setContent(new Warning('Die Leistung konnte nicht abgerufen werden'));
-            } else {
+            $tblCommodityItem = Commodity::useService()->getCommodityItemAllByCommodity($tblCommodity);
+            $tblItemAllByCommodity = Commodity::useService()->getItemAllByCommodity($tblCommodity);
+            $tblItemAll = Item::useService()->getItemAll();
 
-                $Global = $this->getGlobal();
-                if (!isset( $Global->POST['Commodity'] )) {
-                    $Global->POST['Commodity']['Name'] = $tblCommodity->getName();
-                    $Global->POST['Commodity']['Description'] = $tblCommodity->getDescription();
-                    $Global->POST['Commodity']['Type'] = $tblCommodity->getTblCommodityType()->getId();
-                    $Global->savePost();
-                }
+            if (!empty( $tblItemAllByCommodity )) {
+                $tblItemAll = array_udiff($tblItemAll, $tblItemAllByCommodity,
+                    function (TblItem $ObjectA, TblItem $ObjectB) {
 
-                $PanelValue = array();
-                $PanelValue[0] = $tblCommodity->getName();
-                $PanelValue[1] = $tblCommodity->getTblCommodityType()->getName();
-                $PanelValue[2] = $tblCommodity->getDescription();
-                $PanelContent = new Layout(
+                        return $ObjectA->getId() - $ObjectB->getId();
+                    }
+                );
+            }
+
+            $TableCommodityContent = array();
+            if (!empty( $tblCommodityItem )) {
+                array_walk($tblCommodityItem, function (TblCommodityItem $tblCommodityItem) use (&$TableCommodityContent) {
+
+                    $tblItem = $tblCommodityItem->getTblItem();
+
+                    $Item['Name'] = $tblItem->getName();
+                    $Item['Description'] = $tblItem->getDisplayDescription();
+                    $Item['Type'] = $tblItem->getTblItemType()->getName();
+                    $Item['Option'] =
+                        (new \SPHERE\Common\Frontend\Link\Repository\Primary('Entfernen', '/Billing/Inventory/Commodity/Item/Remove',
+                            new Minus(), array(
+                                'Id' => $tblCommodityItem->getId()
+                            )))->__toString();
+
+                    array_push($TableCommodityContent, $Item);
+                });
+            }
+
+            $TableItemContent = array();
+            if (!empty( $tblItemAll )) {
+                /** @var TblItem $tblItem */
+                array_walk($tblItemAll, function (TblItem $tblItem) use (&$TableItemContent, $tblCommodity) {
+
+                    $Item['Name'] = $tblItem->getName();
+                    $Item['Description'] = $tblItem->getDisplayDescription();
+                    $Item['Type'] = $tblItem->getTblItemType()->getName();
+                    $Item['Option'] =
+                        (new \SPHERE\Common\Frontend\Link\Repository\Primary('Hinzufügen', '/Billing/Inventory/Commodity/Item/Add',
+                            new Plus(), array(
+                                'tblCommodityId' => $tblCommodity->getId(),
+                                'tblItemId'      => $tblItem->getId(),
+                            )))->__toString();
+                    array_push($TableItemContent, $Item);
+                });
+            }
+
+            $Stage->setContent(
+                new Layout(array(
                     new LayoutGroup(array(
                         new LayoutRow(array(
                             new LayoutColumn(
-                                new Panel('Name', $PanelValue[0], Panel::PANEL_TYPE_INFO)
-                                , 6),
+                                new Panel('Name der aktuellen Leistung', $tblCommodity->getName(), Panel::PANEL_TYPE_SUCCESS), 4
+                            ),
                             new LayoutColumn(
-                                new Panel('Leistungsart', $PanelValue[1], Panel::PANEL_TYPE_INFO)
-                                , 6),
-                        )),
-                        new LayoutRow(
-                            new LayoutColumn(
-                                new Panel('Beschreibung', $PanelValue[2], Panel::PANEL_TYPE_INFO)
+                                new Panel('Beschreibung', $tblCommodity->getDescription(),
+                                    Panel::PANEL_TYPE_SUCCESS), 8
                             )
-                        )
-                    ))
-                );
-
-                $Form = $this->formCommodity()
-                    ->appendFormButton(new Primary('Speichern', new Save()))
-                    ->setConfirm('Eventuelle Änderungen wurden noch nicht gespeichert');
-
-                $Stage->setContent(
-                    new Layout(
-                        new LayoutGroup(
-                            new LayoutRow(
-                                new LayoutColumn(
-                                    $PanelContent
-                                )
+                        ))
+                    )),
+                    new LayoutGroup(array(
+                        new LayoutRow(array(
+                            new LayoutColumn(array(
+                                new Title('vorhandene Artikel'),
+                                ( empty( $TableCommodityContent ) ?
+                                    new Warning('Keine Artikel in aktueller Leistung') :
+                                    new TableData($TableCommodityContent, null,
+                                        array(
+                                            'Name'        => 'Name',
+                                            'Description' => 'Beschreibung',
+                                            'Type'        => 'Typ',
+                                            'Option'      => ''
+                                        )
+                                    ) )
+                            ), 6
+                            ),
+                            new LayoutColumn(array(
+                                new Title('mögliche Artikel'),
+                                ( empty( $TableItemContent ) ?
+                                    new Warning('Keine weiteren Artikel verfügbar') :
+                                    new TableData($TableItemContent, null,
+                                        array(
+                                            'Name'        => 'Name',
+                                            'Description' => 'Beschreibung',
+                                            'Type'        => 'Typ',
+                                            'Option'      => ''
+                                        )
+                                    ) )
+                            ), 6
                             )
-                        )
-                    )
-                    .new Layout(
-                        new LayoutGroup(
-                            new LayoutRow(
-                                new LayoutColumn(new Well(
-                                    Commodity::useService()->changeCommodity($Form, $tblCommodity, $Commodity)
-                                ))
-                            ), new Title(new Pencil().' Bearbeiten')
-                        )
-                    )
-                );
-            }
-        }
-
-        return $Stage;
-    }
-
-    /**
-     * @param $tblCommodityId
-     * @param $tblItemId
-     * @param $Item
-     *
-     * @return Stage
-     */
-    public function frontendItemAdd($tblCommodityId, $tblItemId, $Item)
-    {
-
-        $Stage = new Stage();
-        $Stage->setTitle('Leistung');
-        $Stage->setDescription('Artikel Hinzufügen');
-        $tblCommodity = Commodity::useService()->getCommodityById($tblCommodityId);
-        $tblItem = Item::useService()->getItemById($tblItemId);
-
-        if (!empty( $tblCommodityId ) && !empty( $tblItemId )) {
-            $Stage->setContent(Commodity::useService()->addItemToCommodity($tblCommodity, $tblItem, $Item));
-        }
-
-        return $Stage;
-    }
-
-    /**
-     * @param $Id
-     *
-     * @return Stage
-     */
-    public function frontendItemAccountSelect($Id)
-    {
-
-        $Stage = new Stage();
-        $Stage->setTitle('Artikel');
-        $Stage->setDescription('FIBU-Konten auswählen');
-        $Stage->addButton(new Standard('Zurück', '/Billing/Inventory/Item',
-            new ChevronLeft()
-        ));
-
-        if (empty( $Id )) {
-            $Stage->setContent(new Warning('Die Daten konnten nicht abgerufen werden'));
-        } else {
-            $tblItem = Item::useService()->getItemById($Id);
-            if (empty( $tblItem )) {
-                $Stage->setContent(new Warning('Der Artikel konnte nicht abgerufen werden'));
-            } else {
-                $tblItemAccountByItem = Item::useService()->getItemAccountAllByItem($tblItem);
-                $tblAccountByItem = Commodity::useService()->getAccountAllByItem($tblItem);
-                $tblAccountAllByActiveState = Account::useService()->getAccountAllByActiveState();
-
-                if (!empty( $tblAccountAllByActiveState )) {
-                    $tblAccountAllByActiveState = array_udiff($tblAccountAllByActiveState, $tblAccountByItem,
-                        function (TblAccount $ObjectA, TblAccount $ObjectB) {
-
-                            return $ObjectA->getId() - $ObjectB->getId();
-                        }
-                    );
-                }
-
-                if (!empty( $tblItemAccountByItem )) {
-                    array_walk($tblItemAccountByItem, function (TblItemAccount $tblItemAccountByItem) {
-
-                        $tblItemAccountByItem->Number = $tblItemAccountByItem->getServiceBillingAccount()->getNumber();
-                        $tblItemAccountByItem->Description = $tblItemAccountByItem->getServiceBillingAccount()->getDescription();
-                        $tblItemAccountByItem->Option =
-                            new \SPHERE\Common\Frontend\Link\Repository\Primary('Entfernen', '/Billing/Inventory/Commodity/Item/Account/Remove',
-                                new Minus(), array(
-                                    'Id' => $tblItemAccountByItem->getId()
-                                ));
-                    });
-                }
-
-                if (!empty( $tblAccountAllByActiveState )) {
-                    /** @noinspection PhpUnusedParameterInspection */
-                    array_walk($tblAccountAllByActiveState,
-                        function (TblAccount $tblAccountAllByActiveState, $Index, TblItem $tblItem) {
-
-                            $tblAccountAllByActiveState->Option =
-                                new \SPHERE\Common\Frontend\Link\Repository\Primary('Hinzufügen', '/Billing/Inventory/Commodity/Item/Account/Add',
-                                    new Plus(), array(
-                                        'tblAccountId' => $tblAccountAllByActiveState->getId(),
-                                        'tblItemId'    => $tblItem->getId()
-                                    ));
-                        }, $tblItem);
-                }
-
-                $Stage->setContent(
-                    new Layout(array(
-                        new LayoutGroup(array(
-                            new LayoutRow(array(
-                                new LayoutColumn(
-                                    new Panel('Name', $tblItem->getName(), Panel::PANEL_TYPE_SUCCESS), 4
-                                ),
-                                new LayoutColumn(
-                                    new Panel('Beschreibung', $tblItem->getDescription(), Panel::PANEL_TYPE_SUCCESS), 8
-                                )
-                            )),
                         )),
-                        new LayoutGroup(array(
-                            new LayoutRow(array(
-                                new LayoutColumn(array(
-                                        new TableData($tblItemAccountByItem, null,
-                                            array(
-                                                'Number'      => 'Nummer',
-                                                'Description' => 'Beschreibung',
-                                                'Option'      => ''
-                                            )
-                                        )
-                                    )
-                                )
-                            )),
-                        ), new Title('zugewiesene FIBU-Konten')),
-                        new LayoutGroup(array(
-                            new LayoutRow(array(
-                                new LayoutColumn(array(
-                                        new TableData($tblAccountAllByActiveState, null,
-                                            array(
-                                                'Number'      => 'Nummer',
-                                                'Description' => 'Beschreibung',
-                                                'Option'      => ''
-                                            )
-                                        )
-                                    )
-                                )
-                            )),
-                        ), new Title('mögliche FIBU-Konten'))
                     ))
-                );
-            }
+                ))
+            );
         }
-
         return $Stage;
     }
 
     /**
-     * @param $Id
+     * @param null $Id
      *
      * @return Stage
      */
-    public function frontendItemSelect($Id)
-    {
-
-        $Stage = new Stage();
-        $Stage->setTitle('Leistung');
-        $Stage->setDescription('Artikel auswählen');
-        $Stage->addButton(new Standard('Zurück', '/Billing/Inventory/Commodity',
-            new ChevronLeft()
-        ));
-
-        if (empty( $Id )) {
-            $Stage->setContent(new Warning('Die Daten konnten nicht abgerufen werden'));
-        } else {
-            $tblCommodity = Commodity::useService()->getCommodityById($Id);
-            if (empty( $tblCommodity )) {
-                $Stage->setContent(new Warning('Die Leistung konnte nicht abgerufen werden'));
-            } else {
-                $tblCommodityItem = Commodity::useService()->getCommodityItemAllByCommodity($tblCommodity);
-                $tblItemAllByCommodity = Commodity::useService()->getItemAllByCommodity($tblCommodity);
-                $tblItemAll = Item::useService()->getItemAll();
-
-                if (!empty( $tblItemAllByCommodity )) {
-                    $tblItemAll = array_udiff($tblItemAll, $tblItemAllByCommodity,
-                        function (TblItem $ObjectA, TblItem $ObjectB) {
-
-                            return $ObjectA->getId() - $ObjectB->getId();
-                        }
-                    );
-                }
-
-                if (!empty( $tblCommodityItem )) {
-                    array_walk($tblCommodityItem, function (TblCommodityItem $tblCommodityItem) {
-
-                        $tblItem = $tblCommodityItem->getTblItem();
-
-                        $tblCommodityItem->Name = $tblItem->getName();
-                        $tblCommodityItem->Description = $tblItem->getDescription();
-                        $tblCommodityItem->PriceString = $tblItem->getPriceString();
-                        $tblCommodityItem->TotalPriceString = $tblCommodityItem->getTotalPriceString();
-                        $tblCommodityItem->QuantityString = str_replace('.', ',', $tblCommodityItem->getQuantity());
-                        $tblCommodityItem->CostUnit = $tblItem->getCostUnit();
-                        $tblCommodityItem->Option =
-                            (new \SPHERE\Common\Frontend\Link\Repository\Primary('Entfernen', '/Billing/Inventory/Commodity/Item/Remove',
-                                new Minus(), array(
-                                    'Id' => $tblCommodityItem->getId()
-                                )))->__toString();
-                    });
-                }
-
-                if (!empty( $tblItemAll )) {
-                    /** @var TblItem $tblItem */
-                    foreach ($tblItemAll as $tblItem) {
-                        $tblItem->PriceString = $tblItem->getPriceString();
-                        $tblItem->Option =
-                            (new Form(
-                                new FormGroup(
-                                    new FormRow(array(
-                                        new FormColumn(
-                                            new TextField('Item[Quantity]', 'Menge', '', new Quantity()
-                                            )
-                                            , 7),
-                                        new FormColumn(
-                                            new Primary('Hinzufügen',
-                                                new Plus())
-                                            , 5)
-                                    ))
-                                ), null,
-                                '/Billing/Inventory/Commodity/Item/Add', array(
-                                    'tblCommodityId' => $tblCommodity->getId(),
-                                    'tblItemId'      => $tblItem->getId()
-                                )
-                            ))->__toString();
-                    }
-                }
-
-                $Stage->setContent(
-                    new Layout(array(
-                        new LayoutGroup(array(
-                            new LayoutRow(array(
-                                new LayoutColumn(
-                                    new Panel('Name', $tblCommodity->getName(), Panel::PANEL_TYPE_SUCCESS), 4
-                                ),
-                                new LayoutColumn(
-                                    new Panel('Beschreibung', $tblCommodity->getDescription(),
-                                        Panel::PANEL_TYPE_SUCCESS), 8
-                                )
-                            ))
-                        )),
-                        new LayoutGroup(array(
-                            new LayoutRow(array(
-                                new LayoutColumn(array(
-                                        new TableData($tblCommodityItem, null,
-                                            array(
-                                                'Name'             => 'Name',
-                                                'Description'      => 'Beschreibung',
-                                                'CostUnit'         => 'Kostenstelle',
-                                                'PriceString'      => 'Preis',
-                                                'QuantityString'   => 'Menge',
-                                                'TotalPriceString' => 'Gesamtpreis',
-                                                'Option'           => ''
-                                            )
-                                        )
-                                    )
-                                )
-                            )),
-                        ), new Title('vorhandene Artikel')),
-                        new LayoutGroup(array(
-                            new LayoutRow(array(
-                                new LayoutColumn(array(
-                                        new TableData($tblItemAll, null,
-                                            array(
-                                                'Name'        => 'Name',
-                                                'Description' => 'Beschreibung',
-                                                'CostUnit'    => 'Kostenstelle',
-                                                'PriceString' => 'Preis',
-                                                'Option'      => 'Anzahl'
-                                            )
-                                        )
-                                    )
-                                )
-                            )),
-                        ), new Title('mögliche Artikel'))
-                    ))
-                );
-            }
-        }
-
-        return $Stage;
-    }
-
-    /**
-     * @param $Id
-     *
-     * @return Stage
-     */
-    public function frontendItemRemove($Id)
+    public function frontendRemoveItem($Id = null)
     {
 
         $Stage = new Stage();
         $Stage->setTitle('Leistung');
         $Stage->setDescription('Artikel Entfernen');
         $tblCommodityItem = Commodity::useService()->getCommodityItemById($Id);
-        if (!empty( $tblCommodityItem )) {
-            $Stage->setContent(Commodity::useService()->removeItemToCommodity($tblCommodityItem));
+        if (!$tblCommodityItem) {
+            $Stage->setContent(new Warning('Verknüpfung nicht gefunden'));
+            return $Stage.new Redirect('/Billing/Inventory/Commodity', Redirect::TIMEOUT_ERROR);
         }
-
-        return $Stage;
-    }
-
-    /**
-     * @param $Id
-     *
-     * @return Stage
-     */
-    public function frontendItemAccountRemove($Id)
-    {
-
-        $Stage = new Stage();
-        $Stage->setTitle('Artikel');
-        $Stage->setDescription('FIBU-Konto Entfernen');
-        $tblItemAccount = Item::useService()->getItemAccountById($Id);
-        if (!empty( $tblItemAccount )) {
-            $Stage->setContent(Item::useService()->removeItemAccount($tblItemAccount));
-        }
-
-        return $Stage;
-    }
-
-    /**
-     * @param $tblItemId
-     * @param $tblAccountId
-     *
-     * @return Stage
-     */
-    public function frontendItemAccountAdd($tblItemId, $tblAccountId)
-    {
-
-        $Stage = new Stage();
-        $Stage->setTitle('Artikel');
-        $Stage->setDescription('FIBU-Konto Hinzufügen');
-        $tblItem = Item::useService()->getItemById($tblItemId);
-        $tblAccount = Account::useService()->getAccountById($tblAccountId);
-
-        if (!empty( $tblItemId ) && !empty( $tblAccountId )) {
-            $Stage->setContent(Item::useService()->addItemToAccount($tblItem, $tblAccount));
-        }
+        $Stage->setContent(Commodity::useService()->removeItemToCommodity($tblCommodityItem));
 
         return $Stage;
     }

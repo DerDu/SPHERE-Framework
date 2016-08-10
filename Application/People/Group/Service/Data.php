@@ -3,6 +3,7 @@ namespace SPHERE\Application\People\Group\Service;
 
 use SPHERE\Application\People\Group\Service\Entity\TblGroup;
 use SPHERE\Application\People\Group\Service\Entity\TblMember;
+use SPHERE\Application\People\Group\Service\Entity\ViewPeopleGroupMember;
 use SPHERE\Application\People\Person\Person;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
@@ -17,6 +18,17 @@ use SPHERE\System\Database\Fitting\ColumnHydrator;
 class Data extends AbstractData
 {
 
+    /**
+     * @return false|ViewPeopleGroupMember[]
+     */
+    public function viewPeopleGroupMember()
+    {
+
+        return $this->getCachedEntityList(
+            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewPeopleGroupMember'
+        );
+    }
+    
     public function setupDatabaseContent()
     {
 
@@ -26,7 +38,7 @@ class Data extends AbstractData
         $this->createGroup('Sorgeberechtigt', '', '', true, 'CUSTODY');
         $this->createGroup('Mitarbeiter', 'Alle Mitarbeiter', '', true, 'STAFF');
         $this->createGroup('Lehrer', 'Alle Mitarbeiter, welche einer Lehrtätigkeit nachgehen', '', true, 'TEACHER');
-        $this->createGroup('Vereinsmitglieder', '', '', true, 'CLUB');
+        $this->createGroup('Vereinsmitglieder', '', '', true, TblGroup::META_TABLE_CLUB);
     }
 
     /**

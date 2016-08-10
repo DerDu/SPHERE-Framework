@@ -2,11 +2,8 @@
 
 namespace SPHERE\Application\Billing\Inventory\Commodity\Service;
 
-use SPHERE\Application\Billing\Accounting\Account\Service\Entity\TblAccount;
 use SPHERE\Application\Billing\Inventory\Commodity\Service\Entity\TblCommodity;
 use SPHERE\Application\Billing\Inventory\Commodity\Service\Entity\TblCommodityItem;
-use SPHERE\Application\Billing\Inventory\Commodity\Service\Entity\TblCommodityType;
-use SPHERE\Application\Billing\Inventory\Item\Item;
 use SPHERE\Application\Billing\Inventory\Item\Service\Entity\TblItem;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
 use SPHERE\System\Database\Binding\AbstractData;
@@ -22,31 +19,6 @@ class Data extends AbstractData
     public function setupDatabaseContent()
     {
 
-        /**
-         * CommodityType
-         */
-        $this->createCommodityType('Einzelleistung');
-        $this->createCommodityType('Sammelleistung');
-    }
-
-    /**
-     * @param $Name
-     *
-     * @return TblCommodityType
-     */
-    public function createCommodityType($Name)
-    {
-
-        $Manager = $this->getConnection()->getEntityManager();
-        $Entity = $Manager->getEntity('TblCommodityType')->findOneBy(array('Name' => $Name,));
-        if (null === $Entity) {
-            $Entity = new TblCommodityType();
-            $Entity->setName($Name);
-            $Manager->saveEntity($Entity);
-            Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(),
-                $Entity);
-        }
-        return $Entity;
     }
 
     /**
@@ -57,8 +29,8 @@ class Data extends AbstractData
     public function getCommodityById($Id)
     {
 
-        $Entity = $this->getConnection()->getEntityManager()->getEntityById('TblCommodity', $Id);
-        return ( null === $Entity ? false : $Entity );
+        return $this->getCachedEntityById(__Method__, $this->getConnection()->getEntityManager(), 'TblCommodity', $Id);
+
     }
 
     /**
@@ -69,10 +41,8 @@ class Data extends AbstractData
     public function getCommodityByName($Name)
     {
 
-        $Entity = $this->getConnection()->getEntityManager()->getEntity('TblCommodity')->findOneBy(
-            array(TblCommodity::ATTR_NAME => $Name)
-        );
-        return ( null === $Entity ? false : $Entity );
+        return $this->getCachedEntityBy(__Method__, $this->getConnection()->getEntityManager(), 'TblCommodity',
+            array(TblCommodity::ATTR_NAME => $Name));
     }
 
     /**
@@ -81,30 +51,7 @@ class Data extends AbstractData
     public function getCommodityAll()
     {
 
-        $Entity = $this->getConnection()->getEntityManager()->getEntity('TblCommodity')->findAll();
-        return ( null === $Entity ? false : $Entity );
-    }
-
-    /**
-     * @param $Id
-     *
-     * @return bool|TblCommodityType
-     */
-    public function getCommodityTypeById($Id)
-    {
-
-        $Entity = $this->getConnection()->getEntityManager()->getEntityById('TblCommodityType', $Id);
-        return ( null === $Entity ? false : $Entity );
-    }
-
-    /**
-     * @return bool|TblCommodityType[]
-     */
-    public function getCommodityTypeAll()
-    {
-
-        $Entity = $this->getConnection()->getEntityManager()->getEntity('TblCommodityType')->findAll();
-        return ( null === $Entity ? false : $Entity );
+        return $this->getCachedEntityList(__Method__, $this->getConnection()->getEntityManager(), 'TblCommodity');
     }
 
     /**
@@ -115,71 +62,31 @@ class Data extends AbstractData
     public function getCommodityItemById($Id)
     {
 
-        $Entity = $this->getConnection()->getEntityManager()->getEntityById('TblCommodityItem', $Id);
-        return ( null === $Entity ? false : $Entity );
+        return $this->getCachedEntityById(__Method__, $this->getConnection()->getEntityManager(), 'TblCommodityItem', $Id);
     }
 
     /**
-     * @param TblItem $tblItem
-     *
-     * @return TblAccount[]
-     */
-    public function getAccountAllByItem(TblItem $tblItem)
-    {
-
-        $tblItemAccountAllByItem = Item::useService()->getItemAccountAllByItem($tblItem);
-        $tblAccount = array();
-        foreach ($tblItemAccountAllByItem as $tblItemAccount) {
-            array_push($tblAccount, $tblItemAccount->getServiceBillingAccount());
-        }
-
-        return $tblAccount;
-    }
-
-    /**
-     * @param TblItem $tblItem
+     * @param TblCommodity $tblCommodity
      *
      * @return bool|TblItem[]
      */
-    public function getCommodityItemAllByItem(TblItem $tblItem)
+    public function getItemAllByCommodity(TblCommodity $tblCommodity)
     {
 
-        $EntityList = $this->getConnection()->getEntityManager()->getEntity('TblCommodityItem')
-            ->findBy(array(TblCommodityItem::ATTR_TBL_ITEM => $tblItem->getId()));
-        return ( null === $EntityList ? false : $EntityList );
-    }
+        $EntityList = $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblCommodityItem',
+            array(TblCommodityItem::ATTR_TBL_COMMODITY => $tblCommodity->getId()));
+        if ($EntityList) {
+            array_walk($EntityList, function (TblCommodityItem &$tblCommodityItem) {
 
-    /**
-     * @param TblCommodity $tblCommodity
-     *
-     * @return int
-     */
-    public function countItemAllByCommodity(TblCommodity $tblCommodity)
-    {
-
-        return (int)$this->getConnection()->getEntityManager()->getEntity('TblCommodityItem')->countBy(array(
-            TblCommodityItem::ATTR_TBL_COMMODITY => $tblCommodity->getId()
-        ));
-    }
-
-    /**
-     * @param TblCommodity $tblCommodity
-     *
-     * @return string
-     */
-    public function sumPriceItemAllByCommodity(TblCommodity $tblCommodity)
-    {
-
-        $sum = 0.00;
-        $tblCommodityItemByCommodity = $this->getCommodityItemAllByCommodity($tblCommodity);
-        /** @var TblCommodityItem $tblCommodityItem */
-        foreach ($tblCommodityItemByCommodity as $tblCommodityItem) {
-            $sum += $tblCommodityItem->getTblItem()->getPrice() * $tblCommodityItem->getQuantity();
+                if ($tblCommodityItem->getTblItem()) {
+                    $tblCommodityItem = $tblCommodityItem->getTblItem();
+                } else {
+                    $tblCommodityItem = false;
+                }
+            });
+            $EntityList = array_filter($EntityList);
         }
-
-        $sum = round($sum, 2);
-        $sum = sprintf("%01.2f", $sum);
-        return str_replace('.', ',', $sum)." €";
+        return ( null === $EntityList ? false : $EntityList );
     }
 
     /**
@@ -190,35 +97,27 @@ class Data extends AbstractData
     public function getCommodityItemAllByCommodity(TblCommodity $tblCommodity)
     {
 
-        $EntityList = $this->getConnection()->getEntityManager()->getEntity('TblCommodityItem')
-            ->findBy(array(TblCommodityItem::ATTR_TBL_COMMODITY => $tblCommodity->getId()));
-        return ( null === $EntityList ? false : $EntityList );
+        return $this->getCachedEntityListBy(__Method__, $this->getConnection()->getEntityManager(), 'TblCommodityItem',
+            array(TblCommodityItem::ATTR_TBL_COMMODITY => $tblCommodity->getId()));
     }
 
     /**
-     * @param                  $Name
-     * @param                  $Description
-     * @param TblCommodityType $tblCommodityType
+     * @param $Name
+     * @param $Description
      *
      * @return TblCommodity
      */
     public function createCommodity(
         $Name,
-        $Description,
-        TblCommodityType $tblCommodityType
+        $Description
     ) {
 
-        echo $Name.' - '.$Description.' - '.$tblCommodityType->getName();
-
-        $Manager = $this->getConnection()->getEntityManager(false);
-
+        $Manager = $this->getConnection()->getEntityManager();
         $Entity = new TblCommodity();
         $Entity->setName($Name);
         $Entity->setDescription($Description);
-        $Entity->setTblCommodityType($tblCommodityType);
 
         $Manager->saveEntity($Entity);
-
         Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(),
             $Entity);
 
@@ -226,18 +125,16 @@ class Data extends AbstractData
     }
 
     /**
-     * @param TblCommodity            $tblCommodity
-     * @param                         $Name
-     * @param                         $Description
-     * @param Entity\TblCommodityType $tblCommodityType
+     * @param TblCommodity $tblCommodity
+     * @param              $Name
+     * @param              $Description
      *
      * @return bool
      */
     public function updateCommodity(
         TblCommodity $tblCommodity,
         $Name,
-        $Description,
-        TblCommodityType $tblCommodityType
+        $Description
     ) {
 
         $Manager = $this->getConnection()->getEntityManager();
@@ -248,7 +145,6 @@ class Data extends AbstractData
         if (null !== $Entity) {
             $Entity->setName($Name);
             $Entity->setDescription($Description);
-            $Entity->setTblCommodityType($tblCommodityType);
 
             $Manager->saveEntity($Entity);
             Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(),
@@ -261,34 +157,13 @@ class Data extends AbstractData
 
     /**
      * @param TblCommodity $tblCommodity
-     *
-     * @return bool|TblItem[]
-     */
-    public function getItemAllByCommodity(TblCommodity $tblCommodity)
-    {
-
-        $EntityList = $this->getConnection()->getEntityManager()->getEntity('TblCommodityItem')
-            ->findBy(array(TblCommodityItem::ATTR_TBL_COMMODITY => $tblCommodity->getId()));
-        if (!empty( $EntityList )) {
-            array_walk($EntityList, function (TblCommodityItem &$tblCommodityItem) {
-
-                $tblCommodityItem = $tblCommodityItem->getTblItem();
-            });
-        }
-        return ( null === $EntityList ? false : $EntityList );
-    }
-
-    /**
-     * @param Entity\TblCommodity $tblCommodity
-     * @param TblItem             $tblItem
-     * @param                     $Quantity
+     * @param TblItem      $tblItem
      *
      * @return bool
      */
     public function addItemToCommodity(
         TblCommodity $tblCommodity,
-        TblItem $tblItem,
-        $Quantity
+        TblItem $tblItem
     ) {
 
         $Manager = $this->getConnection()->getEntityManager();
@@ -300,10 +175,8 @@ class Data extends AbstractData
             $Entity = new TblCommodityItem();
             $Entity->setTblCommodity($tblCommodity);
             $Entity->setTblItem($tblItem);
-            $Entity->setQuantity(str_replace(',', '.', $Quantity));
 
             $Manager->saveEntity($Entity);
-
             Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(),
                 $Entity);
         }

@@ -21,6 +21,9 @@ class Schneeberg implements IModuleInterface
     public static function registerModule()
     {
 
+        /*
+        * Oberschule
+        */
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
             __NAMESPACE__ . '/Student', __NAMESPACE__ . '\Frontend::frontendStudentImport'
         ));
@@ -31,11 +34,17 @@ class Schneeberg implements IModuleInterface
             __NAMESPACE__ . '/InterestedPerson', __NAMESPACE__ . '\Frontend::frontendInterestedPersonImport'
         ));
 
+        /*
+        * Grundschule
+        */
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
             __NAMESPACE__ . '/StudentPrimarySchool', __NAMESPACE__ . '\Frontend::frontendStudentImportPrimarySchool'
         ));
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
             __NAMESPACE__ . '/Custody', __NAMESPACE__ . '\Frontend::frontendCustodyImport'
+        ));
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__ . '/Contact', __NAMESPACE__ . '\Frontend::frontendContactImport'
         ));
 
         /*
@@ -44,6 +53,7 @@ class Schneeberg implements IModuleInterface
         Main::getDispatcher()->registerWidget('Import', array(__CLASS__, 'widgetStudentPrimarySchool'), 2, 2);
         Main::getDispatcher()->registerWidget('Import', array(__CLASS__, 'widgetMother'), 2, 2);
         Main::getDispatcher()->registerWidget('Import', array(__CLASS__, 'widgetFather'), 2, 2);
+        Main::getDispatcher()->registerWidget('Import', array(__CLASS__, 'widgetContact'), 2, 2);
 
         /*
          * Oberschule
@@ -147,6 +157,19 @@ class Schneeberg implements IModuleInterface
             FileSystem::getFileLoader('/Common/Style/Resource/logo_kreide2.png'),
             'Schneeberg', 'Väter Grundschule',
             new Standard('', '/Transfer/Import/Schneeberg/Custody', new Upload(), array('IsMother' => false), 'Upload')
+        );
+    }
+
+    /**
+     * @return Thumbnail
+     */
+    public static function widgetContact()
+    {
+
+        return new Thumbnail(
+            FileSystem::getFileLoader('/Common/Style/Resource/logo_kreide2.png'),
+            'Schneeberg', 'Kontaktdaten Grundschule',
+            new Standard('', '/Transfer/Import/Schneeberg/Contact', new Upload(), array(), 'Upload')
         );
     }
 }

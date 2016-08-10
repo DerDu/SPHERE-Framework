@@ -15,14 +15,12 @@ use SPHERE\System\Database\Fitting\Element;
 class TblAccountType extends Element
 {
 
-    const ATTR_TBL_ACCOUNT_TYPE = 'tblAccountType';
-
     /**
      * @Column(type="string")
      */
     protected $Name;
     /**
-     * @Column(type="string")
+     * @Column(type="text")
      */
     protected $Description;
 

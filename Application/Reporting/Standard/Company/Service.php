@@ -14,13 +14,14 @@ use SPHERE\Application\Corporation\Search\Group\Group;
 use SPHERE\Application\Document\Explorer\Storage\Storage;
 use SPHERE\Common\Frontend\Form\IFormInterface;
 use SPHERE\Common\Window\Redirect;
+use SPHERE\System\Extension\Extension;
 
 /**
  * Class Service
  *
  * @package SPHERE\Application\Reporting\Standard\Company
  */
-class Service
+class Service extends Extension
 {
 
     /**
@@ -62,6 +63,10 @@ class Service
         $groupList = Group::useService()->getCompanyAllByGroup($tblGroup);
         $count = 0;
         if ($groupList) {
+
+            $groupList = $this->getSorter($groupList)->sortObjectBy('DisplayName');
+
+            /** @var TblCompany $tblCompany */
             foreach ($groupList as $tblCompany) {
 
                 $count++;

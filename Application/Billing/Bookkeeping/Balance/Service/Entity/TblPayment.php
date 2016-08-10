@@ -16,68 +16,60 @@ use SPHERE\System\Database\Fitting\Element;
 class TblPayment extends Element
 {
 
-    const ATTR_TBL_BALANCE = 'tblBalance';
+    const ATTR_TBL_PAYMENT_TYPE = 'tblPaymentType';
+    const ATTR_PURPOSE = 'Purpose';
 
     /**
      * @Column(type="bigint")
      */
-    protected $tblBalance;
+    protected $tblPaymentType;
     /**
      * @Column(type="decimal", precision=14, scale=4)
      */
     protected $Value;
     /**
-     * @Column(type="date")
+     * @Column(type="string")
      */
-    protected $Date;
+    protected $Purpose;
 
     /**
-     * @return bool|TblBalance
+     * @return bool|TblPaymentType
      */
-    public function getTblBalance()
+    public function getTblPaymentType()
     {
 
-        if (null === $this->tblBalance) {
+        if (null === $this->tblPaymentType) {
             return false;
         } else {
-            return Balance::useService()->getBalanceById($this->tblBalance);
+            return Balance::useService()->getPaymentTypeById($this->tblPaymentType);
         }
     }
 
     /**
-     * @param null|TblBalance $tblBalance
+     * @param TblPaymentType|null $tblPaymentType
      */
-    public function setTblBalance($tblBalance = null)
+    public function setTblPaymentType(TblPaymentType $tblPaymentType = null)
     {
 
-        $this->tblBalance = ( null === $tblBalance ? null : $tblBalance->getId() );
+        $this->tblPaymentType = ( null === $tblPaymentType ? null : $tblPaymentType->getId() );
     }
 
     /**
-     * @return string $Date
+     * @return string $Purpose
      */
-    public function getDate()
+    public function getPurpose()
     {
 
-        if (null === $this->Date) {
-            return false;
-        }
-        /** @var \DateTime $Date */
-        $Date = $this->Date;
-        if ($Date instanceof \DateTime) {
-            return $Date->format('d.m.Y');
-        } else {
-            return (string)$Date;
-        }
+        return $this->Purpose;
     }
 
     /**
-     * @param \DateTime $Date
+     * @param string $Purpose
      */
-    public function setDate(\DateTime $Date)
+    public function setPurpose($Purpose)
     {
 
-        $this->Date = $Date;
+        $this->Purpose = $Purpose;
     }
 
     /**
@@ -106,5 +98,18 @@ class TblPayment extends Element
 
         $result = sprintf("%01.2f", $this->Value);
         return str_replace('.', ',', $result)." €";
+    }
+
+    /**
+     * @return string
+     */
+    public function getLastDate()
+    {
+
+        if ($this->getEntityUpdate() != null) {
+            return $this->getEntityUpdate()->format('d.m.Y');
+        } else {
+            return $this->getEntityCreate()->format('d.m.Y');
+        }
     }
 }

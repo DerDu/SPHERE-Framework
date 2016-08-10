@@ -65,6 +65,7 @@ use SPHERE\Common\Frontend\Text\Repository\Muted;
 use SPHERE\Common\Frontend\Text\Repository\Small;
 use SPHERE\Common\Window\Stage;
 use SPHERE\System\Extension\Extension;
+use SPHERE\System\Extension\Repository\Sorter;
 use SPHERE\System\Extension\Repository\Sorter\StringNaturalOrderSorter;
 
 /**
@@ -103,6 +104,11 @@ class Frontend extends Extension implements IFrontendInterface
                                 new Panel('Identifikation', array(
                                     new TextField('Meta[Student][Identifier]', 'Schülernummer',
                                         'Schülernummer')
+                                ), Panel::PANEL_TYPE_INFO)
+                                , 4),
+                            new FormColumn(
+                                new Panel('Schulpflicht', array(
+                                    new DatePicker('Meta[Student][SchoolAttendanceStartDate]', '', 'Beginnt am', new Calendar())
                                 ), Panel::PANEL_TYPE_INFO)
                                 , 4),
                         ))
@@ -249,8 +255,7 @@ class Frontend extends Extension implements IFrontendInterface
                         $tblLevel = $tblDivision->getTblLevel();
                         $tblYear = $tblDivision->getServiceTblYear();
                         if ($tblLevel && $tblYear) {
-                            $VisitedDivisions[] = $tblYear->getDisplayName().' Klasse '.$tblDivision->getDisplayName();
-
+                            $VisitedDivisions[] = $tblYear->getDisplayName() . ' Klasse ' . $tblDivision->getDisplayName();;
                             foreach ($tblDivisionStudentAllByPerson as &$tblDivisionStudentTemp) {
                                 if ($tblDivisionStudent->getId() !== $tblDivisionStudentTemp->getId()
                                     && $tblDivisionStudentTemp->getTblDivision()
@@ -269,7 +274,6 @@ class Frontend extends Extension implements IFrontendInterface
 
                 if (!empty( $VisitedDivisions )) {
                     rsort($VisitedDivisions);
-                    $VisitedDivisions[0] = new Bold($VisitedDivisions[0]);
                 }
             }
         }
@@ -425,6 +429,7 @@ class Frontend extends Extension implements IFrontendInterface
                 if ($tblStudent) {
 
                     $Global->POST['Meta']['Student']['Identifier'] = $tblStudent->getIdentifier();
+                    $Global->POST['Meta']['Student']['SchoolAttendanceStartDate'] = $tblStudent->getSchoolAttendanceStartDate();
 
                     /** @var TblStudentMedicalRecord $tblStudentMedicalRecord */
                     $tblStudentMedicalRecord = $tblStudent->getTblStudentMedicalRecord();
@@ -499,7 +504,7 @@ class Frontend extends Extension implements IFrontendInterface
         array_walk($tblAgreementCategoryAll,
             function (TblStudentAgreementCategory $tblStudentAgreementCategory) use (&$AgreementPanel) {
 
-                array_push($AgreementPanel, new Aspect($tblStudentAgreementCategory->getName()));
+                array_push($AgreementPanel, new Aspect(new Bold($tblStudentAgreementCategory->getName())));
                 $tblAgreementTypeAll = Student::useService()->getStudentAgreementTypeAllByCategory($tblStudentAgreementCategory);
                 array_walk($tblAgreementTypeAll,
                     function (TblStudentAgreementType $tblStudentAgreementType) use (

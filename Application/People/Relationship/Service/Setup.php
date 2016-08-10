@@ -3,7 +3,11 @@ namespace SPHERE\Application\People\Relationship\Service;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
+use SPHERE\Application\People\Relationship\Service\Entity\TblGroup;
+use SPHERE\Application\People\Relationship\Service\Entity\TblToPerson;
+use SPHERE\Application\People\Relationship\Service\Entity\TblType;
 use SPHERE\System\Database\Binding\AbstractSetup;
+use SPHERE\System\Database\Fitting\View;
 
 /**
  * Class Setup
@@ -35,6 +39,13 @@ class Setup extends AbstractSetup
          */
         $this->getConnection()->addProtocol(__CLASS__);
         $this->getConnection()->setMigration($Schema, $Simulate);
+
+        $this->getConnection()->createView(
+            (new View($this->getConnection(), 'viewRelationshipToPerson'))
+                ->addLink(new TblToPerson(), 'tblType', new TblType())
+                ->addLink(new TblType(), 'tblGroup', new TblGroup())
+        );
+        
         return $this->getConnection()->getProtocol($Simulate);
     }
 

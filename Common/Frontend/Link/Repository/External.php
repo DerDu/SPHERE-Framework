@@ -6,6 +6,7 @@ use SPHERE\Common\Frontend\Icon\IIconInterface;
 use SPHERE\Common\Frontend\Icon\Repository\Extern;
 use SPHERE\Common\Frontend\Link\ILinkInterface;
 use SPHERE\Common\Window\Navigation\Link\Route;
+use SPHERE\Common\Window\Redirect;
 use SPHERE\System\Authenticator\Authenticator;
 use SPHERE\System\Authenticator\Type\Get;
 use SPHERE\System\Extension\Extension;
@@ -22,6 +23,13 @@ class External extends Extension implements ILinkInterface
     protected $Name;
     /** @var IBridgeInterface $Template */
     protected $Template = null;
+    /** @var string $Hash */
+    protected $Hash = '';
+
+    /** @var string $RedirectRoute */
+    private $RedirectRoute = '/';
+    /** @var int $RedirectTimeout */
+    private $RedirectTimeout = -1;
 
     /**
      * @param string         $Name
@@ -79,11 +87,42 @@ class External extends Extension implements ILinkInterface
     }
 
     /**
+     * @param string    $Route
+     * @param int $Timeout
+     *
+     * @return External
+     */
+    public function setRedirect($Route, $Timeout = Redirect::TIMEOUT_SUCCESS)
+    {
+        $this->RedirectRoute = $Route;
+        $this->RedirectTimeout = $Timeout;
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getContent()
     {
+        if( $this->RedirectTimeout >= 0 ) {
+            $this->Template->setVariable('RedirectRoute', $this->RedirectRoute);
+            $this->Template->setVariable('RedirectTimeout', $this->RedirectTimeout);
+        }
+
+        $this->Template->setVariable('Hash', $this->getHash());
 
         return $this->Template->getContent();
+    }
+
+    /**
+     * @return string
+     */
+    public function getHash()
+    {
+
+        if (empty( $this->Hash )) {
+            $this->Hash = md5( uniqid( __CLASS__, true ) );
+        }
+        return $this->Hash;
     }
 }

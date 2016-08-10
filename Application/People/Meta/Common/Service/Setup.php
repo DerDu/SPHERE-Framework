@@ -3,8 +3,12 @@ namespace SPHERE\Application\People\Meta\Common\Service;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
+use SPHERE\Application\People\Meta\Common\Service\Entity\TblCommon;
+use SPHERE\Application\People\Meta\Common\Service\Entity\TblCommonBirthDates;
+use SPHERE\Application\People\Meta\Common\Service\Entity\TblCommonInformation;
 use SPHERE\System\Database\Binding\AbstractSetup;
 use SPHERE\System\Database\Fitting\Element;
+use SPHERE\System\Database\Fitting\View;
 
 /**
  * Class Setup
@@ -34,6 +38,13 @@ class Setup extends AbstractSetup
          */
         $this->getConnection()->addProtocol(__CLASS__);
         $this->getConnection()->setMigration($Schema, $Simulate);
+
+        $this->getConnection()->createView(
+            (new View($this->getConnection(), 'viewPeopleMetaCommon'))
+                ->addLink(new TblCommon(), 'tblCommonBirthDates', new TblCommonBirthDates(), 'Id')
+                ->addLink(new TblCommon(), 'tblCommonInformation', new TblCommonInformation(), 'Id')
+        );
+        
         return $this->getConnection()->getProtocol($Simulate);
     }
 

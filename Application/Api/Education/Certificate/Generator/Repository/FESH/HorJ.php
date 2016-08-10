@@ -43,7 +43,7 @@ class HorJ extends Certificate
         return (new Frame())->addDocument((new Document())
             ->addPage((new Page())
                 ->addSlice(
-                    $Header
+                    $IsSample ? $Header : new Slice()
                 )
                 ->addSlice((new Slice())
                     ->addSection((new Section())
@@ -129,80 +129,7 @@ class HorJ extends Certificate
                             , '80%')
                     )->styleMarginTop('5px')
                 )
-                ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Betragen')
-                            ->stylePaddingTop()
-                            , '33%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Input.KBE is not empty) %}
-                                    {{ Content.Input.KBE }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#CCC')
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            , '15%')
-                        ->addElementColumn((new Element())
-                            , '4%')
-                        ->addElementColumn((new Element())
-                            ->setContent('Mitarbeit')
-                            ->stylePaddingTop()
-                            , '33%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Input.KMI is not empty) %}
-                                    {{ Content.Input.KMI }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#CCC')
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            , '15%')
-                    )
-                    ->styleMarginTop('15px')
-                )
-                ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Fleiß')
-                            ->stylePaddingTop()
-                            , '33%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Input.KFL is not empty) %}
-                                    {{ Content.Input.KFL }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#CCC')
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            , '15%')
-                        ->addElementColumn((new Element())
-                            , '4%')
-                        ->addElementColumn((new Element())
-                            ->setContent('Ordnung')
-                            ->stylePaddingTop()
-                            , '33%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Input.KOR is not empty) %}
-                                    {{ Content.Input.KOR }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#CCC')
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            , '15%')
-                    )
-                    ->styleMarginTop('7px')
-                )
+                ->addSlice( $this->getGradeLanes() )
                 ->addSlice((new Slice())
                     ->addSection((new Section())
                         ->addElementColumn((new Element())
@@ -221,181 +148,7 @@ class HorJ extends Certificate
                         ->styleTextItalic()
                     )
                 )
-                ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Deutsch')
-                            ->stylePaddingTop()
-                            ->styleMarginTop('20px')
-                            , '33%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.DE is not empty) %}
-                                    {{ Content.Grade.Data.DE }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#CCC')
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            ->styleMarginTop('20px')
-                            , '15%')
-                        ->addElementColumn((new Element())
-                            , '4%')
-                        ->addElementColumn((new Element())
-                            ->setContent('Mathematik')
-                            ->stylePaddingTop()
-                            ->styleMarginTop('20px')
-                            , '33%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.MA is not empty) %}
-                                    {{ Content.Grade.Data.MA }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#CCC')
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            ->styleMarginTop('20px')
-                            , '15%')
-                    )
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Sachunterricht')
-                            ->stylePaddingTop()
-                            ->styleMarginTop('7px')
-                            , '33%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.ToDO is not empty) %}
-                                    {{ Content.Grade.Data.ToDO }}
-                                {% else %}
-                                    ---
-                                {% endif %}')// ToDO Sachunterricht ist kein vorgegebenes Fach
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#CCC')
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            ->styleMarginTop('7px')
-                            , '15%')
-                        ->addElementColumn((new Element())
-                            , '4%')
-                        ->addElementColumn((new Element())
-                            ->setContent('Werken')
-                            ->stylePaddingTop()
-                            ->styleMarginTop('7px')
-                            , '33%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.ToDO is not empty) %}
-                                    {{ Content.Grade.Data.ToDO }}
-                                {% else %}
-                                    ---
-                                {% endif %}')// ToDO Werken ist kein vorgegebenes Fach
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#CCC')
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            ->styleMarginTop('7px')
-                            , '15%')
-                    )
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Kunst')
-                            ->stylePaddingTop()
-                            ->styleMarginTop('7px')
-                            , '33%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.KU is not empty) %}
-                                    {{ Content.Grade.Data.KU }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#CCC')
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            ->styleMarginTop('7px')
-                            , '15%')
-                        ->addElementColumn((new Element())
-                            , '4%')
-                        ->addElementColumn((new Element())
-                            ->setContent('EV. Religion')
-                            ->stylePaddingTop()
-                            ->styleMarginTop('7px')
-                            , '33%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.REV is not empty) %}
-                                    {{ Content.Grade.Data.REV }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#CCC')
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            ->styleMarginTop('7px')
-                            , '15%')
-                    )
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Musik')
-                            ->stylePaddingTop()
-                            ->styleMarginTop('7px')
-                            , '33%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.MU is not empty) %}
-                                    {{ Content.Grade.Data.MU }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#CCC')
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            ->styleMarginTop('7px')
-                            , '15%')
-                        ->addElementColumn((new Element())
-                            , '4%')
-                        ->addElementColumn((new Element())
-                            ->setContent('Sport')
-                            ->stylePaddingTop()
-                            ->styleMarginTop('7px')
-                            , '33%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.ToDO is not empty) %}
-                                    {{ Content.Grade.Data.ToDO }}
-                                {% else %}
-                                    ---
-                                {% endif %}')// ToDO Sport ist kein vorgegebenes Fach
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#CCC')
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            ->styleMarginTop('7px')
-                            , '15%')
-                    )
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Englisch')
-                            ->stylePaddingTop()
-                            ->styleMarginTop('7px')
-                            , '33%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.EN is not empty) %}
-                                    {{ Content.Grade.Data.EN }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#CCC')
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            ->styleMarginTop('7px')
-                            , '15%')
-                        ->addElementColumn((new Element())
-                            , '52%')
-                    )
-                )
+                ->addSlice( $this->getSubjectLanes() )
                 ->addSlice((new Slice())
                     ->addSection((new Section())
                         ->addElementColumn((new Element())
@@ -500,6 +253,22 @@ class HorJ extends Certificate
                             ->setContent('Klassenlehrer/in')
                             ->styleAlignCenter()
                             ->styleTextSize('11px')
+                            , '35%')
+                    )
+                    ->addSection((new Section())
+                        ->addElementColumn((new Element())
+                            , '35%')
+                        ->addElementColumn((new Element())
+                            , '30%')
+                        ->addElementColumn((new Element())
+                            ->setContent('{% if(Content.DivisionTeacher.Name is not empty) %}
+                                    {{ Content.DivisionTeacher.Name }}
+                                {% else %}
+                                    &nbsp;
+                                {% endif %}')
+                            ->styleTextSize('11px')
+                            ->stylePaddingTop('2px')
+                            ->styleAlignCenter()
                             , '35%')
                     )
                     ->styleMarginTop('30px')

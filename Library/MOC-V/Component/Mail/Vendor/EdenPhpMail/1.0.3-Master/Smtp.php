@@ -508,7 +508,20 @@ class Smtp extends Base
             $bcc[] = trim($name.' <'.$email.'>');
         }
 
-        list( $account, $suffix ) = explode('@', $this->username);
+        /**
+         * Fix: Undefined Index [1]
+         * Fix: Receiving: 501 <username1>: sender address must contain a domain
+         * [FROM]
+         * list( $account, $suffix ) = explode('@', $this->username);
+         * [TO: see till End Fix]
+         */
+        if( strpos( $this->username, '@' ) === false ) {
+            $parts = array( $this->username );
+        } else {
+            $parts = explode('@', $this->username);
+        }
+        $suffix = end($parts);
+        /** End Fix **/
 
         $headers = array(
             'Date'    => $timestamp,
@@ -645,12 +658,19 @@ class Smtp extends Base
         $body = $this->getBody();
 
         //add from
-        if (!$this->call('MAIL FROM:<'.$this->username.'>', 250, 251)) {
+        /**
+         * Fix: Receiving: 501 <username1>: sender address must contain a domain
+         * [FROM]
+         * $this->username
+         * [TO]
+         * ( isset( $headers['From'] ) ? $headers['From'] : $this->username )
+         */
+        if (!$this->call('MAIL FROM:<'.( isset( $headers['From'] ) ? $headers['From'] : $this->username).'>', 250, 251)) {
             $this->disconnect();
             //throw exception
             Exception::i()
                 ->setMessage(Exception::SMTP_ADD_EMAIL)
-                ->addVariable($this->username)
+                ->addVariable(( isset( $headers['From'] ) ? $headers['From'] : $this->username))
                 ->trigger();
         }
 

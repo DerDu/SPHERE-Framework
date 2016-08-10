@@ -2,6 +2,7 @@
 namespace SPHERE\Application\Education;
 
 use SPHERE\Application\Education\Certificate\Certificate;
+use SPHERE\Application\Education\ClassRegister\ClassRegister;
 use SPHERE\Application\Education\Graduation\Graduation;
 use SPHERE\Application\Education\Lesson\Lesson;
 use SPHERE\Application\Education\School\School;
@@ -26,6 +27,7 @@ class Education implements IClusterInterface
         Lesson::registerApplication();
         Graduation::registerApplication();
         Certificate::registerApplication();
+        ClassRegister::registerApplication();
 
         Main::getDisplay()->addClusterNavigation(
             new Link(new Link\Route(__NAMESPACE__), new Link\Name('Bildung'), new Link\Icon(new EducationIcon()))

@@ -1982,7 +1982,7 @@ class Service
                                             $RunY)))
                                     );
 
-                                    if ($tblPerson){
+                                    if ($tblPerson) {
                                         $countCustodyExists++;
                                         $error[] = 'Zeile: ' . ($RunY + 1) . ' Der Sorgeberechtigte wurde nicht angelegt, da er bereits vorhanden ist.';
                                     } else {
@@ -2152,6 +2152,253 @@ class Service
         } else {
             return $list;
         }
+    }
+
+    /**
+     * @param IFormInterface|null $Form
+     * @param UploadedFile|null $File
+     *
+     * @return IFormInterface|Danger|string
+     * @throws \MOC\V\Component\Document\Exception\DocumentTypeException
+     */
+    public function createContactsFromFile(
+        IFormInterface $Form = null,
+        UploadedFile $File = null
+    ) {
+
+
+        /**
+         * Skip to Frontend
+         */
+        if (null === $File) {
+            return $Form;
+        }
+
+        if (null !== $File) {
+            if ($File->getError()) {
+                $Form->setError('File', 'Fehler');
+            } else {
+
+                /**
+                 * Prepare
+                 */
+                $File = $File->move($File->getPath(),
+                    $File->getFilename() . '.' . $File->getClientOriginalExtension());
+
+                /**
+                 * Read
+                 */
+                //$File->getMimeType()
+                /** @var PhpExcel $Document */
+                $Document = Document::getDocument($File->getPathname());
+                if (!$Document instanceof PhpExcel) {
+                    $Form->setError('File', 'Fehler');
+                    return $Form;
+                }
+
+                $X = $Document->getSheetColumnCount();
+                $Y = $Document->getSheetRowCount();
+
+                /**
+                 * Header -> Location
+                 */
+                $Location = array(
+                    'Name' => null,
+                    'Vorname' => null,
+                    'Telefonnummer zu Hause' => null,
+                    'Mobiltelefon Mutter' => null,
+                    'Arbeit Mutter' => null,
+                    'Mobiltelefon Vater' => null,
+                    'Arbeit Vater' => null,
+                    'Mail Mutter' => null,
+                    'Mail Vater' => null,
+                );
+
+                $Emergency = array();
+
+                for ($RunX = 0; $RunX < $X; $RunX++) {
+                    $Value = trim($Document->getValue($Document->getCell($RunX, 0)));
+                    if (array_key_exists($Value, $Location)) {
+                        $Location[$Value] = $RunX;
+                    } elseif (strpos($Value, 'Notfall') !== false) {
+                        $Emergency[$Value] = $RunX;
+                    }
+                }
+
+                /**
+                 * Import
+                 */
+                if (!in_array(null, $Location, true)) {
+                    $countContact = 0;
+
+                    $error = array();
+                    for ($RunY = 1; $RunY < $Y; $RunY++) {
+                        set_time_limit(300);
+                        // Student
+                        $firstName = trim($Document->getValue($Document->getCell($Location['Vorname'], $RunY)));
+                        $lastName = trim($Document->getValue($Document->getCell($Location['Name'], $RunY)));
+                        if ($firstName === '' || $lastName === '') {
+                            $error[] = 'Zeile: ' . ($RunY + 1) . ' Der Schüler besitzt keinen vollständigen Namen. Die Kontakte wurden nicht hinzugefügt.';
+                        } else {
+                            $student = $this->getStudentsByName($firstName, $lastName);
+                            if ($student === false) {
+                                $error[] = 'Zeile: ' . ($RunY + 1) . ' Der Schüler vom Kontakt wurde nicht gefunden, da nicht als Schüler angelegt wurde.';
+                            } elseif (is_array($student)) {
+                                $error[] = 'Zeile: ' . ($RunY + 1) . ' Die Kontakte konnte keinem Schüler zugeordnet werden, da der Schüler mehrmals existiert.';
+                            } else {
+
+                                $number = trim($Document->getValue($Document->getCell($Location['Telefonnummer zu Hause'],
+                                    $RunY)));
+                                if ($number !== '') {
+                                    Phone::useService()->insertPhoneToPerson(
+                                        $student,
+                                        $number,
+                                        Phone::useService()->getTypeById(1),
+                                        'zu Hause'
+                                    );
+                                }
+
+                                $tblMother = false;
+                                $tblFather = false;
+                                $tblRelationshipList = Relationship::useService()->getPersonRelationshipAllByPerson($student);
+                                if ($tblRelationshipList){
+                                    foreach ($tblRelationshipList as $tblRelationship){
+                                        if ($tblRelationship->getServiceTblPersonFrom()
+                                            && $tblRelationship->getServiceTblPersonTo()
+                                            && $tblRelationship->getServiceTblPersonTo()->getId() == $student->getId()
+                                        ){
+                                            if (($tblCommon = Common::useService()->getCommonByPerson($tblRelationship->getServiceTblPersonFrom()))
+                                                && ($tblCommonBirthDates = $tblCommon->getTblCommonBirthDates())
+                                            ) {
+                                                if ($tblCommonBirthDates->getGender() == TblCommonBirthDates::VALUE_GENDER_FEMALE){
+                                                    $tblMother = $tblRelationship->getServiceTblPersonFrom();
+                                                } elseif ($tblCommonBirthDates->getGender() == TblCommonBirthDates::VALUE_GENDER_MALE){
+                                                    $tblFather = $tblRelationship->getServiceTblPersonFrom();
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if ($tblMother) {
+                                    $number = trim($Document->getValue($Document->getCell($Location['Mobiltelefon Mutter'],
+                                        $RunY)));
+                                    if ($number !== '') {
+                                        Phone::useService()->insertPhoneToPerson(
+                                            $tblMother,
+                                            $number,
+                                            Phone::useService()->getTypeById(2),
+                                            ''
+                                        );
+                                    }
+
+                                    $number = trim($Document->getValue($Document->getCell($Location['Arbeit Mutter'],
+                                        $RunY)));
+                                    if ($number !== '') {
+                                        Phone::useService()->insertPhoneToPerson(
+                                            $tblMother,
+                                            $number,
+                                            Phone::useService()->getTypeById(3),
+                                            ''
+                                        );
+                                    }
+
+                                    $address = trim($Document->getValue($Document->getCell($Location['Mail Mutter'],
+                                        $RunY)));
+                                    if ($address !== ''){
+                                        Mail::useService()->insertMailToPerson(
+                                            $tblMother,
+                                            $address,
+                                            Mail::useService()->getTypeById(1),
+                                            ''
+                                        );
+                                    }
+                                }
+
+                                if ($tblFather) {
+                                    $number = trim($Document->getValue($Document->getCell($Location['Mobiltelefon Vater'],
+                                        $RunY)));
+                                    if ($number !== '') {
+                                        Phone::useService()->insertPhoneToPerson(
+                                            $tblFather,
+                                            $number,
+                                            Phone::useService()->getTypeById(2),
+                                            ''
+                                        );
+                                    }
+
+                                    $number = trim($Document->getValue($Document->getCell($Location['Arbeit Vater'],
+                                        $RunY)));
+                                    if ($number !== '') {
+                                        Phone::useService()->insertPhoneToPerson(
+                                            $tblFather,
+                                            $number,
+                                            Phone::useService()->getTypeById(3),
+                                            ''
+                                        );
+                                    }
+
+                                    $address = trim($Document->getValue($Document->getCell($Location['Mail Vater'],
+                                        $RunY)));
+                                    if ($address !== ''){
+                                        Mail::useService()->insertMailToPerson(
+                                            $tblFather,
+                                            $address,
+                                            Mail::useService()->getTypeById(1),
+                                            ''
+                                        );
+                                    }
+                                }
+
+                                foreach($Emergency as $key => $location){
+                                    $number = trim($Document->getValue($Document->getCell($location,
+                                        $RunY)));
+                                    if ($number !== '') {
+                                        $remark = '';
+                                        if (($pos = strpos($number, '|')) !== false){
+                                            $remark = trim(substr($number, $pos + 1));
+                                            $number = trim(substr($number, 0, $pos));
+                                        }
+
+                                        $tblType = Phone::useService()->getTypeById(5);
+                                        if (0 === strpos($number, '01')) {
+                                            $tblType = Phone::useService()->getTypeById(6);
+                                        }
+
+                                        Phone::useService()->insertPhoneToPerson(
+                                            $student,
+                                            $number,
+                                            $tblType,
+                                            $remark
+                                        );
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Debugger::screenDump($error);
+
+                    return
+                        new Success('Es wurden ' . $countContact . ' Schüler erfolgreich angelegt.')
+                        . new Layout(new LayoutGroup(new LayoutRow(new LayoutColumn(
+                            new Panel(
+                                'Fehler',
+                                $error,
+                                Panel::PANEL_TYPE_DANGER
+                            )
+                        ))));
+
+                } else {
+                    Debugger::screenDump($Location);
+
+                    return new Warning(json_encode($Location)) . new Danger(
+                        "File konnte nicht importiert werden, da nicht alle erforderlichen Spalten gefunden wurden");
+                }
+            }
+        }
+
+        return new Danger('File nicht gefunden');
     }
 
 }

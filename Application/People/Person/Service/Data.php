@@ -3,6 +3,7 @@ namespace SPHERE\Application\People\Person\Service;
 
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\People\Person\Service\Entity\TblSalutation;
+use SPHERE\Application\People\Person\Service\Entity\ViewPerson;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
 use SPHERE\System\Database\Binding\AbstractData;
 use SPHERE\System\Database\Fitting\IdHydrator;
@@ -15,6 +16,17 @@ use SPHERE\System\Database\Fitting\IdHydrator;
 class Data extends AbstractData
 {
 
+    /**
+     * @return false|ViewPerson[]
+     */
+    public function viewPerson()
+    {
+
+        return $this->getCachedEntityList(
+            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewPerson'
+        );
+    }
+    
     public function setupDatabaseContent()
     {
 

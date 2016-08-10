@@ -25,7 +25,7 @@ class TblAccount extends Element
      */
     protected $Number;
     /**
-     * @Column(type="string")
+     * @Column(type="text")
      */
     protected $Description;
     /**

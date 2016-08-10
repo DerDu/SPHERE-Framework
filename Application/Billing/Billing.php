@@ -87,7 +87,7 @@ class Billing implements IClusterInterface
     public function frontendAccounting()
     {
 
-        $Stage = new Stage('Dashboard', ' Rechnungen');
+        $Stage = new Stage('Dashboard', ' Buchhaltung');
         return $Stage;
     }
 

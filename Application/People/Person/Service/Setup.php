@@ -3,7 +3,10 @@ namespace SPHERE\Application\People\Person\Service;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
+use SPHERE\Application\People\Person\Service\Entity\TblPerson;
+use SPHERE\Application\People\Person\Service\Entity\TblSalutation;
 use SPHERE\System\Database\Binding\AbstractSetup;
+use SPHERE\System\Database\Fitting\View;
 
 /**
  * Class Setup
@@ -32,6 +35,12 @@ class Setup extends AbstractSetup
          */
         $this->getConnection()->addProtocol(__CLASS__);
         $this->getConnection()->setMigration($Schema, $Simulate);
+
+        $this->getConnection()->createView(
+            (new View($this->getConnection(), 'viewPerson'))
+                ->addLink(new TblPerson(), 'tblSalutation', new TblSalutation(''))
+        );
+
         return $this->getConnection()->getProtocol($Simulate);
     }
 

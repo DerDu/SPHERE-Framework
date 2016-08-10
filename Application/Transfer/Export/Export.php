@@ -4,6 +4,7 @@ namespace SPHERE\Application\Transfer\Export;
 use MOC\V\Core\FileSystem\FileSystem;
 use SPHERE\Application\IApplicationInterface;
 use SPHERE\Application\Transfer\Export\Datev\Datev;
+use SPHERE\Application\Transfer\Export\Invoice\Invoice;
 use SPHERE\Common\Frontend\Icon\Repository\Download;
 use SPHERE\Common\Frontend\Layout\Repository\Thumbnail;
 use SPHERE\Common\Frontend\Link\Repository\Standard;
@@ -23,6 +24,7 @@ class Export implements IApplicationInterface
     {
 
         Datev::registerModule();
+        Invoice::registerModule();
 
         Main::getDisplay()->addApplicationNavigation(
             new Link(new Link\Route(__NAMESPACE__), new Link\Name('Daten exportieren'), new Link\Icon(new Download()))

@@ -1,12 +1,9 @@
 <?php
 namespace SPHERE\Application\Billing\Inventory\Commodity;
 
-use SPHERE\Application\Billing\Accounting\Account\Service\Entity\TblAccount;
-use SPHERE\Application\Billing\Accounting\Basket\Basket;
 use SPHERE\Application\Billing\Inventory\Commodity\Service\Data;
 use SPHERE\Application\Billing\Inventory\Commodity\Service\Entity\TblCommodity;
 use SPHERE\Application\Billing\Inventory\Commodity\Service\Entity\TblCommodityItem;
-use SPHERE\Application\Billing\Inventory\Commodity\Service\Entity\TblCommodityType;
 use SPHERE\Application\Billing\Inventory\Commodity\Service\Setup;
 use SPHERE\Application\Billing\Inventory\Item\Service\Entity\TblItem;
 use SPHERE\Common\Frontend\Form\IFormInterface;
@@ -62,37 +59,6 @@ class Service extends AbstractService
     }
 
     /**
-     * @param TblCommodity $tblCommodity
-     *
-     * @return int
-     */
-    public function countItemAllByCommodity(TblCommodity $tblCommodity)
-    {
-
-        return (new Data($this->getBinding()))->countItemAllByCommodity($tblCommodity);
-    }
-
-    /**
-     * @param TblCommodity $tblCommodity
-     *
-     * @return string
-     */
-    public function sumPriceItemAllByCommodity(TblCommodity $tblCommodity)
-    {
-
-        return (new Data($this->getBinding()))->sumPriceItemAllByCommodity($tblCommodity);
-    }
-
-    /**
-     * @return bool|TblCommodityType[]
-     */
-    public function getCommodityTypeAll()
-    {
-
-        return (new Data($this->getBinding()))->getCommodityTypeAll();
-    }
-
-    /**
      * @param $Id
      *
      * @return bool|TblCommodityItem
@@ -112,28 +78,6 @@ class Service extends AbstractService
     {
 
         return (new Data($this->getBinding()))->getItemAllByCommodity($tblCommodity);
-    }
-
-    /**
-     * @param TblItem $tblItem
-     *
-     * @return bool|TblItem[]
-     */
-    public function getCommodityItemAllByItem(TblItem $tblItem)
-    {
-
-        return (new Data($this->getBinding()))->getCommodityItemAllByItem($tblItem);
-    }
-
-    /**
-     * @param TblItem $tblItem
-     *
-     * @return TblAccount[]
-     */
-    public function getAccountAllByItem(TblItem $tblItem)
-    {
-
-        return (new Data($this->getBinding()))->getAccountAllByItem($tblItem);
     }
 
     /**
@@ -180,24 +124,12 @@ class Service extends AbstractService
         if (!$Error) {
             (new Data($this->getBinding()))->createCommodity(
                 $Commodity['Name'],
-                $Commodity['Description'],
-                $this->getCommodityTypeById($Commodity['Type'])
+                $Commodity['Description']
             );
             return new Success('Die Leistung wurde erfolgreich angelegt')
             .new Redirect('/Billing/Inventory/Commodity', Redirect::TIMEOUT_SUCCESS);
         }
         return $Stage;
-    }
-
-    /**
-     * @param $Id
-     *
-     * @return bool|TblCommodityType
-     */
-    public function getCommodityTypeById($Id)
-    {
-
-        return (new Data($this->getBinding()))->getCommodityTypeById($Id);
     }
 
     /**
@@ -237,8 +169,7 @@ class Service extends AbstractService
             if ((new Data($this->getBinding()))->updateCommodity(
                 $tblCommodity,
                 $Commodity['Name'],
-                $Commodity['Description'],
-                $this->getCommodityTypeById($Commodity['Type'])
+                $Commodity['Description']
             )
             ) {
                 $Stage .= new Success('Änderungen gespeichert, die Daten werden neu geladen...')
@@ -262,14 +193,14 @@ class Service extends AbstractService
         if (null === $tblCommodity) {
             return '';
         }
-        $tblCommodityItemList = Commodity::useService()->getCommodityItemAllByCommodity($tblCommodity);
-        /** @var TblCommodityItem $tblCommodityItem */
-        foreach ($tblCommodityItemList as $tblCommodityItem) {
-            $tblBasketItemList = Basket::useService()->getBasketItemAllByCommodityItem($tblCommodityItem);
-            foreach ($tblBasketItemList as $tblBasketItem) {
-                Basket::useService()->removeBasketItem($tblBasketItem);
-            }
-        }
+//        $tblCommodityItemList = Commodity::useService()->getCommodityItemAllByCommodity($tblCommodity);
+//        /** @var TblCommodityItem $tblCommodityItem */
+//        foreach ($tblCommodityItemList as $tblCommodityItem) {
+//            $tblBasketItemList = Basket::useService()->getBasketItemAllByCommodityItem($tblCommodityItem);
+//            foreach ($tblBasketItemList as $tblBasketItem) {
+//                Basket::useService()->removeBasketItem($tblBasketItem);
+//            }
+//        }
 
         if ((new Data($this->getBinding()))->destroyCommodity($tblCommodity)) {
             return new Success('Die Leistung wurde erfolgreich gelöscht')
@@ -294,18 +225,13 @@ class Service extends AbstractService
     /**
      * @param TblCommodity $tblCommodity
      * @param TblItem      $tblItem
-     * @param              $Item
      *
      * @return string
      */
-    public function addItemToCommodity(TblCommodity $tblCommodity, TblItem $tblItem, $Item)
+    public function addItemToCommodity(TblCommodity $tblCommodity, TblItem $tblItem)
     {
 
-        if (empty( $Item['Quantity'] ) || $Item['Quantity'] <= 0) {
-            $Item['Quantity'] = 1;
-        }
-
-        if ((new Data($this->getBinding()))->addItemToCommodity($tblCommodity, $tblItem, $Item['Quantity'])) {
+        if ((new Data($this->getBinding()))->addItemToCommodity($tblCommodity, $tblItem)) {
             return new Success('Der Artikel '.$tblItem->getName().' wurde erfolgreich hinzugefügt')
             .new Redirect('/Billing/Inventory/Commodity/Item/Select', Redirect::TIMEOUT_SUCCESS, array('Id' => $tblCommodity->getId()));
         } else {
@@ -323,15 +249,19 @@ class Service extends AbstractService
     {
 
         $Error = false;
-        $tblBasketList = Basket::useService()->getBasketAll();
-        foreach ($tblBasketList as $tblBasket) {
-            $tblBasketItemList = Basket::useService()->getBasketItemAllByBasket($tblBasket);
-            foreach ($tblBasketItemList as $tblBasketItem) {
-                if ($tblBasketItem->getServiceBillingCommodityItem()->getId() === $tblCommodityItem->getId()) {
-                    $Error = true;
-                }
-            }
-        }
+        /** Prüfung auf Warenkorb einsatz */
+//        $tblBasketList = Basket::useService()->getBasketAll();
+//        if($tblBasketList)
+//        {
+//            foreach ($tblBasketList as $tblBasket) {
+//                $tblBasketItemList = Basket::useService()->getBasketItemAllByBasket($tblBasket);
+//                foreach ($tblBasketItemList as $tblBasketItem) {
+//                    if ($tblBasketItem->getServiceBillingCommodityItem()->getId() === $tblCommodityItem->getId()) {
+//                        $Error = true;
+//                    }
+//                }
+//            }
+//        }
 
         if (!$Error) {
             if ((new Data($this->getBinding()))->removeItemToCommodity($tblCommodityItem)) {

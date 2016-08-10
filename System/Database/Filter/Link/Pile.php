@@ -3,6 +3,8 @@ namespace SPHERE\System\Database\Filter\Link;
 
 use SPHERE\System\Database\Binding\AbstractService;
 use SPHERE\System\Database\Fitting\Element;
+use SPHERE\System\Debugger\DebuggerFactory;
+use SPHERE\System\Debugger\Logger\BenchmarkLogger;
 
 /**
  * Class Pile
@@ -42,6 +44,10 @@ class Pile
         $Node = '\SPHERE\System\Database\Filter\Link\Repository\Node'.count($this->PileList);
         if (!class_exists($Node)) {
             throw new \Exception('No valid Search-Class for '.count($this->PileList).' Nodes found');
+        } else {
+            (new DebuggerFactory())->createLogger(new BenchmarkLogger())->addLog(
+                'Valid Search-Class for '.count($this->PileList).' Nodes found'
+            );
         }
         /** @var AbstractNode $Node */
         $Node = new $Node();

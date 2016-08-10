@@ -49,6 +49,15 @@ class Service extends AbstractService
     }
 
     /**
+     * @return bool|TblCertificate[]
+     */
+    public function getCertificateAll()
+    {
+
+        return (new Data($this->getBinding()))->getCertificateAll();
+    }
+
+    /**
      * @param int $Id
      *
      * @return bool|TblCertificate
@@ -154,7 +163,7 @@ class Service extends AbstractService
                         (new Data($this->getBinding()))->updateCertificateSubject($tblCertificateSubject,
                             $tblSubject,
                             ( ( isset( $Field['IsEssential'] ) && $Field['IsEssential'] ) ? true : false ),
-                            ( ( isset( $Field['Liberation'] ) && $Field['Liberation'] ) 
+                            ( ( isset( $Field['Liberation'] ) && $Field['Liberation'] )
                                 ? ( Student::useService()->getStudentLiberationCategoryById( $Field['Liberation'] )
                                     ? Student::useService()->getStudentLiberationCategoryById( $Field['Liberation'] )
                                     : null
@@ -167,7 +176,7 @@ class Service extends AbstractService
                         (new Data($this->getBinding()))->createCertificateSubject($tblCertificate,
                             $LaneIndex, $LaneRanking, $tblSubject,
                             ( ( isset( $Field['IsEssential'] ) && $Field['IsEssential'] ) ? true : false ),
-                            ( ( isset( $Field['Liberation'] ) && $Field['Liberation'] ) 
+                            ( ( isset( $Field['Liberation'] ) && $Field['Liberation'] )
                                 ? ( Student::useService()->getStudentLiberationCategoryById( $Field['Liberation'] )
                                     ? Student::useService()->getStudentLiberationCategoryById( $Field['Liberation'] )
                                     : null
@@ -181,6 +190,12 @@ class Service extends AbstractService
                         array_push($Error,
                             'Eine Fachangabe an der Position '.$LaneIndex.':'.$LaneRanking.' konnte nicht gespeichert werden'
                         );
+                    } else {
+                        if(($tblCertificateSubject = Generator::useService()->getCertificateSubjectByIndex(
+                            $tblCertificate, $LaneIndex, $LaneRanking
+                        ))) {
+                            (new Data($this->getBinding()))->removeCertificateSubject($tblCertificateSubject);
+                        }
                     }
                 }
             }

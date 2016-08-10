@@ -25,20 +25,32 @@ class CheJGsOne extends Certificate
     public function buildCertificate($IsSample = true)
     {
 
-        $Header = (new Slice())
-            ->addSection((new Section())
-                ->addElementColumn((new Element())
-                    ->setContent('ESZC GS Jahreszeugnis Klasse 1.pdf')
-                    ->styleTextSize('12px')
-                    ->styleTextColor('#CCC')
-                    ->styleAlignCenter()
-                    , '25%')
-                ->addElementColumn((new Element\Sample())
-                    ->styleTextSize('30px')
-                )
-                ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg', '200px', '62px'))
-                    , '25%')
-            );
+        if( $IsSample ) {
+            $Header = ( new Slice() )
+                ->addSection(( new Section() )
+                    ->addElementColumn(( new Element() )
+                        ->setContent('ESZC GS Jahreszeugnis Klasse 1.pdf')
+                        ->styleTextSize('12px')
+                        ->styleTextColor('#CCC')
+                        ->styleAlignCenter()
+                        , '25%')
+                    ->addElementColumn(( new Element\Sample() )
+                        ->styleTextSize('30px')
+                    )
+                    ->addElementColumn(( new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
+                            '200px') )
+                        , '25%')
+                );
+        } else {
+            $Header = ( new Slice() )
+                ->addSection(( new Section() )
+                    ->addElementColumn(( new Element() ), '25%')
+                    ->addElementColumn(( new Element() ))
+                    ->addElementColumn(( new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
+                            '200px') )
+                        , '25%')
+                );
+        }
 
         return (new Frame())->addDocument((new Document())
             ->addPage((new Page())
@@ -203,6 +215,22 @@ class CheJGsOne extends Certificate
                             ->setContent('Klassenlehrer(in)')
                             ->styleAlignCenter()
                             ->styleTextSize('11px')
+                            , '30%')
+                    )
+                    ->addSection((new Section())
+                        ->addElementColumn((new Element())
+                            , '35%')
+                        ->addElementColumn((new Element())
+                            , '35%')
+                        ->addElementColumn((new Element())
+                            ->setContent('{% if(Content.DivisionTeacher.Name is not empty) %}
+                                    {{ Content.DivisionTeacher.Name }}
+                                {% else %}
+                                    &nbsp;
+                                {% endif %}')
+                            ->styleTextSize('11px')
+                            ->stylePaddingTop('2px')
+                            ->styleAlignCenter()
                             , '30%')
                     )
                     ->styleMarginTop('25px')

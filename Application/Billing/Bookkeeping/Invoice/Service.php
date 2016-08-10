@@ -3,26 +3,21 @@
 namespace SPHERE\Application\Billing\Bookkeeping\Invoice;
 
 use SPHERE\Application\Billing\Accounting\Banking\Banking;
-use SPHERE\Application\Billing\Accounting\Banking\Service\Entity\TblDebtor;
-use SPHERE\Application\Billing\Accounting\Banking\Service\Entity\TblPaymentType;
-use SPHERE\Application\Billing\Accounting\Basket\Service\Entity\TblBasket;
-use SPHERE\Application\Billing\Bookkeeping\Balance\Balance;
+use SPHERE\Application\Billing\Accounting\SchoolAccount\SchoolAccount;
+use SPHERE\Application\Billing\Bookkeeping\Basket\Basket;
+use SPHERE\Application\Billing\Bookkeeping\Basket\Service\Entity\TblBasket;
 use SPHERE\Application\Billing\Bookkeeping\Invoice\Service\Data;
+use SPHERE\Application\Billing\Bookkeeping\Invoice\Service\Entity\TblDebtor;
 use SPHERE\Application\Billing\Bookkeeping\Invoice\Service\Entity\TblInvoice;
 use SPHERE\Application\Billing\Bookkeeping\Invoice\Service\Entity\TblInvoiceItem;
-use SPHERE\Application\Billing\Bookkeeping\Invoice\Service\Entity\TblOrder;
-use SPHERE\Application\Billing\Bookkeeping\Invoice\Service\Entity\TblOrderItem;
-use SPHERE\Application\Billing\Bookkeeping\Invoice\Service\Entity\TblTempInvoice;
+use SPHERE\Application\Billing\Bookkeeping\Invoice\Service\Entity\TblItem;
 use SPHERE\Application\Billing\Bookkeeping\Invoice\Service\Setup;
-use SPHERE\Application\Billing\Inventory\Commodity\Commodity;
-use SPHERE\Application\Billing\Inventory\Commodity\Service\Entity\TblCommodity;
-use SPHERE\Application\Contact\Address\Service\Entity\TblAddress;
+use SPHERE\Application\Contact\Address\Address;
+use SPHERE\Application\Contact\Mail\Mail;
+use SPHERE\Application\Contact\Phone\Phone;
+use SPHERE\Application\People\Meta\Student\Student;
+use SPHERE\Application\People\Person\Person;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
-use SPHERE\Common\Frontend\Form\IFormInterface;
-use SPHERE\Common\Frontend\Message\Repository\Danger;
-use SPHERE\Common\Frontend\Message\Repository\Success;
-use SPHERE\Common\Frontend\Message\Repository\Warning;
-use SPHERE\Common\Window\Redirect;
 use SPHERE\System\Database\Binding\AbstractService;
 
 /**
@@ -50,58 +45,58 @@ class Service extends AbstractService
     }
 
     /**
-     * @param TblDebtor $tblDebtor
-     *
-     * @return bool
+     * @return bool|TblInvoice[]
      */
-    public function checkInvoiceFromDebtorIsPaidByDebtor(TblDebtor $tblDebtor)
+    public function getInvoiceAll()
     {
 
-        return (new Data($this->getBinding()))->checkInvoiceFromDebtorIsPaidByDebtor($tblDebtor);
+        return (new Data($this->getBinding()))->getInvoiceAll();
     }
 
     /**
-     * @param TblInvoice $tblInvoice
-     *
-     * @return string
-     */
-    public function sumPriceItemAllStringByInvoice(TblInvoice $tblInvoice)
-    {
-
-        return (new Data($this->getBinding()))->sumPriceItemAllStringByInvoice($tblInvoice);
-    }
-
-    /**
-     * @param TblOrder $tblOrder
-     *
-     * @return string
-     */
-    public function sumPriceItemAllStringByOrder(TblOrder $tblOrder)
-    {
-
-        return (new Data($this->getBinding()))->sumPriceItemAllStringByOrder($tblOrder);
-    }
-
-    /**
-     * @param TblInvoice $tblInvoice
-     *
-     * @return float
-     */
-    public function sumPriceItemAllByInvoice(TblInvoice $tblInvoice)
-    {
-
-        return (new Data($this->getBinding()))->sumPriceItemAllByInvoice($tblInvoice);
-    }
-
-    /**
-     * @param $IsVoid
+     * @param bool $Check
      *
      * @return bool|TblInvoice[]
      */
-    public function getInvoiceAllByIsVoidState($IsVoid)
+    public function getInvoiceByIsPaid($Check = true)
     {
 
-        return (new Data($this->getBinding()))->getInvoiceAllByIsVoidState($IsVoid);
+        return (new Data($this->getBinding()))->getInvoiceByIsPaid($Check);
+    }
+
+    /**
+     * @param bool $Check
+     *
+     * @return bool|TblInvoice[]
+     */
+    public function getInvoiceByIsReversal($Check = true)
+    {
+
+        return (new Data($this->getBinding()))->getInvoiceByIsReversal($Check);
+    }
+
+    /**
+     * @param TblInvoice $tblInvoice
+     * @param bool       $IsPaid
+     *
+     * @return bool
+     */
+    public function changeInvoiceIsPaid(TblInvoice $tblInvoice, $IsPaid = true)
+    {
+
+        return (new Data($this->getBinding()))->changeInvoiceIsPaid($tblInvoice, $IsPaid);
+    }
+
+    /**
+     * @param TblInvoice $tblInvoice
+     * @param bool       $IsReversal
+     *
+     * @return bool
+     */
+    public function changeInvoiceIsReversal(TblInvoice $tblInvoice, $IsReversal = true)
+    {
+
+        return (new Data($this->getBinding()))->changeInvoiceIsReversal($tblInvoice, $IsReversal);
     }
 
     /**
@@ -118,12 +113,23 @@ class Service extends AbstractService
     /**
      * @param $Id
      *
-     * @return bool|TblOrder
+     * @return false|TblItem
      */
-    public function getOrderById($Id)
+    public function getItemById($Id)
     {
 
-        return (new Data($this->getBinding()))->getOrderById($Id);
+        return (new Data($this->getBinding()))->getItemById($Id);
+    }
+
+    /**
+     * @param $Id
+     *
+     * @return false|TblDebtor
+     */
+    public function getDebtorById($Id)
+    {
+
+        return (new Data($this->getBinding()))->getDebtorById($Id);
     }
 
     /**
@@ -138,576 +144,140 @@ class Service extends AbstractService
     }
 
     /**
-     * @param TblOrder $tblOrder
-     *
-     * @return bool|TblOrderItem[]
-     */
-    public function getOrderItemAllByOrder(TblOrder $tblOrder)
-    {
-
-        return (new Data($this->getBinding()))->getOrderItemAllByOrder($tblOrder);
-    }
-
-    /**
-     * @param $Id
-     *
-     * @return bool|TblInvoiceItem
-     */
-    public function getInvoiceItemById($Id)
-    {
-
-        return (new Data($this->getBinding()))->getInvoiceItemById($Id);
-    }
-
-    /**
-     * @param $Id
-     *
-     * @return bool|TblOrderItem
-     */
-    public function getOrderItemById($Id)
-    {
-
-        return (new Data($this->getBinding()))->getOrderItemById($Id);
-    }
-
-    /**
-     * @param $IsPaid
+     * @param TblPerson $tblPerson
+     * @param bool      $IsPaid
+     * @param bool      $IsReversal
      *
      * @return bool|TblInvoice[]
      */
-    public function getInvoiceAllByIsPaidState($IsPaid)
+    public function getInvoiceAllByPerson(TblPerson $tblPerson, $IsPaid = false, $IsReversal = false)
     {
 
-        return (new Data($this->getBinding()))->getInvoiceAllByIsPaidState($IsPaid);
+        return (new Data($this->getBinding()))->getInvoiceAllByPerson($tblPerson, $IsPaid, $IsReversal);
     }
 
     /**
-     * @param TblBasket $tblBasket
+     * @param TblInvoice $tblInvoice
      *
-     * @return bool
+     * @return false|TblItem[]
      */
-    public function destroyTempInvoice(TblBasket $tblBasket)
+    public function getItemAllByInvoice(TblInvoice $tblInvoice)
     {
 
-        return (new Data($this->getBinding()))->destroyTempInvoice($tblBasket);
+        return (new Data($this->getBinding()))->getItemAllByInvoice($tblInvoice);
     }
 
     /**
-     * @param TblBasket $tblBasket
-     * @param           $Date
+     * @param TblInvoice $tblInvoice
      *
-     * @return bool
+     * @return false|TblPerson[]
      */
-    public function createOrderListFromBasket(TblBasket $tblBasket, $Date)
+    public function getPersonAllByInvoice(TblInvoice $tblInvoice)
     {
 
-        return (new Data($this->getBinding()))->createOrderListFromBasket($tblBasket, $Date);
+        return (new Data($this->getBinding()))->getPersonAllByInvoice($tblInvoice);
     }
 
     /**
-     * @param $Id
+     * @param TblInvoice $tblInvoice
      *
-     * @return bool|TblTempInvoice
+     * @return false|TblDebtor[]
      */
-    public function getTempInvoiceById($Id)
+    public function getDebtorAllByInvoice(TblInvoice $tblInvoice)
     {
 
-        return (new Data($this->getBinding()))->getTempInvoiceById($Id);
+        return (new Data($this->getBinding()))->getDebtorAllByInvoice($tblInvoice);
     }
 
     /**
-     * @param TblBasket $tblBasket
+     * @param TblInvoice $tblInvoice
+     * @param TblItem    $tblItem
      *
-     * @return bool|TblTempInvoice[]
+     * @return bool|TblPerson
      */
-    public function getTempInvoiceAllByBasket(TblBasket $tblBasket)
+    public function getPersonByInvoiceAndItem(TblInvoice $tblInvoice, TblItem $tblItem)
     {
 
-        return (new Data($this->getBinding()))->getTempInvoiceAllByBasket($tblBasket);
+        return (new Data($this->getBinding()))->getPersonByInvoiceAndItem($tblInvoice, $tblItem);
     }
 
     /**
-     * @param $isConfirmed
+     * @param TblInvoice $tblInvoice
+     * @param TblPerson  $tblPerson
      *
-     * @return array|bool
+     * @return bool|TblPerson
      */
-    public function getInvoiceAllByIsConfirmedState($isConfirmed)
+    public function getItemAllInvoiceAndPerson(TblInvoice $tblInvoice, TblPerson $tblPerson)
     {
 
-        $invoiceAllByConfirmed = array();
-        $invoiceAllByNotConfirmed = array();
-        $tblInvoiceAll = $this->getInvoiceAll();
-
-        if ($tblInvoiceAll) {
-            foreach ($tblInvoiceAll as $tblInvoice) {
-                if ($tblInvoice->isConfirmed()) {
-                    $invoiceAllByConfirmed[] = $tblInvoice;
-                } else {
-                    $invoiceAllByNotConfirmed[] = $tblInvoice;
-                }
-            }
-        }
-
-        if ($isConfirmed) {
-            if (!empty( $invoiceAllByConfirmed )) {
-                return $invoiceAllByConfirmed;
-            } else {
-                return false;
-            }
-        } else {
-            if (!empty( $invoiceAllByNotConfirmed )) {
-                return $invoiceAllByNotConfirmed;
-            } else {
-                return false;
-            }
-        }
+        return (new Data($this->getBinding()))->getItemAllInvoiceAndPerson($tblInvoice, $tblPerson);
     }
 
     /**
+     * @param TblInvoice $tblInvoice
+     * @param TblItem    $tblItem
+     *
+     * @return bool|TblDebtor
+     */
+    public function getDebtorByInvoiceAndItem(TblInvoice $tblInvoice, TblItem $tblItem)
+    {
+
+        return (new Data($this->getBinding()))->getDebtorByInvoiceAndItem($tblInvoice, $tblItem);
+    }
+
+    /**
+     * @param \DateTime      $From
+     * @param \DateTime|null $To
+     * @param int            $Status "Invoice" 1 = open, 2 = paid, 3 = storno
+     *
      * @return bool|TblInvoice[]
      */
-    public function getInvoiceAll()
+    public function getInvoiceAllByDate(\DateTime $From, \DateTime $To = null, $Status = 1)
     {
 
-        return (new Data($this->getBinding()))->getInvoiceAll();
+        return (new Data($this->getBinding()))->getInvoiceAllByDate($From, $To, $Status);
     }
 
     /**
-     * @param TblOrderItem $tblOrderItem
-     * @param TblInvoice   $tblInvoice
+     * @param \DateTime $Date
      *
-     * @return TblInvoiceItem
+     * @return bool|Service\Entity\TblInvoice[]
      */
-    public function createInvoiceItem(TblOrderItem $tblOrderItem, TblInvoice $tblInvoice)
+    public function getInvoiceAllByYearAndMonth(\DateTime $Date)
     {
 
-        return (new Data($this->getBinding()))->createInvoiceItem($tblOrderItem, $tblInvoice);
+        return (new Data($this->getBinding()))->getInvoiceAllByYearAndMonth($Date);
     }
 
     /**
-     * @param TblInvoiceItem $tblInvoiceItem
-     * @param TblInvoice     $tblInvoiceCopy
-     *
-     * @return TblInvoiceItem
-     */
-    public function createInvoiceItemCopy(TblInvoiceItem $tblInvoiceItem, TblInvoice $tblInvoiceCopy)
-    {
-
-        return (new Data($this->getBinding()))->createInvoiceItemCopy($tblInvoiceItem, $tblInvoiceCopy);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getOrderAll()
-    {
-
-        return (new Data($this->getBinding()))->getOrderAll();
-    }
-
-    /**
-     * @param TblOrder $tblOrder
-     * @param          $Account
+     * @param $value
      *
      * @return string
      */
-    public function createInvoice(TblOrder $tblOrder, $Account = null)
+    public function getPriceString($value)
     {
 
-        $tblOrderItemList = Invoice::useService()->getOrderItemAllByOrder($tblOrder);
-        if (!empty( $tblOrderItemList )) {
-            if ($tblInvoice = (new Data($this->getBinding()))->createInvoice($tblOrder)) {
-
-                foreach ($tblOrderItemList as $tblOrderItem) {
-                    Invoice::useService()->createInvoiceItem($tblOrderItem, $tblInvoice);
-                }
-                if ($Account !== false || $Account !== null) {
-                    $tblAccount = Banking::useService()->getAccountById($Account);
-
-                    $tblOrderItemList = Invoice::useService()->getOrderItemAllByOrder($tblOrder);
-                    if (!empty( $tblOrderItemList )) {
-                        if ($tblOrder->getServiceBillingBankingPaymentType()->getName() === 'SEPA-Lastschrift') {
-                            if ($tblAccount) {
-                                $tblCommodity = Commodity::useService()->getCommodityByName($tblOrderItemList[0]->getCommodityName());
-                                if ($tblCommodity) {
-                                    $tblDebtor = Banking::useService()->getDebtorByDebtorNumber($tblOrder->getDebtorNumber());
-                                    if ($tblDebtor) {
-//                                    if (Banking::useService()->getReferenceByDebtorAndCommodity($tblDebtor,
-//                                        $tblCommodity)) {
-                                        if (Banking::useService()->getReferenceByAccountAndCommodity($tblAccount, $tblCommodity)) {
-                                            $tblReference = Banking::useService()->getReferenceByAccountAndCommodity($tblAccount, $tblCommodity);
-                                            $Reference = $tblReference->getReference();
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if (!isset( $Reference )) {
-                            $Reference = null;
-                        }
-
-                        if (Balance::useService()->createBalance(
-                            Banking::useService()->getDebtorByDebtorNumber($tblInvoice->getDebtorNumber()),
-                            $tblInvoice,
-                            null,
-                            $tblAccount->getBankName(),
-                            $tblAccount->getIBAN(),
-                            $tblAccount->getBIC(),
-                            $tblAccount->getOwner(),
-                            $tblAccount->getCashSign(),
-                            $Reference
-                        )
-                        ) {
-                            if (Invoice::useService()->destroyOrder($tblOrder)) {
-                                return new Success('Die Rechnung wurde erstellt')
-                                .new Redirect('/Billing/Bookkeeping/Invoice/Order', Redirect::TIMEOUT_SUCCESS);
-                            } else {
-                                return new Success('Die Rechnung erstellt, Auftrag aber nicht gelöscht', Redirect::TIMEOUT_ERROR)
-                                .new Redirect('/Billing/Bookkeeping/Invoice/Order', Redirect::TIMEOUT_SUCCESS);
-                            }
-                        } else {
-                            return new Warning('Die Rechnung konnte nicht erstellt werden')
-                            .new Redirect('/Billing/Bookkeeping/Invoice/Order/Edit', Redirect::TIMEOUT_ERROR,
-                                array('Id' => $tblOrder->getId()));
-                        }
-                    }
-                    return new Warning('Die Rechnung kann ohne Artikel nicht erstellt werden.')
-                    .new Redirect('/Billing/Bookkeeping/Invoice/Order/Edit', Redirect::TIMEOUT_ERROR,
-                        array('Id' => $tblOrder->getId()));
-
-
-                }
-//                elseif($Account === null){
-//
-//                    $tblBalance = Balance::useService()->getBalanceByInvoice($tblInvoice);
-//                    if($tblBalance)
-//                    {
-//                        if(Balance::useService()->copyBalance($tblBalance, $tblInvoice))
-//                        {
-//                            return new Success('Die Rechnung wurde Stoniert')
-//                            .new Redirect('/Billing/Bookkeeping/Invoice', Redirect::TIMEOUT_SUCCESS);
-//                        }
-//                    }
-//
-//                }
-                else {
-                    if (Balance::useService()->createBalance(
-                        Banking::useService()->getDebtorByDebtorNumber($tblInvoice->getDebtorNumber()),
-                        $tblInvoice
-                    )
-                    ) {
-                        return new Success('Die Rechnung wurde erfolgreich bestätigt und freigegeben')
-                        .new Redirect('/Billing/Bookkeeping/Invoice/Order', Redirect::TIMEOUT_SUCCESS);
-                    } else {
-                        return new Warning('Die Rechnung konnte nicht bestätigt und freigegeben werden')
-                        .new Redirect('/Billing/Bookkeeping/Invoice/Order/Edit', Redirect::TIMEOUT_ERROR,
-                            array('Id' => $tblOrder->getId()));
-                    }
-                }
-            }
-            return new Warning('Die Rechnung konnte nicht erstellt werden')
-            .new Redirect('/Billing/Bookkeeping/Invoice/Order/Edit', Redirect::TIMEOUT_ERROR,
-                array('Id' => $tblOrder->getId()));
-        }
-        return new Warning('Die Rechnung enthält keine Artikel')
-        .new Redirect('/Billing/Bookkeeping/Invoice/Order/Edit', Redirect::TIMEOUT_ERROR,
-            array('Id' => $tblOrder->getId()));
-    }
-
-//    /**
-//     * @param TblInvoice $tblInvoice
-//     *
-//     * @return string
-//     */
-//    public function createStorno(TblInvoice $tblInvoice)
-//    {
-//
-//        if ($tblInvoice = (new Data($this->getBinding()))->createInvoice($tblInvoice)) {
-//
-//        }
-//        return new Warning('Storno konnte nicht erstellt werden')
-//        .new Redirect('/Billing/Bookkeeping/Invoice', Redirect::TIMEOUT_ERROR);
-//    }
-
-    /**
-     * @param TblInvoice $tblInvoice
-     *
-     * @return TblInvoice
-     */
-    public function copyInvoice(TblInvoice $tblInvoice)
-    {
-
-        $tblInvoiceCopy = (new Data($this->getBinding()))->copyInvoice($tblInvoice);
-        $tblBalance = Balance::useService()->getBalanceByInvoice($tblInvoice);
-        if ($tblBalance) {
-            Balance::useService()->copyBalance($tblBalance, $tblInvoiceCopy);
-        }
-        if ($tblInvoiceItemList = Invoice::useService()->getInvoiceItemAllByInvoice($tblInvoice)) {
-            foreach ($tblInvoiceItemList as $tblInvoiceItem) {
-                Invoice::useService()->createInvoiceItemCopy($tblInvoiceItem, $tblInvoiceCopy);
-            }
-        }
-        return $tblInvoiceCopy;
-    }
-
-    /**
-     * @param TblInvoice $tblInvoice
-     * @param            $Account
-     *
-     * @return string
-     */
-    public function confirmInvoice(TblInvoice $tblInvoice, $Account)
-    {
-
-        If ($Account !== false) {
-            $tblAccount = Banking::useService()->getAccountById($Account);
-
-            $tblInvoiceItemList = Invoice::useService()->getInvoiceItemAllByInvoice($tblInvoice);
-            if (!empty( $tblInvoiceItemList )) {
-                if ($tblInvoice->getServiceBillingBankingPaymentType()->getName() === 'SEPA-Lastschrift') {
-                    if ($tblAccount) {
-                        $tblCommodity = Commodity::useService()->getCommodityByName($tblInvoiceItemList[0]->getCommodityName());
-                        if ($tblCommodity) {
-                            $tblDebtor = Banking::useService()->getDebtorByDebtorNumber($tblInvoice->getDebtorNumber());
-                            if ($tblDebtor) {
-//                                    if (Banking::useService()->getReferenceByDebtorAndCommodity($tblDebtor,
-//                                        $tblCommodity)) {
-                                if (Banking::useService()->getReferenceByAccountAndCommodity($tblAccount, $tblCommodity)) {
-                                    $tblReference = Banking::useService()->getReferenceByAccountAndCommodity($tblAccount, $tblCommodity);
-                                    $Reference = $tblReference->getReference();
-                                }
-                            }
-                        }
-                    }
-                }
-                if (!isset( $Reference )) {
-                    $Reference = null;
-                }
-
-                if (Balance::useService()->createBalance(
-                    Banking::useService()->getDebtorByDebtorNumber($tblInvoice->getDebtorNumber()),
-                    $tblInvoice,
-                    null,
-                    $tblAccount->getBankName(),
-                    $tblAccount->getIBAN(),
-                    $tblAccount->getBIC(),
-                    $tblAccount->getOwner(),
-                    $tblAccount->getCashSign(),
-                    $Reference
-                )
-                ) {
-                    return new Success('Die Rechnung wurde erfolgreich bestätigt und freigegeben')
-                    .new Redirect('/Billing/Bookkeeping/Invoice/Order', Redirect::TIMEOUT_SUCCESS);
-                } else {
-                    return new Warning('Die Rechnung konnte nicht bestätigt und freigegeben werden')
-                    .new Redirect('/Billing/Bookkeeping/Invoice/Order/Edit', Redirect::TIMEOUT_ERROR,
-                        array('Id' => $tblInvoice->getId()));
-                }
-            }
-            return new Warning('Die Rechnung konnte nicht bestätigt und freigegeben werden. Fehlende Artikel!')
-            .new Redirect('/Billing/Bookkeeping/Invoice/Order/Edit', Redirect::TIMEOUT_ERROR,
-                array('Id' => $tblInvoice->getId()));
-
-
-        } else {
-            if (Balance::useService()->createBalance(
-                Banking::useService()->getDebtorByDebtorNumber($tblInvoice->getDebtorNumber()),
-                $tblInvoice
-            )
-            ) {
-                return new Success('Die Rechnung wurde erfolgreich bestätigt und freigegeben')
-                .new Redirect('/Billing/Bookkeeping/Invoice/Order', Redirect::TIMEOUT_SUCCESS);
-            } else {
-                return new Warning('Die Rechnung konnte nicht bestätigt und freigegeben werden')
-                .new Redirect('/Billing/Bookkeeping/Invoice/Order/Edit', Redirect::TIMEOUT_ERROR,
-                    array('Id' => $tblInvoice->getId()));
-            }
-        }
+        $result = number_format($value, 2, ',', '.');
+        $result .= ' €';
+        return $result;
     }
 
     /**
      * @param TblInvoice $tblInvoice
      *
-     * @return string
+     * @return int
      */
-    public function cancelInvoice(
-        TblInvoice $tblInvoice
-    ) {
-
-//        if (!$tblInvoice->isConfirmed()) {
-//            if ((new Data($this->getBinding()))->cancelInvoice($tblInvoice)) {
-//                return new Success('Die Rechnung wurde erfolgreich storniert')
-//                .new Redirect('/Billing/Bookkeeping/Invoice', Redirect::TIMEOUT_SUCCESS);
-//            } else {
-//                return new Warning('Die Rechnung konnte nicht storniert werden')
-//                .new Redirect('/Billing/Bookkeeping/Invoice/Show', Redirect::TIMEOUT_ERROR,
-//                    array('Id' => $tblInvoice->getId()));
-//            }
-//        } else {
-        //TODO cancel confirmed invoice
-
-        if (Invoice::useService()->copyInvoice($tblInvoice)) {
-            if ((new Data($this->getBinding()))->cancelInvoice($tblInvoice)) {
-                return new Success('Die Rechnung wurde erfolgreich storniert')
-                .new Redirect('/Billing/Bookkeeping/Invoice', Redirect::TIMEOUT_SUCCESS);
-            } else {
-                return new Warning('Die Rechnung konnte nicht storniert werden')
-                .new Redirect('/Billing/Bookkeeping/Invoice', Redirect::TIMEOUT_ERROR);
-            }
-        } else {
-            return new Warning('Die Rechnung konnte nicht storniert werden')
-            .new Redirect('/Billing/Bookkeeping/Invoice', Redirect::TIMEOUT_ERROR);
-        }
-
-
-    }
-
-    /**
-     * @param TblOrder $tblOrder
-     *
-     * @return string
-     */
-    public function destroyOrder(TblOrder $tblOrder)
+    public function getInvoicePrice(TblInvoice $tblInvoice)
     {
 
-        $tblOrderItemList = Invoice::useService()->getOrderItemAllByOrder($tblOrder);
-        if ($tblOrderItemList) {
-            foreach ($tblOrderItemList as $tblOrderItem) {
-                $this->removeOrderItem($tblOrderItem);
+        $result = 0;
+        $tblItemList = Invoice::useService()->getItemAllByInvoice($tblInvoice);
+        if ($tblItemList) {
+            foreach ($tblItemList as $tblItem) {
+                $result += $tblItem->getValue() * $tblItem->getQuantity();
             }
         }
-
-        if ((new Data($this->getBinding()))->destroyOrder($tblOrder)) {
-            return new Success('Der Auftrag wurde erfolgreich gelöscht')
-            .new Redirect('/Billing/Bookkeeping/Invoice/Order', Redirect::TIMEOUT_SUCCESS);
-        } else {
-            return new Warning('Der Auftrag konnte nicht gelöscht werden')
-            .new Redirect('/Billing/Bookkeeping/Invoice/Order', Redirect::TIMEOUT_ERROR);
-        }
-    }
-
-    /**
-     * @param TblOrder   $tblOrder
-     * @param TblAddress $tblAddress
-     *
-     * @return string
-     */
-    public function changeOrderAddress(
-        TblOrder $tblOrder,
-        TblAddress $tblAddress
-    ) {
-
-        if ((new Data($this->getBinding()))->updateOrderAddress($tblOrder, $tblAddress)) {
-            return new Success('Die Rechnungsadresse wurde erfolgreich geändert')
-            .new Redirect('/Billing/Bookkeeping/Invoice/Order/Edit', Redirect::TIMEOUT_SUCCESS, array('Id' => $tblOrder->getId()));
-        } else {
-            return new Warning('Die Rechnungsadresse konnte nicht geändert werden')
-            .new Redirect('/Billing/Bookkeeping/Invoice/Order/Edit', Redirect::TIMEOUT_ERROR, array('Id' => $tblOrder->getId()));
-        }
-    }
-
-    /**
-     * @param TblInvoice     $tblInvoice
-     * @param TblPaymentType $tblPaymentType
-     *
-     * @return string
-     */
-    public function changeInvoicePaymentType(TblInvoice $tblInvoice, TblPaymentType $tblPaymentType)
-    {
-
-        if ((new Data($this->getBinding()))->changeInvoicePaymentType($tblInvoice, $tblPaymentType)) {
-            return new Success('Die Zahlungsart wurde erfolgreich geändert')
-            .new Redirect('/Billing/Bookkeeping/Invoice/Order/Edit', Redirect::TIMEOUT_SUCCESS, array('Id' => $tblInvoice->getId()));
-        } else {
-            return new Warning('Die Zahlungsart konnte nicht geändert werden')
-            .new Redirect('/Billing/Bookkeeping/Invoice/Order/Edit', Redirect::TIMEOUT_ERROR, array('Id' => $tblInvoice->getId()));
-        }
-    }
-
-    /**
-     * @param TblInvoice $tblInvoice
-     *
-     * @return string
-     */
-    public function createPayInvoice(
-        TblInvoice $tblInvoice
-    ) {
-
-        if ((new Data($this->getBinding()))->createPayInvoice($tblInvoice)) {
-            return new Success('Die Rechnung wurde erfolgreich bezahlt')
-            .new Redirect('/Billing/Bookkeeping/Balance', Redirect::TIMEOUT_SUCCESS);
-        } else {
-            return new Warning('Die Rechnung konnte nicht bezahlt werden')
-            .new Redirect('/Billing/Bookkeeping/Balance', Redirect::TIMEOUT_ERROR);
-        }
-    }
-
-    /**
-     * @param IFormInterface|null $Stage
-     * @param TblOrderItem        $tblInvoiceItem
-     * @param                     $OrderItem
-     *
-     * @return IFormInterface|string
-     */
-    public function changeOrderItem(IFormInterface &$Stage = null, TblOrderItem $tblOrderItem, $OrderItem)
-    {
-
-        /**
-         * Skip to Frontend
-         */
-        if (null === $OrderItem
-        ) {
-            return $Stage;
-        }
-
-        $Error = false;
-
-        if (isset( $OrderItem['Price'] ) && empty( $OrderItem['Price'] )) {
-            $Stage->setError('InvoiceItem[Price]', 'Bitte geben Sie einen Preis an');
-            $Error = true;
-        }
-        if (isset( $OrderItem['Quantity'] ) && empty( $OrderItem['Quantity'] )) {
-            $Stage->setError('InvoiceItem[Quantity]', 'Bitte geben Sie eine Menge an');
-            $Error = true;
-        }
-
-        if (!$Error) {
-            if ((new Data($this->getBinding()))->updateOrderItem(
-                $tblOrderItem,
-                $OrderItem['Price'],
-                $OrderItem['Quantity']
-            )
-            ) {
-                $Stage .= new Success('Änderungen gespeichert, die Daten werden neu geladen...')
-                    .new Redirect('/Billing/Bookkeeping/Invoice/Order/Edit', Redirect::TIMEOUT_SUCCESS,
-                        array('Id' => $tblOrderItem->getTblOrder()->getId()));
-            } else {
-                $Stage .= new Danger('Änderungen konnten nicht gespeichert werden')
-                    .new Redirect('/Billing/Bookkeeping/Invoice/Order/Edit', Redirect::TIMEOUT_ERROR,
-                        array('Id' => $tblOrderItem->getTblOrder()->getId()));
-            };
-        }
-        return $Stage;
-    }
-
-    /**
-     * @param TblOrderItem $tblOrderItem
-     *
-     * @return string
-     */
-    public function removeOrderItem(
-        TblOrderItem $tblOrderItem
-    ) {
-
-        if ((new Data($this->getBinding()))->destroyOrderItem($tblOrderItem)) {
-            return new Success('Der Artikel '.$tblOrderItem->getItemName().' wurde erfolgreich entfernt')
-            .new Redirect('/Billing/Bookkeeping/Invoice/Order/Edit', Redirect::TIMEOUT_SUCCESS,
-                array('Id' => $tblOrderItem->getTblOrder()->getId()));
-        } else {
-            return new Warning('Der Artikel '.$tblOrderItem->getItemName().' konnte nicht entfernt werden')
-            .new Redirect('/Billing/Bookkeeping/Invoice/Order/Edit', Redirect::TIMEOUT_ERROR,
-                array('Id' => $tblOrderItem->getTblOrder()->getId()));
-        }
+        return $result;
     }
 
     /**
@@ -715,40 +285,246 @@ class Service extends AbstractService
      *
      * @return bool|string
      */
-    public function removeInvoice(
-        TblInvoice $tblInvoice
-    ) {
+    public function getInvoiceItemsString(TblInvoice $tblInvoice)
+    {
 
-        return (new Data($this->getBinding()))->destroyInvoice($tblInvoice);
+        $ItemList = array();
+        $tblItemList = Invoice::useService()->getItemAllByInvoice($tblInvoice);
+        if ($tblItemList) {
+            foreach ($tblItemList as $tblItem) {
+                $Item = $tblItem->getServiceTblItem();
+                if($Item){
+                    $ItemList[] = $Item->getName();
+                }
+            }
+            $ItemList = array_unique($ItemList);
+        }
+        $ItemString = implode(' ,', $ItemList);
+
+        return (empty($ItemList) ? false : $ItemString);
     }
 
     /**
      * @param TblBasket $tblBasket
-     * @param TblPerson $tblPerson
-     * @param TblDebtor $tblDebtor
      *
-     * @return null|TblTempInvoice
+     * @return array|bool
      */
-    public function createTempInvoice(
-        TblBasket $tblBasket,
-        TblPerson $tblPerson,
-        TblDebtor $tblDebtor
-    ) {
+    public function reviewInvoiceData(TblBasket $tblBasket)
+    {
+        /** Shopping Content */
+        $tblBasketVerificationList = Basket::useService()->getBasketVerificationByBasket($tblBasket);
+        if (!$tblBasketVerificationList) {
+            return false;
+        }
+        $Invoice = array();
+        $ItemCount = 0;
+        foreach ($tblBasketVerificationList as $tblBasketVerification) {
+            $tblPerson = $tblBasketVerification->getServiceTblPerson();
+            $tblItem = $tblBasketVerification->getServiceTblItem();
+            $Quantity = $tblBasketVerification->getQuantity();
+            $Value = $tblBasketVerification->getValue();
+            $Price = $tblBasketVerification->getPrice();
+            $PriceSum = $tblBasketVerification->getSummaryPrice();
 
-        return (new Data($this->getBinding()))->createTempInvoice($tblBasket, $tblPerson, $tblDebtor);
+            /** search Customer */
+            $tblDebtorSelect = Banking::useService()->getDebtorSelectionByPersonAndItem($tblPerson, $tblItem);
+            if ($tblDebtorSelect) {
+                $tblBankReference = $tblDebtorSelect->getTblBankReference();
+                $tblDebtor = $tblDebtorSelect->getTblDebtor();
+
+                if ($tblDebtorSelect->getServiceTblPaymentType()->getName() == 'SEPA-Lastschrift') {
+                    $tblPaymentType = $tblDebtorSelect->getServiceTblPaymentType();
+                } else {
+                    $tblPaymentType = $tblDebtorSelect->getServiceTblPaymentType();
+                }
+                if ($tblBankReference && $tblDebtor) {
+                    /** separator for Invoice */
+                    $seperator = $tblDebtor->getId();
+                    /** fill Invoice */
+                    $Invoice[$seperator][$ItemCount]['PersonFrom'] = $tblPerson->getFullName();
+                    $Invoice[$seperator][$ItemCount]['PersonFromId'] = $tblPerson->getId();
+                    $Invoice[$seperator][$ItemCount]['PersonTo'] = $tblDebtor->getServiceTblPerson()->getFullName();
+                    $Invoice[$seperator][$ItemCount]['PaymentType'] = $tblPaymentType->getName();
+                    $Invoice[$seperator][$ItemCount]['Item'] = $tblBasketVerification->getServiceTblItem()->getName();
+                    $Invoice[$seperator][$ItemCount]['Quantity'] = $Quantity;
+                    $Invoice[$seperator][$ItemCount]['Price'] = $Price;
+                    $Invoice[$seperator][$ItemCount]['PriceSum'] = $PriceSum;
+                    $Invoice[$seperator][$ItemCount]['Value'] = $Value;
+                    $Invoice[$seperator][$ItemCount]['Reference'] = $tblBankReference->getReference();
+                    $Invoice[$seperator][$ItemCount]['DebtorNumber'] = $tblDebtor->getDebtorNumber();
+                    $ItemCount++;
+                } elseif ($tblDebtor) {
+                    /** separator for Invoice */
+                    $seperator = $tblDebtor->getId();
+                    /** fill Invoice */
+                    $Invoice[$seperator][$ItemCount]['PersonFrom'] = $tblPerson->getFullName();
+                    $Invoice[$seperator][$ItemCount]['PersonFromId'] = $tblPerson->getId();
+                    $Invoice[$seperator][$ItemCount]['PersonTo'] = $tblDebtor->getServiceTblPerson()->getFullName();
+                    $Invoice[$seperator][$ItemCount]['PaymentType'] = $tblPaymentType->getName();
+                    $Invoice[$seperator][$ItemCount]['Item'] = $tblBasketVerification->getServiceTblItem()->getName();
+                    $Invoice[$seperator][$ItemCount]['Quantity'] = $Quantity;
+                    $Invoice[$seperator][$ItemCount]['Price'] = $Price;
+                    $Invoice[$seperator][$ItemCount]['PriceSum'] = $PriceSum;
+                    $Invoice[$seperator][$ItemCount]['Value'] = $Value;
+                    $Invoice[$seperator][$ItemCount]['Reference'] = 'Bar/Überweisung';
+                    $Invoice[$seperator][$ItemCount]['DebtorNumber'] = $tblDebtor->getDebtorNumber();
+                    $ItemCount++;
+                }
+            }
+        }
+
+        return $Invoice;
     }
 
     /**
-     * @param TblTempInvoice $tblTempInvoice
-     * @param TblCommodity   $tblCommodity
+     * @param TblBasket $tblBasket
+     * @param           $Date
+     * @param null      $SchoolAccount
      *
-     * @return null|Service\Entity\TblTempInvoiceCommodity
+     * @return bool
      */
-    public function createTempInvoiceCommodity(
-        TblTempInvoice $tblTempInvoice,
-        TblCommodity $tblCommodity
-    ) {
+    public function createInvoice(TblBasket $tblBasket, $Date, $SchoolAccount = null)
+    {
+        /** Shopping Content */
+        $tblBasketVerificationList = Basket::useService()->getBasketVerificationByBasket($tblBasket);
+        if (!$tblBasketVerificationList) {
+            return false;
+        }
+        $DebtorItemList = array();
+        foreach ($tblBasketVerificationList as $tblBasketVerification) {
 
-        return (new Data($this->getBinding()))->createTempInvoiceCommodity($tblTempInvoice, $tblCommodity);
+
+            $tblPerson = $tblBasketVerification->getServiceTblPerson();
+            $tblItem = $tblBasketVerification->getServiceTblItem();
+            $Quantity = $tblBasketVerification->getQuantity();
+            $Price = $tblBasketVerification->getValue();
+
+            /** search Customer */
+            $tblDebtorSelect = Banking::useService()->getDebtorSelectionByPersonAndItem($tblPerson, $tblItem);
+            if ($tblDebtorSelect) {
+                $tblBankReference = $tblDebtorSelect->getTblBankReference();
+                $tblDebtor = $tblDebtorSelect->getTblDebtor();
+                $tblPaymentType = $tblDebtorSelect->getServiceTblPaymentType();
+
+                if ($tblBankReference && $tblDebtor) {
+                    /** fill Invoice/tblDebtor */
+                    $DebtorId = $tblDebtor->getId();
+                    /** fill Invoice/tblItem */
+                    $DebtorItemList[$DebtorId]['DebtorInvoice'][] = (new Data($this->getBinding()))->createDebtor($tblDebtor, $tblPaymentType, $tblBankReference)->getId();
+                    $DebtorItemList[$DebtorId]['Item'][] = (new Data($this->getBinding()))->createItem($tblBasketVerification)->getId();
+                    $DebtorItemList[$DebtorId]['Quantity'][] = $Quantity;
+                    $DebtorItemList[$DebtorId]['Value'][] = $Price;
+                    $DebtorItemList[$DebtorId]['PersonId'][] = $tblPerson->getId();
+                } elseif ($tblDebtor) {
+                    /** fill Invoice/tblDebtor */
+                    $DebtorId = $tblDebtor->getId();
+                    /** fill Invoice/tblItem */
+                    $DebtorItemList[$DebtorId]['DebtorInvoice'][] = (new Data($this->getBinding()))->createDebtor($tblDebtor, $tblPaymentType, null)->getId();
+                    $DebtorItemList[$DebtorId]['Item'][] = (new Data($this->getBinding()))->createItem($tblBasketVerification)->getId();
+                    $DebtorItemList[$DebtorId]['Quantity'][] = $Quantity;
+                    $DebtorItemList[$DebtorId]['Value'][] = $Price;
+                    $DebtorItemList[$DebtorId]['PersonId'][] = $tblPerson->getId();
+                }
+            }
+        }
+
+        $tblInvoiceList = Invoice::useService()->getInvoiceAllByYearAndMonth((new \DateTime($Date)));
+        $date = (new \DateTime($Date))->format('ym');
+        if (empty( $tblInvoiceList )) {
+            $count = 1;
+        } else {
+            $count = count($tblInvoiceList) + 1;
+        }
+        /** fill Invoice/tblInvoice */
+        foreach ($DebtorItemList as $DebtorId => $InvoiceList) {
+
+            $countString = $date.'_'.str_pad($count, 5, 0, STR_PAD_LEFT);
+            $InsertArray = array();
+            foreach ($InvoiceList['DebtorInvoice'] as $DebtorInvoiceId) {
+                $tblDebtor = Invoice::useService()->getDebtorById($DebtorInvoiceId);
+                $InsertArray['tblPersonDebtor'] = $tblDebtor->getServiceTblDebtor()->getServiceTblPerson();
+                if ($InsertArray['tblPersonDebtor']) {
+
+                    //get Address
+                    $InsertArray['tblAddress'] = Address::useService()->getAddressByPerson($InsertArray['tblPersonDebtor']);
+                    if (empty( $InsertArray['tblAddress'] )) {
+                        $InsertArray['tblAddress'] = null;
+                    }
+                    //get Mail
+                    $InsertArray['tblMail'] = null;
+                    $InsertArray['tblMail'] = Mail::useService()->getMailAllByPerson($InsertArray['tblPersonDebtor']);
+                    if (!empty( $InsertArray['tblMail'] )) {
+                        $InsertArray['tblMail'] = $InsertArray['tblMail'][0]->getTblMail();
+                    }
+                    //get Phone
+                    $InsertArray['tblPhone'] = null;
+                    $InsertArray['tblPhone'] = Phone::useService()->getPhoneAllByPerson($InsertArray['tblPersonDebtor']);
+                    if (!empty( $InsertArray['tblPhone'] )) {
+                        $InsertArray['tblPhone'] = $InsertArray['tblPhone'][0]->getTblPhone();
+                    }
+                }
+            }
+
+            $tblPerson = Person::useService()->getPersonById($InvoiceList['PersonId'][0]);
+            $tblSchoolAccount = false;
+            if ($tblPerson) {
+                $tblStudent = Student::useService()->getStudentByPerson($tblPerson);
+                if ($tblStudent) {
+                    $tblTransferType = Student::useService()->getStudentTransferTypeByIdentifier('PROCESS');
+                    if ($tblTransferType) {
+                        $tblStudentTransfer = Student::useService()->getStudentTransferByType($tblStudent,
+                            $tblTransferType);
+                        if ($tblStudentTransfer) {
+                            $tblType = $tblStudentTransfer->getServiceTblType();
+                            $tblCompany = $tblStudentTransfer->getServiceTblCompany();
+                            if ($tblType && $tblCompany) {
+                                $tblSchoolAccount = SchoolAccount::useService()->getSchoolAccountByCompanyAndType($tblCompany, $tblType);
+                            }
+                        }
+                    }
+                }
+            }
+            if ($tblSchoolAccount) {
+                $InsertArray['tblSchoolAccount'] = $tblSchoolAccount;
+            } else {
+//                $tblSchoolAccount = SchoolAccount::useService()->getSchoolAccountAll();
+//                if(!empty($tblSchoolAccount)){
+//                    $InsertArray['tblSchoolAccount'] = $tblSchoolAccount[0];
+//                } else {
+                $tblSchoolAccount = SchoolAccount::useService()->getSchoolAccountById($SchoolAccount);
+                $InsertArray['tblSchoolAccount'] = $tblSchoolAccount;
+//                }
+            }
+
+            $InvoiceId = (new Data($this->getBinding()))->createInvoice($InsertArray['tblPersonDebtor'], $InsertArray['tblSchoolAccount'], $countString, $Date,
+                $InsertArray['tblAddress'],
+                ( empty( $InsertArray['tblMail'] ) ? null : $InsertArray['tblMail'] ),
+                ( empty( $InsertArray['tblPhone'] ) ? null : $InsertArray['tblPhone'] ))->getId();
+            $DebtorItemList[$DebtorId]['InvoiceId'] = $InvoiceId;
+
+            $count++;
+        }
+
+        /** fill Invoice/tblInvoiceItem */
+        foreach ($DebtorItemList as $InvoiceList) {
+            $tblInvoice = Invoice::useService()->getInvoiceById($InvoiceList['InvoiceId']);
+
+            foreach ($InvoiceList['Item'] as $key => $Item) {
+
+                $tblPerson = Person::useService()->getPersonById($InvoiceList['PersonId'][$key]);
+                $tblDebtor = Invoice::useService()->getDebtorById($InvoiceList['DebtorInvoice'][$key]);
+                if ($tblPerson && $tblDebtor) {
+                    $tblItem = Invoice::useService()->getItemById($Item);
+                    (new Data($this->getBinding()))->createInvoiceItem($tblInvoice, $tblItem, $tblPerson, $tblDebtor);
+                }
+            }
+        }
+
+        // Warenkorb leeren
+        foreach ($tblBasketVerificationList as $tblBasketVerification) {
+            Basket::useService()->destroyBasketVerification($tblBasketVerification);
+        }
+
+        return true;
     }
 }

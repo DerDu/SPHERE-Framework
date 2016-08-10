@@ -2,13 +2,11 @@
 
 namespace SPHERE\Application\Billing\Accounting\Banking\Service;
 
-use SPHERE\Application\Billing\Accounting\Banking\Banking;
-use SPHERE\Application\Billing\Accounting\Banking\Service\Entity\TblAccount;
+use SPHERE\Application\Billing\Accounting\Banking\Service\Entity\TblBankReference;
 use SPHERE\Application\Billing\Accounting\Banking\Service\Entity\TblDebtor;
-use SPHERE\Application\Billing\Accounting\Banking\Service\Entity\TblDebtorCommodity;
-use SPHERE\Application\Billing\Accounting\Banking\Service\Entity\TblPaymentType;
-use SPHERE\Application\Billing\Accounting\Banking\Service\Entity\TblReference;
-use SPHERE\Application\Billing\Inventory\Commodity\Service\Entity\TblCommodity;
+use SPHERE\Application\Billing\Accounting\Banking\Service\Entity\TblDebtorSelection;
+use SPHERE\Application\Billing\Bookkeeping\Balance\Service\Entity\TblPaymentType;
+use SPHERE\Application\Billing\Inventory\Item\Service\Entity\TblItem;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
 use SPHERE\System\Database\Binding\AbstractData;
@@ -24,45 +22,66 @@ class Data extends AbstractData
     public function setupDatabaseContent()
     {
 
-        /**
-         * TblPayment
-         */
-        $this->createPaymentType('SEPA-Lastschrift');
-        $this->createPaymentType('SEPA-Überweisung');
-        $this->createPaymentType('Bar');
-    }
-
-    /**
-     * @param $PaymentType
-     *
-     * @return TblPaymentType|null|object
-     */
-    public function createPaymentType($PaymentType)
-    {
-
-        $Manager = $this->getConnection()->getEntityManager();
-        $Entity = $Manager->getEntity('TblPaymentType')->findOneBy(array(TblPaymentType::ATTR_NAME => $PaymentType));
-        if (null === $Entity) {
-            $Entity = new TblPaymentType();
-            $Entity->setName($PaymentType);
-            $Manager->saveEntity($Entity);
-            Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(),
-                $Entity);
-        }
-
-        return $Entity;
     }
 
     /**
      * @param $Id
      *
-     * @return bool|TblDebtor
+     * @return false|TblDebtor
      */
     public function getDebtorById($Id)
     {
 
-        $Entity = $this->getConnection()->getEntityManager()->getEntityById('TblDebtor', $Id);
-        return ( null === $Entity ? false : $Entity );
+        return $this->getCachedEntityById(__METHOD__, $this->getConnection()->getEntityManager(), 'TblDebtor', $Id);
+    }
+
+    /**
+     * @param $Id
+     *
+     * @return false|TblBankReference
+     */
+    public function getBankReferenceById($Id)
+    {
+
+        return $this->getCachedEntityById(__METHOD__, $this->getConnection()->getEntityManager(), 'TblBankReference', $Id);
+    }
+
+    /**
+     * @param $Id
+     *
+     * @return false|TblDebtorSelection
+     */
+    public function getDebtorSelectionById($Id)
+    {
+
+        return $this->getCachedEntityById(__METHOD__, $this->getConnection()->getEntityManager(), 'TblDebtorSelection', $Id);
+    }
+
+    /**
+     * @return bool|TblDebtor[]
+     */
+    public function getDebtorAll()
+    {
+
+        return $this->getCachedEntityList(__METHOD__, $this->getConnection()->getEntityManager(), 'TblDebtor');
+    }
+
+    /**
+     * @return false|TblBankReference[]
+     */
+    public function getBankReferenceAll()
+    {
+
+        return $this->getCachedEntityList(__METHOD__, $this->getConnection()->getEntityManager(), 'TblBankReference');
+    }
+
+    /**
+     * @return false|TblDebtorSelection[]
+     */
+    public function getDebtorSelectionAll()
+    {
+
+        return $this->getCachedEntityList(__METHOD__, $this->getConnection()->getEntityManager(), 'TblDebtorSelection');
     }
 
     /**
@@ -73,188 +92,234 @@ class Data extends AbstractData
     public function getDebtorByDebtorNumber($DebtorNumber)
     {
 
-        $Entity = $this->getConnection()->getEntityManager()->getEntity('TblDebtor')->findOneBy(array(TblDebtor::ATTR_DEBTOR_NUMBER => $DebtorNumber));
-        return ( null === $Entity ? false : $Entity );
+        return $this->getCachedEntityBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblDebtor',
+            array(TblDebtor::ATTR_DEBTOR_NUMBER => $DebtorNumber));
     }
 
     /**
-     * @param TblDebtor $tblDebtor
+     * @param $Reference
      *
-     * @return bool|TblAccount
+     * @return false|TblBankReference
      */
-    public function getActiveAccountByDebtor(TblDebtor $tblDebtor)
+    public function getReferenceIsUsed($Reference)
     {
 
-        $Entity = $this->getConnection()->getEntityManager()->getEntity('TblAccount')->findOneBy
-        (array(
-            TblAccount::ATTR_TBL_DEBTOR => $tblDebtor->getId(),
-            TblAccount::ATTR_TBL_ACTIVE => true
-        ));
-        return ( null === $Entity ? false : $Entity );
-    }
-
-    /**
-     * @param $ServiceManagement_Person
-     *
-     * @return TblDebtor[]|bool
-     */
-    public function getDebtorByServiceManagementPerson($ServiceManagement_Person)
-    {
-
-        $Entity = $this->getConnection()->getEntityManager()->getEntity('TblDebtor')->findBy(array(TblDebtor::ATTR_SERVICE_MANAGEMENT_PERSON => $ServiceManagement_Person));
-        return ( null === $Entity ? false : $Entity );
+        return $this->getCachedEntityBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblBankReference',
+            array(TblBankReference::ATTR_REFERENCE_NUMBER => $Reference));
     }
 
     /**
      * @param TblPerson $tblPerson
      *
-     * @return TblDebtor[]|bool
+     * @return false|TblDebtor[]
      */
-    public function getDebtorAllByPerson(TblPerson $tblPerson)
+    public function getDebtorByPerson(TblPerson $tblPerson)
     {
 
-        $EntityList = $this->getConnection()->getEntityManager()->getEntity('TblDebtor')
-            ->findBy(array(TblDebtor::ATTR_SERVICE_MANAGEMENT_PERSON => $tblPerson->getId()));
-        return ( null === $EntityList ? false : $EntityList );
+        return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblDebtor',
+            array(TblDebtor::ATTR_SERVICE_TBL_PERSON => $tblPerson->getId()));
     }
 
     /**
-     * @param TblDebtor $tblDebtor
+     * @param TblPerson $tblPerson
      *
-     * @return bool|TblDebtorCommodity[]
+     * @return false|TblBankReference[]
      */
-    public function getCommodityDebtorAllByDebtor(TblDebtor $tblDebtor)
+    public function getBankReferenceByPerson(TblPerson $tblPerson)
     {
 
-        $EntityList = $this->getConnection()->getEntityManager()->getEntity('TblDebtorCommodity')
-            ->findBy(array(TblDebtorCommodity::ATTR_TBL_DEBTOR => $tblDebtor->getId()));
-        return ( null === $EntityList ? false : $EntityList );
+        return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblBankReference',
+            array(TblBankReference::ATTR_SERVICE_TBL_PERSON => $tblPerson->getId()));
     }
 
     /**
-     * @param $Id
+     * @param $Reference
      *
-     * @return bool|TblDebtorCommodity
+     * @return false|TblBankReference
      */
-    public function getDebtorCommodityById($Id)
+    public function getBankReferenceByNumber($Reference)
     {
 
-        $Entity = $this->getConnection()->getEntityManager()->getEntityById('TblDebtorCommodity', $Id);
-        return ( null === $Entity ? false : $Entity );
+        return $this->getCachedEntityBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblBankReference',
+            array(TblBankReference::ATTR_REFERENCE_NUMBER => $Reference));
     }
 
     /**
-     * @param $Id
+     * @param TblPerson $tblPerson
      *
-     * @return bool|TblAccount
+     * @return false|TblDebtorSelection[]
      */
-    public function getAccountById($Id)
+    public function getDebtorSelectionByPerson(TblPerson $tblPerson)
     {
 
-        $Entity = $this->getConnection()->getEntityManager()->getEntityById('TblAccount', $Id);
-        return ( null === $Entity ? false : $Entity );
+        return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblDebtorSelection',
+            array(TblDebtorSelection::ATTR_SERVICE_TBL_PERSON => $tblPerson->getId()));
     }
 
     /**
-     * @return TblAccount[]|bool
-     */
-    public function getAccountAll()
-    {
-
-        $EntityList = $this->getConnection()->getEntityManager()->getEntity('TblAccount')->findAll();
-        return ( null === $EntityList ? false : $EntityList );
-    }
-
-    /**
-     * @param TblDebtor $tblDebtor
+     * @param TblBankReference $tblBankReference
      *
-     * @return TblAccount[]|bool
+     * @return false|TblDebtorSelection[]
      */
-    public function getAccountByDebtor(TblDebtor $tblDebtor)
+    public function getDebtorSelectionByBankReference(TblBankReference $tblBankReference)
     {
 
-        $EntityList = $this->getConnection()->getEntityManager()->getEntity('TblAccount')
-            ->findBy(array(TblAccount::ATTR_TBL_DEBTOR => $tblDebtor->getId()));
-        return ( null === $EntityList ? false : $EntityList );
+        return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblDebtorSelection',
+            array(TblDebtorSelection::ATTR_TBL_BANK_REFERENCE => $tblBankReference->getId()));
     }
 
     /**
-     * @param TblAccount $tblAccount
+     * @param TblPerson $tblPerson
+     * @param TblItem   $tblItem
+     * without Debtor
      *
-     * @return bool| TblReference
+     * @return false|TblDebtorSelection
      */
-    public function getReferenceByAccount(TblAccount $tblAccount)
+    public function getDebtorSelectionByPersonAndItem(TblPerson $tblPerson, TblItem $tblItem)
     {
 
-        $EntityList = $this->getConnection()->getEntityManager()->getEntity('TblReference')
-            ->findBy(array(TblReference::ATTR_TBL_ACCOUNT => $tblAccount->getId()));
-        return ( null === $EntityList ? false : $EntityList );
+        return $this->getCachedEntityBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblDebtorSelection',
+            array(TblDebtorSelection::ATTR_SERVICE_TBL_PERSON => $tblPerson->getId(),
+                  TblDebtorSelection::ATTR_SERVICE_TBL_ITEM   => $tblItem->getId()));
     }
 
     /**
-     * @param TblAccount $tblAccount
+     * @param TblPerson $tblPerson
+     * @param TblItem   $tblItem
+     * without Debtor
      *
-     * @return array|bool
+     * @return false|TblDebtorSelection
      */
-    public function getReferenceActiveByAccount(TblAccount $tblAccount)
+    public function getDebtorSelectionByPersonAndItemWithoutDebtor(TblPerson $tblPerson, TblItem $tblItem)
     {
 
-        $EntityList = $this->getConnection()->getEntityManager()->getEntity('TblReference')
-            ->findBy(array(
-                TblReference::ATTR_TBL_ACCOUNT => $tblAccount->getId(),
-                TblReference::ATTR_IS_VOID     => false
+        return $this->getCachedEntityBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblDebtorSelection',
+            array(TblDebtorSelection::ATTR_SERVICE_TBL_PERSON => $tblPerson->getId(),
+                  TblDebtorSelection::ATTR_SERVICE_TBL_ITEM   => $tblItem->getId(),
+                  TblDebtorSelection::ATTR_TBL_DEBTOR         => null,));
+    }
+
+    /**
+     * @param TblDebtorSelection $tblDebtorSelection
+     *
+     * @return false|TblDebtorSelection
+     */
+    public function checkDebtorSelectionDebtor(TblDebtorSelection $tblDebtorSelection)
+    {
+
+        return $this->getCachedEntityBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblDebtorSelection',
+            array(TblDebtorSelection::ATTR_SERVICE_TBL_PERSON => $tblDebtorSelection->getServiceTblPerson()->getId(),
+                  TblDebtorSelection::ATTR_SERVICE_TBL_ITEM   => $tblDebtorSelection->getServiceTblInventoryItem()->getId(),
+                  TblDebtorSelection::ATTR_TBL_DEBTOR         => null,
             ));
-        return ( null === $EntityList ? false : $EntityList );
     }
 
     /**
-     * @param TblDebtorCommodity $tblDebtorCommodity
+     * @param TblPerson $tblPerson
+     * @param           $DebtorNumber
      *
-     * @return bool
+     * @return null|TblDebtor
      */
-    public function removeCommodityToDebtor(
-        TblDebtorCommodity $tblDebtorCommodity
-    ) {
+    public function createDebtor(TblPerson $tblPerson, $DebtorNumber)
+    {
 
         $Manager = $this->getConnection()->getEntityManager();
 
-        $Entity = $Manager->getEntity('TblDebtorCommodity')->findOneBy(
-            array(
-                'Id' => $tblDebtorCommodity->getId()
-            ));
-        if (null !== $Entity) {
-            /**@var Element $Entity */
-            Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(),
-                $Entity);
-            $Manager->killEntity($Entity);
-            return true;
-        }
-        return false;
-    }
+        $Entity = $Manager->getEntity('TblDebtor')->findOneBy(array(
+            TblDebtor::ATTR_DEBTOR_NUMBER => $DebtorNumber,
+        ));
 
-    /**
-     * @param TblDebtor    $tblDebtor
-     * @param TblCommodity $tblCommodity
-     *
-     * @return TblDebtorCommodity
-     */
-    public function addCommodityToDebtor(
-        TblDebtor $tblDebtor,
-        TblCommodity $tblCommodity
-    ) {
-
-        $Manager = $this->getConnection()->getEntityManager();
-        $Entity = $Manager->getEntity('TblDebtorCommodity')->findOneBy(
-            array(
-                TblDebtorCommodity::ATTR_TBL_DEBTOR                => $tblDebtor->getId(),
-                TblDebtorCommodity::ATTR_SERVICE_BILLING_COMMODITY => $tblCommodity->getId()
-            ));
         if (null === $Entity) {
-            $Entity = new TblDebtorCommodity();
-            $Entity->setTblDebtor($tblDebtor);
-            $Entity->setServiceBillingCommodity($tblCommodity);
+            $Entity = new TblDebtor();
+            $Entity->setDebtorNumber($DebtorNumber);
+            $Entity->setServiceTblPerson($tblPerson);
 
             $Manager->saveEntity($Entity);
+
+            Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(),
+                $Entity);
+        }
+        return $Entity;
+    }
+
+    /**
+     * @param TblPerson $tblPerson
+     * @param           $Reference
+     * @param bool      $ReferenceDate
+     * @param null      $BankName
+     * @param null      $Owner
+     * @param null      $IBAN
+     * @param null      $BIC
+     *
+     * @return TblBankReference
+     */
+    public function createReference(
+        TblPerson $tblPerson,
+        $Reference,
+        $ReferenceDate = false,
+        $BankName = null,
+        $Owner = null,
+        $IBAN = null,
+        $BIC = null
+    ) {
+
+        $Manager = $this->getConnection()->getEntityManager();
+
+        $Entity = new TblBankReference();
+        $Entity->setReference($Reference);
+        $Entity->setServiceTblPerson($tblPerson);
+        if ($ReferenceDate) {
+            $Entity->setReferenceDate(new \DateTime($ReferenceDate));
+        } else {
+            date_default_timezone_set('Europe/Berlin');
+            $Entity->setReferenceDate(new \DateTime('now'));
+        }
+        $Entity->setBankName($BankName);
+        $Entity->setOwner($Owner);
+        $Entity->setIBAN($IBAN);
+        $Entity->setBIC($BIC);
+
+        $Manager->saveEntity($Entity);
+
+        Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(),
+            $Entity);
+
+        return $Entity;
+    }
+
+    /**
+     * @param TblPerson      $serviceTblPerson
+     * @param TblPerson      $serviceTblPersonPayers
+     * @param TblPaymentType $serviceBalance_PaymentType
+     * @param TblItem        $serviceItem_Item
+     *
+     * @return null|object|TblDebtorSelection
+     */
+    public function createDebtorSelection(
+        TblPerson $serviceTblPerson,
+        TblPerson $serviceTblPersonPayers,
+        TblPaymentType $serviceBalance_PaymentType,
+        TblItem $serviceItem_Item
+    ) {
+
+        $Manager = $this->getConnection()->getEntityManager();
+
+        $Entity = $Manager->getEntity('TblDebtorSelection')->findOneBy(array(
+            TblDebtorSelection::ATTR_SERVICE_TBL_PERSON => $serviceTblPerson->getId(),
+//            TblDebtorSelection::SERVICE_PEOPLE_PERSON_PAYERS => $serviceTblPersonPayers->getId(),
+//            TblDebtorSelection::SERVICE_BALANCE_PAYMENT_TYPE => $serviceBalance_PaymentType->getId(),
+            TblDebtorSelection::ATTR_SERVICE_TBL_ITEM   => $serviceItem_Item->getId(),
+        ));
+
+        if (null === $Entity) {
+            $Entity = new TblDebtorSelection();
+            $Entity->setServiceTblPerson($serviceTblPerson);
+            $Entity->setServiceTblPersonPayers($serviceTblPersonPayers);
+            $Entity->setServiceTblPaymentType($serviceBalance_PaymentType);
+            $Entity->setServiceTblInventoryItem($serviceItem_Item);
+
+            $Manager->saveEntity($Entity);
+
             Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(),
                 $Entity);
         }
@@ -263,562 +328,209 @@ class Data extends AbstractData
 
     /**
      * @param TblDebtor $tblDebtor
+     * @param           $DebtorNumber
+     *
+     * @return bool|TblDebtor
+     */
+    public function updateDebtor(TblDebtor $tblDebtor, $DebtorNumber)
+    {
+
+        $Manager = $this->getConnection()->getEntityManager();
+
+        $Entity = $Manager->getEntityById('TblDebtor', $tblDebtor->getId());
+
+        /** @var TblDebtor $Entity */
+        $Protocol = clone $Entity;
+        if (null !== $Entity) {
+            $Entity->setDebtorNumber($DebtorNumber);
+            $Manager->saveEntity($Entity);
+            Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(),
+                $Protocol,
+                $Entity);
+            return $Entity;
+        }
+        return false;
+    }
+
+    /**
+     * @param TblBankReference $tblBankReference
+     * @param                  $Reference
+     * @param                  $Date
+     * @param null             $Owner
+     * @param null             $BankName
+     * @param null             $IBAN
+     * @param null             $BIC
      *
      * @return bool
      */
-    public function removeBanking(
-        TblDebtor $tblDebtor
+    public function updateReference(
+        TblBankReference $tblBankReference,
+        $Reference,
+        $Date,
+        $Owner = null,
+        $BankName = null,
+        $IBAN = null,
+        $BIC = null
     ) {
 
         $Manager = $this->getConnection()->getEntityManager();
 
-        $EntityReferenceList = $Manager->getEntity('TblReference')
-            ->findBy(array(TblReference::ATTR_TBL_DEBTOR => $tblDebtor->getId()));
-        if (null !== $EntityReferenceList) {
-            foreach ($EntityReferenceList as $EntityReference) {
-                Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(),
-                    $EntityReference);
-                $Manager->killEntity($EntityReference);
-            }
+        /** @var TblBankReference $Entity */
+        $Entity = $Manager->getEntityById('TblBankReference', $tblBankReference->getId());
+        $Protocol = clone $Entity;
+        if (null !== $Entity) {
+            $Entity->setReference($Reference);
+            $Entity->setReferenceDate(new \DateTime($Date));
+            $Entity->setOwner($Owner);
+            $Entity->setBankName($BankName);
+            $Entity->setIBAN($IBAN);
+            $Entity->setBIC($BIC);
+            $Entity->setOwner($Owner);
+            $Manager->saveEntity($Entity);
+            Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(),
+                $Protocol,
+                $Entity);
+            return true;
         }
+        return false;
+    }
 
-        $EntityItemsDebtorCommodity = $Manager->getEntity('TblDebtorCommodity')
-            ->findBy(array(TblDebtorCommodity::ATTR_TBL_DEBTOR => $tblDebtor->getId()));
-        if (null !== $EntityItemsDebtorCommodity) {
-            foreach ($EntityItemsDebtorCommodity as $Entity) {
-                Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(),
-                    $Entity);
-                $Manager->killEntity($Entity);
-            }
-        }
+    /**
+     * @param TblDebtorSelection    $tblDebtorSelection
+     * @param TblDebtor             $tblDebtor
+     * @param TblBankReference|null $tblBankReference
+     *
+     * @return bool|false|TblDebtorSelection
+     */
+    public function updateDebtorSelection(
+        TblDebtorSelection $tblDebtorSelection,
+        TblDebtor $tblDebtor,
+        TblBankReference $tblBankReference = null
+    ) {
 
-        $EntityItems = $Manager->getEntity('TblDebtor')
-            ->findBy(array(TblDebtor::ATTR_DEBTOR_NUMBER => $tblDebtor->getId()));
-        if (null !== $EntityItems) {
-            foreach ($EntityItems as $Entity) {
-                Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(),
-                    $Entity);
-                $Manager->killEntity($Entity);
-            }
+        $Manager = $this->getConnection()->getEntityManager();
+
+        $Entity = $this->getCachedEntityById(__METHOD__, $Manager, 'TblDebtorSelection', $tblDebtorSelection->getId());
+
+        if (null !== $Entity) {
+            /** @var TblDebtorSelection $Entity */
+            $Protocol = clone $Entity;
+            $Entity->setTblDebtor($tblDebtor);
+            $Entity->setTblBankReference($tblBankReference);
+
+            $Manager->saveEntity($Entity);
+
+            Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(),
+                $Protocol,
+                $Entity);
+            return $Entity;
         }
+        return false;
+    }
+
+    /**
+     * @param TblDebtorSelection    $tblDebtorSelection
+     * @param TblPerson             $tblPersonPayers
+     * @param TblPaymentType        $tblPaymentType
+     * @param TblDebtor|null        $tblDebtor
+     * @param TblBankReference|null $tblBankReference
+     *
+     * @return bool|false|TblDebtorSelection
+     */
+    public function changeDebtorSelection(
+        TblDebtorSelection $tblDebtorSelection,
+        TblPerson $tblPersonPayers,
+        TblPaymentType $tblPaymentType,
+        TblDebtor $tblDebtor = null,
+        TblBankReference $tblBankReference = null
+    ) {
+
+        $Manager = $this->getConnection()->getEntityManager();
+
+        $Entity = $this->getCachedEntityById(__METHOD__, $Manager, 'TblDebtorSelection', $tblDebtorSelection->getId());
+
+        if (null !== $Entity) {
+            /** @var TblDebtorSelection $Entity */
+            $Protocol = clone $Entity;
+            if ($tblPaymentType->getName() !== 'SEPA-Lastschrift' ||
+                $Entity->getServiceTblPersonPayers()->getId() != $tblPersonPayers->getId()
+            ) {
+                $Entity->setTblDebtor($tblDebtor);
+                $Entity->setTblBankReference($tblBankReference);
+            }
+
+            $Entity->setServiceTblPersonPayers($tblPersonPayers);
+            $Entity->setServiceTblPaymentType($tblPaymentType);
+
+            $Manager->saveEntity($Entity);
+
+            Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(),
+                $Protocol,
+                $Entity);
+            return $Entity;
+        }
+        return false;
+    }
+
+    /**
+     * @param TblDebtor $tblDebtor
+     *
+     * @return bool
+     */
+    public function removeDebtor(
+        TblDebtor $tblDebtor
+    ) {
+
+        $Manager = $this->getConnection()->getEntityManager();
 
         $Entity = $Manager->getEntity('TblDebtor')->findOneBy(array('Id' => $tblDebtor->getId()));
         if (null !== $Entity) {
             /**@var Element $Entity */
             Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(),
                 $Entity);
+            $Manager->removeEntity($Entity);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param TblBankReference $tblBankReference
+     *
+     * @return bool
+     */
+    public function removeReference(TblBankReference $tblBankReference)
+    {
+
+        $Manager = $this->getConnection()->getEntityManager();
+
+        /** @var TblBankReference $Entity */
+        $Entity = $Manager->getEntityById('TblBankReference', $tblBankReference->getId());
+        if (null !== $Entity) {
+            $Manager->removeEntity($Entity);
+            Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(), $Entity);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param TblDebtorSelection $tblDebtorSelection
+     *
+     * @return bool
+     */
+    public function destroyDebtorSelection(TblDebtorSelection $tblDebtorSelection)
+    {
+
+        $Manager = $this->getConnection()->getEntityManager();
+
+        /** @var TblDebtorSelection $Entity */
+        $Entity = $Manager->getEntityById('TblDebtorSelection', $tblDebtorSelection->getId());
+        if (null !== $Entity) {
             $Manager->killEntity($Entity);
+            Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(), $Entity);
             return true;
         }
         return false;
-    }
-
-    /**
-     * @param TblAccount $tblAccount
-     *
-     * @return bool
-     */
-    public function destroyAccount(TblAccount $tblAccount)
-    {
-
-        $Manager = $this->getConnection()->getEntityManager();
-
-        if (Banking::useService()->getReferenceActiveByAccount($tblAccount)) {
-            $tblReferenceList = Banking::useService()->getReferenceActiveByAccount($tblAccount);
-            foreach ($tblReferenceList as $tblReference) {
-                $this->deactivateReference($tblReference);
-            }
-        }
-
-        $Entity = $Manager->getEntityById('TblAccount', $tblAccount->getId());
-        if (null !== $Entity) {
-            /**@var Element $Entity */
-            Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(),
-                $Entity);
-            $Manager->killEntity($Entity);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @param TblReference $tblReference
-     *
-     * @return bool
-     */
-    public function deactivateReference(TblReference $tblReference)
-    {
-
-        $Manager = $this->getConnection()->getEntityManager();
-
-        /** @var TblReference $Entity */
-        $Entity = $Manager->getEntityById('TblReference', $tblReference->getId());
-        $Protocol = clone $Entity;
-        if (null !== $Entity) {
-            $Entity->setVoid(true);
-
-            $Manager->saveEntity($Entity);
-            Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(),
-                $Protocol,
-                $Entity);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @param TblDebtor $tblDebtor
-     *
-     * @return bool
-     */
-    public function removeReference(TblDebtor $tblDebtor)
-    {
-
-        $Manager = $this->getConnection()->getEntityManager();
-        $EntityList = $Manager->getEntity('TblReference')->findBy(array(TblReference::ATTR_TBL_DEBTOR => $tblDebtor->getId()));
-
-        if (null !== $EntityList) {
-            foreach ($EntityList as $Entity) {
-                Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(),
-                    $Entity);
-                $Manager->killEntity($Entity);
-            }
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @param TblAccount $tblAccount
-     *
-     * @return bool
-     */
-    public function deactivateAccount(TblAccount $tblAccount)
-    {
-
-        $Manager = $this->getConnection()->getEntityManager();
-
-        /** @var TblAccount $Entity */
-        $Entity = $Manager->getEntityById('TblAccount', $tblAccount->getId());
-        $Protocol = clone $Entity;
-        if (null !== $Entity) {
-            $Entity->setActive(false);
-
-            $Manager->saveEntity($Entity);
-            Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(),
-                $Protocol,
-                $Entity);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @param TblAccount $tblAccount
-     *
-     * @return bool
-     */
-    public function activateAccount(TblAccount $tblAccount)
-    {
-
-        $Manager = $this->getConnection()->getEntityManager();
-
-        /** @var TblAccount $Entity */
-        $Entity = $Manager->getEntityById('TblAccount', $tblAccount->getId());
-        $Protocol = clone $Entity;
-        if (null !== $Entity) {
-            $Entity->setActive(true);
-
-            $Manager->saveEntity($Entity);
-            Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(),
-                $Protocol,
-                $Entity);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @param TblDebtor      $tblDebtor
-     * @param TblPaymentType $paymentType
-     *
-     * @return bool
-     */
-    public function changePaymentType(TblDebtor $tblDebtor, TblPaymentType $paymentType)
-    {
-
-        $Manager = $this->getConnection()->getEntityManager();
-
-        /** @var TblDebtor $Entity */
-        $Entity = $Manager->getEntityById('TblDebtor', $tblDebtor->getId());
-        $Protocol = clone $Entity;
-        if (null !== $Entity) {
-            $Entity->setPaymentType($paymentType);
-
-            $Manager->saveEntity($Entity);
-            Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(),
-                $Protocol,
-                $Entity);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @param TblDebtor    $tblDebtor
-     * @param TblCommodity $tblCommodity
-     *
-     * @return TblDebtorCommodity[]|bool
-     */
-    public function getDebtorCommodityAllByDebtorAndCommodity(TblDebtor $tblDebtor, TblCommodity $tblCommodity)
-    {
-
-        $EntityList = $this->getConnection()->getEntityManager()->getEntity('TblDebtorCommodity')
-            ->findBy(array(
-                TblDebtorCommodity::ATTR_TBL_DEBTOR                => $tblDebtor->getId(),
-                TblDebtorCommodity::ATTR_SERVICE_BILLING_COMMODITY => $tblCommodity->getId()
-            ));
-        return ( null === $EntityList ? false : $EntityList );
-    }
-
-    /**
-     * @param                $DebtorNumber
-     * @param                $Description
-     * @param                $ServiceManagement_Person
-     * @param TblPaymentType $PaymentType
-     *
-     * @return TblDebtor
-     */
-    public function createDebtor(
-        $DebtorNumber,
-        $Description,
-        $ServiceManagement_Person,
-        $PaymentType
-    ) {
-
-        $Manager = $this->getConnection()->getEntityManager();
-
-        $Entity = new TblDebtor();
-        $Entity->setDebtorNumber($DebtorNumber);
-        $Entity->setDescription($Description);
-        $Entity->setServiceManagementPerson($ServiceManagement_Person);
-        $Entity->setPaymentType(Banking::useService()->getPaymentTypeById($PaymentType));
-
-        $Manager->saveEntity($Entity);
-
-        Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(),
-            $Entity);
-
-        return $Entity;
-    }
-
-    /**
-     * @param            $BankName
-     * @param            $Owner
-     * @param            $CashSign
-     * @param            $IBAN
-     * @param            $BIC
-     * @param bool|false $Active
-     * @param TblDebtor  $Debtor
-     *
-     * @return TblAccount
-     */
-    public function createAccount(
-//        $LeadTimeFirst,
-//        $LeadTimeFollow,
-        $BankName,
-        $Owner,
-        $CashSign,
-        $IBAN,
-        $BIC,
-        $Active = false,
-        TblDebtor $Debtor
-    ) {
-
-        $Manager = $this->getConnection()->getEntityManager();
-
-        $Entity = new TblAccount();
-//        $Entity->setLeadTimeFirst($LeadTimeFirst);
-//        $Entity->setLeadTimeFollow($LeadTimeFollow);
-        $Entity->setBankName($BankName);
-        $Entity->setOwner($Owner);
-        $Entity->setCashSign($CashSign);
-        $Entity->setIBAN($IBAN);
-        $Entity->setBIC($BIC);
-        $Entity->setActive($Active);
-        $Entity->setTblDebtor($Debtor);
-
-        $Manager->saveEntity($Entity);
-
-        Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(),
-            $Entity);
-
-        return $Entity;
-    }
-
-    /**
-     * @return bool|TblDebtor[]
-     */
-    public function getDebtorAll()
-    {
-
-        $Entity = $this->getConnection()->getEntityManager()->getEntity('TblDebtor')->findAll();
-        return ( null === $Entity ? false : $Entity );
-    }
-
-    /**
-     * @param              $Reference
-     * @param              $DebtorNumber
-     * @param              $ReferenceDate
-     * @param TblCommodity $tblCommodity
-     * @param TblAccount   $tblAccount
-     *
-     * @return TblReference
-     */
-    public function createReference(
-        $Reference,
-        $DebtorNumber,
-        $ReferenceDate,
-        TblCommodity $tblCommodity,
-        TblAccount $tblAccount
-    ) {
-
-        $Manager = $this->getConnection()->getEntityManager();
-
-        $Entity = new TblReference();
-        $Entity->setReference($Reference);
-        $Entity->setVoid(false);
-        $Entity->setServiceTblDebtor(Banking::useService()->getDebtorByDebtorNumber($DebtorNumber));
-        $Entity->setServiceBillingCommodity($tblCommodity);
-        if ($ReferenceDate) {
-            $Entity->setReferenceDate(new \DateTime($ReferenceDate));
-        } else {
-            date_default_timezone_set('Europe/Berlin');
-            $Entity->setReferenceDate(new \DateTime('now'));
-        }
-        $Entity->setServiceTblAccount($tblAccount);
-        $Manager->saveEntity($Entity);
-
-        Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(),
-            $Entity);
-
-        return $Entity;
-    }
-
-    /**
-     * @param TblDebtor $tblDebtor
-     * @param           $Description
-     *
-     * @return bool
-     */
-    public function updateDebtor(
-        TblDebtor $tblDebtor,
-        $Description
-    ) {
-
-        $Manager = $this->getConnection()->getEntityManager();
-
-        /** @var TblDebtor $Entity */
-        $Entity = $Manager->getEntityById('TblDebtor', $tblDebtor->getId());
-        $Protocol = clone $Entity;
-        if (null !== $Entity) {
-            $Entity->setDescription($Description);
-            $Manager->saveEntity($Entity);
-            Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(),
-                $Protocol,
-                $Entity);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @param TblReference $tblReference
-     * @param              $Date
-     *
-     * @return bool
-     */
-    public function updateReference(TblReference $tblReference, $Date)
-    {
-
-        $Manager = $this->getConnection()->getEntityManager();
-
-        /** @var TblReference $Entity */
-        $Entity = $Manager->getEntityById('TblReference', $tblReference->getId());
-        $Protocol = clone $Entity;
-        if (null !== $Entity) {
-            $Entity->setReferenceDate(new \DateTime($Date));
-            $Manager->saveEntity($Entity);
-            Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(),
-                $Protocol,
-                $Entity);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @param TblAccount $tblAccount
-     * @param            $Owner
-     * @param            $IBAN
-     * @param            $BIC
-     * @param            $CashSign
-     * @param            $BankName
-     * @param            $DebtorId
-     *
-     * @return bool
-     */
-    public function updateAccount(
-        TblAccount $tblAccount,
-        $Owner,
-        $IBAN,
-        $BIC,
-        $CashSign,
-        $BankName,
-        $DebtorId
-    ) {
-
-        $Manager = $this->getConnection()->getEntityManager();
-
-        /** @var TblAccount $Entity */
-        $Entity = $Manager->getEntityById('TblAccount', $tblAccount->getId());
-        $Protocol = clone $Entity;
-        if (null !== $Entity) {
-            $Entity->setOwner($Owner);
-            $Entity->setIBAN($IBAN);
-            $Entity->setBIC($BIC);
-            $Entity->setCashSign($CashSign);
-            $Entity->setBankName($BankName);
-            $Entity->setTblDebtor(Banking::useService()->getDebtorById($DebtorId));
-            $Manager->saveEntity($Entity);
-            Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(),
-                $Protocol,
-                $Entity);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @param TblDebtor $tblDebtor
-     *
-     * @return bool|TblReference[]
-     */
-    public function getReferenceByDebtor(TblDebtor $tblDebtor)
-    {
-
-        $Entity = $this->getConnection()->getEntityManager()->getEntity('TblReference')
-            ->findBy(array(TblReference::ATTR_TBL_DEBTOR => $tblDebtor->getId(), TblReference::ATTR_IS_VOID => false));
-        return ( null === $Entity ? false : $Entity );
-    }
-
-    /**
-     * @param $tblReference
-     *
-     * @return bool|TblReference
-     */
-    public function getReferenceById($tblReference)
-    {
-
-        $Entity = $this->getConnection()->getEntityManager()->getEntityById('TblReference', $tblReference);
-        return ( null === $Entity ? false : $Entity );
-    }
-
-    /**
-     * @param TblDebtor    $tblDebtor
-     * @param TblCommodity $tblCommodity
-     *
-     * @return bool|TblReference
-     */
-    public function getReferenceByDebtorAndCommodity(TblDebtor $tblDebtor, TblCommodity $tblCommodity)
-    {
-
-        $Entity = $this->getConnection()->getEntityManager()->getEntity('TblReference')->findOneBy(array(
-            TblReference::ATTR_TBL_DEBTOR                => $tblDebtor->getId(),
-            TblReference::ATTR_SERVICE_BILLING_COMMODITY => $tblCommodity->getId(),
-            TblReference::ATTR_IS_VOID                   => false
-        ));
-        return ( null === $Entity ? false : $Entity );
-    }
-
-    /**
-     * @param TblAccount   $tblAccount
-     * @param TblCommodity $tblCommodity
-     *
-     * @return bool|TblReference
-     */
-    public function getReferenceByAccountAndCommodity(TblAccount $tblAccount, TblCommodity $tblCommodity)
-    {
-
-        $Entity = $this->getConnection()->getEntityManager()->getEntity('TblReference')->findOneBy(array(
-            TblReference::ATTR_TBL_ACCOUNT               => $tblAccount->getId(),
-            TblReference::ATTR_SERVICE_BILLING_COMMODITY => $tblCommodity->getId(),
-            TblReference::ATTR_IS_VOID                   => false
-        ));
-        return ( null === $Entity ? false : $Entity );
-    }
-
-    /**
-     * @param $Reference
-     *
-     * @return bool|TblReference
-     */
-    public function getReferenceByReference($Reference)
-    {
-
-        $Entity = $this->getConnection()->getEntityManager()->getEntity('TblReference')
-            ->findOneBy(array(TblReference::ATTR_REFERENCE => $Reference));
-        return ( null === $Entity ? false : $Entity );
-    }
-
-    /**
-     * @param $Reference
-     *
-     * @return bool|TblReference
-     */
-    public function getReferenceByReferenceActive($Reference)
-    {
-
-        $Entity = $this->getConnection()->getEntityManager()->getEntity('TblReference')
-            ->findOneBy(array(
-                TblReference::ATTR_REFERENCE => $Reference,
-                TblReference::ATTR_IS_VOID   => false
-            ));
-        return ( null === $Entity ? false : $Entity );
-    }
-
-    /**
-     * @return bool|TblPaymentType[]
-     */
-    public function getPaymentTypeAll()
-    {
-
-        $Entity = $this->getConnection()->getEntityManager()->getEntity('TblPaymentType')->findAll();
-
-        return ( null === $Entity ? false : $Entity );
-    }
-
-    /**
-     * @param $PaymentType
-     *
-     * @return bool|null|$tblPaymentType
-     */
-    public function getPaymentTypeByName($PaymentType)
-    {
-
-        $Entity = $this->getConnection()->getEntityManager()->getEntity('TblPaymentType')->findOneBy(array(TblPaymentType::ATTR_NAME => $PaymentType));
-        return ( null === $Entity ? false : $Entity );
-    }
-
-    /**
-     * @param $Id
-     *
-     * @return bool|TblPaymentType
-     */
-    public function getPaymentTypeById($Id)
-    {
-
-        $Entity = $this->getConnection()->getEntityManager()->getEntityById('TblPaymentType', $Id);
-        return ( null === $Entity ? false : $Entity );
     }
 }

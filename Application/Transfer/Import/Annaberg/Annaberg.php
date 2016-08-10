@@ -32,7 +32,11 @@ class Annaberg implements IModuleInterface
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
             __NAMESPACE__ . '/Staff', __NAMESPACE__ . '\Frontend::frontendStaffImport'
         ));
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__ . '/Company', __NAMESPACE__ . '\Frontend::frontendCompanyImport'
+        ));
 
+        Main::getDispatcher()->registerWidget('Import', array(__CLASS__, 'widgetCompany'), 2, 2);
         Main::getDispatcher()->registerWidget('Import', array(__CLASS__, 'widgetStudent'), 2, 2);
         Main::getDispatcher()->registerWidget('Import', array(__CLASS__, 'widgetStaff'), 2, 2);
     }
@@ -80,4 +84,18 @@ class Annaberg implements IModuleInterface
             new Standard('', '/Transfer/Import/Annaberg/Staff', new Upload(), array(), 'Upload')
         );
     }
+
+    /**
+     * @return Thumbnail
+     */
+    public static function widgetCompany()
+    {
+
+        return new Thumbnail(
+            FileSystem::getFileLoader('/Common/Style/Resource/logo_kreide2.png'),
+            'Annaberg', 'Schulen (Firmen)',
+            new Standard('', '/Transfer/Import/Annaberg/Company', new Upload(), array(), 'Upload')
+        );
+    }
+
 }

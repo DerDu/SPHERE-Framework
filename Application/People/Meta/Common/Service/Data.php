@@ -4,6 +4,7 @@ namespace SPHERE\Application\People\Meta\Common\Service;
 use SPHERE\Application\People\Meta\Common\Service\Entity\TblCommon;
 use SPHERE\Application\People\Meta\Common\Service\Entity\TblCommonBirthDates;
 use SPHERE\Application\People\Meta\Common\Service\Entity\TblCommonInformation;
+use SPHERE\Application\People\Meta\Common\Service\Entity\ViewPeopleMetaCommon;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
 use SPHERE\System\Database\Binding\AbstractData;
@@ -16,6 +17,17 @@ use SPHERE\System\Database\Binding\AbstractData;
 class Data extends AbstractData
 {
 
+    /**
+     * @return false|ViewPeopleMetaCommon[]
+     */
+    public function viewPeopleMetaCommon()
+    {
+
+        return $this->getCachedEntityList(
+            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewPeopleMetaCommon'
+        );
+    }
+    
     public function setupDatabaseContent()
     {
 

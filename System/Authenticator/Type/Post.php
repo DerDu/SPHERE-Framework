@@ -42,6 +42,7 @@ class Post extends Extension implements ITypeInterface
 
         $Global = $this->getGlobal();
         array_walk_recursive($Global->POST, array($this, 'preventXSS'));
+        array_walk_recursive($Global->POST, array($this, 'trimInput'));
         $Global->savePost();
 
         return true;
@@ -62,6 +63,14 @@ class Post extends Extension implements ITypeInterface
         return array();
     }
 
+    /**
+     * @param $Value
+     */
+    protected function trimInput(&$Value)
+    {
+
+        $Value = trim($Value);
+    }
 
     /**
      * @param $Value

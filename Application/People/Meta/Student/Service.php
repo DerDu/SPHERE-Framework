@@ -325,7 +325,8 @@ class Service extends Integration
                 $tblStudentBilling,
                 $tblStudentLocker,
                 $tblStudentBaptism,
-                $tblStudentIntegration
+                $tblStudentIntegration,
+                $Meta['Student']['SchoolAttendanceStartDate']
             );
 
         } else {
@@ -379,7 +380,8 @@ class Service extends Integration
                 $tblStudentBilling,
                 $tblStudentLocker,
                 $tblStudentBaptism,
-                $tblStudentIntegration
+                $tblStudentIntegration,
+                $Meta['Student']['SchoolAttendanceStartDate']
             );
         }
 

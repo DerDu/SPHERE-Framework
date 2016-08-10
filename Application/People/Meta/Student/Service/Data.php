@@ -34,6 +34,18 @@ class Data extends Integration
         $this->createStudentAgreementType($tblStudentAgreementCategory, 'durch Ton/Video/Film');
         $this->createStudentAgreementType($tblStudentAgreementCategory, 'für Werbung in eigener Sache');
 
+        $tblStudentAgreementCategory = $this->createStudentAgreementCategory(
+            'Namentliche Erwähnung des Schülers',
+            ''
+        );
+        $this->createStudentAgreementType($tblStudentAgreementCategory, 'in Schulschriften');
+        $this->createStudentAgreementType($tblStudentAgreementCategory, 'in Veröffentlichungen');
+        $this->createStudentAgreementType($tblStudentAgreementCategory, 'auf Internetpräsenz');
+        $this->createStudentAgreementType($tblStudentAgreementCategory, 'auf Facebookseite');
+        $this->createStudentAgreementType($tblStudentAgreementCategory, 'für Druckpresse');
+        $this->createStudentAgreementType($tblStudentAgreementCategory, 'durch Ton/Video/Film');
+        $this->createStudentAgreementType($tblStudentAgreementCategory, 'für Werbung in eigener Sache');
+
         $this->createStudentSubjectType('ORIENTATION', 'Orientation');
         $this->createStudentSubjectType('ADVANCED', 'Advanced');
         $this->createStudentSubjectType('PROFILE', 'Profile');

@@ -71,10 +71,10 @@ class Frontend extends Extension implements IFrontendInterface
     {
 
         $Stage = new Stage('Schulen', 'Übersicht');
+        $Stage->addButton(new Standard('Schule hinzufügen', '/Setting/Consumer/School/Create'));
 
         $Stage->setContent(
-            new Standard('Schule hinzufügen', '/Setting/Consumer/School/Create')
-            .new Layout(
+            new Layout(
                 new LayoutGroup(
                     new LayoutRow(
                         new LayoutColumn(
@@ -86,7 +86,7 @@ class Frontend extends Extension implements IFrontendInterface
         );
 
         if (( $tblSchoolAll = School::useService()->getSchoolAll() )) {
-
+            $Stage->addButton(new Standard('Schule entfernen', '/Setting/Consumer/School/Delete'));
             $Form = null;
             foreach ($tblSchoolAll as $tblSchool) {
                 $tblCompany = $tblSchool->getServiceTblCompany();
@@ -97,9 +97,9 @@ class Frontend extends Extension implements IFrontendInterface
                                 self::frontendLayoutCombine($tblCompany)
                             )),
                         ),
-                            (new Title(new TagList() . ' ' .
+                            (new Title(new TagList().' '.
                                 new \SPHERE\Common\Frontend\Text\Repository\Warning($tblSchool->getServiceTblType()
-                                    ? $tblSchool->getServiceTblType()->getName() : ' ') . ' '
+                                    ? $tblSchool->getServiceTblType()->getName() : ' ').' '
                                 .$tblCompany->getDisplayName(), ' Kontaktdaten'
                             ))
                         ),
@@ -108,9 +108,7 @@ class Frontend extends Extension implements IFrontendInterface
             }
 
             $Stage->setContent(
-                new Standard('Schule hinzufügen', '/Setting/Consumer/School/Create')
-                .new Standard('Schule entfernen', '/Setting/Consumer/School/Delete')
-                .$Form
+                $Form
             );
         }
         return $Stage;
@@ -225,7 +223,7 @@ class Frontend extends Extension implements IFrontendInterface
 
                     $tblToCompany = new LayoutColumn(
                         new Panel(
-                            new Building() . ' ' . new Link() . ' ' . $tblToCompany->getTblType()->getName(), $Panel,
+                            new Building().' '.new Link().' '.$tblToCompany->getTblType()->getName(), $Panel,
                             Panel::PANEL_TYPE_DEFAULT)
                         , 3);
                 }
@@ -293,12 +291,12 @@ class Frontend extends Extension implements IFrontendInterface
     }
 
     /**
-     * @param $School
-     * @param $Type
+     * @param null $School
+     * @param null $Type
      *
      * @return Stage
      */
-    public function frontendSchoolCreate($School, $Type)
+    public function frontendSchoolCreate($School = null, $Type = null)
     {
 
         $Stage = new Stage('Schule', 'Hinzufügen');
@@ -397,7 +395,7 @@ class Frontend extends Extension implements IFrontendInterface
                     if ($tblAddressAll) {
                         foreach ($tblAddressAll as $tblAddress) {
                             $Address[] = new Muted(new Small($tblAddress->getTblAddress()->getStreetName().' '
-                                . $tblAddress->getTblAddress()->getStreetNumber() . ' '
+                                .$tblAddress->getTblAddress()->getStreetNumber().' '
                                 .$tblAddress->getTblAddress()->getTblCity()->getName()));
                         }
                     }
@@ -444,20 +442,20 @@ class Frontend extends Extension implements IFrontendInterface
     }
 
     /**
-     * @param            $Id
-     * @param bool|false $Confirm
+     * @param null $Id
+     * @param bool $Confirm
      *
-     * @return Stage
+     * @return Stage|string
      */
-    public function frontendSchoolDestroy($Id, $Confirm = false)
+    public function frontendSchoolDestroy($Id = null, $Confirm = false)
     {
 
         $Stage = new Stage('Schule', 'Löschen');
         if ($Id) {
             $tblSchool = School::useService()->getSchoolById($Id);
-            if (!$tblSchool){
-                return $Stage . new Danger('Die Schule konnte nicht gefunden werden', new Ban())
-                    . new Redirect('/Setting/Consumer/School', Redirect::TIMEOUT_ERROR);
+            if (!$tblSchool) {
+                return $Stage.new Danger('Die Schule konnte nicht gefunden werden', new Ban())
+                .new Redirect('/Setting/Consumer/School', Redirect::TIMEOUT_ERROR);
             }
 
             if (!$Confirm) {
@@ -473,7 +471,7 @@ class Frontend extends Extension implements IFrontendInterface
                     if ($tblAddressAll) {
                         foreach ($tblAddressAll as $tblAddress) {
                             $Address[] = new Muted(new Small($tblAddress->getTblAddress()->getStreetName().' '
-                                . $tblAddress->getTblAddress()->getStreetNumber() . ' '
+                                .$tblAddress->getTblAddress()->getStreetNumber().' '
                                 .$tblAddress->getTblAddress()->getTblCity()->getName()));
                         }
                     }
@@ -481,7 +479,7 @@ class Frontend extends Extension implements IFrontendInterface
                 $Stage->setContent(
                     new Layout(new LayoutGroup(new LayoutRow(new LayoutColumn(
                         new Panel(new Question().' Diese Schule mit der Schulart "'
-                            . ($tblSchool->getServiceTblType() ? $tblSchool->getServiceTblType()->getName() : '')
+                            .( $tblSchool->getServiceTblType() ? $tblSchool->getServiceTblType()->getName() : '' )
                             .'" wirklich löschen?', $Address,
                             Panel::PANEL_TYPE_DANGER,
                             new Standard(

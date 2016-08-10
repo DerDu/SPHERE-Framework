@@ -295,6 +295,33 @@ class Frontend extends Extension implements IFrontendInterface
     }
 
     /**
+     * Kompakte Darstellung aller relevanter/Datenschutz unbedenklicher Personendaten (reine Ansicht!)
+     *
+     * @param null|int $Id TblPerson
+     *
+     * @return Stage
+     */
+    public function frontendDossier($Id = null)
+    {
+
+        $Stage = new Stage();
+
+        if( !$Id ) {
+            // TODO: Error
+            return $Stage;
+        }
+
+        $tblPerson = Person::useService()->getPersonById($Id);
+        if( !$tblPerson ) {
+            // TODO: Error
+            return $Stage;
+        }
+
+
+        return $Stage;
+    }
+
+    /**
      * @return Form
      */
     private function formPerson()

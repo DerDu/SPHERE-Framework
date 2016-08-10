@@ -2,10 +2,9 @@
 
 namespace SPHERE\Application\Billing\Bookkeeping\Balance\Service;
 
-use SPHERE\Application\Billing\Accounting\Banking\Service\Entity\TblDebtor;
-use SPHERE\Application\Billing\Bookkeeping\Balance\Service\Entity\TblBalance;
+use SPHERE\Application\Billing\Bookkeeping\Balance\Service\Entity\TblInvoicePayment;
 use SPHERE\Application\Billing\Bookkeeping\Balance\Service\Entity\TblPayment;
-use SPHERE\Application\Billing\Bookkeeping\Invoice\Invoice;
+use SPHERE\Application\Billing\Bookkeeping\Balance\Service\Entity\TblPaymentType;
 use SPHERE\Application\Billing\Bookkeeping\Invoice\Service\Entity\TblInvoice;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
 use SPHERE\System\Database\Binding\AbstractData;
@@ -21,44 +20,44 @@ class Data extends AbstractData
     public function setupDatabaseContent()
     {
 
+        /**
+         * TblPayment
+         */
+        $this->createPaymentType('SEPA-Lastschrift');
+        $this->createPaymentType('SEPA-Überweisung');
+        $this->createPaymentType('Bar');
     }
 
     /**
-     * @param integer $Id
+     * @param $PaymentType
      *
-     * @return bool|TblBalance
+     * @return TblPaymentType|null|object
      */
-    public function getBalanceById($Id)
+    public function createPaymentType($PaymentType)
     {
 
-        $Entity = $this->getConnection()->getEntityManager()->getEntityById('TblBalance', $Id);
-        return ( null === $Entity ? false : $Entity );
+        $Manager = $this->getConnection()->getEntityManager();
+        $Entity = $Manager->getEntity('TblPaymentType')->findOneBy(array(TblPaymentType::ATTR_NAME => $PaymentType));
+        if (null === $Entity) {
+            $Entity = new TblPaymentType();
+            $Entity->setName($PaymentType);
+            $Manager->saveEntity($Entity);
+            Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(),
+                $Entity);
+        }
+
+        return $Entity;
     }
 
     /**
-     * @param TblInvoice $tblInvoice
+     * @param $Id
      *
-     * @return bool|TblBalance
-     */
-    public function getBalanceByInvoice(TblInvoice $tblInvoice)
-    {
-
-        $Entity = $this->getConnection()->getEntityManager()->getEntity('TblBalance')->findOneBy(
-            array(TblBalance::ATTR_SERVICE_BILLING_INVOICE => $tblInvoice->getId())
-        );
-        return ( null === $Entity ? false : $Entity );
-    }
-
-    /**
-     * @param integer $Id
-     *
-     * @return bool|TblPayment
+     * @return false|TblPayment
      */
     public function getPaymentById($Id)
     {
 
-        $Entity = $this->getConnection()->getEntityManager()->getEntityById('TblPayment', $Id);
-        return ( null === $Entity ? false : $Entity );
+        return $this->getCachedEntityById(__METHOD__, $this->getConnection()->getEntityManager(), 'TblPayment', $Id);
     }
 
     /**
@@ -67,308 +66,127 @@ class Data extends AbstractData
     public function getPaymentAll()
     {
 
-        $Entity = $this->getConnection()->getEntityManager()->getEntity('TblPayment')->findAll();
-        return ( null === $Entity ? false : $Entity );
+        return $this->getCachedEntityList(__METHOD__, $this->getConnection()->getEntityManager(), 'TblPayment');
     }
 
     /**
-     * @return bool|TblInvoice[]
+     * @param $Id
+     *
+     * @return false|TblPaymentType
      */
-    public function getInvoiceHasFullPaymentAll()
+    public function getPaymentTypeById($Id)
     {
 
-        $invoiceHasFullPaymentAll = array();
-        $balanceAll = $this->getBalanceAll();
-        if ($balanceAll) {
-            foreach ($balanceAll as $balance) {
-                $invoice = $balance->getServiceBillingInvoice();
-                $sumInvoicePrice = Invoice::useService()->sumPriceItemAllByInvoice($invoice);
-                $sumPaymentPrice = $this->sumPriceItemByBalance($balance);
+        return $this->getCachedEntityById(__METHOD__, $this->getConnection()->getEntityManager(), 'TblPaymentType', $Id);
+    }
 
-                $sumInvoicePrice = round($sumInvoicePrice, 2);
-                $sumPaymentPrice = round($sumPaymentPrice, 2);
+    /**
+     * @return false|TblPaymentType[]
+     */
+    public function getPaymentTypeAll()
+    {
 
-                if ($sumInvoicePrice <= $sumPaymentPrice) {
-                    $invoiceHasFullPaymentAll[] = $invoice;
-                }
+        return $this->getCachedEntityList(__METHOD__, $this->getConnection()->getEntityManager(), 'TblPaymentType');
+    }
+
+    /**
+     * @param $Name
+     *
+     * @return false|TblPaymentType
+     */
+    public function getPaymentTypeByName($Name)
+    {
+
+        return $this->getCachedEntityBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblPaymentType',
+            array(TblPaymentType::ATTR_NAME => $Name));
+    }
+
+    /**
+     * @param TblInvoice $tblInvoice
+     *
+     * @return false|TblPayment[]
+     */
+    public function getPaymentAllByInvoice(TblInvoice $tblInvoice)
+    {
+
+        $EntityList = $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblInvoicePayment',
+            array(TblInvoicePayment::ATTR_SERVICE_TBL_INVOICE => $tblInvoice));
+        if ($EntityList) {
+            /** @var TblInvoicePayment $Entity */
+            foreach ($EntityList as &$Entity) {
+                $Entity = $Entity->getTblPayment();
             }
         }
-
-        return ( empty( $invoiceHasFullPaymentAll ) ? false : $invoiceHasFullPaymentAll );
+        return ( $EntityList );
     }
 
     /**
-     * @return bool|TblBalance[]
-     */
-    public function getBalanceAll()
-    {
-
-        $Entity = $this->getConnection()->getEntityManager()->getEntity('TblBalance')->findAll();
-        return ( null === $Entity ? false : $Entity );
-    }
-
-    /**
-     * @param TblBalance $tblBalance
+     * @param TblPaymentType $tblPaymentType
+     * @param                $Value
+     * @param                $Purpose
      *
-     * @return float
+     * @return null|object|TblPayment
      */
-    public function sumPriceItemByBalance(TblBalance $tblBalance)
-    {
-
-        $sum = 0.00;
-        $tblPaymentList = $this->getPaymentByBalance($tblBalance);
-        foreach ($tblPaymentList as $tblPayment) {
-            $sum += $tblPayment->getValue();
-        }
-
-        return $sum;
-    }
-
-    /**
-     * @param TblBalance $tblBalance
-     *
-     * @return bool|TblPayment[]
-     */
-    public function getPaymentByBalance(TblBalance $tblBalance)
-    {
-
-        $Entity = $this->getConnection()->getEntityManager()->getEntity('TblPayment')->findBy(
-            array(TblPayment::ATTR_TBL_BALANCE => $tblBalance->getId())
-        );
-        return ( null === $Entity ? false : $Entity );
-    }
-
-    /**
-     * @return bool|TblInvoice[]
-     */
-    public function getInvoiceHasExportDateAll()
-    {
-
-        $invoiceHasExportDateAll = array();
-        $balanceAll = $this->getBalanceAll();
-        if ($balanceAll) {
-            foreach ($balanceAll as $balance) {
-                $invoice = $balance->getServiceBillingInvoice();
-                $BalanceDate = $balance->getExportDate();
-
-                if ($BalanceDate !== false) {
-                    $invoiceHasExportDateAll[] = $invoice;
-                }
-            }
-        }
-
-        return ( empty( $invoiceHasExportDateAll ) ? false : $invoiceHasExportDateAll );
-    }
-
-    /**
-     * @param TblBalance $tblBalance
-     *
-     * @return string
-     */
-    public function sumPriceItemStringByBalance(TblBalance $tblBalance)
-    {
-
-        return str_replace('.', ',', round($this->sumPriceItemByBalance($tblBalance), 2))." €";
-    }
-
-    /**
-     * @param TblDebtor $tblDebtor
-     *
-     * @return bool
-     */
-    public function checkPaymentFromDebtorExistsByDebtor(TblDebtor $tblDebtor)
-    {
-
-        /** @var TblBalance[] $balanceAllByDebtor */
-        $balanceAllByDebtor = $this->getConnection()->getEntityManager()->getEntity('TblBalance')->findBy(
-            array(TblBalance::ATTR_SERVICE_BILLING_DEBTOR => $tblDebtor->getId())
-        );
-        foreach ($balanceAllByDebtor as $balance) {
-            $Entity = $this->getConnection()->getEntityManager()->getEntity('TblPayment')->findOneBy(
-                array(TblPayment::ATTR_TBL_BALANCE => $balance->getId())
-            );
-            if ($Entity !== null) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @param TblDebtor  $serviceBilling_Banking
-     * @param TblInvoice $serviceBilling_Invoice
-     * @param            $ExportDate
-     * @param null       $BankName
-     * @param null       $IBAN
-     * @param null       $BIC
-     * @param null       $Owner
-     * @param null       $CashSign
-     * @param null       $Reference
-     *
-     * @return bool
-     */
-    public function createBalance(
-        TblDebtor $serviceBilling_Banking,
-        TblInvoice $serviceBilling_Invoice,
-        $ExportDate = null,
-        $BankName = null,
-        $IBAN = null,
-        $BIC = null,
-        $Owner = null,
-        $CashSign = null,
-        $Reference = null
-    ) {
-
-        $Manager = $this->getConnection()->getEntityManager();
-        $Entity = $Manager->getEntity('TblBalance')->findOneBy(array(
-            TblBalance::ATTR_SERVICE_BILLING_DEBTOR  => $serviceBilling_Banking->getId(),
-            TblBalance::ATTR_SERVICE_BILLING_INVOICE => $serviceBilling_Invoice->getId()
-        ));
-
-        if (null === $Entity) {
-            $Entity = new TblBalance();
-            $Entity->setServiceBillingDebtor($serviceBilling_Banking);
-            $Entity->setServiceBillingInvoice($serviceBilling_Invoice);
-            if ($ExportDate !== null) {
-                $Entity->setExportDate($ExportDate);
-            }
-            if ($BankName !== null) {
-                $Entity->setBankName($BankName);
-            }
-            if ($IBAN !== null) {
-                $Entity->setIBAN($IBAN);
-            }
-            if ($BIC !== null) {
-                $Entity->setBIC($BIC);
-            }
-            if ($Owner !== null) {
-                $Entity->setOwner($Owner);
-            }
-            if ($CashSign !== null) {
-                $Entity->setCashSign($CashSign);
-            }
-            if ($Reference !== null) {
-                $Entity->setReference($Reference);
-            }
-            $Manager->saveEntity($Entity);
-            Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(),
-                $Entity);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    public function copyBalance(TblBalance $tblBalance, TblInvoice $tblInvoice)
+    public function createPayment(TblPaymentType $tblPaymentType, $Value, $Purpose)
     {
 
         $Manager = $this->getConnection()->getEntityManager();
-        $Entity = $Manager->getEntity('TblBalance')->findOneBy(array(
-            TblBalance::ATTR_SERVICE_BILLING_DEBTOR  => $tblBalance->getServiceBillingDebtor()->getId(),
-            TblBalance::ATTR_SERVICE_BILLING_INVOICE => $tblInvoice->getId()
-        ));
+        $Entity = new TblPayment();
+        $Entity->setTblPaymentType($tblPaymentType);
+        $Entity->setValue(str_replace(',', '.', $Value));
+        $Entity->setPurpose($Purpose);
 
-        if (null === $Entity) {
-            $Entity = new TblBalance();
-            $Entity->setServiceBillingDebtor($tblBalance->getServiceBillingDebtor());
-            $Entity->setServiceBillingInvoice($tblInvoice);
-            $Entity->setExportDate(new \DateTime($tblBalance->getExportDate()));
-            $Entity->setBankName($tblBalance->getBankName());
-            $Entity->setIBAN($tblBalance->getIBAN());
-            $Entity->setBIC($tblBalance->getBIC());
-            $Entity->setOwner($tblBalance->getOwner());
-            $Entity->setCashSign($tblBalance->getCashSign());
-            $Entity->setReference($tblBalance->getReference());
-            $Manager->saveEntity($Entity);
-            Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(),
-                $Entity);
-
-            return true;
-        }
-
-        return false;
+        $Manager->saveEntity($Entity);
+        Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(),
+            $Entity);
+        return $Entity;
     }
 
     /**
-     * @param TblBalance $tblBalance
+     * @param TblPayment     $tblPayment
+     * @param TblPaymentType $tblPaymentType
+     * @param                $Value
+     * @param                $Purpose
      *
-     * @return bool
+     * @return false|TblPayment
      */
-    public function createSetExportDateBalance(TblBalance $tblBalance)
+    public function changePayment(TblPayment $tblPayment, TblPaymentType $tblPaymentType, $Value, $Purpose)
     {
-
         $Manager = $this->getConnection()->getEntityManager();
-        /** @var TblBalance $Entity */
-        $Entity = $Manager->getEntityById('TblInvoice', $tblBalance->getId());
+        $Entity = $this->getCachedEntityById(__METHOD__, $Manager, 'TblPayment', $tblPayment->getId());
         $Protocol = clone $Entity;
+        /** @var TblPayment $Entity */
+        if ($Entity) {
+            $Entity->setTblPaymentType($tblPaymentType);
+            $Entity->setValue(str_replace(',', '.', $Value));
+            $Entity->setPurpose($Purpose);
 
-        if (null !== $Entity) {
-            $Entity->setExportDate(new \DateTime('now'));
             $Manager->saveEntity($Entity);
             Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(),
                 $Protocol,
                 $Entity);
-
-            return true;
+            return $Entity;
         }
-
-        return false;
+        return $Entity;
     }
 
     /**
-     * @param TblBalance $tblBalance
+     * @param TblInvoice $tblInvoice
+     * @param TblPayment $tblPayment
      *
-     * @return bool
+     * @return TblInvoicePayment
      */
-    public function removeBalance(TblBalance $tblBalance)
+    public function createInvoicePayment(TblInvoice $tblInvoice, TblPayment $tblPayment)
     {
 
         $Manager = $this->getConnection()->getEntityManager();
-        $Entity = $Manager->getEntity('TblBalance')->findOneBy(
-            array('Id' => $tblBalance->getId())
-        );
+        $Entity = new TblInvoicePayment();
+        $Entity->setServiceTblInvoice($tblInvoice);
+        $Entity->setTblPayment($tblPayment);
 
-        if (null !== $Entity) {
-            /**@var Element $Entity */
-            Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(),
-                $Entity);
-            $Manager->killEntity($Entity);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * @param TblBalance $tblBalance
-     * @param            $Value
-     * @param \DateTime  $Date
-     *
-     * @return TblPayment|null|object
-     */
-    public function createPayment(TblBalance $tblBalance, $Value, \DateTime $Date)
-    {
-
-        $Manager = $this->getConnection()->getEntityManager();
-        $Entity = $Manager->getEntity('TblPayment')->findOneBy(array(
-            'tblBalance' => $tblBalance->getId(),
-            'Value'      => $Value,
-            'Date'       => $Date
-        ));
-
-        if (null === $Entity) {
-            $Entity = new TblPayment();
-            $Entity->setTblBalance($tblBalance);
-            $Entity->setValue($Value);
-            $Entity->setDate($Date);
-
-            $Manager->saveEntity($Entity);
-            Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(),
-                $Entity);
-        }
+        $Manager->saveEntity($Entity);
+        Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(),
+            $Entity);
 
         return $Entity;
     }

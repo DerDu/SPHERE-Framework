@@ -18,13 +18,14 @@ use SPHERE\Application\People\Relationship\Relationship;
 use SPHERE\Application\People\Search\Group\Group;
 use SPHERE\Common\Frontend\Form\IFormInterface;
 use SPHERE\Common\Window\Redirect;
+use SPHERE\System\Extension\Extension;
 
 /**
  * Class Service
  *
  * @package SPHERE\Application\Reporting\Standard\Person
  */
-class Service
+class Service extends Extension
 {
 
     /**
@@ -67,6 +68,9 @@ class Service
 
         $TableContent = array();
         if (!empty( $tblPersonList )) {
+
+            $tblPersonList = $this->getSorter($tblPersonList)->sortObjectBy('LastFirstName');
+
             array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent) {
                 if (($addressList = Address::useService()->getAddressAllByPerson($tblPerson))) {
                     $address = $addressList[0];
@@ -184,12 +188,7 @@ class Service
         $TableContent = array();
         if (!empty( $tblPersonList )) {
 
-            foreach ($tblPersonList as $key => $row) {
-                $lastName[$key] = strtoupper($row->getLastName());
-                $firstName[$key] = strtoupper($row->getFirstName());
-                $id[$key] = $row->getId();
-            }
-            array_multisort($lastName, SORT_ASC, $firstName, SORT_ASC, $tblPersonList);
+            $tblPersonList = $this->getSorter($tblPersonList)->sortObjectBy('LastFirstName');
 
             array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent) {
 
@@ -403,12 +402,7 @@ class Service
 
         if (!empty( $tblPersonList )) {
 
-            foreach ($tblPersonList as $key => $row) {
-                $lastName[$key] = strtoupper($row->getLastName());
-                $firstName[$key] = strtoupper($row->getFirstName());
-                $id[$key] = $row->getId();
-            }
-            array_multisort($lastName, SORT_ASC, $firstName, SORT_ASC, $tblPersonList);
+            $tblPersonList = $this->getSorter($tblPersonList)->sortObjectBy('LastFirstName');
 
             $All = 0;
 
@@ -537,12 +531,7 @@ class Service
 
         if (!empty( $tblPersonList )) {
 
-            foreach ($tblPersonList as $key => $row) {
-                $lastName[$key] = strtoupper($row->getLastName());
-                $firstName[$key] = strtoupper($row->getFirstName());
-                $id[$key] = $row->getId();
-            }
-            array_multisort($lastName, SORT_ASC, $firstName, SORT_ASC, $tblPersonList);
+            $tblPersonList = $this->getSorter($tblPersonList)->sortObjectBy('LastFirstName');
 
             array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent) {
 

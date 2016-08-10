@@ -5,6 +5,8 @@ use SPHERE\Application\IApplicationInterface;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Consumer;
 use SPHERE\Application\Reporting\Custom\Chemnitz\Person\Person as ChemnitzPerson;
 use SPHERE\Application\Reporting\Custom\Hormersdorf\Person\Person as HormersdorfPerson;
+use SPHERE\Application\Reporting\Custom\Herrnhut\Person\Person as HerrnhutPerson;
+use SPHERE\Application\Reporting\Custom\Coswig\Person\Person as CoswigPerson;
 use SPHERE\Common\Main;
 use SPHERE\Common\Window\Navigation\Link;
 use SPHERE\Common\Window\Stage;
@@ -21,11 +23,21 @@ class Custom implements IApplicationInterface
     {
 
         $consumerAcronym = ( Consumer::useService()->getConsumerBySession() ? Consumer::useService()->getConsumerBySession()->getAcronym() : '' );
+        // Chemitz
         if ($consumerAcronym === 'ESZC' || $consumerAcronym === 'DEMO') {
             ChemnitzPerson::registerModule();
         }
+        // Hormersdorf
         if ($consumerAcronym === 'FEGH' || $consumerAcronym === 'FESH' || $consumerAcronym === 'DEMO') {
             HormersdorfPerson::registerModule();
+        }
+        // Herrnhut
+        if ($consumerAcronym === 'EZGH' || $consumerAcronym === 'DEMO') {
+            HerrnhutPerson::registerModule();
+        }
+        // Coswig
+        if ($consumerAcronym === 'EVSC' || $consumerAcronym === 'DEMO') {
+            CoswigPerson::registerModule();
         }
 
         Main::getDisplay()->addApplicationNavigation(

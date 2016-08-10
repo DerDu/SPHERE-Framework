@@ -42,6 +42,7 @@ class Get extends Extension implements ITypeInterface
         $Global = $this->getGlobal();
 
         array_walk_recursive($Global->GET, array($this, 'preventXSS'));
+        array_walk_recursive($Global->GET, array($this, 'trimInput'));
 
         if (!empty( $Global->GET ) && !isset( $Global->GET['_Sign'] )) {
             $Global->GET = array();
@@ -109,6 +110,15 @@ class Get extends Extension implements ITypeInterface
         });
         krsort($Data);
         return $Data;
+    }
+
+    /**
+     * @param $Value
+     */
+    protected function trimInput(&$Value)
+    {
+
+        $Value = trim($Value);
     }
 
     /**

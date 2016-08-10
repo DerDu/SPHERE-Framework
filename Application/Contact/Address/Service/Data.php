@@ -7,6 +7,8 @@ use SPHERE\Application\Contact\Address\Service\Entity\TblState;
 use SPHERE\Application\Contact\Address\Service\Entity\TblToCompany;
 use SPHERE\Application\Contact\Address\Service\Entity\TblToPerson;
 use SPHERE\Application\Contact\Address\Service\Entity\TblType;
+use SPHERE\Application\Contact\Address\Service\Entity\ViewAddressToCompany;
+use SPHERE\Application\Contact\Address\Service\Entity\ViewAddressToPerson;
 use SPHERE\Application\Corporation\Company\Service\Entity\TblCompany;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
@@ -22,6 +24,28 @@ use SPHERE\System\Database\Fitting\IdHydrator;
  */
 class Data extends AbstractData
 {
+
+    /**
+     * @return false|ViewAddressToPerson[]
+     */
+    public function viewAddressToPersonAll()
+    {
+
+        return $this->getCachedEntityList(
+            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewAddressToPerson'
+        );
+    }
+
+    /**
+     * @return false|ViewAddressToCompany[]
+     */
+    public function viewAddressToCompanyAll()
+    {
+
+        return $this->getCachedEntityList(
+            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewAddressToCompany'
+        );
+    }
 
     /**
      * @return void
@@ -207,12 +231,13 @@ class Data extends AbstractData
 
     /**
      * @param TblState $tblState
-     * @param TblCity $tblCity
-     * @param string $StreetName
-     * @param string $StreetNumber
-     * @param string $PostOfficeBox
-     * @param $County
-     * @param $Nation
+     * @param TblCity  $tblCity
+     * @param string   $StreetName
+     * @param string   $StreetNumber
+     * @param string   $PostOfficeBox
+     * @param          $County
+     * @param          $Nation
+     *
      * @return TblAddress
      */
     public function createAddress(
@@ -233,8 +258,8 @@ class Data extends AbstractData
                 TblAddress::ATTR_STREET_NAME     => $StreetName,
                 TblAddress::ATTR_STREET_NUMBER   => $StreetNumber,
                 TblAddress::ATTR_POST_OFFICE_BOX => $PostOfficeBox,
-                TblAddress::ATTR_COUNTY => $County,
-                TblAddress::ATTR_NATION => $Nation,
+                TblAddress::ATTR_COUNTY          => $County,
+                TblAddress::ATTR_NATION          => $Nation,
             ));
         if (null === $Entity) {
             $Entity = new TblAddress();
@@ -349,7 +374,7 @@ class Data extends AbstractData
 
     /**
      * @param TblPerson $tblPerson
-     * @param TblType $tblType
+     * @param TblType   $tblType
      *
      * @return bool|Entity\TblToPerson[]
      */
@@ -359,7 +384,7 @@ class Data extends AbstractData
         return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblToPerson',
             array(
                 TblToPerson::SERVICE_TBL_PERSON => $tblPerson->getId(),
-                TblToPerson::ATT_TBL_TYPE => $tblType->getId()
+                TblToPerson::ATT_TBL_TYPE       => $tblType->getId()
             ));
     }
 
@@ -438,7 +463,7 @@ class Data extends AbstractData
 
     /**
      * @param TblCompany $tblCompany
-     * @param TblType $tblType
+     * @param TblType    $tblType
      *
      * @return bool|Entity\TblToCompany[]
      */
@@ -448,7 +473,7 @@ class Data extends AbstractData
         return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblToCompany',
             array(
                 TblToCompany::SERVICE_TBL_COMPANY => $tblCompany->getId(),
-                TblToCompany::ATT_TBL_TYPE => $tblType->getId()
+                TblToCompany::ATT_TBL_TYPE        => $tblType->getId()
             ));
     }
 
@@ -499,12 +524,12 @@ class Data extends AbstractData
     {
 
         $Cache = $this->getCache(new MemcachedHandler());
-        if (null === ($IdList = $Cache->getValue($tblPerson->getId(), __METHOD__))) {
+        if (null === ( $IdList = $Cache->getValue($tblPerson->getId(), __METHOD__) )) {
             $Manager = $this->getConnection()->getEntityManager();
 
             $Builder = $Manager->getQueryBuilder();
             $Query = $Builder->select('L.tblAddress')
-                ->from(__NAMESPACE__ . '\Entity\TblToPerson', 'L')
+                ->from(__NAMESPACE__.'\Entity\TblToPerson', 'L')
                 ->where($Builder->expr()->eq('L.serviceTblPerson', '?1'))
                 ->setParameter(1, $tblPerson->getId())
                 ->getQuery();
@@ -527,13 +552,13 @@ class Data extends AbstractData
 
         $Key = md5(json_encode($IdArray));
         $Cache = $this->getCache(new MemcachedHandler());
-        if (null === ($tblAddressAll = $Cache->getValue($Key, __METHOD__))) {
+        if (null === ( $tblAddressAll = $Cache->getValue($Key, __METHOD__) )) {
 
             $Manager = $this->getConnection()->getEntityManager();
 
             $Builder = $Manager->getQueryBuilder();
             $Query = $Builder->select('A')
-                ->from(__NAMESPACE__ . '\Entity\TblAddress', 'A')
+                ->from(__NAMESPACE__.'\Entity\TblAddress', 'A')
                 ->where($Builder->expr()->in('A.Id', '?1'))
                 ->setParameter(1, $IdArray)
                 ->getQuery();

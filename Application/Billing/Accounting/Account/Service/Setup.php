@@ -53,7 +53,7 @@ class Setup extends AbstractSetup
             $Table->addColumn('Name', 'string');
         }
         if (!$this->getConnection()->hasColumn('tblAccountKeyType', 'Description')) {
-            $Table->addColumn('Description', 'string');
+            $Table->addColumn('Description', 'text');
         }
         return $Table;
     }
@@ -71,7 +71,7 @@ class Setup extends AbstractSetup
             $Table->addColumn('Name', 'string');
         }
         if (!$this->getConnection()->hasColumn('tblAccountType', 'Description')) {
-            $Table->addColumn('Description', 'string');
+            $Table->addColumn('Description', 'text');
         }
         return $Table;
     }
@@ -96,7 +96,7 @@ class Setup extends AbstractSetup
             $Table->addColumn('ValidTo', 'date');
         }
         if (!$this->getConnection()->hasColumn('tblAccountKey', 'Description')) {
-            $Table->addColumn('Description', 'string');
+            $Table->addColumn('Description', 'text');
         }
         if (!$this->getConnection()->hasColumn('tblAccountKey', 'Code')) {
             $Table->addColumn('Code', 'integer');
@@ -120,7 +120,7 @@ class Setup extends AbstractSetup
             $Table->addColumn('Number', 'string');
         }
         if (!$this->getConnection()->hasColumn('tblAccount', 'Description')) {
-            $Table->addColumn('Description', 'string');
+            $Table->addColumn('Description', 'text');
         }
         if (!$this->getConnection()->hasColumn('tblAccount', 'IsActive')) {
             $Table->addColumn('IsActive', 'boolean');

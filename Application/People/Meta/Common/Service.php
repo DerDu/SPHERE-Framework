@@ -5,6 +5,7 @@ use SPHERE\Application\People\Meta\Common\Service\Data;
 use SPHERE\Application\People\Meta\Common\Service\Entity\TblCommon;
 use SPHERE\Application\People\Meta\Common\Service\Entity\TblCommonBirthDates;
 use SPHERE\Application\People\Meta\Common\Service\Entity\TblCommonInformation;
+use SPHERE\Application\People\Meta\Common\Service\Entity\ViewPeopleMetaCommon;
 use SPHERE\Application\People\Meta\Common\Service\Setup;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Common\Frontend\Form\IFormInterface;
@@ -20,6 +21,15 @@ use SPHERE\System\Database\Binding\AbstractService;
 class Service extends AbstractService
 {
 
+    /**
+     * @return false|ViewPeopleMetaCommon[]
+     */
+    public function viewPeopleMetaCommon()
+    {
+
+        return (new Data($this->getBinding()))->viewPeopleMetaCommon();
+    }
+    
     /**
      * @param bool $doSimulation
      * @param bool $withData

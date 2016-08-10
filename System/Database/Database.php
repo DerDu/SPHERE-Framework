@@ -270,7 +270,7 @@ class Database extends Extension
     public function hasView($ViewName)
     {
 
-        return in_array($ViewName, $this->getSchemaManager()->listViews());
+        return array_key_exists(strtolower($ViewName), $this->getSchemaManager()->listViews());
     }
 
     /**

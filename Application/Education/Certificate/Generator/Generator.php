@@ -18,9 +18,9 @@ class Generator implements IModuleInterface
     public static function registerModule()
     {
 
-        Main::getDisplay()->addModuleNavigation(
-            new Link(new Link\Route(__NAMESPACE__.'\Select\Division'), new Link\Name('Zeugnis erstellen'))
-        );
+//        Main::getDisplay()->addModuleNavigation(
+//            new Link(new Link\Route(__NAMESPACE__.'\Select\Division'), new Link\Name('Zeugnis erstellen'))
+//        );
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
             __NAMESPACE__.'\Select\Division', __NAMESPACE__.'\Frontend::frontendSelectDivision'
         ));

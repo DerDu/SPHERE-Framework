@@ -27,7 +27,7 @@ class Service extends \SPHERE\Application\Platform\Gatekeeper\Authorization\Acco
      * @param IFormInterface $Form
      * @param array          $Account
      *
-     * @return IFormInterface
+     * @return IFormInterface|string
      */
     public function createAccount(IFormInterface $Form, $Account)
     {
@@ -52,7 +52,7 @@ class Service extends \SPHERE\Application\Platform\Gatekeeper\Authorization\Acco
             $Form->setError('Account[Name]', 'Bitte geben Sie einen Benutzernamen an');
             $Error = true;
         } else {
-            if (preg_match('!^[a-z0-9öäüß]{4,}$!is', $Username)) {
+            if (preg_match('!^[a-z0-9öäüß]{3,}$!is', $Username)) {
                 $Username = $tblConsumer->getAcronym().'-'.$Username;
                 if (!GatekeeperAccount::useService()->getAccountByUsername($Username)) {
                     $Form->setSuccess('Account[Name]', '');
@@ -62,7 +62,7 @@ class Service extends \SPHERE\Application\Platform\Gatekeeper\Authorization\Acco
                 }
             } else {
                 $Form->setError('Account[Name]',
-                    'Der Benutzername darf nur Buchstaben und Zahlen enthalten und muss mindestens 5 Zeichen lang sein');
+                    'Der Benutzername darf nur Buchstaben und Zahlen enthalten und muss mindestens 3 Zeichen lang sein');
                 $Error = true;
             }
         }
@@ -137,7 +137,7 @@ class Service extends \SPHERE\Application\Platform\Gatekeeper\Authorization\Acco
      * @param TblAccount     $tblAccount
      * @param array          $Account
      *
-     * @return IFormInterface
+     * @return IFormInterface|string
      */
     public function changeAccount(IFormInterface $Form, TblAccount $tblAccount, $Account)
     {

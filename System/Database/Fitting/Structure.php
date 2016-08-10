@@ -38,6 +38,26 @@ class Structure
     }
 
     /**
+     * @param View $View
+     */
+    public function createView(View $View)
+    {
+
+        if (!$this->Database->hasView($View->getName())) {
+            $this->getSchemaManager()->createView($View->getView());
+        }
+    }
+
+    /**
+     * @return DBALSchemaManager
+     */
+    public function getSchemaManager()
+    {
+
+        return $this->Database->getSchemaManager();
+    }
+
+    /**
      * @param DBALSchema $Schema
      * @param string     $Name
      *
@@ -126,12 +146,12 @@ class Structure
     }
 
     /**
-     * @return DBALSchemaManager
+     * @return \Doctrine\DBAL\Query\QueryBuilder
      */
-    public function getSchemaManager()
+    public function getQueryBuilder()
     {
 
-        return $this->Database->getSchemaManager();
+        return $this->Database->getConnection()->getQueryBuilder();
     }
 
     /**
@@ -178,7 +198,7 @@ class Structure
 
         $this->Database->removeIndex($Table, $ColumnList);
     }
-    
+
     /**
      * @param string $TableName
      *

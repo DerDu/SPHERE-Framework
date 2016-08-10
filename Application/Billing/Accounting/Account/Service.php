@@ -46,25 +46,25 @@ class Service extends AbstractService
     }
 
     /**
-     * @param $Id
+     * @param TblAccount $tblAccount
      *
      * @return bool
      */
-    public function changeFibuActivate($Id)
+    public function changeFibuActivate(TblAccount $tblAccount)
     {
 
-        return (new Data($this->getBinding()))->updateActivateAccount($Id);
+        return (new Data($this->getBinding()))->updateActivateAccount($tblAccount);
     }
 
     /**
-     * @param $Id
+     * @param TblAccount $tblAccount
      *
      * @return bool
      */
-    public function changeFibuDeactivate($Id)
+    public function changeFibuDeactivate(TblAccount $tblAccount)
     {
 
-        return (new Data($this->getBinding()))->updateDeactivateAccount($Id);
+        return (new Data($this->getBinding()))->updateDeactivateAccount($tblAccount);
     }
 
     /**

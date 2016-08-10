@@ -105,15 +105,31 @@ class SelectBox extends AbstractField implements IFieldInterface
                 }
             }
             if (array_key_exists(0, $Convert)) {
-                $Convert[0] = '-[ Nicht ausgewählt ]-';
+                unset( $Convert[0] );
+                asort($Convert, SORT_NATURAL);
+
+                $Keys = array_keys( $Convert );
+                $Values = array_values( $Convert );
+                array_unshift( $Keys, 0 );
+                array_unshift( $Values, '-[ Nicht ausgewählt ]-');
+                $Convert = array_combine( $Keys, $Values );
+            } else {
+                asort($Convert, SORT_NATURAL);
             }
-            asort($Convert);
             $this->Template->setVariable('ElementData', $Convert);
         } else {
             if (array_key_exists(0, $Data) && $Data[0] != '-[ Nicht verfügbar ]-') {
-                $Data[0] = '-[ Nicht ausgewählt ]-';
+                unset( $Data[0] );
+                asort($Data, SORT_NATURAL);
+
+                $Keys = array_keys( $Data );
+                $Values = array_values( $Data );
+                array_unshift( $Keys, 0 );
+                array_unshift( $Values, '-[ Nicht ausgewählt ]-');
+                $Data = array_combine( $Keys, $Values );
+            } else {
+                asort($Data, SORT_NATURAL);
             }
-            asort($Data);
             $this->Template->setVariable('ElementData', $Data);
         }
         if (null !== $Icon) {

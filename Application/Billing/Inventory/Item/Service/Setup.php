@@ -25,7 +25,10 @@ class Setup extends AbstractSetup
          * Table
          */
         $Schema = clone $this->getConnection()->getSchema();
-        $tblItem = $this->setTableItem($Schema);
+        $tblItemType = $this->setTableItemType($Schema);
+        $tblItem = $this->setTableItem($Schema, $tblItemType);
+        $tblCalculation = $this->setTableCalculation($Schema);
+        $this->setTableItemCalculation($Schema, $tblItem, $tblCalculation);
         $this->setTableItemAccount($Schema, $tblItem);
 
         /**
@@ -41,7 +44,24 @@ class Setup extends AbstractSetup
      *
      * @return Table
      */
-    private function setTableItem(Schema &$Schema)
+    private function setTableItemType(Schema &$Schema)
+    {
+
+        $Table = $this->getConnection()->createTable($Schema, 'tblItemType');
+        if (!$this->getConnection()->hasColumn('tblItemType', 'Name')) {
+            $Table->addColumn('Name', 'string');
+        }
+
+        return $Table;
+    }
+
+    /**
+     * @param Schema $Schema
+     * @param Table  $tblItemType
+     *
+     * @return Table
+     */
+    private function setTableItem(Schema &$Schema, Table $tblItemType)
     {
 
         $Table = $this->getConnection()->createTable($Schema, 'tblItem');
@@ -49,22 +69,47 @@ class Setup extends AbstractSetup
             $Table->addColumn('Name', 'string');
         }
         if (!$this->getConnection()->hasColumn('tblItem', 'Description')) {
-            $Table->addColumn('Description', 'string');
+            $Table->addColumn('Description', 'text');
         }
-        if (!$this->getConnection()->hasColumn('tblItem', 'Price')) {
-            $Table->addColumn('Price', 'decimal', array('precision' => 14, 'scale' => 4));
+
+        $this->getConnection()->addForeignKey($Table, $tblItemType);
+
+        return $Table;
+    }
+
+    /**
+     * @param Schema $Schema
+     *
+     * @return Table
+     */
+    private function setTableCalculation(Schema &$Schema)
+    {
+
+        $Table = $this->getConnection()->createTable($Schema, 'tblCalculation');
+        if (!$this->getConnection()->hasColumn('tblCalculation', 'Value')) {
+            $Table->addColumn('Value', 'decimal', array('precision' => 14, 'scale' => 4));
         }
-        if (!$this->getConnection()->hasColumn('tblItem', 'CostUnit')) {
-            $Table->addColumn('CostUnit', 'string');
+        if (!$this->getConnection()->hasColumn('tblCalculation', 'serviceTblSiblingRank')) {
+            $Table->addColumn('serviceTblSiblingRank', 'bigint', array('notnull' => false));
         }
-        if (!$this->getConnection()->hasColumn('tblItem', 'serviceStudentSiblingRank')) {
-            $Table->addColumn('serviceStudentSiblingRank', 'bigint', array('notnull' => false));
-        }
-        if (!$this->getConnection()->hasColumn('tblItem', 'serviceSchoolTblType')) {
-            $Table->addColumn('serviceSchoolTblType', 'bigint', array('notnull' => false));
+        if (!$this->getConnection()->hasColumn('tblCalculation', 'serviceTblType')) {
+            $Table->addColumn('serviceTblType', 'bigint', array('notnull' => false));
         }
 
         return $Table;
+    }
+
+    /**
+     * @param Schema $Schema
+     * @param Table  $tblItem
+     * @param Table  $tblCalculation
+     */
+    private function setTableItemCalculation(Schema &$Schema, Table $tblItem, Table $tblCalculation)
+    {
+
+        $Table = $this->getConnection()->createTable($Schema, 'tblItemCalculation');
+        $this->getConnection()->addForeignKey($Table, $tblItem);
+        $this->getConnection()->addForeignKey($Table, $tblCalculation);
     }
 
     /**
@@ -78,8 +123,8 @@ class Setup extends AbstractSetup
 
         $Table = $this->getConnection()->createTable($Schema, 'tblItemAccount');
 
-        if (!$this->getConnection()->hasColumn('tblItemAccount', 'serviceBilling_Account')) {
-            $Table->addColumn('serviceBilling_Account', 'bigint');
+        if (!$this->getConnection()->hasColumn('tblItemAccount', 'serviceTblAccount')) {
+            $Table->addColumn('serviceTblAccount', 'bigint');
         }
 
         $this->getConnection()->addForeignKey($Table, $tblItem);

@@ -5,11 +5,12 @@ use Doctrine\ORM\Mapping\Cache;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
-use SPHERE\Application\Billing\Accounting\Banking\Banking;
-use SPHERE\Application\Billing\Accounting\Banking\Service\Entity\TblPaymentType;
-use SPHERE\Application\Billing\Bookkeeping\Balance\Balance;
 use SPHERE\Application\Contact\Address\Address;
 use SPHERE\Application\Contact\Address\Service\Entity\TblAddress;
+use SPHERE\Application\Contact\Mail\Mail;
+use SPHERE\Application\Contact\Mail\Service\Entity\TblMail;
+use SPHERE\Application\Contact\Phone\Phone;
+use SPHERE\Application\Contact\Phone\Service\Entity\TblPhone;
 use SPHERE\Application\People\Person\Person;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\System\Database\Fitting\Element;
@@ -22,388 +23,342 @@ use SPHERE\System\Database\Fitting\Element;
 class TblInvoice extends Element
 {
 
+    const ATTR_INVOICE_NUMBER = 'InvoiceNumber';
     const ATTR_IS_PAID = 'IsPaid';
-    const ATTR_IS_VOID = 'IsVoid';
-    const ATTR_DEBTOR_NUMBER = 'DebtorNumber';
-    const ATTR_NUMBER = 'Number';
-    const ATTR_SERVICE_BILLING_BANKING_PAYMENT_TYPE = 'serviceBilling_Banking_Payment_Type';
+    const ATTR_IS_REVERSAL = 'IsReversal';
+    const ATTR_TARGET_TIME = 'TargetTime';
 
+    /**
+     * @Column(type="string")
+     */
+    protected $InvoiceNumber;
+    /**
+     * @Column(type="datetime")
+     */
+    protected $TargetTime;
+    /**
+     * @Column(type="string")
+     */
+    protected $SchoolName;
+    /**
+     * @Column(type="string")
+     */
+    protected $SchoolOwner;
+    /**
+     * @Column(type="string")
+     */
+    protected $SchoolBankName;
+    /**
+     * @Column(type="string")
+     */
+    protected $SchoolIBAN;
+    /**
+     * @Column(type="string")
+     */
+    protected $SchoolBIC;
+//    /**
+//     * @Column(type="decimal", precision=14, scale=4)
+//     */
+//    protected $Discount;
     /**
      * @Column(type="boolean")
      */
     protected $IsPaid;
     /**
-     * @Column(type="string")
-     */
-    protected $Number;
-    /**
-     * @Column(type="string")
-     */
-    protected $BasketName;
-    /**
      * @Column(type="boolean")
      */
-    protected $IsVoid;
-    /**
-     * @Column(type="date")
-     */
-    protected $InvoiceDate;
-    /**
-     * @Column(type="date")
-     */
-    protected $PaymentDate;
-    /**
-     * @Column(type="decimal", precision=14, scale=4)
-     */
-    protected $Discount;
-    /**
-     * @Column(type="string")
-     */
-    protected $DebtorFirstName;
-    /**
-     * @Column(type="string")
-     */
-    protected $DebtorLastName;
-    /**
-     * @Column(type="string")
-     */
-    protected $DebtorSalutation;
-    /**
-     * @Column(type="string")
-     */
-    protected $DebtorNumber;
+    protected $IsReversal;
     /**
      * @Column(type="bigint")
      */
-    protected $serviceManagement_Address;
+    protected $serviceTblAddress;
     /**
      * @Column(type="bigint")
      */
-    protected $serviceManagement_Person;
+    protected $serviceTblPerson;
     /**
      * @Column(type="bigint")
      */
-    protected $serviceBilling_Banking_Payment_Type;
+    protected $serviceTblMail;
     /**
-     * @Column(type="boolean")
+     * @Column(type="bigint")
      */
-    protected $IsPaymentDateModified;
+    protected $serviceTblPhone;
+
+    /**
+     * @return string
+     */
+    public function getInvoiceNumber()
+    {
+
+        return $this->InvoiceNumber;
+    }
+
+    /**
+     * @param string $InvoiceNumber
+     */
+    public function setInvoiceNumber($InvoiceNumber)
+    {
+
+        $this->InvoiceNumber = $InvoiceNumber;
+    }
+
+    /**
+     * @return bool|string
+     */
+    public function getTargetTime()
+    {
+
+        if (null === $this->TargetTime) {
+            return false;
+        }
+        /** @var \DateTime $InvoiceDate */
+        $TargetDate = $this->TargetTime;
+        if ($TargetDate instanceof \DateTime) {
+            return $TargetDate->format('d.m.Y');
+        } else {
+            return (string)$TargetDate;
+        }
+    }
+
+    /**
+     * @param \DateTime|null $Date
+     */
+    public function setTargetTime(\DateTime $Date = null)
+    {
+
+        $this->TargetTime = $Date;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSchoolName()
+    {
+
+        return $this->SchoolName;
+    }
+
+    /**
+     * @param string $SchoolName
+     */
+    public function setSchoolName($SchoolName)
+    {
+
+        $this->SchoolName = $SchoolName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSchoolOwner()
+    {
+
+        return $this->SchoolOwner;
+    }
+
+    /**
+     * @param string $SchoolOwner
+     */
+    public function setSchoolOwner($SchoolOwner)
+    {
+
+        $this->SchoolOwner = $SchoolOwner;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSchoolBankName()
+    {
+
+        return $this->SchoolBankName;
+    }
+
+    /**
+     * @param string $SchoolBankName
+     */
+    public function setSchoolBankName($SchoolBankName)
+    {
+
+        $this->SchoolBankName = $SchoolBankName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSchoolIBAN()
+    {
+
+        return $this->SchoolIBAN;
+    }
+
+    /**
+     * @param string $SchoolIBAN
+     */
+    public function setSchoolIBAN($SchoolIBAN)
+    {
+
+        $this->SchoolIBAN = $SchoolIBAN;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSchoolBIC()
+    {
+
+        return $this->SchoolBIC;
+    }
+
+    /**
+     * @param string $SchoolBIC
+     */
+    public function setSchoolBIC($SchoolBIC)
+    {
+
+        $this->SchoolBIC = $SchoolBIC;
+    }
+
+//    /**
+//     * @return (type="decimal", precision=14, scale=4)
+//     */
+//    public function getDiscount()
+//    {
+//
+//        return $this->Discount;
+//    }
+//
+//    /**
+//     * @param (type="decimal", precision=14, scale=4) $Price
+//     */
+//    public function setDiscount($Discount)
+//    {
+//
+//        $this->Discount = $Discount;
+//    }
 
     /**
      * @return boolean
      */
-    public function getPaymentDateModified()
-    {
-
-        return $this->IsPaymentDateModified;
-    }
-
-    /**
-     * @param boolean $IsPaymentDateModified
-     */
-    public function setPaymentDateModified($IsPaymentDateModified)
-    {
-
-        $this->IsPaymentDateModified = $IsPaymentDateModified;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isConfirmed()
-    {
-
-        return ( Balance::useService()->getBalanceByInvoice($this) === false ? false : true );
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isPaid()
+    public function getIsPaid()
     {
 
         return $this->IsPaid;
     }
 
     /**
-     * @param boolean $IsPaid
+     * @param boolean $isPaid
      */
-    public function setPaid($IsPaid)
+    public function setIsPaid($isPaid)
     {
 
-        $this->IsPaid = $IsPaid;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNumber()
-    {
-
-        return $this->Number;
-    }
-
-    /**
-     * @param string $Number
-     */
-    public function setNumber($Number)
-    {
-
-        $this->Number = $Number;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBasketName()
-    {
-
-        return $this->BasketName;
-    }
-
-    /**
-     * @param string $BasketName
-     */
-    public function setBasketName($BasketName)
-    {
-
-        $this->BasketName = $BasketName;
+        $this->IsPaid = $isPaid;
     }
 
     /**
      * @return boolean
      */
-    public function isVoid()
+    public function getIsReversal()
     {
 
-        return $this->IsVoid;
+        return $this->IsReversal;
     }
 
     /**
-     * @param boolean $IsVoid
+     * @param boolean $IsReversal
      */
-    public function setVoid($IsVoid)
+    public function setIsReversal($IsReversal)
     {
 
-        $this->IsVoid = $IsVoid;
-    }
-
-    /**
-     * @return string
-     */
-    public function getInvoiceDate()
-    {
-
-        if (null === $this->InvoiceDate) {
-            return false;
-        }
-        /** @var \DateTime $InvoiceDate */
-        $InvoiceDate = $this->InvoiceDate;
-        if ($InvoiceDate instanceof \DateTime) {
-            return $InvoiceDate->format('d.m.Y');
-        } else {
-            return (string)$InvoiceDate;
-        }
-    }
-
-    /**
-     * @param \DateTime $InvoiceDate
-     */
-    public function setInvoiceDate(\DateTime $InvoiceDate)
-    {
-
-        $this->InvoiceDate = $InvoiceDate;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPaymentDate()
-    {
-
-        if (null === $this->PaymentDate) {
-            return false;
-        }
-        /** @var \DateTime $PaymentDate */
-        $PaymentDate = $this->PaymentDate;
-        if ($PaymentDate instanceof \DateTime) {
-            return $PaymentDate->format('d.m.Y');
-        } else {
-            return (string)$PaymentDate;
-        }
-    }
-
-    /**
-     * @param \DateTime $PaymentDate
-     */
-    public function setPaymentDate(\DateTime $PaymentDate)
-    {
-
-        $this->PaymentDate = $PaymentDate;
-    }
-
-    /**
-     * @return (type="decimal", precision=14, scale=4)
-     */
-    public function getDiscount()
-    {
-
-        return $this->Discount;
-    }
-
-    /**
-     * @param (type="decimal", precision=14, scale=4) $Price
-     */
-    public function setDiscount($Discount)
-    {
-
-        $this->Discount = $Discount;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDebtorFirstName()
-    {
-
-        return $this->DebtorFirstName;
-    }
-
-    /**
-     * @param string $PersonFirstName
-     */
-    public function setDebtorFirstName($PersonFirstName)
-    {
-
-        $this->DebtorFirstName = $PersonFirstName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDebtorLastName()
-    {
-
-        return $this->DebtorLastName;
-    }
-
-    /**
-     * @param string $PersonLastName
-     */
-    public function setDebtorLastName($PersonLastName)
-    {
-
-        $this->DebtorLastName = $PersonLastName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDebtorSalutation()
-    {
-
-        return $this->DebtorSalutation;
-    }
-
-    /**
-     * @param string $PersonSalutation
-     */
-    public function setDebtorSalutation($PersonSalutation)
-    {
-
-        $this->DebtorSalutation = $PersonSalutation;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDebtorNumber()
-    {
-
-        return $this->DebtorNumber;
-    }
-
-    /**
-     * @param string $DebtorNumber
-     */
-    public function setDebtorNumber($DebtorNumber)
-    {
-
-        $this->DebtorNumber = $DebtorNumber;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDebtorFullName()
-    {
-
-        return $this->DebtorSalutation." ".$this->DebtorFirstName." ".$this->DebtorLastName;
+        $this->IsReversal = $IsReversal;
     }
 
     /**
      * @return bool|TblAddress
      */
-    public function getServiceManagementAddress()
+    public function getServiceTblAddress()
     {
 
-        if (null === $this->serviceManagement_Address) {
+        if (null === $this->serviceTblAddress) {
             return false;
         } else {
-            return Address::useService()->getAddressById($this->serviceManagement_Address);
+            return Address::useService()->getAddressById($this->serviceTblAddress);
         }
     }
 
     /**
      * @param TblAddress $tblAddress
      */
-    public function setServiceManagementAddress(TblAddress $tblAddress = null)
+    public function setServiceTblAddress(TblAddress $tblAddress = null)
     {
 
-        $this->serviceManagement_Address = ( null === $tblAddress ? null : $tblAddress->getId() );
+        $this->serviceTblAddress = ( null === $tblAddress ? null : $tblAddress->getId() );
     }
 
     /**
      * @return bool|TblPerson
      */
-    public function getServiceManagementPerson()
+    public function getServiceTblPerson()
     {
 
-        if (null === $this->serviceManagement_Person) {
+        if (null === $this->serviceTblPerson) {
             return false;
         } else {
-            return Person::useService()->getPersonById($this->serviceManagement_Person);
+            return Person::useService()->getPersonById($this->serviceTblPerson);
         }
     }
 
     /**
      * @param TblPerson $tblPerson
      */
-    public function setServiceManagementPerson(TblPerson $tblPerson = null)
+    public function setServiceTblPerson(TblPerson $tblPerson = null)
     {
 
-        $this->serviceManagement_Person = ( null === $tblPerson ? null : $tblPerson->getId() );
+        $this->serviceTblPerson = ( null === $tblPerson ? null : $tblPerson->getId() );
     }
 
     /**
-     * @return bool|TblPaymentType
+     * @return bool|TblMail
      */
-    public function getServiceBillingBankingPaymentType()
+    public function getServiceTblMail()
     {
 
-        if (null === $this->serviceBilling_Banking_Payment_Type) {
+        if (null === $this->serviceTblMail) {
             return false;
         } else {
-            return Banking::useService()->getPaymentTypeById($this->serviceBilling_Banking_Payment_Type);
+            return Mail::useService()->getMailById($this->serviceTblMail);
         }
     }
 
     /**
-     * @param TblPaymentType $tblPaymentType
+     * @param TblMail $tblMail
      */
-    public function setServiceBillingBankingPaymentType(TblPaymentType $tblPaymentType = null)
+    public function setServiceTblMail(TblMail $tblMail = null)
     {
 
-        $this->serviceBilling_Banking_Payment_Type = ( null === $tblPaymentType ? null : $tblPaymentType->getId() );
+        $this->serviceTblMail = ( null === $tblMail ? null : $tblMail->getId() );
+    }
+
+    /**
+     * @return bool|TblPhone
+     */
+    public function getServiceTblPhone()
+    {
+
+        if (null === $this->serviceTblPhone) {
+            return false;
+        } else {
+            return Phone::useService()->getPhoneById($this->serviceTblPhone);
+        }
+    }
+
+    /**
+     * @param TblPhone $tblPhone
+     */
+    public function setServiceTblPhone(TblPhone $tblPhone = null)
+    {
+
+        $this->serviceTblPhone = ( null === $tblPhone ? null : $tblPhone->getId() );
     }
 }

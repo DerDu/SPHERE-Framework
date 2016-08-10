@@ -19,7 +19,7 @@ class TblItemAccount extends Element
 {
 
     const ATTR_TBL_ITEM = 'tblItem';
-    const ATTR_SERVICE_BILLING_ACCOUNT = 'serviceBilling_Account';
+    const ATTR_SERVICE_TBL_ACCOUNT = 'serviceTblAccount';
 
     /**
      * @Column(type="bigint")
@@ -28,7 +28,7 @@ class TblItemAccount extends Element
     /**
      * @Column(type="bigint")
      */
-    protected $serviceBilling_Account;
+    protected $serviceTblAccount;
 
     /**
      * @return bool|TblItem
@@ -58,19 +58,19 @@ class TblItemAccount extends Element
     public function getServiceBillingAccount()
     {
 
-        if (null === $this->serviceBilling_Account) {
+        if (null === $this->serviceTblAccount) {
             return false;
         } else {
-            return Account::useService()->getAccountById($this->serviceBilling_Account);
+            return Account::useService()->getAccountById($this->serviceTblAccount);
         }
     }
 
     /**
-     * @param TblAccount $serviceBilling_Account
+     * @param TblAccount $tblAccount
      */
-    public function setTblAccount(TblAccount $serviceBilling_Account = null)
+    public function setTblAccount(TblAccount $tblAccount = null)
     {
 
-        $this->serviceBilling_Account = ( null === $serviceBilling_Account ? null : $serviceBilling_Account->getId() );
+        $this->serviceTblAccount = ( null === $tblAccount ? null : $tblAccount->getId() );
     }
 }

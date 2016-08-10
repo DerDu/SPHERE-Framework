@@ -2,6 +2,8 @@
 namespace SPHERE\Application\Setting\Consumer\School;
 
 use SPHERE\Application\Corporation\Company\Company;
+use SPHERE\Application\Corporation\Company\Service\Entity\TblCompany;
+use SPHERE\Application\Education\School\Type\Service\Entity\TblType;
 use SPHERE\Application\Education\School\Type\Type;
 use SPHERE\Application\Setting\Consumer\School\Service\Data;
 use SPHERE\Application\Setting\Consumer\School\Service\Entity\TblSchool;
@@ -61,6 +63,28 @@ class Service extends AbstractService
     }
 
     /**
+     * @param TblCompany $tblCompany
+     *
+     * @return false|TblSchool
+     */
+    public function getSchoolByCompany(TblCompany $tblCompany)
+    {
+
+        return (new Data($this->getBinding()))->getSchoolByCompany($tblCompany);
+    }
+
+    /**
+     * @param TblCompany $tblCompany
+     *
+     * @return false|TblSchool
+     */
+    public function getSchoolByCompanyAndType(TblCompany $tblCompany, TblType $tblType)
+    {
+
+        return (new Data($this->getBinding()))->getSchoolByCompanyAndType($tblCompany, $tblType);
+    }
+
+    /**
      * @param IFormInterface $Form
      * @param integer        $School
      * @param array          $Type
@@ -90,7 +114,7 @@ class Service extends AbstractService
             $Error = true;
         } else {
             $tblCompany = Company::useService()->getCompanyById($School);
-            if (!$tblCompany){
+            if (!$tblCompany) {
                 $Form->appendGridGroup(new FormGroup(new FormRow(new FormColumn(new Danger('Bitte wählen Sie eine Schule aus')))));
                 $Error = true;
             }

@@ -2,8 +2,11 @@
 namespace SPHERE\Application\Education\Lesson\Term;
 
 use SPHERE\Application\Education\Lesson\Term\Service\Data;
+use SPHERE\Application\Education\Lesson\Term\Service\Entity\TblHoliday;
+use SPHERE\Application\Education\Lesson\Term\Service\Entity\TblHolidayType;
 use SPHERE\Application\Education\Lesson\Term\Service\Entity\TblPeriod;
 use SPHERE\Application\Education\Lesson\Term\Service\Entity\TblYear;
+use SPHERE\Application\Education\Lesson\Term\Service\Entity\TblYearHoliday;
 use SPHERE\Application\Education\Lesson\Term\Service\Entity\TblYearPeriod;
 use SPHERE\Application\Education\Lesson\Term\Service\Setup;
 use SPHERE\Common\Frontend\Form\IFormInterface;
@@ -66,7 +69,7 @@ class Service extends AbstractService
     public function getYearAllSinceYears($Year)
     {
 
-        $Now = (new \DateTime('now'))->sub(new \DateInterval('P'.$Year.'Y'));
+        $Now = (new \DateTime('now'))->sub(new \DateInterval('P' . $Year . 'Y'));
 
         $EntityList = array();
         $tblYearAll = Term::useService()->getYearAll();
@@ -98,8 +101,9 @@ class Service extends AbstractService
         }
         $EntityList = array_filter($EntityList);
 
-        return ( empty( $EntityList ) ? false : $EntityList );
+        return (empty($EntityList) ? false : $EntityList);
     }
+
     /**
      * @param int $Year
      *
@@ -108,7 +112,7 @@ class Service extends AbstractService
     public function getYearAllFutureYears($Year)
     {
 
-        $Now = (new \DateTime('now'))->add(new \DateInterval('P'.$Year.'Y'));
+        $Now = (new \DateTime('now'))->add(new \DateInterval('P' . $Year . 'Y'));
 
         $EntityList = array();
         $tblYearAll = Term::useService()->getYearAll();
@@ -140,7 +144,7 @@ class Service extends AbstractService
         }
         $EntityList = array_filter($EntityList);
 
-        return ( empty( $EntityList ) ? false : $EntityList );
+        return (empty($EntityList) ? false : $EntityList);
     }
 
     /**
@@ -154,7 +158,7 @@ class Service extends AbstractService
 
     /**
      * @param IFormInterface $Form
-     * @param null|array     $Year
+     * @param null|array $Year
      *
      * @return IFormInterface|string
      */
@@ -172,11 +176,11 @@ class Service extends AbstractService
 
         $Error = false;
 
-        if (isset( $Year['Year'] ) && empty( $Year['Year'] )) {
+        if (isset($Year['Year']) && empty($Year['Year'])) {
             $Form->setError('Year[Year]', 'Bitte geben sie ein Jahr an');
             $Error = true;
         } else {
-            if (( $tblYear = Term::useService()->checkYearExist($Year['Year'], $Year['Description']) )) {
+            if (($tblYear = Term::useService()->checkYearExist($Year['Year'], $Year['Description']))) {
                 $Form->setError('Year[Description]', 'Bitte geben sie eine andere Beschreibung an');
                 $Error = true;
             }
@@ -185,10 +189,10 @@ class Service extends AbstractService
         if (!$Error) {
             if ((new Data($this->getBinding()))->createYear($Year['Year'], $Year['Description'])) {
                 return new Success('Das Schuljahr wurde erfolgreich hinzugefügt')
-                .new Redirect($this->getRequest()->getUrl(), Redirect::TIMEOUT_SUCCESS);
+                . new Redirect($this->getRequest()->getUrl(), Redirect::TIMEOUT_SUCCESS);
             } else {
                 return new Danger('Das Schuljahr konnte nicht hinzugefügt werden')
-                .new Redirect($this->getRequest()->getUrl(), Redirect::TIMEOUT_ERROR);
+                . new Redirect($this->getRequest()->getUrl(), Redirect::TIMEOUT_ERROR);
             }
         }
         return $Form;
@@ -223,6 +227,16 @@ class Service extends AbstractService
     }
 
     /**
+     * @param $String
+     *
+     * @return false|Service\Entity\TblYear[]
+     */
+    public function getYearByName($String)
+    {
+        return (new Data($this->getBinding()))->getYearByName($String);
+    }
+
+    /**
      * @param \DateTime $Date
      *
      * @return bool|TblYear[]
@@ -250,8 +264,8 @@ class Service extends AbstractService
                             $tblPeriodTemp = $tblPeriod;
                         }
                     }
-                    if (new \DateTime($From) < new \DateTime($Date->format('d.m.Y')) &&
-                        new \DateTime($To) > new \DateTime($Date->format('d.m.Y'))
+                    if (new \DateTime($From) <= new \DateTime($Date->format('d.m.Y')) &&
+                        new \DateTime($To) >= new \DateTime($Date->format('d.m.Y'))
                     ) {
                         $tblYearTempList = Term::useService()->getYearByPeriod($tblPeriodTemp);
                         if ($tblYearTempList) {
@@ -288,7 +302,7 @@ class Service extends AbstractService
 
         $EntityList = array_filter($EntityList);
 
-        return ( empty( $EntityList ) ? false : $EntityList );
+        return (empty($EntityList) ? false : $EntityList);
     }
 
     /**
@@ -299,7 +313,6 @@ class Service extends AbstractService
 
         $Now = new \DateTime('now');
         return $this->getYearAllByDate($Now);
-
     }
 
     /**
@@ -315,10 +328,10 @@ class Service extends AbstractService
         $tblPeriod = $this->getPeriodById($Period);
 
         if ((new Data($this->getBinding()))->addYearPeriod($tblYear, $tblPeriod)) {
-            return new Success('Zeitraum festgelegt').
+            return new Success('Zeitraum festgelegt') .
             new Redirect('/Education/Lesson/Term', Redirect::TIMEOUT_SUCCESS);
         }
-        return new Warning('Zeitraum konnte nicht festgelegt werden').
+        return new Warning('Zeitraum konnte nicht festgelegt werden') .
         new Redirect('/Education/Lesson/Term', Redirect::TIMEOUT_ERROR);
     }
 
@@ -357,16 +370,16 @@ class Service extends AbstractService
         $tblPeriod = $this->getPeriodById($Period);
 
         if ((new Data($this->getBinding()))->removeYearPeriod($tblYear, $tblPeriod)) {
-            return new Success('Zeitraum entfernt').
+            return new Success('Zeitraum entfernt') .
             new Redirect('/Education/Lesson/Term', Redirect::TIMEOUT_SUCCESS);
         }
-        return new Warning('Zeitraum konnte nicht entfernt werden').
+        return new Warning('Zeitraum konnte nicht entfernt werden') .
         new Redirect('/Education/Lesson/Term', Redirect::TIMEOUT_ERROR);
     }
 
     /**
      * @param IFormInterface $Form
-     * @param null|array     $Period
+     * @param null|array $Period
      *
      * @return IFormInterface|string
      */
@@ -384,21 +397,21 @@ class Service extends AbstractService
 
         $Error = false;
 
-        if (isset( $Period['Name'] ) && empty( $Period['Name'] )) {
+        if (isset($Period['Name']) && empty($Period['Name'])) {
             $Form->setError('Period[Name]', 'Bitte geben Sie einen eineindeutigen Namen an');
             $Error = true;
         }
 
-        if (isset( $Period['From'] ) && empty( $Period['From'] )) {
+        if (isset($Period['From']) && empty($Period['From'])) {
             $Form->setError('Period[From]', 'Bitte geben Sie Start-Datum an');
             $Error = true;
         }
-        if (isset( $Period['To'] ) && empty( $Period['To'] )) {
+        if (isset($Period['To']) && empty($Period['To'])) {
             $Form->setError('Period[To]', 'Bitte geben Sie Ende-Datum an');
             $Error = true;
         }
         $tblPeriod = $this->getPeriodByName($Period['Name']);
-        if (!empty( $tblPeriod )) {
+        if (!empty($tblPeriod)) {
             if ($tblPeriod->getFromDate() === $Period['From']
                 && $tblPeriod->getToDate() === $Period['To']
                 && $tblPeriod->getDescription() === $Period['Description']
@@ -418,10 +431,10 @@ class Service extends AbstractService
                 $Period['Name'], $Period['From'], $Period['To'], $Period['Description'])
             ) {
                 return new Success('Der Zeitraum wurde erfolgreich hinzugefügt')
-                .new Redirect($this->getRequest()->getUrl(), Redirect::TIMEOUT_SUCCESS);
+                . new Redirect($this->getRequest()->getUrl(), Redirect::TIMEOUT_SUCCESS);
             } else {
                 return new Danger('Der Zeitraum konnte nicht hinzugefügt werden')
-                .new Redirect($this->getRequest()->getUrl(), Redirect::TIMEOUT_ERROR);
+                . new Redirect($this->getRequest()->getUrl(), Redirect::TIMEOUT_ERROR);
             }
         }
         return $Form;
@@ -440,7 +453,7 @@ class Service extends AbstractService
 
     /**
      * @param IFormInterface|null $Stage
-     * @param TblYear             $tblYear
+     * @param TblYear $tblYear
      * @param                     $Year
      *
      * @return IFormInterface|string
@@ -461,11 +474,11 @@ class Service extends AbstractService
 
         $Error = false;
 
-        if (isset( $Year['Year'] ) && empty( $Year['Year'] )) {
+        if (isset($Year['Year']) && empty($Year['Year'])) {
             $Stage->setError('Year[Year]', 'Bitte geben Sie ein Jahr an');
             $Error = true;
         } else {
-            if (( $CheckYear = Term::useService()->checkYearExist($Year['Year'], $Year['Description']) )) {
+            if (($CheckYear = Term::useService()->checkYearExist($Year['Year'], $Year['Description']))) {
                 if ($tblYear->getId() !== $CheckYear->getId()) {
                     $Stage->setError('Year[Description]', 'Bitte geben sie eine andere Beschreibung an');
                     $Error = true;
@@ -481,10 +494,10 @@ class Service extends AbstractService
             )
             ) {
                 $Stage .= new Success('Änderungen gespeichert, die Daten werden neu geladen...')
-                    .new Redirect('/Education/Lesson/Term/Create/Year', Redirect::TIMEOUT_SUCCESS);
+                    . new Redirect('/Education/Lesson/Term/Create/Year', Redirect::TIMEOUT_SUCCESS);
             } else {
                 $Stage .= new Danger('Änderungen konnten nicht gespeichert werden')
-                    .new Redirect('/Education/Lesson/Term/Create/Year', Redirect::TIMEOUT_ERROR);
+                    . new Redirect('/Education/Lesson/Term/Create/Year', Redirect::TIMEOUT_ERROR);
             };
         }
         return $Stage;
@@ -492,8 +505,8 @@ class Service extends AbstractService
 
     /**
      * @param IFormInterface|null $Stage
-     * @param TblPeriod           $tblPeriod
-     * @param null|array          $Period
+     * @param TblPeriod $tblPeriod
+     * @param null|array $Period
      *
      * @return IFormInterface|string
      */
@@ -513,15 +526,15 @@ class Service extends AbstractService
 
         $Error = false;
 
-        if (isset( $Period['Name'] ) && empty( $Period['Name'] )) {
+        if (isset($Period['Name']) && empty($Period['Name'])) {
             $Stage->setError('Period[Name]', 'Bitte geben Sie einen Namen an');
             $Error = true;
         }
-        if (isset( $Period['From'] ) && empty( $Period['From'] )) {
+        if (isset($Period['From']) && empty($Period['From'])) {
             $Stage->setError('Period[From]', 'Bitte geben Sie ein Startdatum an');
             $Error = true;
         }
-        if (isset( $Period['To'] ) && empty( $Period['To'] )) {
+        if (isset($Period['To']) && empty($Period['To'])) {
             $Stage->setError('Period[To]', 'Bitte geben Sie ein Enddatum an');
             $Error = true;
         }
@@ -536,10 +549,10 @@ class Service extends AbstractService
             )
             ) {
                 $Stage .= new Success('Änderungen gespeichert, die Daten werden neu geladen...')
-                    .new Redirect('/Education/Lesson/Term/Create/Period', Redirect::TIMEOUT_SUCCESS);
+                    . new Redirect('/Education/Lesson/Term/Create/Period', Redirect::TIMEOUT_SUCCESS);
             } else {
                 $Stage .= new Danger('Änderungen konnten nicht gespeichert werden')
-                    .new Redirect('/Education/Lesson/Term/Create/Period', Redirect::TIMEOUT_ERROR);
+                    . new Redirect('/Education/Lesson/Term/Create/Period', Redirect::TIMEOUT_ERROR);
             };
         }
         return $Stage;
@@ -558,10 +571,10 @@ class Service extends AbstractService
         }
         if ((new Data($this->getBinding()))->destroyYear($tblYear)) {
             return new Success('Das Jahr wurde erfolgreich gelöscht')
-            .new Redirect('/Education/Lesson/Term/Create/Year', Redirect::TIMEOUT_SUCCESS);
+            . new Redirect('/Education/Lesson/Term/Create/Year', Redirect::TIMEOUT_SUCCESS);
         } else {
             return new Danger('Das Jahr konnte nicht gelöscht werden')
-            .new Redirect('/Education/Lesson/Term/Create/Year', Redirect::TIMEOUT_ERROR);
+            . new Redirect('/Education/Lesson/Term/Create/Year', Redirect::TIMEOUT_ERROR);
         }
 
     }
@@ -585,14 +598,14 @@ class Service extends AbstractService
         if (!$Error) {
             if ((new Data($this->getBinding()))->destroyPeriod($tblPeriod)) {
                 return new Success('Der Zeitraum wurde erfolgreich gelöscht')
-                .new Redirect('/Education/Lesson/Term/Create/Period', Redirect::TIMEOUT_SUCCESS);
+                . new Redirect('/Education/Lesson/Term/Create/Period', Redirect::TIMEOUT_SUCCESS);
             } else {
                 return new Danger('Der Zeitraum konnte nicht gelöscht werden')
-                .new Redirect('/Education/Lesson/Term/Create/Period', Redirect::TIMEOUT_ERROR);
+                . new Redirect('/Education/Lesson/Term/Create/Period', Redirect::TIMEOUT_ERROR);
             }
         }
         return new Danger('Der Zeitraum wird benutzt!')
-        .new Redirect('/Education/Lesson/Term/Create/Period', Redirect::TIMEOUT_ERROR);
+        . new Redirect('/Education/Lesson/Term/Create/Period', Redirect::TIMEOUT_ERROR);
     }
 
     /**
@@ -633,7 +646,7 @@ class Service extends AbstractService
     }
 
     /**
-     * @param TblYear   $tblYear
+     * @param TblYear $tblYear
      * @param TblPeriod $tblPeriod
      *
      * @return TblYearPeriod
@@ -644,4 +657,287 @@ class Service extends AbstractService
         return (new Data($this->getBinding()))->addYearPeriod($tblYear, $tblPeriod);
     }
 
+    /**
+     * @param $Id
+     *
+     * @return false|TblHolidayType
+     */
+    public function getHolidayTypeById($Id)
+    {
+
+        return (new Data($this->getBinding()))->getHolidayTypeById($Id);
+    }
+
+    /**
+     * @param $Identifier
+     *
+     * @return false|TblHolidayType
+     */
+    public function getHolidayTypeByIdentifier($Identifier)
+    {
+
+        return (new Data($this->getBinding()))->getHolidayTypeByIdentifier($Identifier);
+    }
+
+    /**
+     * @return false|TblHolidayType[]
+     */
+    public function getHolidayTypeAll()
+    {
+
+        return (new Data($this->getBinding()))->getHolidayTypeAll();
+    }
+
+    /**
+     * @param $Id
+     *
+     * @return false|TblHoliday
+     */
+    public function getHolidayById($Id)
+    {
+
+        return (new Data($this->getBinding()))->getHolidayById($Id);
+    }
+
+    /**
+     * @param TblYear $tblYear
+     * @param \DateTime $date
+     *
+     * @return false|TblHoliday
+     */
+    public function getHolidayByDay(TblYear $tblYear, \DateTime $date)
+    {
+
+        return (new Data($this->getBinding()))->getHolidayByDay($tblYear, $date);
+    }
+
+    /**
+     * @return false|TblHoliday[]
+     */
+    public function getHolidayAll()
+    {
+
+        return (new Data($this->getBinding()))->getHolidayAll();
+    }
+
+    /**
+     * @param TblYear $tblYear
+     *
+     * @return false|TblHoliday[]
+     */
+    public function getHolidayAllByYear(TblYear $tblYear)
+    {
+
+        return (new Data($this->getBinding()))->getHolidayAllByYear($tblYear);
+    }
+
+    /**
+     * @param $Id
+     *
+     * @return false|TblYearHoliday
+     */
+    public function getYearHolidayById($Id)
+    {
+
+        return (new Data($this->getBinding()))->getYearHolidayById($Id);
+    }
+
+    /**
+     * @param TblYear $tblYear
+     *
+     * @return false|TblYearHoliday[]
+     */
+    public function getYearHolidayAllByYear(TblYear $tblYear)
+    {
+
+        return (new Data($this->getBinding()))->getYearHolidayAllByYear($tblYear);
+    }
+
+    /**
+     * @param TblHoliday $tblHoliday
+     *
+     * @return false|TblYearHoliday[]
+     */
+    public function getYearHolidayAllByHoliday(TblHoliday $tblHoliday)
+    {
+
+        return (new Data($this->getBinding()))->getYearHolidayAllByHoliday($tblHoliday);
+    }
+
+        /**
+     * Alle möglichen Holidays innerhalb des Schuljahres
+     *
+     * @param TblYear $tblYear
+     *
+     * @return false|TblHoliday[]
+     */
+    public function getHolidayAllWhereYear(TblYear $tblYear)
+    {
+
+        return (new Data($this->getBinding()))->getHolidayAllWhereYear($tblYear);
+    }
+
+    /**
+     * @param IFormInterface|null $Stage
+     * @param $Data
+     *
+     * @return IFormInterface|string
+     */
+    public function createHoliday(IFormInterface $Stage = null, $Data)
+    {
+
+        /**
+         * Skip to Frontend
+         */
+        if (null === $Data) {
+            return $Stage;
+        }
+
+        $Error = false;
+        if (isset($Data['FromDate']) && empty($Data['FromDate'])) {
+            $Stage->setError('Data[FromDate]', 'Bitte geben Sie ein Datum an');
+            $Error = true;
+        }
+        if (isset($Data['Name']) && empty($Data['Name'])) {
+            $Stage->setError('Data[Name]', 'Bitte geben Sie einen Namen an');
+            $Error = true;
+        }
+        $tblHolidayType = $this->getHolidayTypeById($Data['Type']);
+        if (!$tblHolidayType) {
+            $Stage->setError('Data[Type]', 'Bitte wählen Sie einen Typ aus');
+            $Error = true;
+        }
+
+        if (!$Error) {
+            (new Data($this->getBinding()))->createHoliday(
+                $tblHolidayType,
+                $Data['Name'],
+                $Data['FromDate'],
+                $Data['ToDate']
+            );
+
+            return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success() . ' Die Unterrichtsfreien Tage sind erfasst worden.')
+            . new Redirect('/Education/Lesson/Term/Holiday', Redirect::TIMEOUT_SUCCESS
+            );
+        }
+
+        return $Stage;
+    }
+
+    /**
+     * @param IFormInterface|null $Stage
+     * @param TblHoliday $tblHoliday
+     * @param $Data
+     *
+     * @return IFormInterface|string
+     */
+    public function updateHoliday(IFormInterface $Stage = null, TblHoliday $tblHoliday, $Data)
+    {
+
+        /**
+         * Skip to Frontend
+         */
+        if (null === $Data) {
+            return $Stage;
+        }
+
+        $Error = false;
+        if (isset($Data['FromDate']) && empty($Data['FromDate'])) {
+            $Stage->setError('Data[FromDate]', 'Bitte geben Sie ein Datum an');
+            $Error = true;
+        }
+        if (isset($Data['Name']) && empty($Data['Name'])) {
+            $Stage->setError('Data[Name]', 'Bitte geben Sie einen Namen an');
+            $Error = true;
+        }
+        $tblHolidayType = $this->getHolidayTypeById($Data['Type']);
+        if (!$tblHolidayType) {
+            $Stage->setError('Data[Type]', 'Bitte wählen Sie einen Typ aus');
+            $Error = true;
+        }
+
+        if (!$Error) {
+            (new Data($this->getBinding()))->updateHoliday(
+                $tblHoliday,
+                $tblHolidayType,
+                $Data['Name'],
+                $Data['FromDate'],
+                $Data['ToDate']
+            );
+
+            return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success() . ' Die Unterrichtsfreien Tage sind geändert worden.')
+            . new Redirect('/Education/Lesson/Term/Holiday', Redirect::TIMEOUT_SUCCESS
+            );
+        }
+
+        return $Stage;
+    }
+
+    /**
+     * @param IFormInterface $Form
+     * @param TblYear $tblYear
+     * @param null $DataAddHoliday
+     * @param null $DataRemoveHoliday
+     *
+     * @return IFormInterface|string
+     */
+    public function addHolidaysToYear(
+        IFormInterface $Form,
+        TblYear $tblYear,
+        $DataAddHoliday = null,
+        $DataRemoveHoliday = null
+    ) {
+
+        /**
+         * Skip to Frontend
+         */
+        $Global = $this->getGlobal();
+        if (!isset($Global->POST['Button']['Submit'])) {
+            return $Form;
+        }
+
+        // entfernen
+        if ($DataRemoveHoliday !== null){
+            foreach ($DataRemoveHoliday as $yearHolidayId => $item){
+                $tblYearHoliday = $this->getYearHolidayById($yearHolidayId);
+                if ($tblYearHoliday){
+                    (new Data($this->getBinding()))->removeYearHoliday($tblYearHoliday);
+                }
+            }
+        }
+
+        // hinzufügen
+        if ($DataAddHoliday !== null) {
+            foreach ($DataAddHoliday as $holidayId => $value) {
+                $tblHoliday = $this->getHolidayById($holidayId);
+                if ($tblHoliday) {
+                    (new Data($this->getBinding()))->addYearHoliday($tblYear, $tblHoliday);
+                }
+            }
+        }
+
+        return new Success('Daten erfolgreich gespeichert', new \SPHERE\Common\Frontend\Icon\Repository\Success())
+        . new Redirect('/Education/Lesson/Term/Holiday/Select', Redirect::TIMEOUT_SUCCESS, array(
+            'YearId' => $tblYear->getId(),
+        ));
+    }
+
+    /**
+     * @param TblHoliday $tblHoliday
+     *
+     * @return bool
+     */
+    public function destroyHoliday(TblHoliday $tblHoliday)
+    {
+
+        // Verknüpfungen löschen
+        $tblYearHolidayList = $this->getYearHolidayAllByHoliday($tblHoliday);
+        if ($tblYearHolidayList){
+            foreach ($tblYearHolidayList as $tblYearHoliday){
+                (new Data($this->getBinding()))->removeYearHoliday($tblYearHoliday);
+            }
+        }
+
+        return (new Data($this->getBinding()))->destroyHoliday($tblHoliday);
+    }
 }

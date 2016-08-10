@@ -19,8 +19,8 @@ use SPHERE\System\Database\Fitting\Element;
 class TblSchool extends Element
 {
 
-    const SERVICE_TBL_COMPANY = 'serviceTblCompany';
-    const SERVICE_TBL_TYPE = 'serviceTblType';
+    const ATTR_SERVICE_TBL_COMPANY = 'serviceTblCompany';
+    const ATTR_SERVICE_TBL_TYPE = 'serviceTblType';
 
     /**
      * @Column(type="bigint")

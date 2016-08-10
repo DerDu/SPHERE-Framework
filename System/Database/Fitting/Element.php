@@ -90,6 +90,9 @@ abstract class Element extends Extension
     public function getEntityCreate()
     {
 
+        if( is_object( $this->EntityCreate ) ) {
+            return clone $this->EntityCreate;
+        }
         return $this->EntityCreate;
     }
 
@@ -99,6 +102,9 @@ abstract class Element extends Extension
     public function getEntityUpdate()
     {
 
+        if( is_object( $this->EntityUpdate ) ) {
+            return clone $this->EntityUpdate;
+        }
         return $this->EntityUpdate;
     }
 

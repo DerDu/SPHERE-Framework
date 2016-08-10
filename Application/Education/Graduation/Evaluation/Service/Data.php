@@ -593,7 +593,7 @@ class Data extends AbstractData
     }
 
     /**
-     * @param TblTask     $tblTask
+     * @param TblTask $tblTask
      * @param TblDivision $tblDivision
      *
      * @return bool|Entity\TblTest[]
@@ -611,7 +611,7 @@ class Data extends AbstractData
         } else {
             return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblTest',
                 array(
-                    TblTest::ATTR_TBL_TASK             => $tblTask->getId(),
+                    TblTest::ATTR_TBL_TASK => $tblTask->getId(),
                     TblTest::ATTR_SERVICE_TBL_DIVISION => $tblDivision->getId()
                 )
             );
@@ -643,5 +643,33 @@ class Data extends AbstractData
             return true;
         }
         return false;
+    }
+
+    /**
+     * @param TblDivision $tblDivision
+     * @param TblTestType $tblTestType
+     * @return false|TblTask[]
+     */
+    public function getTaskAllByDivision(TblDivision $tblDivision, TblTestType $tblTestType)
+    {
+
+        $resultList = array();
+        $list = $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblTest',
+            array(
+                TblTest::ATTR_SERVICE_TBL_DIVISION => $tblDivision->getId(),
+                TblTest::ATTR_TBL_TEST_TYPE => $tblTestType->getId()
+            )
+        );
+
+        if ($list) {
+            /** @var TblTest $tblTest */
+            foreach ($list as $tblTest){
+                if ($tblTest->getTblTask()){
+                    $resultList[$tblTest->getTblTask()->getId()] = $tblTest->getTblTask();
+                }
+            }
+        }
+
+        return empty($resultList) ? false : $resultList;
     }
 }

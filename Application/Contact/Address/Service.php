@@ -8,6 +8,8 @@ use SPHERE\Application\Contact\Address\Service\Entity\TblState;
 use SPHERE\Application\Contact\Address\Service\Entity\TblToCompany;
 use SPHERE\Application\Contact\Address\Service\Entity\TblToPerson;
 use SPHERE\Application\Contact\Address\Service\Entity\TblType;
+use SPHERE\Application\Contact\Address\Service\Entity\ViewAddressToCompany;
+use SPHERE\Application\Contact\Address\Service\Entity\ViewAddressToPerson;
 use SPHERE\Application\Contact\Address\Service\Setup;
 use SPHERE\Application\Corporation\Company\Service\Entity\TblCompany;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
@@ -25,6 +27,24 @@ use SPHERE\System\Database\Binding\AbstractService;
  */
 class Service extends AbstractService
 {
+
+    /**
+     * @return false|ViewAddressToPerson[]
+     */
+    public function viewAddressToPersonAll()
+    {
+
+        return (new Data($this->getBinding()))->viewAddressToPersonAll();
+    }
+
+    /**
+     * @return false|ViewAddressToCompany[]
+     */
+    public function viewAddressToCompanyAll()
+    {
+
+        return (new Data($this->getBinding()))->viewAddressToCompanyAll();
+    }
 
     /**
      * @param bool $doSimulation
@@ -314,13 +334,13 @@ class Service extends AbstractService
 
     /**
      * @param IFormInterface $Form
-     * @param TblToPerson $tblToPerson
-     * @param array $Street
-     * @param array $City
-     * @param int $State
-     * @param array $Type
-     * @param $County
-     * @param $Nation
+     * @param TblToPerson    $tblToPerson
+     * @param array          $Street
+     * @param array          $City
+     * @param int            $State
+     * @param array          $Type
+     * @param                $County
+     * @param                $Nation
      *
      * @return IFormInterface|string
      */
@@ -360,7 +380,7 @@ class Service extends AbstractService
             $Form->setSuccess('Street[Number]');
         }
 
-        if (isset( $City['Code'] ) && empty($City['Code'])) {
+        if (isset( $City['Code'] ) && empty( $City['Code'] )) {
             $Form->setError('City[Code]', 'Bitte geben Sie eine Postleitzahl ein');
             $Error = true;
         } else {
@@ -372,7 +392,7 @@ class Service extends AbstractService
         } else {
             $Form->setSuccess('City[Name]');
         }
-        if (!($tblType = $this->getTypeById($Type['Type']))){
+        if (!( $tblType = $this->getTypeById($Type['Type']) )) {
             $Form->setError('Type[Type]', 'Bitte geben Sie einen Typ ein');
             $Error = true;
         } else {
@@ -400,12 +420,12 @@ class Service extends AbstractService
                     $tblType,
                     $Type['Remark'])
                 ) {
-                    return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success() . ' Die Adresse wurde erfolgreich geändert')
-                    . new Redirect('/People/Person', Redirect::TIMEOUT_SUCCESS,
+                    return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success().' Die Adresse wurde erfolgreich geändert')
+                    .new Redirect('/People/Person', Redirect::TIMEOUT_SUCCESS,
                         array('Id' => $tblToPerson->getServiceTblPerson()->getId()));
                 } else {
-                    return new Danger(new Ban() . ' Die Adresse konnte nicht geändert werden')
-                    . new Redirect('/People/Person', Redirect::TIMEOUT_ERROR,
+                    return new Danger(new Ban().' Die Adresse konnte nicht geändert werden')
+                    .new Redirect('/People/Person', Redirect::TIMEOUT_ERROR,
                         array('Id' => $tblToPerson->getServiceTblPerson()->getId()));
                 }
             } else {
@@ -417,13 +437,13 @@ class Service extends AbstractService
 
     /**
      * @param IFormInterface $Form
-     * @param TblToCompany $tblToCompany
-     * @param array $Street
-     * @param array $City
-     * @param int $State
-     * @param array $Type
-     * @param $County
-     * @param $Nation
+     * @param TblToCompany   $tblToCompany
+     * @param array          $Street
+     * @param array          $City
+     * @param int            $State
+     * @param array          $Type
+     * @param                $County
+     * @param                $Nation
      *
      * @return IFormInterface|string
      */
@@ -463,7 +483,7 @@ class Service extends AbstractService
             $Form->setSuccess('Street[Number]');
         }
 
-        if (isset( $City['Code'] ) && empty($City['Code'])) {
+        if (isset( $City['Code'] ) && empty( $City['Code'] )) {
             $Form->setError('City[Code]', 'Bitte geben Sie eine Postleitzahl ein');
             $Error = true;
         } else {
@@ -475,7 +495,7 @@ class Service extends AbstractService
         } else {
             $Form->setSuccess('City[Name]');
         }
-        if (!($tblType = $this->getTypeById($Type['Type']))){
+        if (!( $tblType = $this->getTypeById($Type['Type']) )) {
             $Form->setError('Type[Type]', 'Bitte geben Sie einen Typ ein');
             $Error = true;
         } else {
@@ -503,12 +523,12 @@ class Service extends AbstractService
                     $tblType,
                     $Type['Remark'])
                 ) {
-                    return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success() . ' Die Adresse wurde erfolgreich geändert')
-                    . new Redirect('/Corporation/Company', Redirect::TIMEOUT_SUCCESS,
+                    return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success().' Die Adresse wurde erfolgreich geändert')
+                    .new Redirect('/Corporation/Company', Redirect::TIMEOUT_SUCCESS,
                         array('Id' => $tblToCompany->getServiceTblCompany()->getId()));
                 } else {
-                    return new Danger(new Ban() . ' Die Adresse konnte nicht geändert werden')
-                    . new Redirect('/Corporation/Company', Redirect::TIMEOUT_ERROR,
+                    return new Danger(new Ban().' Die Adresse konnte nicht geändert werden')
+                    .new Redirect('/Corporation/Company', Redirect::TIMEOUT_ERROR,
                         array('Id' => $tblToCompany->getServiceTblCompany()->getId()));
                 }
             } else {
@@ -520,13 +540,13 @@ class Service extends AbstractService
 
     /**
      * @param IFormInterface $Form
-     * @param TblCompany $tblCompany
-     * @param array $Street
-     * @param array $City
-     * @param integer $State
-     * @param array $Type
-     * @param $County
-     * @param $Nation
+     * @param TblCompany     $tblCompany
+     * @param array          $Street
+     * @param array          $City
+     * @param integer        $State
+     * @param array          $Type
+     * @param                $County
+     * @param                $Nation
      *
      * @return IFormInterface|string
      */
@@ -566,7 +586,7 @@ class Service extends AbstractService
             $Form->setSuccess('Street[Number]');
         }
 
-        if (isset( $City['Code'] ) && empty($City['Code'])) {
+        if (isset( $City['Code'] ) && empty( $City['Code'] )) {
             $Form->setError('City[Code]', 'Bitte geben Sie eine Postleitzahl ein');
             $Error = true;
         } else {
@@ -578,7 +598,7 @@ class Service extends AbstractService
         } else {
             $Form->setSuccess('City[Name]');
         }
-        if (!($tblType = $this->getTypeById($Type['Type']))){
+        if (!( $tblType = $this->getTypeById($Type['Type']) )) {
             $Form->setError('Type[Type]', 'Bitte geben Sie einen Typ ein');
             $Error = true;
         } else {
@@ -601,11 +621,11 @@ class Service extends AbstractService
             if ((new Data($this->getBinding()))->addAddressToCompany($tblCompany, $tblAddress, $tblType,
                 $Type['Remark'])
             ) {
-                return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success() . ' Die Adresse wurde erfolgreich hinzugefügt')
+                return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success().' Die Adresse wurde erfolgreich hinzugefügt')
                 .new Redirect('/Corporation/Company', Redirect::TIMEOUT_SUCCESS,
                     array('Id' => $tblCompany->getId()));
             } else {
-                return new Danger(new Ban() . ' Die Adresse konnte nicht hinzugefügt werden')
+                return new Danger(new Ban().' Die Adresse konnte nicht hinzugefügt werden')
                 .new Redirect('/Corporation/Company', Redirect::TIMEOUT_ERROR,
                     array('Id' => $tblCompany->getId()));
             }
@@ -626,7 +646,7 @@ class Service extends AbstractService
 
     /**
      * @param TblPerson $tblPerson
-     * @param TblType $tblType
+     * @param TblType   $tblType
      *
      * @return bool|TblToPerson[]
      */
@@ -672,7 +692,7 @@ class Service extends AbstractService
 
     /**
      * @param TblCompany $tblCompany
-     * @param TblType $tblType
+     * @param TblType    $tblType
      *
      * @return bool|TblToCompany[]
      */
@@ -682,7 +702,7 @@ class Service extends AbstractService
         return (new Data($this->getBinding()))->getAddressAllByCompanyAndType($tblCompany, $tblType);
     }
 
-        /**
+    /**
      * @param integer $Id
      *
      * @return bool|TblToPerson

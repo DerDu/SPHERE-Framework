@@ -94,6 +94,11 @@ class Script extends Extension
             '/Library/jQuery.DataTables.Plugins/1.10.7/sorting/date-de.js',
             "'undefined' !== typeof jQuery.fn.dataTable.ext.type.order['de_datetime-asc']"
         );
+        $this->setSource(
+            'jQuery.DataTable.Plugin.Sorting.GermanString',
+            '/Library/jQuery.DataTables.Plugins/1.10.7/sorting/german-string.js',
+            "'undefined' !== typeof jQuery.fn.dataTable.ext.type.order['german-string-asc']"
+        );
 //        $this->setSource(
 //            'jQuery.DataTable.Plugin.Sorting.Weekday',
 //            '/Library/jQuery.DataTables.Plugins/1.0.1/sorting/weekday.js',
@@ -156,6 +161,7 @@ class Script extends Extension
             array(
 //                'jQuery.DataTable.Plugin.Sorting.Weekday',
                 'jQuery.DataTable.Plugin.Sorting.DateTime',
+                'jQuery.DataTable.Plugin.Sorting.GermanString',
                 'Bootstrap.DataTable',
                 'jQuery.DataTable.Responsive',
                 'jQuery.DataTable',

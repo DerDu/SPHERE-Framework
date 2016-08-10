@@ -25,6 +25,10 @@ class Setup extends AbstractSetup
         $tblYear = $this->setTableYear($Schema);
         $tblPeriod = $this->setTablePeriod($Schema);
         $this->setTableYearPeriod($Schema, $tblYear, $tblPeriod);
+        $tblHolidayType = $this->setTableHolidayType($Schema);
+        $tblHoliday = $this->setTableHoliday($Schema, $tblHolidayType);
+        $this->setTableYearHoliday($Schema, $tblYear, $tblHoliday);
+
         /**
          * Migration & Protocol
          */
@@ -80,8 +84,8 @@ class Setup extends AbstractSetup
 
     /**
      * @param Schema $Schema
-     * @param Table  $tblYear
-     * @param Table  $tblPeriod
+     * @param Table $tblYear
+     * @param Table $tblPeriod
      *
      * @return Table
      */
@@ -93,4 +97,70 @@ class Setup extends AbstractSetup
         $this->getConnection()->addForeignKey($Table, $tblPeriod);
         return $Table;
     }
+
+    /**
+     * @param Schema $Schema
+     *
+     * @return Table
+     */
+    private function setTableHolidayType(Schema &$Schema)
+    {
+
+        $Table = $this->getConnection()->createTable($Schema, 'tblHolidayType');
+        if (!$this->getConnection()->hasColumn('tblHolidayType', 'Name')) {
+            $Table->addColumn('Name', 'string');
+        }
+        if (!$this->getConnection()->hasColumn('tblHolidayType', 'Identifier')) {
+            $Table->addColumn('Identifier', 'string');
+        }
+
+        return $Table;
+    }
+
+    /**
+     * @param Schema $Schema
+     * @param Table $tblHolidayType
+     * 
+     * @return Table
+     */
+    private function setTableHoliday(Schema &$Schema, Table $tblHolidayType)
+    {
+
+        $Table = $this->getConnection()->createTable($Schema, 'tblHoliday');
+        if (!$this->getConnection()->hasColumn('tblHoliday', 'Name')) {
+            $Table->addColumn('Name', 'string');
+        }
+        if (!$this->getConnection()->hasColumn('tblHoliday', 'FromDate')) {
+            $Table->addColumn('FromDate', 'datetime', array('notnull' => false));
+        }
+        if (!$this->getConnection()->hasColumn('tblHoliday', 'ToDate')) {
+            $Table->addColumn('ToDate', 'datetime', array('notnull' => false));
+        }
+
+        $this->getConnection()->addForeignKey($Table, $tblHolidayType, true);
+
+        return $Table;
+    }
+
+    /**
+     * @param Schema $Schema
+     * @param Table $tblYear
+     * @param Table $tblHoliday
+     *
+     * @return Table
+     */
+    private function setTableYearHoliday(Schema &$Schema, Table $tblYear, Table $tblHoliday)
+    {
+
+        $Table = $this->getConnection()->createTable($Schema, 'tblYearHoliday');
+        if (!$this->getConnection()->hasColumn('tblYearHoliday', 'serviceTblCompany')) {
+            $Table->addColumn('serviceTblCompany', 'bigint', array('notnull' => false));
+        }
+
+        $this->getConnection()->addForeignKey($Table, $tblYear, true);
+        $this->getConnection()->addForeignKey($Table, $tblHoliday, true);
+
+        return $Table;
+    }
+
 }

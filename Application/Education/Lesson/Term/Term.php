@@ -7,6 +7,7 @@ use SPHERE\Application\IModuleInterface;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Consumer;
 use SPHERE\Common\Frontend\Icon\Repository\Calendar;
 use SPHERE\Common\Frontend\Icon\Repository\Clock;
+use SPHERE\Common\Frontend\Icon\Repository\Holiday;
 use SPHERE\Common\Frontend\Icon\Repository\Time;
 use SPHERE\Common\Frontend\Layout\Repository\Headline;
 use SPHERE\Common\Frontend\Layout\Repository\Panel;
@@ -39,34 +40,46 @@ class Term implements IModuleInterface
                 new Link\Icon(new Calendar()))
         );
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
-            __NAMESPACE__, __CLASS__.'::frontendDashboard'
+            __NAMESPACE__, __CLASS__ . '::frontendDashboard'
         ));
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
-            __NAMESPACE__.'/Create/Year', __NAMESPACE__.'\Frontend::frontendCreateYear'
+            __NAMESPACE__ . '/Create/Year', __NAMESPACE__ . '\Frontend::frontendCreateYear'
         ));
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
-            __NAMESPACE__.'/Edit/Year', __NAMESPACE__.'\Frontend::frontendEditYear'
+            __NAMESPACE__ . '/Edit/Year', __NAMESPACE__ . '\Frontend::frontendEditYear'
         ));
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
-            __NAMESPACE__.'/Destroy/Year', __NAMESPACE__.'\Frontend::frontendDestroyYear'
+            __NAMESPACE__ . '/Destroy/Year', __NAMESPACE__ . '\Frontend::frontendDestroyYear'
         ));
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
-            __NAMESPACE__.'/Create/Period', __NAMESPACE__.'\Frontend::frontendCreatePeriod'
+            __NAMESPACE__ . '/Create/Period', __NAMESPACE__ . '\Frontend::frontendCreatePeriod'
         ));
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
-            __NAMESPACE__.'/Edit/Period', __NAMESPACE__.'\Frontend::frontendEditPeriod'
+            __NAMESPACE__ . '/Edit/Period', __NAMESPACE__ . '\Frontend::frontendEditPeriod'
         ));
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
-            __NAMESPACE__.'/Destroy/Period', __NAMESPACE__.'\Frontend::frontendDestroyPeriod'
+            __NAMESPACE__ . '/Destroy/Period', __NAMESPACE__ . '\Frontend::frontendDestroyPeriod'
         ));
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
-            __NAMESPACE__.'/Link/Period', __NAMESPACE__.'\Frontend::frontendLinkPeriod'
+            __NAMESPACE__ . '/Link/Period', __NAMESPACE__ . '\Frontend::frontendLinkPeriod'
         ));
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
-            __NAMESPACE__.'/Choose/Period', __NAMESPACE__.'\Frontend::frontendChoosePeriod'
+            __NAMESPACE__ . '/Choose/Period', __NAMESPACE__ . '\Frontend::frontendChoosePeriod'
         ));
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
-            __NAMESPACE__.'/Remove/Period', __NAMESPACE__.'\Frontend::frontendRemovePeriod'
+            __NAMESPACE__ . '/Remove/Period', __NAMESPACE__ . '\Frontend::frontendRemovePeriod'
+        ));
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__ . '/Holiday', __NAMESPACE__ . '\Frontend::frontendHoliday'
+        ));
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__ . '/Holiday/Edit', __NAMESPACE__ . '\Frontend::frontendEditHoliday'
+        ));
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__ . '/Holiday/Destroy', __NAMESPACE__ . '\Frontend::frontendDestroyHoliday'
+        ));
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__ . '/Holiday/Select', __NAMESPACE__ . '\Frontend::frontendSelectHoliday'
         ));
 
     }
@@ -88,9 +101,11 @@ class Term implements IModuleInterface
 
         $Stage = new Stage('Schuljahr', 'Dashboard');
 
-        $Stage->addButton(new Standard('Schuljahr', __NAMESPACE__.'\Create\Year', new Calendar(), null,
+        $Stage->addButton(new Standard('Schuljahr', __NAMESPACE__ . '\Create\Year', new Calendar(), null,
             'Erstellen/Bearbeiten'));
-        $Stage->addButton(new Standard('Zeitraum', __NAMESPACE__.'\Create\Period', new Time(), null,
+        $Stage->addButton(new Standard('Zeitraum', __NAMESPACE__ . '\Create\Period', new Time(), null,
+            'Erstellen/Bearbeiten'));
+        $Stage->addButton(new Standard('Unterrichtsfreie Tage', __NAMESPACE__ . '\Holiday', new Holiday(), null,
             'Erstellen/Bearbeiten'));
 
         $tblYearAll = Term::useService()->getYearAll();
@@ -103,25 +118,50 @@ class Term implements IModuleInterface
                     /** @noinspection PhpUnusedParameterInspection */
                     array_walk($tblPeriodAll, function (TblPeriod &$tblPeriod) use ($tblYear) {
 
-                        $tblPeriod = $tblPeriod->getName().' '.new Muted(new Small($tblPeriod->getDescription()))
+                        $tblPeriod = $tblPeriod->getName() . ' ' . new Muted(new Small($tblPeriod->getDescription()))
 //                            .new PullRight(new Standard('', __NAMESPACE__.'\Remove\Period', new Remove(),
 //                                array('PeriodId' => $tblPeriod->getId(),
 //                                      'Id'       => $tblYear->getId()), 'Zeitraum entfernen'))
-                            .'<br/>'.$tblPeriod->getFromDate().' - '.$tblPeriod->getToDate();
+                            . '<br/>' . $tblPeriod->getFromDate() . ' - ' . $tblPeriod->getToDate();
                     });
                 } else {
                     $tblPeriodAll = array();
                 }
+
+                // ToDo Sortierung nach FromDate & ToDate
+
+                $holidayList = array();
+                $tblYearHolidayAllByYear = Term::useService()->getYearHolidayAllByYear($tblYear);
+                if ($tblYearHolidayAllByYear) {
+                    foreach ($tblYearHolidayAllByYear as $tblYearHoliday) {
+                        $tblHoliday = $tblYearHoliday->getTblHoliday();
+                        if ($tblHoliday) {
+                            $holidayList[] = $tblHoliday->getName() . ' '
+                                . new Muted(new Small($tblHoliday->getFromDate()
+                                    . ($tblHoliday->getToDate() ? ' - ' . $tblHoliday->getToDate() : ' ')));
+                        }
+                    }
+                }
+
                 array_push($Year, array(
                     'Schuljahr' => $tblYear->getDisplayName(),
                     'Zeiträume' => new Panel(
-                        ( empty( $tblPeriodAll ) ?
+                        (empty($tblPeriodAll) ?
                             'Keine Zeiträume hinterlegt'
-                            : count($tblPeriodAll).' Zeiträume' ),
+                            : count($tblPeriodAll) . ' Zeiträume'),
                         $tblPeriodAll,
-                        ( empty( $tblPeriodAll ) ? Panel::PANEL_TYPE_WARNING : Panel::PANEL_TYPE_DEFAULT )
-                        , new Standard('', __NAMESPACE__.'\Choose\Period', new Clock(),
+                        (empty($tblPeriodAll) ? Panel::PANEL_TYPE_WARNING : Panel::PANEL_TYPE_DEFAULT)
+                        , new Standard('', __NAMESPACE__ . '\Choose\Period', new Clock(),
                         array('Id' => $tblYear->getId()), 'Zeitraum zuweisen'
+                    )),
+                    'Holiday' => new Panel(
+                        (empty($holidayList) ?
+                            'Keine Unterrichtsfreien Tage hinterlegt'
+                            : count($holidayList) . ' Unterrichtsfreie Tage'),
+                        $holidayList,
+                        (empty($holidayList) ? Panel::PANEL_TYPE_WARNING : Panel::PANEL_TYPE_DEFAULT)
+                        , new Standard('', __NAMESPACE__ . '\Holiday\Select', new Holiday(),
+                        array('YearId' => $tblYear->getId()), 'Unterrichtsfreie Tage zuweisen'
                     )),
 //                    'Optionen'  =>
 //                        new Standard('', __NAMESPACE__.'\Edit\Year', new Pencil(),
@@ -144,11 +184,12 @@ class Term implements IModuleInterface
                 new LayoutGroup(
                     new LayoutRow(
                         new LayoutColumn(array(
-                            new Headline(new Calendar().' Im System vorhandene Schuljahre'),
+                            new Headline(new Calendar() . ' Im System vorhandene Schuljahre'),
                             new TableData(
                                 $Year, null, array(
                                     'Schuljahr' => 'Schuljahr',
                                     'Zeiträume' => 'Zeiträume',
+                                    'Holiday' => 'Unterrichtsfreie Tage',
 //                                    'Optionen'  => 'Zuordnung'
                                 )
                             )
@@ -169,7 +210,7 @@ class Term implements IModuleInterface
 
         return new Service(
             new Identifier('Education', 'Lesson', 'Term', null, Consumer::useService()->getConsumerBySession()),
-            __DIR__.'/Service/Entity', __NAMESPACE__.'\Service\Entity'
+            __DIR__ . '/Service/Entity', __NAMESPACE__ . '\Service\Entity'
         );
     }
 }

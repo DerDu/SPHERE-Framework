@@ -21,10 +21,10 @@ class TblCommodityItem extends Element
     const ATTR_TBL_COMMODITY = 'tblCommodity';
     const ATTR_TBL_ITEM = 'tblItem';
 
-    /**
-     * @Column(type="decimal", precision=14, scale=4)
-     */
-    protected $Quantity;
+//    /**
+//     * @Column(type="decimal", precision=14, scale=4)
+//     */
+//    protected $Quantity;
     /**
      * @Column(type="bigint")
      */
@@ -34,21 +34,21 @@ class TblCommodityItem extends Element
      */
     protected $tblItem;
 
-    /**
-     * @return string
-     */
-    public function getTotalPriceString()
-    {
-
-        $tblItem = $this->getTblItem();
-        $quantity = $this->getQuantity();
-        $result = 0.00;
-        if ($tblItem && $tblItem->getPrice() > 0 && $quantity > 0) {
-            $result = sprintf("%01.4f", $tblItem->getPrice() * $quantity);
-        }
-
-        return str_replace('.', ',', $result)." €";
-    }
+//    /**
+//     * @return string
+//     */
+//    public function getTotalPriceString()
+//    {
+//
+//        $tblItem = $this->getTblItem();
+//        $quantity = $this->getQuantity();
+//        $result = 0.00;
+//        if ($tblItem && $tblItem->getPrice() > 0 && $quantity > 0) {
+//            $result = sprintf("%01.4f", $tblItem->getPrice() * $quantity);
+//        }
+//
+//        return str_replace('.', ',', $result)." €";
+//    }
 
     /**
      * @return bool|TblItem
@@ -72,23 +72,23 @@ class TblCommodityItem extends Element
         $this->tblItem = ( null === $tblItem ? null : $tblItem->getId() );
     }
 
-    /**
-     * @return (type="decimal", precision=14, scale=4)
-     */
-    public function getQuantity()
-    {
-
-        return $this->Quantity;
-    }
-
-    /**
-     * @param (type="decimal", precision=14, scale=4) $Quantity
-     */
-    public function setQuantity($Quantity)
-    {
-
-        $this->Quantity = $Quantity;
-    }
+//    /**
+//     * @return (type="decimal", precision=14, scale=4)
+//     */
+//    public function getQuantity()
+//    {
+//
+//        return $this->Quantity;
+//    }
+//
+//    /**
+//     * @param (type="decimal", precision=14, scale=4) $Quantity
+//     */
+//    public function setQuantity($Quantity)
+//    {
+//
+//        $this->Quantity = $Quantity;
+//    }
 
     /**
      * @return bool|TblCommodity

@@ -814,4 +814,15 @@ class Service extends AbstractService
         ));
     }
 
+    /**
+     * @param TblDivision $tblDivision
+     * @param TblTestType $tblTestType
+     * @return false|TblTask[]
+     */
+    public function getTaskAllByDivision(TblDivision $tblDivision, TblTestType $tblTestType)
+    {
+
+        return (new Data($this->getBinding()))->getTaskAllByDivision($tblDivision, $tblTestType);
+    }
+
 }

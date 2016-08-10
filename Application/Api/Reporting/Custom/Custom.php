@@ -60,10 +60,48 @@ class Custom implements IModuleInterface
         */
         if ($consumerAcronym === 'FEGH' || $consumerAcronym === 'FESH') {
             Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
-                __NAMESPACE__.'/Hormersdorf/Person/ClassList/Download', __NAMESPACE__.'\Hormersdorf\Person::downloadClassList'
+                __NAMESPACE__.'/Hormersdorf/Person/ClassList/Download',
+                __NAMESPACE__.'\Hormersdorf\Person::downloadClassList'
             ));
             Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
-                __NAMESPACE__.'/Hormersdorf/Person/StaffList/Download', __NAMESPACE__.'\Hormersdorf\Person::downloadStaffList'
+                __NAMESPACE__.'/Hormersdorf/Person/StaffList/Download',
+                __NAMESPACE__.'\Hormersdorf\Person::downloadStaffList'
+            ));
+        }
+
+        /*
+         * Herrnhut
+         */
+        if ($consumerAcronym === 'EZGH' || $consumerAcronym === 'DEMO') {
+            Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+                __NAMESPACE__.'/Herrnhut/Common/ProfileList/Download',
+                __NAMESPACE__.'\Herrnhut\Common::downloadProfileList'
+            ));
+            Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+                __NAMESPACE__.'/Herrnhut/Common/SignList/Download',
+                __NAMESPACE__.'\Herrnhut\Common::downloadSignList'
+            ));
+            Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+                __NAMESPACE__.'/Herrnhut/Common/LanguageList/Download',
+                __NAMESPACE__.'\Herrnhut\Common::downloadLanguageList'
+            ));
+            Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+                __NAMESPACE__.'/Herrnhut/Common/ClassList/Download',
+                __NAMESPACE__.'\Herrnhut\Common::downloadClassList'
+            ));
+            Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+                __NAMESPACE__.'/Herrnhut/Common/ExtendedClassList/Download',
+                __NAMESPACE__.'\Herrnhut\Common::downloadExtendedClassList'
+            ));
+        }
+
+        /*
+         * Coswig
+         */
+        if ($consumerAcronym === 'EVSC' || $consumerAcronym === 'DEMO') {
+            Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+                __NAMESPACE__.'/Coswig/Common/ClassList/Download',
+                __NAMESPACE__.'\Coswig\Common::downloadClassList'
             ));
         }
     }

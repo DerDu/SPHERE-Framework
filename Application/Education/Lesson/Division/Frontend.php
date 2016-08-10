@@ -172,7 +172,8 @@ class Frontend extends Extension implements IFrontendInterface
                     $Temp['Period'] = 'fehlt';
                 }
 
-                $SubjectUsedCount = Division::useService()->countDivisionSubjectUsedByDivision($tblDivision);
+                $SubjectUsedCount = Division::useService()->countDivisionSubjectForSubjectTeacherByDivision($tblDivision);
+                $GroupTeacherCount = Division::useService()->countDivisionSubjectGroupTeacherByDivision($tblDivision);
                 $Temp['Description'] = $tblDivision->getDescription();
                 $Temp['StudentList'] = Division::useService()->countDivisionStudentAllByDivision($tblDivision);
                 $Temp['TeacherList'] = Division::useService()->countDivisionTeacherAllByDivision($tblDivision);
@@ -188,8 +189,11 @@ class Frontend extends Extension implements IFrontendInterface
                 } else {
                     $Temp['SubjectList'] = $SubjectCount;
                 }
-//                $sum = $Temp['StudentList'] + $Temp['TeacherList'] + $Custody;
-//                $sum = 0; //Löschen einblenden
+                if ($GroupTeacherCount > 1) {
+                    $Temp['SubjectList'] .= '<br/>'.new PullRight(new Small(new Small(new Muted('('.new Danger($GroupTeacherCount).') Gruppenlehrer fehlen'))));
+                } elseif ($GroupTeacherCount == 1) {
+                    $Temp['SubjectList'] .= '<br/>'.new PullRight(new Small(new Small(new Muted('('.new Danger($GroupTeacherCount).') Gruppenlehrer fehlt'))));
+                }
                 $Temp['Option'] = new Standard('&nbsp;Klassenansicht', '/Education/Lesson/Division/Show',
                         new EyeOpen(), array('Id' => $tblDivision->getId()), 'Klasse einsehen')
                     .new Standard('', '/Education/Lesson/Division/Change', new Pencil(),
@@ -198,8 +202,6 @@ class Frontend extends Extension implements IFrontendInterface
                         array('Id' => $tblDivision->getId()), 'Klasse kopieren')
                     .(new Standard('', '/Education/Lesson/Division/Destroy', new Remove(),
                         array('Id' => $tblDivision->getId()), 'Löschen'));;
-//                    .( ( $sum === 0 ) ? new \SPHERE\Common\Frontend\Link\Repository\Danger('', '/Education/Lesson/Division/Destroy', new Remove(),
-//                        array('Id' => $tblDivision->getId()), 'Klasse entfernen') : null );
 
                 array_push($TableContent, $Temp);
             });
@@ -288,11 +290,11 @@ class Frontend extends Extension implements IFrontendInterface
 
         $tblSchoolTypeAll = Type::useService()->getTypeAll();
 
-        if ($future) {
-            $tblYearAll = Term::useService()->getYearAllFutureYears(1);
-        } else {
+//        if ($future) {
+//            $tblYearAll = Term::useService()->getYearAllFutureYears(1);
+//        } else {
             $tblYearAll = Term::useService()->getYearAllSinceYears(0);
-        }
+//        }
 
         return new Form(
             new FormGroup(array(

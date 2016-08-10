@@ -58,6 +58,8 @@ abstract class AbstractConverter extends Sanitizer
         if (is_callable($FieldSanitizer->getCallback())) {
             $this->SanitizePointer[$FieldSanitizer->getColumn()][$FieldSanitizer->getField()] = $FieldSanitizer->getCallback();
         } else {
+            /** @var array $Callback */
+            $Callback = $FieldSanitizer->getCallback();
             throw new \Exception(end($Callback).' nicht verfügbar');
         }
         return $this;

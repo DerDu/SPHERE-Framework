@@ -163,7 +163,7 @@ class Frontend extends Extension implements IFrontendInterface
                     new FormRow(array(
                         new FormColumn(
                             new Panel('Hardware-Schlüssel *', array(
-                                new PasswordField('CredentialKey', 'Yubi-Key', 'Yubi-Key', new YubiKey())
+                                new PasswordField('CredentialKey', 'YubiKey', 'YubiKey', new YubiKey())
                             ), Panel::PANEL_TYPE_INFO, new Small('* Optional'))
                         )
                     ))

@@ -9,6 +9,7 @@ use SPHERE\Common\Frontend\Form\IFormInterface;
 use SPHERE\Common\Frontend\Layout\Repository\Listing;
 use SPHERE\Common\Frontend\Message\Repository\Danger;
 use SPHERE\Common\Frontend\Message\Repository\Success;
+use SPHERE\Common\Window\Error;
 use SPHERE\Common\Window\Redirect;
 use SPHERE\System\Extension\Extension;
 
@@ -88,15 +89,16 @@ class Service extends Extension
                 if (isset( $Upload )) {
                     $Mail->addAttachment(new FileParameter($Upload->getLocation().DIRECTORY_SEPARATOR.$Upload->getFilename()));
                 }
-                $Mail->setFromHeader($Ticket['Mail']);
+                $Mail->setFromHeader('helpdesk@kreda.schule');
                 $Mail->sendMail();
                 $Mail->disconnectServer();
             } catch (\Exception $Exception) {
                 return new Danger('Das Ticket konnte leider nicht erstellt werden')
-                .new Redirect('/Manual/Support', 10);
+                .new Error( $Exception->getCode(), $Exception->getMessage(), false )
+                .new Redirect('/Manual/Support', Redirect::TIMEOUT_ERROR);
             }
             return new Success('Das Ticket wurde erfolgreich erstellt')
-            .new Redirect('/Manual/Support', 1);
+            .new Redirect('/Manual/Support', Redirect::TIMEOUT_SUCCESS);
         }
 
         return $Form;

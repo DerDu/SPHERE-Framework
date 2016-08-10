@@ -19,6 +19,7 @@ use SPHERE\Common\Frontend\Form\IFormInterface;
 use SPHERE\Common\Frontend\Message\Repository\Success;
 use SPHERE\Common\Frontend\Message\Repository\Warning;
 use SPHERE\Common\Window\Redirect;
+use SPHERE\System\Cache\Handler\MemcachedHandler;
 use SPHERE\System\Database\Binding\AbstractService;
 
 /**
@@ -132,17 +133,17 @@ class Service extends AbstractService
     {
 
         if (null === $Session) {
-            if ((new Data($this->getBinding()))->destroySession($Session)) {
-                if (!headers_sent()) {
-                    // Destroy Cookie
-                    $params = session_get_cookie_params();
-                    setcookie(session_name(), '', 0, $params['path'], $params['domain'], $params['secure'],
-                        isset( $params['httponly'] ));
-                    session_start();
-                    // Generate New Id
-                    session_regenerate_id(true);
-                }
+            (new Data($this->getBinding()))->destroySession($Session);
+            if (!headers_sent()) {
+                // Destroy Cookie
+                $params = session_get_cookie_params();
+                setcookie(session_name(), '', 0, $params['path'], $params['domain'], $params['secure'],
+                    isset( $params['httponly'] ));
+                session_start();
+                // Generate New Id
+                session_regenerate_id(true);
             }
+            $this->getCache(new MemcachedHandler())->clearSlot('PUBLIC');
             return $Redirect;
         } else {
             return (new Data($this->getBinding()))->destroySession($Session);

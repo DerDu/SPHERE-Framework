@@ -212,7 +212,7 @@ class Data extends AbstractData
         if ($EntityList) {
             /** @var TblDivisionSubject $item */
             foreach ($EntityList as &$item) {
-                if (!$item->getTblDivision()) {
+                if (!$item->getTblDivision() || !$item->getServiceTblSubject()) {
                     $item = false;
                 }
             }
@@ -249,6 +249,25 @@ class Data extends AbstractData
         }
 
         return empty( $EntityList ) ? false : $EntityList;
+    }
+
+    /**
+     * @param TblSubject  $tblSubject
+     * @param TblDivision $tblDivision
+     *
+     * @return false|TblDivisionSubject
+     */
+    public function getDivisionSubjectBySubjectAndDivisionWithoutGroup(TblSubject $tblSubject, TblDivision $tblDivision)
+    {
+
+        $Entity = $this->getCachedEntityBy(__Method__, $this->getConnection()->getEntityManager(), 'TblDivisionSubject',
+            array(
+                TblDivisionSubject::ATTR_SERVICE_TBL_SUBJECT => $tblSubject->getId(),
+                TblDivisionSubject::ATTR_TBL_DIVISION        => $tblDivision->getId(),
+                TblDivisionSubject::ATTR_TBL_SUBJECT_GROUP   => null,
+            ));
+
+        return $Entity;
     }
 
     /**
@@ -1703,5 +1722,39 @@ class Data extends AbstractData
         } else {
             return 0;
         }
+    }
+
+    /**
+     * @param TblDivision $tblDivision
+     * @param TblPerson $tblPerson
+     *
+     * @return bool
+     */
+    public function exitsDivisionStudent(TblDivision $tblDivision, TblPerson $tblPerson)
+    {
+
+        return $this->getCachedEntityBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblDivisionStudent',
+            array(
+                TblDivisionStudent::ATTR_TBL_DIVISION => $tblDivision->getId()   ,
+                TblDivisionStudent::ATTR_SERVICE_TBL_PERSON => $tblPerson->getId()
+            )
+        ) ? true : false;
+    }
+
+    /**
+     * @param TblDivisionSubject $tblDivisionSubject
+     * @param TblPerson $tblPerson
+     *
+     * @return bool
+     */
+    public function exitsSubjectStudent(TblDivisionSubject $tblDivisionSubject, TblPerson $tblPerson)
+    {
+
+        return $this->getCachedEntityBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblSubjectStudent',
+            array(
+                TblSubjectStudent::ATTR_TBL_DIVISION_SUBJECT => $tblDivisionSubject->getId()   ,
+                TblDivisionStudent::ATTR_SERVICE_TBL_PERSON => $tblPerson->getId()
+            )
+        ) ? true : false;
     }
 }

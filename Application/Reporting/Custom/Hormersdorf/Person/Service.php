@@ -14,8 +14,9 @@ use SPHERE\Application\People\Group\Group;
 use SPHERE\Application\People\Meta\Common\Common;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\People\Relationship\Relationship;
+use SPHERE\System\Extension\Extension;
 
-class Service
+class Service extends Extension
 {
 
     /**
@@ -29,6 +30,9 @@ class Service
         $tblPersonList = Division::useService()->getStudentAllByDivision($tblDivision);
         $TableContent = array();
         if (!empty( $tblPersonList )) {
+
+            $tblPersonList = $this->getSorter($tblPersonList)->sortObjectBy('LastFirstName');
+
             array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent) {
 
                 $Item['ExcelNameRow2'] = '';
@@ -68,9 +72,9 @@ class Service
                     $address = null;
                 }
 
-                $Item['FatherName'] = $father !== null ? ( $tblPerson->getLastName() == $father->getLastName()
+                $Item['FatherName'] = $father ? ( $tblPerson->getLastName() == $father->getLastName()
                     ? $father->getFirstSecondName() : $father->getFirstSecondName().' '.$father->getLastName() ) : '';
-                $Item['MotherName'] = $mother !== null ? ( $tblPerson->getLastName() == $mother->getLastName()
+                $Item['MotherName'] = $mother ? ( $tblPerson->getLastName() == $mother->getLastName()
                     ? $mother->getFirstSecondName() : $mother->getFirstSecondName().' '.$mother->getLastName() ) : '';
                 $Item['DisplayName'] = $tblPerson->getLastFirstName()
                     .( $father !== null || $mother !== null ? '<br>('.( $mother !== null ? $Item['MotherName']
@@ -215,6 +219,9 @@ class Service
         $tblPersonList = Group::useService()->getPersonAllByGroup(Group::useService()->getGroupByName('Mitarbeiter'));
         $TableContent = array();
         if (!empty( $tblPersonList )) {
+
+            $tblPersonList = $this->getSorter($tblPersonList)->sortObjectBy('LastFirstName');
+
             array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent) {
 
                 $Item['Name'] = $tblPerson->getLastFirstName();

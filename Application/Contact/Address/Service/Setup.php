@@ -3,8 +3,15 @@ namespace SPHERE\Application\Contact\Address\Service;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
+use SPHERE\Application\Contact\Address\Service\Entity\TblAddress;
+use SPHERE\Application\Contact\Address\Service\Entity\TblCity;
+use SPHERE\Application\Contact\Address\Service\Entity\TblState;
+use SPHERE\Application\Contact\Address\Service\Entity\TblToCompany;
+use SPHERE\Application\Contact\Address\Service\Entity\TblToPerson;
+use SPHERE\Application\Contact\Address\Service\Entity\TblType;
 use SPHERE\System\Database\Binding\AbstractSetup;
 use SPHERE\System\Database\Fitting\Element;
+use SPHERE\System\Database\Fitting\View;
 
 /**
  * Class Setup
@@ -37,6 +44,23 @@ class Setup extends AbstractSetup
          */
         $this->getConnection()->addProtocol(__CLASS__);
         $this->getConnection()->setMigration($Schema, $Simulate);
+
+        $this->getConnection()->createView(
+            (new View($this->getConnection(), 'viewAddressToPerson'))
+                ->addLink(new TblToPerson(), 'tblType', new TblType())
+                ->addLink(new TblToPerson(), 'tblAddress', new TblAddress())
+                ->addLink(new TblAddress(), 'tblCity', new TblCity())
+                ->addLink(new TblAddress(), 'tblState', new TblState(''))
+        );
+
+        $this->getConnection()->createView(
+            (new View($this->getConnection(), 'viewAddressToCompany'))
+                ->addLink(new TblToCompany(), 'tblType', new TblType())
+                ->addLink(new TblToCompany(), 'tblAddress', new TblAddress())
+                ->addLink(new TblAddress(), 'tblCity', new TblCity())
+                ->addLink(new TblAddress(), 'tblState', new TblState(''))
+        );
+
         return $this->getConnection()->getProtocol($Simulate);
     }
 

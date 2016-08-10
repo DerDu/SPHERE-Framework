@@ -29,7 +29,7 @@ class Data extends AbstractData
      *
      * @return Element[]
      */
-    public function getEntityAllByLogic(Element $Entity, AbstractLogic $Logic)
+    final public function getEntityAllByLogic(Element $Entity, AbstractLogic $Logic)
     {
 
         return parent::getEntityAllByLogic($Entity, $Logic);
@@ -44,7 +44,7 @@ class Data extends AbstractData
      *
      * @return array
      */
-    public function getColumnAllByLogic(Element $Entity, AbstractLogic $Logic, $Column = 'Id')
+    final public function getColumnAllByLogic(Element $Entity, AbstractLogic $Logic, $Column = 'Id')
     {
 
         return parent::getColumnAllByLogic($Entity, $Logic, $Column);

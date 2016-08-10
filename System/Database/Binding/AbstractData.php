@@ -48,10 +48,12 @@ abstract class AbstractData extends Cacheable
 
         $Builder->select('E')->from( $Entity->getEntityFullName(), 'E' );
         $Builder->andWhere( $Logic->getExpression() );
+        $Builder->distinct(true);
         $Query = $Builder->getQuery();
         $Query->useQueryCache(true);
 
-        $this->getDebugger()->screenDump( $Query->getSQL() );
+        // TODO: Remove
+        //$this->getDebugger()->screenDump( $Query->getSQL() );
 
         return $Query->getResult();
     }
@@ -85,7 +87,8 @@ abstract class AbstractData extends Cacheable
         $Query = $Builder->getQuery();
         $Query->useQueryCache(true);
 
-        $this->getDebugger()->screenDump($Query->getSQL());
+        // TODO: Remove
+        // $this->getDebugger()->screenDump($Query->getSQL());
 
         return $Query->getResult(ColumnHydrator::HYDRATION_MODE);
     }

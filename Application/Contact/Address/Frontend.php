@@ -256,6 +256,12 @@ class Frontend extends Extension implements IFrontendInterface
         $Stage->addButton( new Backward(true) );
         $Stage->setMessage('Die Adresse der gewählten Person ändern');
 
+        if (!$tblToPerson) {
+            // Back to Person with Backward
+            return $Stage.new Danger('Adresse nicht gefunden', new Ban());
+//            . new Redirect('/People/Search/Group', Redirect::TIMEOUT_ERROR);
+        }
+
         if(!$tblToPerson->getServiceTblPerson()){
             return $Stage . new Danger('Person nicht gefunden', new Ban())
             . new Redirect('/People/Search/Group', Redirect::TIMEOUT_ERROR);

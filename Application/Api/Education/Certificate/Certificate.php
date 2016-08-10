@@ -14,7 +14,10 @@ class Certificate extends Extension implements IModuleInterface
     {
 
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
-            __NAMESPACE__.'/Generator', __NAMESPACE__.'\Generator\Creator::createPdf'
+            __NAMESPACE__.'/Generator/Create', __NAMESPACE__.'\Generator\Creator::createPdf'
+        ));
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__ . '/Generator/Preview', __NAMESPACE__ . '\Generator\Creator::previewPdf'
         ));
     }
 
@@ -33,5 +36,4 @@ class Certificate extends Extension implements IModuleInterface
     {
         // TODO: Implement useFrontend() method.
     }
-
 }

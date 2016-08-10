@@ -110,6 +110,26 @@ class TblAddress extends Element
     /**
      * @return string
      */
+    public function getGuiTwoRowString()
+    {
+
+        $Cache = $this->getCache(new MemcachedHandler());
+        if (null === ($Return = $Cache->getValue($this->getId(), __METHOD__))) {
+
+            $Return = $this->getStreetName()
+                . ' ' . $this->getStreetNumber()
+                . ',<br>' . $this->getTblCity()->getCode()
+                . ' ' . $this->getTblCity()->getDisplayName()
+                . ($this->getLocation() ? ' (' . $this->getLocation() . ')' : '');
+
+            $Cache->setValue($this->getId(), $Return, 0, __METHOD__);
+        }
+        return $Return;
+    }
+
+    /**
+     * @return string
+     */
     public function getStreetName()
     {
 
