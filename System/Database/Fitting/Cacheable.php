@@ -16,6 +16,8 @@ use SPHERE\System\Extension\Extension;
  */
 abstract class Cacheable extends Extension
 {
+    const ORDER_ASC = 'asc';
+    const ORDER_DESC = 'desc';
 
     /** @var null|HandlerInterface $CacheSystem */
     private static $CacheSystem = null;
@@ -75,7 +77,10 @@ abstract class Cacheable extends Extension
         if (is_object($Parameter)) {
             $Parameter = json_decode(json_encode($Parameter), true);
         }
-        return md5($EntityName . ':' . implode('#', (array)$Parameter));
+        $Keys = array_keys( (array)$Parameter );
+        $Values = array_values( (array)$Parameter );
+
+        return md5($EntityName . ':' . implode('#', $Keys). implode('#', $Values));
     }
 
     /**
@@ -95,7 +100,7 @@ abstract class Cacheable extends Extension
      * @param array|object|bool|int $EntityList
      * @param array|string|int      $Parameter
      */
-    private function debugFactory($__METHOD__, $EntityList, $Parameter)
+    protected function debugFactory($__METHOD__, $EntityList, $Parameter)
     {
 
         if ($this->useDebugger()) {
@@ -109,7 +114,7 @@ abstract class Cacheable extends Extension
     /**
      * @return bool|null
      */
-    private function useDebugger()
+    protected function useDebugger()
     {
         if ($this->Debug === null) {
             $this->Debug = (
@@ -178,16 +183,16 @@ abstract class Cacheable extends Extension
      * @param Manager $EntityManager
      * @param string  $EntityName
      * @param array   $Parameter  Initiator Parameter-Array
+     * @param array   $OrderBy array( 'Column' => ORDER_{ASC|DESC}, ... )
      *
      * @return false|Element[]
-     * @throws \Exception
      */
-    final protected function getCachedEntityListBy($__METHOD__, Manager $EntityManager, $EntityName, $Parameter)
+    final protected function getCachedEntityListBy($__METHOD__, Manager $EntityManager, $EntityName, $Parameter, $OrderBy = array( 'EntityCreate' => self::ORDER_DESC ))
     {
 
         // Only if NOT REMOVED
         $Parameter['EntityRemove'] = null;
-        $Key = $this->getKeyHash($EntityName, $Parameter);
+        $Key = $this->getKeyHash($EntityName, $Parameter).$this->getKeyHash($EntityName, $OrderBy);
 
         $Memory = (new CacheFactory())->createHandler(new MemoryHandler());
         if (!$this->Enabled || null === ( $EntityList = $Memory->getValue($Key, $__METHOD__) )) {
@@ -195,7 +200,7 @@ abstract class Cacheable extends Extension
             $Cache = self::getCacheSystem();
             $EntityList = null;
             if (!$this->Enabled || null === ( $EntityList = $Cache->getValue($Key, $__METHOD__) )) {
-                $EntityList = $EntityManager->getEntity($EntityName)->findBy($Parameter);
+                $EntityList = $EntityManager->getEntity($EntityName)->findBy($Parameter, $OrderBy);
                 $Cache->setValue($Key, $EntityList, 0, $__METHOD__);
                 $this->debugFactory($__METHOD__, $EntityList, $Parameter);
             } else {
@@ -211,14 +216,14 @@ abstract class Cacheable extends Extension
      * @param string  $__METHOD__ Initiator
      * @param Manager $EntityManager
      * @param string  $EntityName
+     * @param array   $OrderBy array( 'Column' => ORDER_{ASC|DESC}, ... )
      *
      * @return false|Element[]
-     * @throws \Exception
      */
-    final protected function getCachedEntityList($__METHOD__, Manager $EntityManager, $EntityName)
+    final protected function getCachedEntityList($__METHOD__, Manager $EntityManager, $EntityName, $OrderBy = array( 'EntityCreate' => self::ORDER_DESC ))
     {
 
-        $Key = $this->getKeyHash($EntityName, 'All');
+        $Key = $this->getKeyHash($EntityName, 'All').$this->getKeyHash($EntityName, $OrderBy);
 
         $Memory = (new CacheFactory())->createHandler(new MemoryHandler());
         if (!$this->Enabled || null === ( $EntityList = $Memory->getValue($Key, $__METHOD__) )) {
@@ -228,7 +233,7 @@ abstract class Cacheable extends Extension
             if (!$this->Enabled || null === ( $EntityList = $Cache->getValue($Key, $__METHOD__) )) {
                 // Only if NOT REMOVED
                 $Parameter['EntityRemove'] = null;
-                $EntityList = $EntityManager->getEntity($EntityName)->findBy($Parameter);
+                $EntityList = $EntityManager->getEntity($EntityName)->findBy($Parameter, $OrderBy);
                 $Cache->setValue($Key, $EntityList, 0, $__METHOD__);
                 $this->debugFactory($__METHOD__, $EntityList, 'All');
             } else {

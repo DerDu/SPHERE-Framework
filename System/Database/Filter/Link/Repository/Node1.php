@@ -1,21 +1,43 @@
 <?php
 namespace SPHERE\System\Database\Filter\Link\Repository;
 
+use SPHERE\System\Database\Binding\AbstractView;
 use SPHERE\System\Database\Filter\Link\AbstractNode;
-use SPHERE\System\Database\Fitting\Element;
 
+/**
+ * Class Node1
+ *
+ * @package SPHERE\System\Database\Filter\Link\Repository
+ */
 class Node1 extends AbstractNode
 {
 
-    protected function parseResult($List)
+    /**
+     * @param AbstractView[][] $List
+     * @param int              $Timeout
+     *
+     * @return mixed
+     */
+    protected function parseResult($List, $Timeout = 60)
     {
 
-        array_walk($List[0], function (Element $Node0) use (&$Result) {
+        $this->setTimeout($Timeout);
 
-            $Result[] = array(
-                $Node0,
-            );
-        });
+        $Result = array();
+        try {
+            /** @var AbstractView $Node0 */
+            foreach ($List[0] as $Node0) {
+                $Result[] = array(
+                    $Node0,
+                );
+                if ($this->checkTimeout()) {
+                    throw new NodeException();
+                }
+            }
+        } catch (NodeException $E) {
+            return $Result;
+        }
+
         return $Result;
     }
 }

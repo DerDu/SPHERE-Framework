@@ -3,11 +3,19 @@ namespace SPHERE\System\Database\Binding;
 
 use SPHERE\System\Database\Fitting\Element;
 
+/**
+ * Class AbstractView
+ *
+ * @package SPHERE\System\Database\Binding
+ */
 abstract class AbstractView extends Element
 {
 
     /** @var array $NameDefinitionList */
     private $NameDefinitionList = array();
+
+    /** @var AbstractView[] $ForeignViewList */
+    private $ForeignViewList = array();
 
     /**
      * @throws \Exception
@@ -61,6 +69,135 @@ abstract class AbstractView extends Element
      * @return void
      */
     abstract public function loadNameDefinition();
+
+    /**
+     * @return array
+     */
+    public function getForeignViewList()
+    {
+
+        $this->loadViewGraph();
+
+        return $this->ForeignViewList;
+    }
+
+    /**
+     * Use this method to add ForeignViews to Graph with "addForeignView()"
+     *
+     * @return void
+     */
+    abstract public function loadViewGraph();
+
+    /**
+     * @return string View-Class-Name of Class (incl. Namespace)
+     */
+    final public function getViewClassName()
+    {
+
+        return ( new \ReflectionObject($this) )->getName();
+    }
+
+    /**
+     * @return array
+     */
+    public function getNameDefinitionList()
+    {
+
+        $this->loadNameDefinition();
+
+        return $this->NameDefinitionList;
+    }
+
+    /**
+     * Overwrite this method to return View-ObjectName as View-DisplayName
+     *
+     * @return string View-Gui-Name of Class
+     */
+    public function getViewGuiName()
+    {
+
+        return $this->getViewObjectName();
+    }
+
+    /**
+     * @return string View-Object-Name of Class
+     */
+    final public function getViewObjectName()
+    {
+
+        return ( new \ReflectionObject($this) )->getShortName();
+    }
+
+    /**
+     * @param string       $PropertyName
+     * @param AbstractView $ForeignView
+     * @param string       $ForeignPropertyName
+     *
+     * @return AbstractView
+     */
+    public function addForeignView($PropertyName, AbstractView $ForeignView, $ForeignPropertyName)
+    {
+
+        if (!in_array($ForeignView->getViewObjectName(), $this->ForeignViewList)) {
+            $this->ForeignViewList[$ForeignView->getViewObjectName()] = array(
+                $PropertyName,
+                $ForeignView,
+                $ForeignPropertyName
+            );
+        }
+        return $this;
+    }
+
+    /**
+     * @return AbstractService
+     */
+    abstract public function getViewService();
+
+    /**
+     * @param AbstractView $ForeignView
+     *
+     * @return string
+     */
+    public function getForeignLinkPropertyParent(AbstractView $ForeignView)
+    {
+
+        $this->loadViewGraph();
+        // Index 0 = THIS-View Property-Name
+        return $this->ForeignViewList[$ForeignView->getViewObjectName()][0];
+    }
+
+    /**
+     * @param AbstractView $ForeignView
+     *
+     * @return string
+     */
+    public function getForeignLinkPropertyChild(AbstractView $ForeignView)
+    {
+
+        $this->loadViewGraph();
+        // Index 2 = Foreign-View Property-Name
+        return $this->ForeignViewList[$ForeignView->getViewObjectName()][2];
+    }
+
+    /**
+     * Magic Getter for Properties
+     *
+     * @param $PropertyName
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    public function __get($PropertyName)
+    {
+
+        if (!empty( $PropertyName )) {
+            if (property_exists($this, $PropertyName)) {
+                /** @noinspection PhpVariableVariableInspection */
+                return $this->$PropertyName;
+            }
+        }
+        throw new \Exception('Property '.$PropertyName.' not found in '.get_class($this));
+    }
 
     /**
      * @param string $PropertyName

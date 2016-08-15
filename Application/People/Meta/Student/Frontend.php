@@ -63,6 +63,7 @@ use SPHERE\Common\Frontend\Message\Repository\Warning;
 use SPHERE\Common\Frontend\Text\Repository\Bold;
 use SPHERE\Common\Frontend\Text\Repository\Muted;
 use SPHERE\Common\Frontend\Text\Repository\Small;
+use SPHERE\Common\Frontend\Text\Repository\Success;
 use SPHERE\Common\Window\Stage;
 use SPHERE\System\Extension\Extension;
 use SPHERE\System\Extension\Repository\Sorter;
@@ -409,7 +410,7 @@ class Frontend extends Extension implements IFrontendInterface
                     ),
                 ), 3),
             )),
-        ), new Title(new TileSmall().' Schülertransfer'));
+        ), new Title(new TileSmall().' Schülertransfer ', new Bold(new Success($tblPerson->getFullName()))));
     }
 
     /**
@@ -603,7 +604,7 @@ class Frontend extends Extension implements IFrontendInterface
                 ), 3),
                 new FormColumn($AgreementPanel, 3),
             )),
-        ), new Title(new TileSmall().' Allgemeines'));
+        ), new Title(new TileSmall().' Allgemeines', new Bold(new Success($tblPerson->getFullName()))));
     }
 
     /**
@@ -715,7 +716,7 @@ class Frontend extends Extension implements IFrontendInterface
                     $this->panelSubjectList('TRACK_BASIC', 'Grundkurse', 'Grundkurs', $tblSubjectAll, 8),
                 ), 3),
             )),
-        ), new Title(new TileSmall().' Unterrichtsfächer'));
+        ), new Title(new TileSmall().' Unterrichtsfächer', new Bold(new Success($tblPerson->getFullName()))));
     }
 
     /**
@@ -919,6 +920,6 @@ class Frontend extends Extension implements IFrontendInterface
                 new FormColumn($PanelFocus, 3),
                 new FormColumn($PanelDisorder, 3),
             )),
-        ), new Title(new TileSmall().' Integration'));
+        ), new Title(new TileSmall().' Integration', new Bold(new Success($tblPerson->getFullName()))));
     }
 }

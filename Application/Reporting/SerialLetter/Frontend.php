@@ -382,14 +382,9 @@ class Frontend extends Extension implements IFrontendInterface
                 'Address' => 'Adresse',
             );
 
+            $countAddresses = 0;
             $tblGroup = $tblSerialLetter->getServiceTblGroup();
             if ($tblGroup) {
-                $Stage->addButton(
-                    new \SPHERE\Common\Frontend\Link\Repository\Primary('Herunterladen',
-                        '/Api/Reporting/SerialLetter/Download', new Download(),
-                        array('Id' => $tblSerialLetter->getId()))
-                );
-
                 $count = 0;
                 $tblPersonList = Group::useService()->getPersonAllByGroup($tblGroup);
                 if ($tblPersonList) {
@@ -400,6 +395,11 @@ class Frontend extends Extension implements IFrontendInterface
                             $tblPerson);
                         if ($tblAddressPersonAllByPerson) {
                             foreach ($tblAddressPersonAllByPerson as $tblAddressPerson) {
+                                if ($tblAddressPerson->getServiceTblToPerson()
+                                    && $tblAddressPerson->getServiceTblToPerson()->getTblAddress()
+                                ) {
+                                    $countAddresses++;
+                                }
                                 $dataList[] = array(
                                     'Number' => ++$count,
                                     'Person' => ($tblAddressPerson->getServiceTblPerson()
@@ -429,10 +429,24 @@ class Frontend extends Extension implements IFrontendInterface
                 }
             }
 
+            if ($countAddresses > 0) {
+                $Stage->addButton(
+                    new \SPHERE\Common\Frontend\Link\Repository\Primary('Herunterladen',
+                        '/Api/Reporting/SerialLetter/Download', new Download(),
+                        array('Id' => $tblSerialLetter->getId()))
+                );
+            }
+
             $Stage->setContent(
                 new Layout(
                     new LayoutGroup(
                         new LayoutRow(array(
+                            $countAddresses == 0
+                                ? new LayoutColumn(
+                                new \SPHERE\Common\Frontend\Message\Repository\Warning('Keine Adressen ausgewählt.',
+                                    new Exclamation())
+                            )
+                                : null,
                             new LayoutColumn(
                                 new Panel('Name', $tblSerialLetter->getName() . ' '
                                     . new Small(new Muted($tblSerialLetter->getDescription())), Panel::PANEL_TYPE_INFO),

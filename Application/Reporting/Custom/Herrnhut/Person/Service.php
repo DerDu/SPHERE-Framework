@@ -6,6 +6,8 @@ use MOC\V\Component\Document\Component\Bridge\Repository\PhpExcel;
 use MOC\V\Component\Document\Component\Parameter\Repository\FileParameter;
 use MOC\V\Component\Document\Document;
 use SPHERE\Application\Contact\Address\Address;
+use SPHERE\Application\Contact\Mail\Mail;
+use SPHERE\Application\Contact\Mail\Service\Entity\TblToPerson;
 use SPHERE\Application\Contact\Phone\Phone;
 use SPHERE\Application\Document\Explorer\Storage\Storage;
 use SPHERE\Application\Education\Lesson\Division\Division;
@@ -79,7 +81,7 @@ class Service extends Extension
                         Student::useService()->getStudentSubjectTypeByIdentifier('PROFILE')
                     );
                     if ($tblStudentProfile && ( $tblSubject = $tblStudentProfile[0]->getServiceTblSubject() )) {
-                        $Item['Profile'] = $tblSubject->getName();
+                        $Item['Profile'] = $tblSubject->getAcronym();
                     }
                 }
 
@@ -157,6 +159,18 @@ class Service extends Extension
             $Row++;
             $export->setValue($export->getCell(1, $Row), 'Gesamt:');
             $export->setValue($export->getCell(2, $Row), count($tblPersonList));
+            $Row++;
+            $Row++;
+            $Result = $this->countProfile($tblPersonList);
+            if (!empty( $Result )) {
+                $export->setValue($export->getCell(1, $Row), 'Profile:');
+                $Row++;
+                foreach ($Result as $Acronym => $Count) {
+                    $export->setValue($export->getCell(1, $Row), $Acronym);
+                    $export->setValue($export->getCell(2, $Row), $Count);
+                    $Row++;
+                }
+            }
 
             $export->saveFile(new FileParameter($fileLocation->getFileLocation()));
 
@@ -584,12 +598,33 @@ class Service extends Extension
         }
         array_multisort($lastName, SORT_ASC, $firstName, SORT_ASC, $tblPersonList);
         $TableContent = array();
+        $Consumer = Consumer::useService()->getConsumerBySession();
 
         $CountNumber = 0;
         if (!empty( $tblPersonList )) {
-            array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent, &$CountNumber) {
+            array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent, &$CountNumber, $tblDivision, $Consumer) {
                 $CountNumber++;
-
+                // Header (Excel)
+                $Item['Division'] = $tblDivision->getDisplayName();
+                $Item['Consumer'] = '';
+                $Item['DivisionYear'] = '';
+                $Item['DivisionTeacher'] = '';
+                if ($Consumer) {
+                    $Item['Consumer'] = $Consumer->getName();
+                }
+                if ($tblDivision->getServiceTblYear()) {
+                    $Item['DivisionYear'] = $tblDivision->getServiceTblYear()->getName().' '.$tblDivision->getServiceTblYear()->getDescription();
+                }
+                $tblTeacherList = Division::useService()->getTeacherAllByDivision($tblDivision);
+                if ($tblTeacherList) {
+                    foreach ($tblTeacherList as $tblTeacher) {
+                        if ($Item['DivisionTeacher'] == '') {
+                            $Item['DivisionTeacher'] = $tblTeacher->getSalutation().' '.$tblTeacher->getLastName();
+                        } else {
+                            $Item['DivisionTeacher'] .= ', '.$tblTeacher->getSalutation().' '.$tblTeacher->getLastName();
+                        }
+                    }
+                }
                 // Content
                 $Item['Count'] = $CountNumber;
                 $Item['Count2'] = $CountNumber;
@@ -644,22 +679,27 @@ class Service extends Extension
             $fileLocation = Storage::useWriter()->getTemporary('xlsx');
             /** @var PhpExcel $export */
             $export = Document::getDocument($fileLocation->getFileLocation());
-            $export->setValue($export->getCell(0, 0), "lfdNr.");
-            $export->setValue($export->getCell(1, 0), "Name, Vorname");
-            $export->setValue($export->getCell(2, 0), "lfdNr.");
-            $export->setValue($export->getCell(3, 0), "Geburtsdatum");
-            $export->setValue($export->getCell(4, 0), "Geburtsort");
-            $export->setValue($export->getCell(5, 0), "Wohnanschrift");
+            $export->setValue($export->getCell(0, 3), "lfdNr.");
+            $export->setValue($export->getCell(1, 3), "Name, Vorname");
+            $export->setValue($export->getCell(2, 3), "lfdNr.");
+            $export->setValue($export->getCell(3, 3), "Geburtsdatum");
+            $export->setValue($export->getCell(4, 3), "Geburtsort");
+            $export->setValue($export->getCell(5, 3), "Wohnanschrift");
 
             //Settings Header
-            $export->setStyle($export->getCell(0, 0), $export->getCell(5, 0))
-                ->setBorderAll()
-                ->setBorderBottom(2)
-                ->setFontBold();
+            $export = $this->setHeader($export, 4, 5, 5);
 
-            $Start = $Row = 0;
+            $Start = $Row = 3;
             foreach ($PersonList as $PersonData) {
-
+                // Fill Header
+                if ($Row == 3) {
+                    $export->setValue($export->getCell(0, 0), 'Klasse: '.$PersonData['Division'].
+                        ' - Klassenliste');
+                    $export->setValue($export->getCell(0, 1), $PersonData['Consumer']);
+                    $export->setValue($export->getCell(0, 2), 'KL: '.$PersonData['DivisionTeacher']);
+                    $export->setValue($export->getCell(4, 2), $PersonData['DivisionYear']);
+                    $export->setValue($export->getCell(5, 2), (new \DateTime('now'))->format('d.m.Y'));
+                }
                 $Row++;
 
                 $export->setValue($export->getCell(0, $Row), $PersonData['Count']);
@@ -683,8 +723,8 @@ class Service extends Extension
             $export->setStyle($export->getCell(5, 0), $export->getCell(5, $Row))->setColumnWidth(45);
 
             // Center
-            $export->setStyle($export->getCell(0, 1), $export->getCell(0, $Row))->setAlignmentCenter();
-            $export->setStyle($export->getCell(2, 1), $export->getCell(2, $Row))->setAlignmentCenter();
+            $export->setStyle($export->getCell(0, 3), $export->getCell(0, $Row))->setAlignmentCenter();
+            $export->setStyle($export->getCell(2, 3), $export->getCell(2, $Row))->setAlignmentCenter();
 
             $Row++;
             $Row++;
@@ -722,14 +762,35 @@ class Service extends Extension
         }
         array_multisort($lastName, SORT_ASC, $firstName, SORT_ASC, $tblPersonList);
         $TableContent = array();
+        $Consumer = Consumer::useService()->getConsumerBySession();
 
         $CountNumber = 0;
         if (!empty( $tblPersonList )) {
-            array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent, &$CountNumber) {
+            array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent, &$CountNumber, $tblDivision, $Consumer) {
                 $CountNumber++;
+                // Header (Excel)
+                $Item['Division'] = $tblDivision->getDisplayName();
+                $Item['Consumer'] = '';
+                $Item['DivisionYear'] = '';
+                $Item['DivisionTeacher'] = '';
+                if ($Consumer) {
+                    $Item['Consumer'] = $Consumer->getName();
+                }
+                if ($tblDivision->getServiceTblYear()) {
+                    $Item['DivisionYear'] = $tblDivision->getServiceTblYear()->getName().' '.$tblDivision->getServiceTblYear()->getDescription();
+                }
+                $tblTeacherList = Division::useService()->getTeacherAllByDivision($tblDivision);
+                if ($tblTeacherList) {
+                    foreach ($tblTeacherList as $tblTeacher) {
+                        if ($Item['DivisionTeacher'] == '') {
+                            $Item['DivisionTeacher'] = $tblTeacher->getSalutation().' '.$tblTeacher->getLastName();
+                        } else {
+                            $Item['DivisionTeacher'] .= ', '.$tblTeacher->getSalutation().' '.$tblTeacher->getLastName();
+                        }
+                    }
+                }
                 // Content
                 $Item['Count'] = $CountNumber;
-                $Item['Count2'] = $CountNumber;
                 $Item['Name'] = $tblPerson->getLastFirstName();
                 $Item['FirstName'] = $tblPerson->getFirstSecondName();
                 $Item['LastName'] = $tblPerson->getLastName();
@@ -737,14 +798,18 @@ class Service extends Extension
                 $Item['ExcelPhoneNumbers'] = '';
                 $Item['Parents'] = '';
                 $Item['ExcelParants'] = '';
-                $Item['Emergency'] = '';
-                $Item['ExcelEmergency'] = '';
+                $Item['Email'] = '';
+                $Item['ExcelEmail'] = '';
+                $Item['Entrance'] = '';
+                $Item['Leaving'] = '';
 
                 $Father = null;
                 $Mother = null;
                 $FatherPhoneList = false;
                 $MotherPhoneList = false;
-                $Emergency = false;
+                $FatherMailList = false;
+                $MotherMailList = false;
+                $MailListing = false;
 
                 // Parent's
                 $guardianList = Relationship::useService()->getPersonRelationshipAllByPerson($tblPerson);
@@ -757,6 +822,7 @@ class Service extends Extension
                                     $Item['Parents'] .= $Father->getFirstName().' '.$Father->getLastName();
                                     $Item['ExcelParants'][] = $Father->getFirstName().' '.$Father->getLastName();
                                     $FatherPhoneList = Phone::useService()->getPhoneAllByPerson($Father);
+                                    $FatherMailList = Mail::useService()->getMailAllByPerson($Father);
                                 }
                             } else {
                                 $Mother = $guardian->getServiceTblPersonFrom();
@@ -768,6 +834,7 @@ class Service extends Extension
                                     }
                                     $Item['ExcelParants'][] = $Mother->getFirstName().' '.$Mother->getLastName();
                                     $MotherPhoneList = Phone::useService()->getPhoneAllByPerson($Mother);
+                                    $MotherMailList = Mail::useService()->getMailAllByPerson($Mother);
                                 }
                             }
                         }
@@ -777,59 +844,85 @@ class Service extends Extension
                 // PhoneNumbers
                 $phoneNumbers = array();
                 $phoneList = Phone::useService()->getPhoneAllByPerson($tblPerson);
+                $MailList = Mail::useService()->getMailAllByPerson($tblPerson);
                 if ($phoneList) {
                     foreach ($phoneList as $phone) {
-                        if ($phone->getTblType()->getName() == 'Notfall') {
-                            $Emergency[] = $phone->getTblPhone()->getNumber().' ('.$phone->getServiceTblPerson()->getFirstName().')';
-                        } else {
-                            $phoneNumbers[] = $phone->getTblPhone()->getNumber().' '.$phone->getTblType()->getName();
-                            if ($phone->getRemark()) {
-                                $phoneNumbers[] = $phone->getRemark();
-                            }
-                        }
+                        $phoneNumbers[] = $phone->getTblPhone()->getNumber(); // .' '.$phone->getTblType()->getName(); // Type Raus
+//                        if ($phone->getRemark()) {
+//                            $phoneNumbers[] = $phone->getRemark();    // Remark Raus
+//                        }
+                    }
+                }
+                if ($MailList) {
+                    foreach ($MailList as $Mail) {
+                        $MailListing[] = $Mail->getTblMail()->getAddress();
                     }
                 }
                 if ($FatherPhoneList) {
                     foreach ($FatherPhoneList as $phone) {
                         if ($phone->getServiceTblPerson()) {
-                            if ($phone->getTblType()->getName() == 'Notfall') {
-                                $Emergency[] = $phone->getTblPhone()->getNumber().' ('.$phone->getServiceTblPerson()->getFirstName().')';
-                            } else {
-                                $type = $phone->getTblType()->getName() == "Geschäftlich" ? "Geschäftl." : $phone->getTblType()->getName();
-                                $phoneNumbers[] = $phone->getTblPhone()->getNumber().' '.$type;
-                                $phoneNumbers[] = $phone->getServiceTblPerson()->getLastFirstName();
-                                if ($phone->getRemark()) {
-                                    $phoneNumbers[] = $phone->getRemark();
-                                }
-                            }
+//                            $type = $phone->getTblType()->getName() == "Geschäftlich" ? "Geschäftl." : $phone->getTblType()->getName();
+                            $phoneNumbers[] = $phone->getTblPhone()->getNumber(); //.' '.$type; // Type Raus
+//                            if ($phone->getRemark()) {
+//                                $phoneNumbers[] = $phone->getRemark();    // Remark Raus
+//                            }
                         }
+                    }
+                }
+                if ($FatherMailList) {
+                    /** @var TblToPerson $Mail */
+                    foreach ($FatherMailList as $Mail) {
+                        $MailListing[] = $Mail->getTblMail()->getAddress();
                     }
                 }
                 if ($MotherPhoneList) {
                     foreach ($MotherPhoneList as $phone) {
                         if ($phone->getServiceTblPerson()) {
-                            if ($phone->getTblType()->getName() == 'Notfall') {
-                                $Emergency[] = $phone->getTblPhone()->getNumber().' ('.$phone->getServiceTblPerson()->getFirstName().')';
-                            } else {
-                                $type = $phone->getTblType()->getName() == "Geschäftlich" ? "Geschäftl." : $phone->getTblType()->getName();
-                                $phoneNumbers[] = $phone->getTblPhone()->getNumber().' '.$type;
-                                $phoneNumbers[] = $phone->getServiceTblPerson()->getLastFirstName();
-                                if ($phone->getRemark()) {
-                                    $phoneNumbers[] = $phone->getRemark();
-                                }
-                            }
+//                            $type = $phone->getTblType()->getName() == "Geschäftlich" ? "Geschäftl." : $phone->getTblType()->getName();
+                            $phoneNumbers[] = $phone->getTblPhone()->getNumber(); //.' '.$type; // Type Raus
+//                            if ($phone->getRemark()) {
+//                                $phoneNumbers[] = $phone->getRemark();    // Remark Raus
+//                            }
                         }
                     }
                 }
+                if ($MotherMailList) {
+                    /** @var TblToPerson $Mail */
+                    foreach ($MotherMailList as $Mail) {
+                        $MailListing[] = $Mail->getTblMail()->getAddress();
+                    }
+                }
 
-                if (!empty( $Emergency )) {
-                    $Item['Emergency'] = implode('<br>', $Emergency);
-                    $Item['ExcelEmergency'] = $Emergency;
+                if (!empty( $MailListing )) {
+                    $Item['Email'] = implode('<br>', $MailListing);
+                    $Item['ExcelEmail'] = $MailListing;
                 }
 
                 if (!empty( $phoneNumbers )) {
                     $Item['PhoneNumbers'] = implode('<br>', $phoneNumbers);
                     $Item['ExcelPhoneNumbers'] = $phoneNumbers;
+                }
+
+                // Entrance & Leaving
+                $tblStudent = Student::useService()->getStudentByPerson($tblPerson);
+                if ($tblStudent) {
+                    $tblStudentTransferType = Student::useService()->getStudentTransferTypeByIdentifier('ARRIVE'); // Aufnahme
+                    if ($tblStudentTransferType) {
+                        $tblStudentTransfer = Student::useService()->getStudentTransferByType($tblStudent, $tblStudentTransferType);
+                        if ($tblStudentTransfer) {
+                            if ($tblStudentTransfer) {
+                                $Item['Entrance'] = $tblStudentTransfer->getTransferDate();
+                            }
+                        }
+                    }
+
+                    $tblStudentTransferType = Student::useService()->getStudentTransferTypeByIdentifier('LEAVE'); // Abgabe
+                    if ($tblStudentTransferType) {
+                        $tblStudentTransfer = Student::useService()->getStudentTransferByType($tblStudent, $tblStudentTransferType);
+                        if ($tblStudentTransfer) {
+                            $Item['Leaving'] = $tblStudentTransfer->getTransferDate();
+                        }
+                    }
                 }
 
                 array_push($TableContent, $Item);
@@ -855,37 +948,43 @@ class Service extends Extension
             $fileLocation = Storage::useWriter()->getTemporary('xlsx');
             /** @var PhpExcel $export */
             $export = Document::getDocument($fileLocation->getFileLocation());
-            $export->setValue($export->getCell(0, 0), "lfdNr.");
-            $export->setValue($export->getCell(1, 0), "Name");
-            $export->setValue($export->getCell(2, 0), "Telefon-Nr.");
-            $export->setValue($export->getCell(3, 0), "Im Notfall zu Verständigen");
-            $export->setValue($export->getCell(4, 0), "Erziehungsberechtigte");
-            $export->setValue($export->getCell(5, 0), "SJ Zugang");
-            $export->setValue($export->getCell(6, 0), "SJ Abgang");
-            $export->setValue($export->getCell(7, 0), "lfdNr.");
+            $export->setValue($export->getCell(0, 3), "lfdNr.");
+            $export->setValue($export->getCell(1, 3), "Name");
+            $export->setValue($export->getCell(2, 3), "Telefon-Nr.");
+            $export->setValue($export->getCell(3, 3), "E-Mail");
+            $export->setValue($export->getCell(4, 3), "Erziehungsberechtigte");
+            $export->setValue($export->getCell(5, 3), "Zugang");
+            $export->setValue($export->getCell(6, 3), "Abgang");
 
             //Settings Header
-            $export->setStyle($export->getCell(0, 0), $export->getCell(7, 0))
-                ->setBorderAll()
-                ->setBorderBottom(2)
-                ->setFontBold();
+            $export = $this->setHeader($export, 4, 5, 6);
 
-            $Start = $Row = 0;
+            $Start = $Row = 3;
             foreach ($PersonList as $PersonData) {
+                // Fill Header
+                if ($Row == 3) {
+                    $export->setValue($export->getCell(0, 0), 'Klasse: '.$PersonData['Division'].
+                        ' - Erweiterte Klassenliste');
+                    $export->setValue($export->getCell(0, 1), $PersonData['Consumer']);
+                    $export->setValue($export->getCell(0, 2), 'KL: '.$PersonData['DivisionTeacher']);
+                    $export->setValue($export->getCell(4, 2), $PersonData['DivisionYear']);
+                    $export->setValue($export->getCell(5, 2), (new \DateTime('now'))->format('d.m.Y'));
+                }
                 $Row++;
-                $RowEmergency = $RowParent = $RowPhone = $Row;
+                $RowEmail = $RowParent = $RowPhone = $Row;
                 $export->setValue($export->getCell(0, $Row), $PersonData['Count']);
                 $export->setValue($export->getCell(1, $Row), $PersonData['Name']);
-                $export->setValue($export->getCell(7, $Row), $PersonData['Count2']);
+                $export->setValue($export->getCell(5, $Row), $PersonData['Entrance']);
+                $export->setValue($export->getCell(6, $Row), $PersonData['Leaving']);
 
                 if (!empty( $PersonData['ExcelPhoneNumbers'] )) {
                     foreach ($PersonData['ExcelPhoneNumbers'] as $Phone) {
                         $export->setValue($export->getCell(2, $RowPhone++), $Phone);
                     }
                 }
-                if (!empty( $PersonData['ExcelEmergency'] )) {
-                    foreach ($PersonData['ExcelEmergency'] as $Parent) {
-                        $export->setValue($export->getCell(3, $RowEmergency++), $Parent);
+                if (!empty( $PersonData['ExcelEmail'] )) {
+                    foreach ($PersonData['ExcelEmail'] as $Mail) {
+                        $export->setValue($export->getCell(3, $RowEmail++), $Mail);
                     }
                 }
                 if (!empty( $PersonData['ExcelParants'] )) {
@@ -897,14 +996,14 @@ class Service extends Extension
                 if ($RowPhone > $Row) {
                     $Row = ( $RowPhone - 1 );
                 }
+                if ($RowEmail > $Row) {
+                    $Row = ( $RowEmail - 1 );
+                }
                 if ($RowParent > $Row) {
                     $Row = ( $RowParent - 1 );
                 }
-                if ($RowEmergency > $Row) {
-                    $Row = ( $RowEmergency - 1 );
-                }
 
-                $export->setStyle($export->getCell(0, $Row), $export->getCell(7, $Row))
+                $export->setStyle($export->getCell(0, $Row), $export->getCell(6, $Row))
                     ->setBorderBottom();
             }
 
@@ -913,26 +1012,24 @@ class Service extends Extension
 //                ->setBorderAll();
             $export->setStyle($export->getCell(0, ( $Start + 1 )), $export->getCell(0, $Row))
                 ->setBorderLeft();
-            $export->setStyle($export->getCell(0, ( $Start + 1 )), $export->getCell(7, $Row))
+            $export->setStyle($export->getCell(0, ( $Start + 1 )), $export->getCell(6, $Row))
                 ->setBorderVertical();
-            $export->setStyle($export->getCell(7, ( $Start + 1 )), $export->getCell(7, $Row))
+            $export->setStyle($export->getCell(6, ( $Start + 1 )), $export->getCell(6, $Row))
                 ->setBorderRight();
-            $export->setStyle($export->getCell(0, $Row), $export->getCell(7, $Row))
+            $export->setStyle($export->getCell(0, $Row), $export->getCell(6, $Row))
                 ->setBorderBottom();
 
             // Spaltenbreite
             $export->setStyle($export->getCell(0, 0), $export->getCell(0, $Row))->setColumnWidth(6);
-            $export->setStyle($export->getCell(1, 0), $export->getCell(1, $Row))->setColumnWidth(20);
-            $export->setStyle($export->getCell(2, 0), $export->getCell(2, $Row))->setColumnWidth(22);
-            $export->setStyle($export->getCell(3, 0), $export->getCell(3, $Row))->setColumnWidth(23);
-            $export->setStyle($export->getCell(4, 0), $export->getCell(4, $Row))->setColumnWidth(20);
+            $export->setStyle($export->getCell(1, 0), $export->getCell(1, $Row))->setColumnWidth(21);
+            $export->setStyle($export->getCell(2, 0), $export->getCell(2, $Row))->setColumnWidth(24);
+            $export->setStyle($export->getCell(3, 0), $export->getCell(3, $Row))->setColumnWidth(25);
+            $export->setStyle($export->getCell(4, 0), $export->getCell(4, $Row))->setColumnWidth(21);
             $export->setStyle($export->getCell(5, 0), $export->getCell(5, $Row))->setColumnWidth(12);
             $export->setStyle($export->getCell(6, 0), $export->getCell(6, $Row))->setColumnWidth(12);
-            $export->setStyle($export->getCell(7, 0), $export->getCell(7, $Row))->setColumnWidth(6);
 
             // Center
-            $export->setStyle($export->getCell(0, 1), $export->getCell(0, $Row))->setAlignmentCenter();
-            $export->setStyle($export->getCell(7, 1), $export->getCell(7, $Row))->setAlignmentCenter();
+            $export->setStyle($export->getCell(0, 3), $export->getCell(0, $Row))->setAlignmentCenter();
 
             $Row++;
             $Row++;
@@ -951,6 +1048,33 @@ class Service extends Extension
         }
 
         return false;
+    }
+
+    private function countProfile($tblPersonList)
+    {
+        $result = array();
+        if (empty( $tblPersonList )) {
+            return $result;
+        } else {
+            foreach ($tblPersonList as $tblPerson) {
+                $tblStudent = Student::useService()->getStudentByPerson($tblPerson);
+                if ($tblStudent) {
+                    // Profil
+                    $tblStudentProfile = Student::useService()->getStudentSubjectAllByStudentAndSubjectType(
+                        $tblStudent,
+                        Student::useService()->getStudentSubjectTypeByIdentifier('PROFILE')
+                    );
+                    if ($tblStudentProfile && ( $tblSubject = $tblStudentProfile[0]->getServiceTblSubject() )) {
+                        if (!isset( $result[$tblSubject->getAcronym()] )) {
+                            $result[$tblSubject->getAcronym()] = 1;
+                        } else {
+                            $result[$tblSubject->getAcronym()] += 1;
+                        }
+                    }
+                }
+            }
+            return $result;
+        }
     }
 
     /**

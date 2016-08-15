@@ -124,6 +124,27 @@ class Structure
         $Statement = $this->Database->getSchema()->getMigrateToSql($Schema,
             $this->Database->getPlatform()
         );
+
+        if( $this->Database->getPlatform()->getName() == "mysql" ) {
+
+            $DatabaseName = $this->Database->getDatabase();
+            $TableStatus = $this->Database->getStatement("show table status from ".$DatabaseName.";");
+
+            foreach( $TableStatus as $Status ) {
+
+                if( $Status['Collation'] != 'utf8_german2_ci'
+                    && (
+                        $Schema->hasTable( $Status['Name'] )
+                        || $this->Database->getSchema()->hasTable( $Status['Name'] )
+                    )
+                ) {
+                    array_push( $Statement, "alter table ".$DatabaseName.".".$Status['Name']." character set utf8 collate utf8_german2_ci;" );
+                    array_push( $Statement, "alter table ".$DatabaseName.".".$Status['Name']." convert to character set utf8 collate utf8_german2_ci;" );
+                }
+            }
+
+        }
+
         if (!empty( $Statement )) {
             foreach ((array)$Statement as $Query) {
                 $this->Database->addProtocol($Query);

@@ -1,16 +1,25 @@
 <?php
 namespace SPHERE\System\Database\Binding;
 
+use Doctrine\DBAL\Schema\Schema;
+use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Types\Type;
 use SPHERE\System\Database\Fitting\Structure;
-use SPHERE\System\Extension\Extension;
 
 /**
  * Class AbstractSetup
  *
  * @package SPHERE\System\Database\Binding
  */
-abstract class AbstractSetup extends Extension
+abstract class AbstractSetup
 {
+
+    const FIELD_TYPE_BIGINT = 'bigint';
+    const FIELD_TYPE_STRING = 'string';
+    const FIELD_TYPE_TEXT = 'text';
+    const FIELD_TYPE_INTEGER = 'integer';
+    const FIELD_TYPE_BOOLEAN = 'boolean';
+    const FIELD_TYPE_DATETIME = 'datetime';
 
     /** @var null|Structure $Connection */
     private $Connection = null;
@@ -32,11 +41,138 @@ abstract class AbstractSetup extends Extension
     abstract public function setupDatabaseSchema($Simulate = true);
 
     /**
+     * @return Schema
+     */
+    final protected function loadSchema()
+    {
+
+        return clone $this->getConnection()->getSchema();
+    }
+
+    /**
      * @return Structure
      */
-    final public function getConnection()
+    final protected function getConnection()
     {
 
         return $this->Connection;
+    }
+
+    /**
+     * @param Schema $Schema
+     * @param bool   $Simulate
+     *
+     * @return string Protocol
+     */
+    final protected function saveSchema(Schema $Schema, $Simulate = true)
+    {
+
+        $this->getConnection()->addProtocol(debug_backtrace()[1]['class'].' > '.$Schema->getName());
+        $this->getConnection()->setMigration($Schema, $Simulate);
+        return $this->getConnection()->getProtocol($Simulate);
+    }
+
+    /**
+     * Create / Update: Table
+     *
+     * @param Schema $Schema
+     * @param string $Name
+     *
+     * @return Table
+     */
+    final protected function createTable(Schema $Schema, $Name)
+    {
+
+        if (!$Schema->hasTable($Name)) {
+            return $this->getConnection()->createTable($Schema, $Name);
+        } else {
+            return $Schema->getTable($Name);
+        }
+    }
+
+    /**
+     * Create / Update: Column
+     *
+     * @param Table  $Table
+     * @param        $Name
+     * @param string $Type
+     * @param bool   $Null
+     *
+     * @return Table
+     */
+    final protected function createColumn(Table $Table, $Name, $Type = self::FIELD_TYPE_STRING, $Null = false)
+    {
+
+        if (!$this->getConnection()->hasColumn($Table->getName(), $Name)) {
+            $Table->addColumn($Name, $Type, array('notnull' => $Null ? false : true));
+        } else {
+            $Column = $Table->getColumn($Name);
+            // Definition has changed?
+            if ($Column->getNotnull() == $Null
+                || $Column->getType()->getName() != $Type
+            ) {
+                $Table->changeColumn($Name, array(
+                    'notnull' => $Null ? false : true,
+                    'type'    => Type::getType($Type)
+                ));
+            }
+        }
+        return $Table;
+    }
+
+    /**
+     * Drop: Index
+     *
+     * @param Table $Table
+     * @param array $FieldList Column-Names
+     *
+     * @return Table
+     */
+    final protected function removeIndex(Table $Table, $FieldList)
+    {
+
+        $this->getConnection()->removeIndex($Table, $FieldList);
+        return $Table;
+    }
+
+    /**
+     * Create: Index
+     *
+     * @param Table $Table
+     * @param array $FieldList Column-Names
+     * @param bool  $Unique
+     *
+     * @return Table
+     */
+    final protected function createIndex(Table $Table, $FieldList, $Unique = true)
+    {
+
+        if (!$this->getConnection()->hasIndex($Table, $FieldList)) {
+            if ($Unique) {
+                $Table->addUniqueIndex($FieldList);
+            } else {
+                $Table->addIndex($FieldList);
+            }
+        }
+        return $Table;
+    }
+
+    /**
+     * Create: Foreign-Key
+     *
+     * [Table] Insert new Column (Column-Name equals ForeignTable-Name)
+     *
+     * [ForeignTable] Index to Table on Column: "Id"
+     *
+     * @param Table $Table
+     * @param Table $ForeignTable
+     *
+     * @return Table
+     */
+    final protected function createForeignKey(Table $Table, Table $ForeignTable)
+    {
+
+        $this->getConnection()->addForeignKey($Table, $ForeignTable);
+        return $Table;
     }
 }

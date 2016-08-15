@@ -3,16 +3,18 @@ namespace SPHERE\System\Database\Filter\Link;
 
 use SPHERE\System\Cache\Handler\DataCacheHandler;
 use SPHERE\System\Database\Binding\AbstractService;
+use SPHERE\System\Database\Binding\AbstractView;
 use SPHERE\System\Database\Filter\Logic\AndLogic;
 use SPHERE\System\Database\Filter\Logic\OrLogic;
 use SPHERE\System\Database\Fitting\Element;
+use SPHERE\System\Extension\Extension;
 
 /**
  * Class AbstractNode
  *
  * @package SPHERE\System\Database\Filter\Pile
  */
-abstract class AbstractNode
+abstract class AbstractNode extends Extension
 {
 
     protected static $Cache = false;
@@ -20,6 +22,8 @@ abstract class AbstractNode
     private $PathList = array();
     /** @var Probe[] $ProbeList */
     private $ProbeList = array();
+    /** @var int|true $Timeout */
+    private $Timeout = 0;
 
     /**
      *
@@ -60,9 +64,10 @@ abstract class AbstractNode
     /**
      * @param array $Search array( ProbeIndex => array( 'Column' => 'Value', ... ), ... )
      *
-     * @return bool|Element[]
+     * @param int $Timeout
+     * @return bool|\SPHERE\System\Database\Fitting\Element[]
      */
-    public function searchData($Search)
+    public function searchData($Search, $Timeout = 60)
     {
 
         $ProbeList = $this->getProbeList();
@@ -107,8 +112,8 @@ abstract class AbstractNode
                 }
             }
 
-            $Result = $this->parseResult($ResultCache);
-            if (self::$Cache) {
+            $Result = $this->parseResult($ResultCache, $Timeout);
+            if (!$this->isTimeout() && self::$Cache) {
                 $Cache->setData($Result);
             }
         }
@@ -138,7 +143,7 @@ abstract class AbstractNode
         if (!empty( $Restriction )) {
             $Logic->addLogic(
                 (new OrLogic($this->getProbe($ProbeIndex)->useBuilder()))->addCriteriaList(
-                    $Restriction, OrLogic::COMPARISON_EXACT
+                    $Restriction, OrLogic::COMPARISON_IN
                 )
             );
         }
@@ -179,5 +184,62 @@ abstract class AbstractNode
         return $this->PathList[$Index];
     }
 
-    abstract protected function parseResult($List);
+    /**
+     * @param  $List
+     * @param  int $Timeout
+     * @return array
+     */
+    abstract protected function parseResult($List, $Timeout = 60);
+
+    /**
+     * @return bool
+     */
+    public function isTimeout() {
+        if( $this->Timeout === true ) {
+        return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param int $Timeout
+     */
+    protected function setTimeout($Timeout)
+    {
+
+        $this->Timeout = time() + $Timeout;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function checkTimeout()
+    {
+        if( time() > $this->Timeout ) {
+            $this->Timeout = true;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param int   $ParentKey      Id of Parent-Property
+     * @param array $List
+     * @param int   $ChildListIndex Index of Child-View-List
+     *
+     * @return array
+     */
+    protected function filterNodeList($ParentKey, $List, $ChildListIndex)
+    {
+
+        return array_filter($List[$ChildListIndex], function (AbstractView $Item) use ($ParentKey, $ChildListIndex) {
+
+            $ChildKey = $Item->__get($this->getPath($ChildListIndex)[0]);
+            if ($ParentKey == $ChildKey) {
+                return true;
+            }
+            return false;
+        });
+    }
 }

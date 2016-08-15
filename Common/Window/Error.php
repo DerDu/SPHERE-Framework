@@ -27,8 +27,9 @@ class Error extends Extension implements ITemplateInterface
     /**
      * @param integer|string $Code
      * @param null           $Message
+     * @param bool           $IsReportable
      */
-    public function __construct($Code, $Message = null)
+    public function __construct($Code, $Message = null, $IsReportable = true)
     {
 
         $this->Template = $this->getTemplate(__DIR__.'/Error.twig');
@@ -44,24 +45,32 @@ class Error extends Extension implements ITemplateInterface
                     $this->Template->setVariable('ErrorMessage', '');
             }
         } else {
-            $Message = new Paragraph('Error-Log: '.$this->getRequest()->getUrl()).$Message;
+
+            $Path = parse_url( $this->getRequest()->getUrl(), PHP_URL_PATH );
+            parse_str( parse_url( $this->getRequest()->getUrl(), PHP_URL_QUERY ), $Query );
+            unset( $Query['_Sign'] );
+            $Query = json_encode( $Query );
+
+            $Message = new Paragraph('Error-Log: ['.$this->getRequest()->getHost().'] '.$Path.' > '.$Query).$Message;
 
             $this->Template->setVariable('ErrorMessage', $Message);
-            $this->Template->setVariable('ErrorMenu', array(
-                    new Form(
-                        new FormGroup(
-                            new FormRow(
-                                new FormColumn(array(
-                                    (new HiddenField('TicketSubject'))->setDefaultValue(urlencode($Code.' Account: '.
-                                        ( ( $Account = Account::useService()->getAccountBySession() ) ? $Account->getId() : '' ))),
-                                    (new HiddenField('TicketMessage'))->setDefaultValue(urlencode($Message)),
-                                    new Primary('Fehlerbericht senden')
-                                ))
+            if( $IsReportable ) {
+                $this->Template->setVariable('ErrorMenu', array(
+                        new Form(
+                            new FormGroup(
+                                new FormRow(
+                                    new FormColumn(array(
+                                        ( new HiddenField('TicketSubject') )->setDefaultValue(urlencode($Code.' Account: '.
+                                            ( ( $Account = Account::useService()->getAccountBySession() ) ? $Account->getId() : '' ))),
+                                        ( new HiddenField('TicketMessage') )->setDefaultValue(urlencode($Message)),
+                                        new Primary('Fehlerbericht senden')
+                                    ))
+                                )
                             )
-                        )
-                        , null, '/Platform/Assistance/Support')
-                )
-            );
+                            , null, '/Platform/Assistance/Support')
+                    )
+                );
+            }
         }
     }
 

@@ -4,6 +4,7 @@ namespace SPHERE\Application\Reporting;
 use SPHERE\Application\IClusterInterface;
 use SPHERE\Application\Reporting\CheckList\CheckList;
 use SPHERE\Application\Reporting\Custom\Custom;
+use SPHERE\Application\Reporting\Dynamic\Dynamic;
 use SPHERE\Application\Reporting\SerialLetter\SerialLetter;
 use SPHERE\Application\Reporting\Standard\Standard;
 use SPHERE\Common\Main;
@@ -25,6 +26,7 @@ class Reporting implements IClusterInterface
         Custom::registerApplication();
         CheckList::registerApplication();
         SerialLetter::registerApplication();
+        Dynamic::registerApplication();
 
         Main::getDisplay()->addClusterNavigation(
             new Link(new Link\Route(__NAMESPACE__), new Link\Name('Auswertung'))

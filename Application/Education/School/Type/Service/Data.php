@@ -82,7 +82,6 @@ class Data extends AbstractData
     public function getTypeAll()
     {
 
-        $EntityList = $this->getConnection()->getEntityManager()->getEntity('TblType')->findAll();
-        return ( empty( $EntityList ) ? false : $EntityList );
+        return $this->getCachedEntityList(__METHOD__,$this->getConnection()->getEntityManager(),'TblType',array('Name'=>self::ORDER_ASC));
     }
 }

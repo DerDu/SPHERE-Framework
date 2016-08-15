@@ -6,6 +6,7 @@ use SPHERE\System\Database\Fitting\Binding;
 use SPHERE\System\Database\Fitting\Cacheable;
 use SPHERE\System\Database\Fitting\ColumnHydrator;
 use SPHERE\System\Database\Fitting\Element;
+use SPHERE\System\Database\Fitting\Manager;
 
 /**
  * Class AbstractData
@@ -35,7 +36,7 @@ abstract class AbstractData extends Cacheable
     /**
      * Internal
      *
-     * @param Element $Entity
+     * @param Element       $Entity
      * @param AbstractLogic $Logic
      *
      * @return Element[]
@@ -46,14 +47,14 @@ abstract class AbstractData extends Cacheable
         $Manager = $this->getConnection()->getEntityManager();
         $Builder = $Manager->getQueryBuilder();
 
-        $Builder->select('E')->from( $Entity->getEntityFullName(), 'E' );
-        $Builder->andWhere( $Logic->getExpression() );
+        $Builder->select('E')->from($Entity->getEntityFullName(), 'E');
+        $Builder->andWhere($Logic->getExpression());
         $Builder->distinct(true);
         $Query = $Builder->getQuery();
         $Query->useQueryCache(true);
 
         // TODO: Remove
-        //$this->getDebugger()->screenDump( $Query->getSQL() );
+//        $this->getDebugger()->screenDump( $Query->getSQL() );
 
         return $Query->getResult();
     }
@@ -91,5 +92,100 @@ abstract class AbstractData extends Cacheable
         // $this->getDebugger()->screenDump($Query->getSQL());
 
         return $Query->getResult(ColumnHydrator::HYDRATION_MODE);
+    }
+
+    /**
+     * @param string  $__METHOD__ Initiator
+     * @param Manager $EntityManager
+     * @param string  $EntityName
+     * @param int     $Id
+     *
+     * @return false|Element
+     * @throws \Exception
+     */
+    final protected function getForceEntityById($__METHOD__, Manager $EntityManager, $EntityName, $Id)
+    {
+
+        $Parameter['Id'] = $Id;
+
+        $Entity = $EntityManager->getEntity($EntityName)->findOneBy($Parameter);
+        if (null === $Entity) {
+            $Entity = false;
+        }
+        $this->debugFactory($__METHOD__, $Entity, $Parameter);
+        return $Entity;
+    }
+
+    /**
+     * @param string  $__METHOD__ Initiator
+     * @param Manager $EntityManager
+     * @param string  $EntityName
+     * @param array   $Parameter  Initiator Parameter-Array
+     *
+     * @return false|Element
+     * @throws \Exception
+     */
+    final protected function getForceEntityBy($__METHOD__, Manager $EntityManager, $EntityName, $Parameter)
+    {
+
+        $Entity = $EntityManager->getEntity($EntityName)->findOneBy($Parameter);
+        if (null === $Entity) {
+            $Entity = false;
+        }
+        $this->debugFactory($__METHOD__, $Entity, $Parameter);
+        return $Entity;
+    }
+
+    /**
+     * @param string  $__METHOD__ Initiator
+     * @param Manager $EntityManager
+     * @param string  $EntityName
+     * @param array   $Parameter  Initiator Parameter-Array
+     *
+     * @return false|Element[]
+     * @throws \Exception
+     */
+    final protected function getForceEntityListBy($__METHOD__, Manager $EntityManager, $EntityName, $Parameter)
+    {
+
+        $EntityList = $EntityManager->getEntity($EntityName)->findBy($Parameter);
+        $this->debugFactory($__METHOD__, $EntityList, $Parameter);
+        return ( empty( $EntityList ) ? false : $EntityList );
+    }
+
+    /**
+     * @param string  $__METHOD__ Initiator
+     * @param Manager $EntityManager
+     * @param string  $EntityName
+     *
+     * @return false|Element[]
+     * @throws \Exception
+     */
+    final protected function getForceEntityList($__METHOD__, Manager $EntityManager, $EntityName)
+    {
+
+        $EntityList = $EntityManager->getEntity($EntityName)->findAll();
+        $this->debugFactory($__METHOD__, $EntityList, 'All');
+        return ( empty( $EntityList ) ? false : $EntityList );
+    }
+
+    /**
+     * @param string  $__METHOD__ Initiator
+     * @param Manager $EntityManager
+     * @param string  $EntityName
+     * @param array   $Parameter  Initiator Parameter-Array
+     *
+     * @return false|Element
+     * @throws \Exception
+     */
+    final protected function getForceEntityCountBy($__METHOD__, Manager $EntityManager, $EntityName, $Parameter)
+    {
+
+        $Entity = $EntityManager->getEntity($EntityName)->countBy($Parameter);
+        if (null === $Entity) {
+            $Entity = false;
+        }
+        $this->debugFactory($__METHOD__, $Entity, $Parameter);
+        return $Entity;
     }
 }

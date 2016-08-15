@@ -375,15 +375,15 @@ class Display extends Extension implements ITemplateInterface
         // Set Depending Information
         switch (strtolower($this->getRequest()->getHost())) {
             case 'www.kreda.schule':
-                $BrandTitle = '<a class="navbar-brand" href="/">KREDA <span class="text-info">Professional</span></a>';
+                $BrandTitle = '<a class="navbar-brand" href="/">Schulsoftware <span class="text-info">Professional</span></a>';
                 $this->Template->setVariable('RoadmapVersion', $Map ? $Map->getVersionRelease() : 'Roadmap');
                 break;
             case 'demo.kreda.schule':
-                $BrandTitle = '<a class="navbar-brand" href="/">KREDA <span class="text-danger">DEMO</span></a>';
+                $BrandTitle = '<a class="navbar-brand" href="/">Schulsoftware <span class="text-danger">Demo</span></a>';
                 $this->Template->setVariable('RoadmapVersion', $Map ? $Map->getVersionPreview() : 'Roadmap');
                 break;
             default:
-                $BrandTitle = '<a class="navbar-brand" href="/">KREDA <span class="text-warning">'.$this->getRequest()->getHost().'</span></a>';
+                $BrandTitle = '<a class="navbar-brand" href="/">Schulsoftware <span class="text-warning">'.$this->getRequest()->getHost().'</span></a>';
                 $this->Template->setVariable('RoadmapVersion', 'Roadmap');
         }
         $this->Template->setVariable('BrandSwitch', $BrandTitle);

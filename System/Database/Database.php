@@ -191,7 +191,7 @@ class Database extends Extension
             }
 
             $Manager = new Manager(
-                EntityManager::create($this->getConnection()->getConnection(), $MetadataConfiguration), $EntityNamespace
+                EntityManager::create($this->getConnection()->getConnection(), $MetadataConfiguration), $EntityNamespace, $this->Identifier
             );
 
             $ManagerCache->setValue((string)$this->Identifier.$EntityNamespace.$EntityPath, $Manager, 0, __METHOD__);

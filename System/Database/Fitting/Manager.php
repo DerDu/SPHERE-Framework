@@ -9,6 +9,8 @@ use Doctrine\ORM\TransactionRequiredException;
 use SPHERE\System\Cache\Handler\DataCacheHandler;
 use SPHERE\System\Cache\Handler\MemcachedHandler;
 use SPHERE\System\Cache\Handler\MemoryHandler;
+use SPHERE\System\Database\Link\Identifier;
+use SPHERE\System\Database\Link\Register;
 use SPHERE\System\Debugger\Logger\CacheLogger;
 use SPHERE\System\Extension\Extension;
 
@@ -24,16 +26,20 @@ class Manager extends Extension
     private $EntityManager = null;
     /** @var string $Namespace */
     private $Namespace = '';
+    /** @var null|Identifier $Identifier */
+    private $Identifier = null;
 
     /**
      * @param EntityManager $EntityManager
-     * @param string        $Namespace
+     * @param string $Namespace
+     * @param Identifier $Identifier
      */
-    final function __construct(EntityManager $EntityManager, $Namespace)
+    final function __construct(EntityManager $EntityManager, $Namespace, Identifier $Identifier)
     {
 
         $this->EntityManager = $EntityManager;
         $this->Namespace = $Namespace;
+        $this->Identifier = $Identifier;
     }
 
     /**
@@ -55,6 +61,12 @@ class Manager extends Extension
      */
     final public function getRepository($ClassName)
     {
+
+        // Replace "Table"-Name with "Database"."Table"-Name
+        /** @var \MOC\V\Component\Database\Component\Bridge\Repository\Doctrine2ORM $Connection */
+        $Connection = (new Register())->getConnection( $this->Identifier )->getConnection();
+        $ClassMetadata = $this->EntityManager->getClassMetadata($this->Namespace.$ClassName);
+        $ClassMetadata->setPrimaryTable( array( 'name' => $Connection->getConnection()->getDatabase().'.'.$ClassMetadata->getTableName() ) );
 
         // MUST NOT USE Cache-System
         return $this->EntityManager->getRepository($this->Namespace.$ClassName);

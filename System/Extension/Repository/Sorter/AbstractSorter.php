@@ -3,6 +3,11 @@ namespace SPHERE\System\Extension\Repository\Sorter;
 
 use SPHERE\System\Database\Fitting\Element;
 
+/**
+ * Class AbstractSorter
+ *
+ * @package SPHERE\System\Extension\Repository\Sorter
+ */
 abstract class AbstractSorter implements ISorterInterface
 {
 

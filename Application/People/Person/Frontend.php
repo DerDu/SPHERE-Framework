@@ -51,6 +51,7 @@ use SPHERE\Common\Frontend\Link\Repository\Backward;
 use SPHERE\Common\Frontend\Link\Repository\Standard;
 use SPHERE\Common\Frontend\Message\Repository\Danger;
 use SPHERE\Common\Frontend\Message\Repository\Success;
+use SPHERE\Common\Frontend\Text\Repository\Success as SuccessText;
 use SPHERE\Common\Frontend\Text\Repository\Bold;
 use SPHERE\Common\Frontend\Text\Repository\Muted;
 use SPHERE\Common\Frontend\Text\Repository\Small;
@@ -232,17 +233,20 @@ class Frontend extends Extension implements IFrontendInterface
                             new LayoutRow(new LayoutColumn(array(
                                 new Well($BasicTable)
                             ))),
-                            new Title(new PersonParent() . ' Grunddaten', 'der Person')
+                            new Title(new PersonParent().' Grunddaten',
+                                'der Person '.new Bold(new SuccessText($tblPerson->getFullName())))
                         ),
                         new LayoutGroup(array(
                             new LayoutRow(new LayoutColumn(new LayoutTabs($MetaTabs))),
                             new LayoutRow(new LayoutColumn($MetaTable)),
-                        ), new Title(new Tag() . ' Informationen', 'zur Person')),
+                        ), new Title(new Tag().' Informationen',
+                            'zur Person '.new Bold(new SuccessText($tblPerson->getFullName())))),
                         new LayoutGroup(array(
                             new LayoutRow(new LayoutColumn(
                                 Address::useFrontend()->frontendLayoutPerson($tblPerson)
                             )),
-                        ), (new Title(new TagList() . ' Adressdaten', 'der Person'))
+                        ), (new Title(new TagList().' Adressdaten',
+                            'der Person '.new Bold(new SuccessText($tblPerson->getFullName()))))
                             ->addButton(
                                 new Standard('Adresse hinzufügen', '/People/Person/Address/Create',
                                     new ChevronDown(), array('Id' => $tblPerson->getId())
@@ -254,7 +258,8 @@ class Frontend extends Extension implements IFrontendInterface
                                 Phone::useFrontend()->frontendLayoutPerson($tblPerson)
                                 . Mail::useFrontend()->frontendLayoutPerson($tblPerson)
                             )),
-                        ), (new Title(new TagList() . ' Kontaktdaten', 'der Person'))
+                        ), (new Title(new TagList().' Kontaktdaten',
+                            'der Person '.new Bold(new SuccessText($tblPerson->getFullName()))))
                             ->addButton(
                                 new Standard('Telefonnummer hinzufügen', '/People/Person/Phone/Create',
                                     new ChevronDown(), array('Id' => $tblPerson->getId())
@@ -271,7 +276,7 @@ class Frontend extends Extension implements IFrontendInterface
                                 Relationship::useFrontend()->frontendLayoutPerson($tblPerson),
                                 Relationship::useFrontend()->frontendLayoutCompany($tblPerson)
                             ))),
-                        ), (new Title(new TagList() . ' Beziehungen', 'zu Personen und Firmen'))
+                        ), (new Title(new TagList().' Beziehungen', new Bold(new SuccessText($tblPerson->getFullName())).' zu Personen und Firmen'))
                             ->addButton(
                                 new Standard('Personenbeziehung hinzufügen', '/People/Person/Relationship/Create',
                                     new ChevronDown(), array('Id' => $tblPerson->getId())

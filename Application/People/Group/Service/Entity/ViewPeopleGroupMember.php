@@ -5,6 +5,11 @@ use Doctrine\ORM\Mapping\Cache;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
+use SPHERE\Application\Contact\Address\Service\Entity\ViewAddressToPerson;
+use SPHERE\Application\People\Group\Group;
+use SPHERE\Application\People\Person\Service\Entity\ViewPerson;
+use SPHERE\Application\People\Relationship\Service\Entity\ViewRelationshipToPerson;
+use SPHERE\System\Database\Binding\AbstractService;
 use SPHERE\System\Database\Binding\AbstractView;
 
 /**
@@ -54,6 +59,17 @@ class ViewPeopleGroupMember extends AbstractView
     protected $TblMember_serviceTblPerson;
 
     /**
+     * Overwrite this method to return View-ObjectName as View-DisplayName
+     *
+     * @return string View-Gui-Name of Class
+     */
+    public function getViewGuiName()
+    {
+
+        return 'Personengruppe';
+    }
+
+    /**
      * Use this method to set PropertyName to DisplayName conversions with "setNameDefinition()"
      *
      * @return void
@@ -61,8 +77,29 @@ class ViewPeopleGroupMember extends AbstractView
     public function loadNameDefinition()
     {
 
-        $this->setNameDefinition('TblGroup_Name', 'Person-Gruppe Name');
-        $this->setNameDefinition('TblGroup_Description', 'Person-Gruppe Beschreibung');
-        $this->setNameDefinition('TblGroup_Remark', 'Person-Gruppe Bemerkungen');
+        $this->setNameDefinition('TblGroup_Name', 'Gruppe: Name');
+        $this->setNameDefinition('TblGroup_Description', 'Gruppe: Beschreibung');
+        $this->setNameDefinition('TblGroup_Remark', 'Gruppe: Bemerkungen');
+    }
+
+    /**
+     * Use this method to add ForeignViews to Graph with "addForeignView()"
+     *
+     * @return void
+     */
+    public function loadViewGraph()
+    {
+
+        $this->addForeignView('TblMember_serviceTblPerson', new ViewPerson(), 'TblPerson_Id');
+        $this->addForeignView('TblMember_serviceTblPerson', new ViewAddressToPerson(), 'TblToPerson_serviceTblPerson');
+        $this->addForeignView('TblMember_serviceTblPerson', new ViewRelationshipToPerson(), 'TblToPerson_serviceTblPersonFrom');
+    }
+
+    /**
+     * @return AbstractService
+     */
+    public function getViewService()
+    {
+        return Group::useService();
     }
 }

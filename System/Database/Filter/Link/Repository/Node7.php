@@ -1,82 +1,85 @@
 <?php
 namespace SPHERE\System\Database\Filter\Link\Repository;
 
+use SPHERE\System\Database\Binding\AbstractView;
 use SPHERE\System\Database\Filter\Link\AbstractNode;
-use SPHERE\System\Database\Fitting\Element;
 
+/**
+ * Class Node7
+ *
+ * @package SPHERE\System\Database\Filter\Link\Repository
+ */
 class Node7 extends AbstractNode
 {
 
-    protected function parseResult($List)
+    /**
+     * @param AbstractView[][] $List
+     * @param int              $Timeout
+     *
+     * @return mixed
+     */
+    protected function parseResult($List, $Timeout = 60)
     {
 
-        array_walk($List[6], function (Element $Node6) use (&$Result, $List) {
+        $this->setTimeout($Timeout);
 
-            array_walk($List[5], function (Element $Node5) use (&$Result, $List, $Node6) {
-
-                array_walk($List[4], function (Element $Node4) use (&$Result, $List, $Node5, $Node6) {
-
-                    array_walk($List[3], function (Element $Node3) use (&$Result, $List, $Node4, $Node5, $Node6) {
-
-                        array_walk($List[2],
-                            function (Element $Node2) use (&$Result, $List, $Node3, $Node4, $Node5, $Node6) {
-
-                                array_walk($List[1],
-                                    function (Element $Node1) use (
-                                        &$Result,
-                                        $List,
-                                        $Node2,
-                                        $Node3,
-                                        $Node4,
-                                        $Node5,
-                                        $Node6
-                                    ) {
-
-                                        array_walk($List[0],
-                                            function (Element $Node0) use (
-                                                &$Result,
-                                                $Node1,
-                                                $Node2,
-                                                $Node3,
-                                                $Node4,
-                                                $Node5,
-                                                $Node6
-                                            ) {
-
-                                                $Data0 = $Node0->__toArray();
-                                                $Data1 = $Node1->__toArray();
-                                                $Data2 = $Node2->__toArray();
-                                                $Data3 = $Node3->__toArray();
-                                                $Data4 = $Node4->__toArray();
-                                                $Data5 = $Node5->__toArray();
-                                                $Data6 = $Node6->__toArray();
-
-                                                if (
-                                                    ( $Data0[$this->getPath(0)[1]] == $Data1[$this->getPath(1)[0]] )
-                                                    && ( $Data1[$this->getPath(1)[1]] == $Data2[$this->getPath(2)[0]] )
-                                                    && ( $Data2[$this->getPath(2)[1]] == $Data3[$this->getPath(3)[0]] )
-                                                    && ( $Data3[$this->getPath(3)[1]] == $Data4[$this->getPath(4)[0]] )
-                                                    && ( $Data4[$this->getPath(4)[1]] == $Data5[$this->getPath(5)[0]] )
-                                                    && ( $Data5[$this->getPath(5)[1]] == $Data6[$this->getPath(6)[0]] )
-                                                ) {
-                                                    $Result[] = array(
-                                                        $Node0,
-                                                        $Node1,
-                                                        $Node2,
-                                                        $Node3,
-                                                        $Node4,
-                                                        $Node5,
-                                                        $Node6,
-                                                    );
+        $Result = array();
+        try {
+            /** @var AbstractView $Node0 */
+            foreach ($List[0] as $Node0) {
+                $Key = $Node0->__get($this->getPath(0)[1]);
+                if (( $MatchList = $this->filterNodeList($Key, $List, 1) )) {
+                    /** @var AbstractView $Node1 */
+                    foreach ($MatchList as $Node1) {
+                        $Key = $Node1->__get($this->getPath(1)[1]);
+                        if (( $MatchList = $this->filterNodeList($Key, $List, 2) )) {
+                            /** @var AbstractView $Node2 */
+                            foreach ($MatchList as $Node2) {
+                                $Key = $Node2->__get($this->getPath(2)[1]);
+                                if (( $MatchList = $this->filterNodeList($Key, $List, 3) )) {
+                                    /** @var AbstractView $Node3 */
+                                    foreach ($MatchList as $Node3) {
+                                        $Key = $Node3->__get($this->getPath(3)[1]);
+                                        if (( $MatchList = $this->filterNodeList($Key, $List, 4) )) {
+                                            /** @var AbstractView $Node4 */
+                                            foreach ($MatchList as $Node4) {
+                                                $Key = $Node4->__get($this->getPath(4)[1]);
+                                                if (( $MatchList = $this->filterNodeList($Key, $List, 5) )) {
+                                                    /** @var AbstractView $Node5 */
+                                                    foreach ($MatchList as $Node5) {
+                                                        $Key = $Node5->__get($this->getPath(5)[1]);
+                                                        if (( $MatchList = $this->filterNodeList($Key, $List, 6) )) {
+                                                            /** @var AbstractView $Node6 */
+                                                            foreach ($MatchList as $Node6) {
+                                                                $Result[] = array(
+                                                                    $Node0,
+                                                                    $Node1,
+                                                                    $Node2,
+                                                                    $Node3,
+                                                                    $Node4,
+                                                                    $Node5,
+                                                                    $Node6,
+                                                                );
+                                                                if ($this->checkTimeout()) {
+                                                                    throw new NodeException();
+                                                                }
+                                                            }
+                                                        }
+                                                    }
                                                 }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (NodeException $E) {
+            return $Result;
+        }
 
-                                            });
-                                    });
-                            });
-                    });
-                });
-            });
-        });
         return $Result;
     }
 }

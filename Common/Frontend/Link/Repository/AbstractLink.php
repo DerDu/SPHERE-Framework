@@ -4,6 +4,10 @@ namespace SPHERE\Common\Frontend\Link\Repository;
 use MOC\V\Component\Template\Component\IBridgeInterface;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Access\Access;
 use SPHERE\Common\Frontend\Icon\IIconInterface;
+use SPHERE\Common\Frontend\Icon\Repository\Edit;
+use SPHERE\Common\Frontend\Icon\Repository\Remove;
+use SPHERE\Common\Frontend\Icon\Repository\Setup;
+use SPHERE\Common\Frontend\Icon\Repository\View;
 use SPHERE\Common\Frontend\Link\ILinkInterface;
 use SPHERE\Common\Window\Navigation\Link\Route;
 use SPHERE\System\Authenticator\Authenticator;
@@ -55,10 +59,24 @@ abstract class AbstractLink extends Extension implements ILinkInterface
         }
 
         $this->Template = $this->getTemplate(__DIR__.'/Link.twig');
-        $this->Template->setVariable('ElementType', $this->Type);
+
         if (null !== $Icon) {
+            if( $Icon instanceof Edit) {
+                $this->Type = $this->Type.' bg-info';
+            }
+            if( $Icon instanceof Remove) {
+                $this->Type = $this->Type.' bg-danger';
+            }
+            if( $Icon instanceof Setup) {
+                $this->Type = $this->Type.' bg-warning';
+            }
+            if( $Icon instanceof View) {
+                $this->Type = $this->Type.' bg-success';
+            }
             $this->Template->setVariable('ElementIcon', $Icon);
         }
+        $this->Template->setVariable('ElementType', $this->Type);
+
         if (!empty( $Data )) {
             $Signature = (new Authenticator(new Get()))->getAuthenticator();
             $Data = '?'.http_build_query($Signature->createSignature($Data, $this->Path));

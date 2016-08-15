@@ -114,6 +114,12 @@ class Frontend extends Extension implements IFrontendInterface
                                         'Type'     => 'Schulart',
                                         'Count'    => 'Schüler',
                                         'Option'   => ''
+                                    ),
+                                    array(
+                                        'order' => array(
+                                            array(0, 'desc'),
+                                            array(1, 'asc')
+                                        )
                                     )
                                 )
                                 , 12)
@@ -268,6 +274,12 @@ class Frontend extends Extension implements IFrontendInterface
                                         'Type'     => 'Schulart',
                                         'Count'    => 'Schüler',
                                         'Option'   => ''
+                                    ),
+                                    array(
+                                        'order' => array(
+                                            array(0, 'desc'),
+                                            array(1, 'asc')
+                                        )
                                     )
                                 )
                                 , 12)
@@ -422,6 +434,12 @@ class Frontend extends Extension implements IFrontendInterface
                                         'Type'     => 'Schulart',
                                         'Count'    => 'Schüler',
                                         'Option'   => ''
+                                    ),
+                                    array(
+                                        'order' => array(
+                                            array(0, 'desc'),
+                                            array(1, 'asc')
+                                        )
                                     )
                                 )
                                 , 12)
@@ -586,6 +604,12 @@ class Frontend extends Extension implements IFrontendInterface
                                         'Type'     => 'Schulart',
                                         'Count'    => 'Schüler',
                                         'Option'   => ''
+                                    ),
+                                    array(
+                                        'order' => array(
+                                            array(0, 'desc'),
+                                            array(1, 'asc')
+                                        )
                                     )
                                 )
                                 , 12)
@@ -624,7 +648,6 @@ class Frontend extends Extension implements IFrontendInterface
                                         'Count'        => 'lfdNr.',
                                         'LastName'     => 'Name',
                                         'FirstName'    => 'Vorname',
-                                        'Count2'       => 'lfdNr.',
                                         'Birthday'     => 'Geb.-datum',
                                         'Birthplace'   => 'Geburtsort',
                                         'StreetName'   => 'Straße',
@@ -747,6 +770,12 @@ class Frontend extends Extension implements IFrontendInterface
                                         'Type'     => 'Schulart',
                                         'Count'    => 'Schüler',
                                         'Option'   => ''
+                                    ),
+                                    array(
+                                        'order' => array(
+                                            array(0, 'desc'),
+                                            array(1, 'asc')
+                                        )
                                     )
                                 )
                                 , 12)
@@ -786,9 +815,10 @@ class Frontend extends Extension implements IFrontendInterface
                                         'LastName'     => 'Name',
                                         'FirstName'    => 'Vorname',
                                         'PhoneNumbers' => 'Telefon-Nr.',
-                                        'Emergency'    => 'Im Notfall zu Verständigen',
+                                        'Email'        => 'E-Mail',
                                         'Parents'      => 'Erziehungsberechtigte',
-                                        'Count2'       => 'lfdNr.',
+                                        'Entrance'     => 'Aufnahme',
+                                        'Leaving'      => 'Abgang',
                                     ),
                                     array(
                                         'order'      => array(

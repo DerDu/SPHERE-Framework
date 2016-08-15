@@ -16,6 +16,16 @@ class Pile
 
     /** @var array $PileList */
     private $PileList = array();
+    /** @var bool $isTimeout */
+    private $isTimeout = false;
+
+    /**
+     * @return boolean
+     */
+    public function isTimeout()
+    {
+        return $this->isTimeout;
+    }
 
     /**
      * @param AbstractService $Service
@@ -35,10 +45,11 @@ class Pile
     /**
      * @param array $Search array( PileIndex => array( 'Column' => array( 'Value', ... ), ... ), ... )
      *
+     * @param int $Timeout
      * @return array
      * @throws \Exception
      */
-    public function searchPile($Search)
+    public function searchPile($Search, $Timeout = 60)
     {
 
         $Node = '\SPHERE\System\Database\Filter\Link\Repository\Node'.count($this->PileList);
@@ -55,6 +66,8 @@ class Pile
             $Node->addProbe($Pile[0], $Pile[1]);
             $Node->addPath($Pile[2], $Pile[3]);
         }
-        return $Node->searchData($Search);
+        $Result = $Node->searchData($Search, $Timeout);
+        $this->isTimeout = $Node->isTimeout();
+        return $Result;
     }
 }

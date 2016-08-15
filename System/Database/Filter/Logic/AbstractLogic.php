@@ -14,6 +14,7 @@ abstract class AbstractLogic
 
     const COMPARISON_EXACT = 0;
     const COMPARISON_LIKE = 1;
+    const COMPARISON_IN = 2;
 
     /** @var AbstractLogic[] $Logic */
     private $Logic = array();
@@ -67,7 +68,7 @@ abstract class AbstractLogic
      */
     final public function addCriteria($Property, $Value, $Comparison = self::COMPARISON_EXACT)
     {
-        if (is_array($Value)) {
+        if (is_array($Value) && $Comparison != self::COMPARISON_IN) {
             foreach ($Value as $Part) {
                 $Expression = $this->getExpressionComparison($Property, $Part, $Comparison);
                 if (!in_array($Expression, $this->Criteria)) {
@@ -87,7 +88,7 @@ abstract class AbstractLogic
      * @param string $Property
      * @param mixed $Value
      * @param int $Comparison
-     * @return Comparison
+     * @return Comparison|string
      */
     final private function getExpressionComparison($Property, $Value, $Comparison = self::COMPARISON_EXACT)
     {
@@ -102,6 +103,8 @@ abstract class AbstractLogic
             case self::COMPARISON_LIKE:
                 return $this->getExpressionBuilder()->like('E.' . $Property,
                     $this->getExpressionBuilder()->literal('%' . $Value . '%'));
+            case self::COMPARISON_IN:
+                return $this->getExpressionBuilder()->in('E.' . $Property, array_unique( $Value ));
             default:
                 return $this->getExpressionBuilder()->eq('E.' . $Property,
                     $this->getExpressionBuilder()->literal($Value));
@@ -117,7 +120,7 @@ abstract class AbstractLogic
     }
 
     /**
-     * @return \Doctrine\ORM\Query\Expr\Base
+     * @return \Doctrine\ORM\Query\Expr\Base[]
      */
     final protected function getLogic()
     {
