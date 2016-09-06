@@ -596,7 +596,7 @@ class Service extends AbstractService
      * @param array $Group
      * @param int $DivisionSubjectId
      *
-     * @return null|object|TblDivisionSubject|IFormInterface
+     * @return IFormInterface|string
      */
     public function addSubjectToDivisionWithGroup(
         IFormInterface $Form,
@@ -765,17 +765,6 @@ class Service extends AbstractService
     {
 
         return (new Data($this->getBinding()))->removeSubjectStudent($tblSubjectStudent);
-    }
-
-    /**
-     * @param TblDivisionSubject $tblDivisionSubject
-     *
-     * @return bool|TblPerson[]
-     */
-    public function getStudentByDivisionSubject(TblDivisionSubject $tblDivisionSubject)
-    {
-
-        return (new Data($this->getBinding()))->getStudentByDivisionSubject($tblDivisionSubject);
     }
 
     /**
@@ -1646,17 +1635,6 @@ class Service extends AbstractService
 
     /**
      * @param TblDivision $tblDivision
-     *
-     * @return bool|TblSubject[]
-     */
-    public function getSubjectAllByDivision(TblDivision $tblDivision)
-    {
-
-        return (new Data($this->getBinding()))->getSubjectAllByDivision($tblDivision);
-    }
-
-    /**
-     * @param TblDivision $tblDivision
      * @param TblDivision $tblDivisionCopy
      */
     public function addSubjectWithGroups(TblDivision $tblDivision, TblDivision $tblDivisionCopy)
@@ -1727,17 +1705,6 @@ class Service extends AbstractService
                 }
             }
         }
-    }
-
-    /**
-     * @param TblDivision $tblDivision
-     *
-     * @return bool|TblPerson[]
-     */
-    public function getStudentAllByDivision(TblDivision $tblDivision)
-    {
-
-        return (new Data($this->getBinding()))->getStudentAllByDivision($tblDivision);
     }
 
     /**

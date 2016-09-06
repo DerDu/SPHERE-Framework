@@ -95,17 +95,6 @@ class Service extends AbstractService
     }
 
     /**
-     * @param TblDirectory $tblDirectory
-     *
-     * @return false|TblFile[]
-     */
-    public function getFileAllByDirectory(TblDirectory $tblDirectory)
-    {
-
-        return ( new Data($this->getBinding()) )->getFileAllByDirectory($tblDirectory);
-    }
-
-    /**
      * @param int $Id
      *
      * @return false|TblPartition
