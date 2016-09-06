@@ -9,6 +9,7 @@ use SPHERE\Application\Document\Explorer\Storage\Storage;
 use SPHERE\System\Database\Fitting\Element;
 
 /**
+ * @deprecated
  * @Entity()
  * @Table(name="tblFile")
  * @Cache(usage="READ_ONLY")
@@ -57,6 +58,7 @@ class TblFile extends Element
     protected $FileSize;
 
     /**
+     * @deprecated
      * @return bool|TblDirectory
      */
     public function getTblDirectory()
@@ -70,7 +72,9 @@ class TblFile extends Element
     }
 
     /**
-     * @param null|TblDirectory $tblDirectory
+     * @deprecated
+     *
+*@param null|TblDirectory $tblDirectory
      */
     public function setTblDirectory(TblDirectory $tblDirectory = null)
     {
@@ -79,6 +83,7 @@ class TblFile extends Element
     }
 
     /**
+     * @deprecated
      * @return bool
      */
     public function isLocked()
@@ -88,7 +93,9 @@ class TblFile extends Element
     }
 
     /**
-     * @param bool $IsLocked
+     * @deprecated
+     *
+*@param bool $IsLocked
      */
     public function setLocked($IsLocked)
     {
@@ -97,6 +104,7 @@ class TblFile extends Element
     }
 
     /**
+     * @deprecated
      * @return string
      */
     public function getName()
@@ -106,7 +114,9 @@ class TblFile extends Element
     }
 
     /**
-     * @param string $Name
+     * @deprecated
+     *
+*@param string $Name
      */
     public function setName($Name)
     {
@@ -115,6 +125,7 @@ class TblFile extends Element
     }
 
     /**
+     * @deprecated
      * @return string
      */
     public function getDescription()
@@ -124,6 +135,7 @@ class TblFile extends Element
     }
 
     /**
+     * @deprecated
      * @param string $Description
      */
     public function setDescription($Description)
@@ -133,6 +145,7 @@ class TblFile extends Element
     }
 
     /**
+     * @deprecated
      * @return string
      */
     public function getFileName()
@@ -142,6 +155,7 @@ class TblFile extends Element
     }
 
     /**
+     * @deprecated
      * @param string $FileName
      */
     public function setFileName($FileName)
@@ -151,6 +165,7 @@ class TblFile extends Element
     }
 
     /**
+     * @deprecated
      * @return string
      */
     public function getFileExtension()
@@ -160,6 +175,7 @@ class TblFile extends Element
     }
 
     /**
+     * @deprecated
      * @param string $FileExtension
      */
     public function setFileExtension($FileExtension)
@@ -169,6 +185,7 @@ class TblFile extends Element
     }
 
     /**
+     * @deprecated
      * @return string|resource
      */
     public function getFileContent()
@@ -178,6 +195,7 @@ class TblFile extends Element
     }
 
     /**
+     * @deprecated
      * @param string $FileContent
      */
     public function setFileContent($FileContent)
@@ -187,6 +205,7 @@ class TblFile extends Element
     }
 
     /**
+     * @deprecated
      * @return string
      */
     public function getFileType()
@@ -196,6 +215,7 @@ class TblFile extends Element
     }
 
     /**
+     * @deprecated
      * @param string $FileType
      */
     public function setFileType($FileType)
@@ -205,6 +225,7 @@ class TblFile extends Element
     }
 
     /**
+     * @deprecated
      * @return int
      */
     public function getFileSize()
@@ -214,6 +235,7 @@ class TblFile extends Element
     }
 
     /**
+     * @deprecated
      * @param int $FileSize
      */
     public function setFileSize($FileSize)

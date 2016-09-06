@@ -27,10 +27,16 @@ class TblDivisionStudent extends Element
      * @Column(type="bigint")
      */
     protected $tblDivision;
+
     /**
      * @Column(type="bigint")
      */
     protected $serviceTblPerson;
+
+    /**
+     * @Column(type="integer")
+     */
+    protected $SortOrder;
 
     /**
      * @return bool|TblDivision
@@ -74,5 +80,21 @@ class TblDivisionStudent extends Element
     {
 
         $this->serviceTblPerson = ( null === $tblPerson ? null : $tblPerson->getId() );
+    }
+
+    /**
+     * @return integer|null
+     */
+    public function getSortOrder()
+    {
+        return $this->SortOrder;
+    }
+
+    /**
+     * @param integer|null $SortOrder
+     */
+    public function setSortOrder($SortOrder)
+    {
+        $this->SortOrder = $SortOrder;
     }
 }

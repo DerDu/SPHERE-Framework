@@ -4,6 +4,7 @@ namespace SPHERE\Application\Document\Explorer\Storage;
 use MOC\V\Core\GlobalsKernel\GlobalsKernel;
 
 /**
+ * @deprecated
  * Class AbstractStorage
  *
  * @package SPHERE\Application\Document\Explorer\Storage
@@ -31,6 +32,7 @@ abstract class AbstractStorage
     private $FileSize = 0;
 
     /**
+     * @deprecated
      * @return string
      */
     public function getName()
@@ -43,7 +45,9 @@ abstract class AbstractStorage
     }
 
     /**
-     * @param string $Name
+     * @deprecated
+     *
+*@param string $Name
      */
     public function setName($Name)
     {
@@ -52,6 +56,7 @@ abstract class AbstractStorage
     }
 
     /**
+     * @deprecated
      * @return string
      */
     public function getDescription()
@@ -61,7 +66,9 @@ abstract class AbstractStorage
     }
 
     /**
-     * @param string $Description
+     * @deprecated
+     *
+*@param string $Description
      */
     public function setDescription($Description)
     {
@@ -70,6 +77,7 @@ abstract class AbstractStorage
     }
 
     /**
+     * @deprecated
      * @return string
      */
     public function getFileName()
@@ -82,7 +90,9 @@ abstract class AbstractStorage
     }
 
     /**
-     * @param string $FileName
+     * @deprecated
+     *
+*@param string $FileName
      */
     public function setFileName($FileName)
     {
@@ -91,6 +101,7 @@ abstract class AbstractStorage
     }
 
     /**
+     * @deprecated
      * @return string
      */
     public function getFileExtension()
@@ -100,6 +111,7 @@ abstract class AbstractStorage
     }
 
     /**
+     * @deprecated
      * @param string $FileExtension
      */
     public function setFileExtension($FileExtension)
@@ -109,6 +121,7 @@ abstract class AbstractStorage
     }
 
     /**
+     * @deprecated
      * @return string
      */
     public function getFileContent()
@@ -118,6 +131,7 @@ abstract class AbstractStorage
     }
 
     /**
+     * @deprecated
      * @param string $FileContent
      */
     public function setFileContent($FileContent)
@@ -127,6 +141,7 @@ abstract class AbstractStorage
     }
 
     /**
+     * @deprecated
      * @return string
      */
     public function getFileType()
@@ -136,6 +151,7 @@ abstract class AbstractStorage
     }
 
     /**
+     * @deprecated
      * @param string $FileType
      */
     public function setFileType($FileType)
@@ -145,6 +161,7 @@ abstract class AbstractStorage
     }
 
     /**
+     * @deprecated
      * @return int
      */
     public function getFileSize()
@@ -157,6 +174,7 @@ abstract class AbstractStorage
     }
 
     /**
+     * @deprecated
      * @param int $FileSize
      */
     public function setFileSize($FileSize)
@@ -166,6 +184,7 @@ abstract class AbstractStorage
     }
 
     /**
+     * @deprecated
      * @return string
      */
     public function getRealPath()
@@ -180,6 +199,7 @@ abstract class AbstractStorage
     }
 
     /**
+     * @deprecated
      * @return string
      */
     public function getFileLocation()
@@ -189,6 +209,7 @@ abstract class AbstractStorage
     }
 
     /**
+     * @deprecated
      * @param string $FileLocation
      */
     public function setFileLocation($FileLocation)
@@ -198,6 +219,7 @@ abstract class AbstractStorage
     }
 
     /**
+     * @deprecated
      * @return string
      */
     public function getFilePath()
@@ -210,6 +232,7 @@ abstract class AbstractStorage
     }
 
     /**
+     * @deprecated
      * @param string $FilePath
      */
     public function setFilePath($FilePath)

@@ -45,9 +45,9 @@ class CheBeGym extends Certificate
                     ->addSection((new Section())
                         ->addElementColumn((new Element())
                             ->setContent('{{ Content.Company.Data.Name }}'
-                                .new Container('{{ Content.Company.Address.Street.Name }}
+                                . new Container('{{ Content.Company.Address.Street.Name }}
                                                 {{ Content.Company.Address.Street.Number }}')
-                                .new Container('{{ Content.Company.Address.City.Code }}
+                                . new Container('{{ Content.Company.Address.City.Code }}
                                                 {{ Content.Company.Address.City.Name }}'))
                             ->stylePaddingBottom('5px')
                             ->stylePaddingLeft('5px')
@@ -225,70 +225,16 @@ class CheBeGym extends Certificate
                             ->setContent('&nbsp;')
                         )
                     )
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Deutsch/Sorbisch¹ ²')
-                            , '25%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.DE is not empty) %}
-                                    {{ Content.Grade.Data.DE }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->styleBorderBottom()
-                            , '20%')
-                        ->addElementColumn((new Element())
-                            , '10%')
-                        ->addElementColumn((new Element())
-                            ->setContent('Mathematik')
-                            , '25%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.MA is not empty) %}
-                                    {{ Content.Grade.Data.MA }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->styleBorderBottom()
-                            , '20%')
-                    )
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Englisch')
-                            ->stylePaddingTop('20px')
-                            , '25%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.EN is not empty) %}
-                                    {{ Content.Grade.Data.EN }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->stylePaddingTop('20px')
-                            ->styleAlignCenter()
-                            ->styleBorderBottom()
-                            , '20%')
-                        ->addElementColumn((new Element())
-                            ->setContent('&nbsp;')
-                            ->stylePaddingTop('20px')
-                            , '55%')
-                    )
+                    ->addSectionList($this->getSubjectLanes(false))
                     ->addSection((new Section())
                         ->addElementColumn((new Element())
                             ->setContent('Durchschnitt der Noten aus den angegebenen Fächern')
                             ->stylePaddingTop('20px')
                             , '80%')
                         ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.DE is not empty) %}
-                                    {% if(Content.Grade.Data.MA is not empty) %}
-                                        {% if(Content.Grade.Data.EN is not empty) %}
-                                            {{ ((Content.Grade.Data.DE + Content.Grade.Data.MA + Content.Grade.Data.EN) / 3)|round(2, "floor") }}
-                                        {% else %}
-                                            ---
-                                        {% endif %}
-                                    {% else %}
-                                        ---
-                                    {% endif %}
+                            ->setContent('
+                                {% if(Content.Grade.Data.Average is not empty) %}
+                                    {{ Content.Grade.Data.Average }}
                                 {% else %}
                                     ---
                                 {% endif %}')
@@ -312,7 +258,12 @@ class CheBeGym extends Certificate
                             ->stylePaddingTop('10px')
                             , '80%')
                         ->addElementColumn((new Element())
-                            ->setContent('---')
+                            ->setContent('
+                                {% if(Content.Grade.Data.AverageOthers is not empty) %}
+                                    {{ Content.Grade.Data.AverageOthers }}
+                                {% else %}
+                                    ---
+                                {% endif %}')
                             ->stylePaddingTop('20px')
                             ->styleAlignCenter()
                             ->styleBorderBottom()
@@ -435,7 +386,7 @@ class CheBeGym extends Certificate
                             , '40%')
                         ->addElementColumn((new Element())
                             ->setContent('Dienstsiegel'
-                                .new Container('der Schule'))
+                                . new Container('der Schule'))
                             ->styleTextSize('9px')
                             ->styleAlignCenter()
                             , '20%')
@@ -459,7 +410,25 @@ class CheBeGym extends Certificate
                             ->stylePaddingTop()
                             , '40%')
                     )
-                    ->styleHeight('100px')
+                    ->addSection((new Section())
+                        ->addElementColumn((new Element())
+                            , '40%')
+                        ->addElementColumn((new Element())
+                            , '20%')
+                        ->addElementColumn((new Element())
+                            ->setContent(
+                                '{% if(Content.DivisionTeacher.Name is not empty) %}
+                                    {{ Content.DivisionTeacher.Name }}
+                                {% else %}
+                                    &nbsp;
+                                {% endif %}'
+                            )
+                            ->styleTextSize('9px')
+                            ->stylePaddingTop('2px')
+//                            ->styleAlignCenter()
+                            , '40%')
+                    )
+                    ->styleHeight('130px')
                     ->stylePaddingTop()
                     ->stylePaddingLeft('5px')
                     ->stylePaddingRight('5px')
@@ -473,10 +442,10 @@ class CheBeGym extends Certificate
                 ->addSlice((new Slice())
                     ->addElement((new Element())
                         ->setContent('¹ Nichtzutreffendes streichen.'
-                            .new Container('² sorbische Schulen, an denen Sorbisch je nach Unterrichtsfach und Klassenstufe
+                            . new Container('² sorbische Schulen, an denen Sorbisch je nach Unterrichtsfach und Klassenstufe
                             Unterrichtssprache ist, kann nach Entscheidung der Schulkonferenz gem. § 10 Abs. 6 SOMIA das
                             Fach Deutsch durch das Fach Sorbisch ersetzt werden.')
-                            .new Container('³ Falls der Raum für Eintragungen nicht ausreicht, ist ein Beiblatt zu verwenden.')
+                            . new Container('³ Falls der Raum für Eintragungen nicht ausreicht, ist ein Beiblatt zu verwenden.')
                         )
                         ->styleTextSize('9px')
                         ->styleMarginTop('5px')

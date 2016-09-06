@@ -335,16 +335,21 @@ abstract class Certificate extends Extension
     }
 
     /**
-     * @return Slice
+     * @param bool|true $isSlice
+     * @param array $languagesWithStartLevel
+     *
+     * @return \SPHERE\Application\Education\Certificate\Generator\Repository\Section[]|Slice
      * @throws \Exception
      */
-    protected function getSubjectLanes()
+    protected function getSubjectLanes($isSlice = true, $languagesWithStartLevel = array())
     {
 
         $SubjectSlice = (new Slice());
 
         $tblCertificateSubjectAll = Generator::useService()->getCertificateSubjectAll($this->getCertificateEntity());
         $tblGradeList = $this->getGrade();
+
+        $SectionList = array();
 
         if (!empty($tblCertificateSubjectAll)) {
             $SubjectStructure = array();
@@ -396,6 +401,9 @@ abstract class Certificate extends Extension
             }
             $SubjectStructure = $SubjectLayout;
 
+            $hasAdditionalLine = false;
+            $isShrinkMarginTop = false;
+
             foreach ($SubjectStructure as $SubjectList) {
                 // Sort Lane-Ranking (1,2...)
                 ksort($SubjectList);
@@ -407,16 +415,39 @@ abstract class Certificate extends Extension
                 }
 
                 foreach ($SubjectList as $Lane => $Subject) {
+                    // Fremdsprache ab Klassenstufe
+                    if (isset($languagesWithStartLevel[$Subject['SubjectAcronym']])) {
+                        $hasAdditionalLine = $languagesWithStartLevel[$Subject['SubjectAcronym']];
+                    }
 
                     if ($Lane > 1) {
                         $SubjectSection->addElementColumn((new Element())
                             , '4%');
                     }
-                    $SubjectSection->addElementColumn((new Element())
-                        ->setContent($Subject['SubjectName'])
-                        ->stylePaddingTop()
-                        ->styleMarginTop('5px')
-                        , '39%');
+                    if ($hasAdditionalLine && $Lane == $hasAdditionalLine['Lane']) {
+                        $SubjectSection->addElementColumn((new Element())
+                            ->setContent($Subject['SubjectName'])
+                            ->stylePaddingTop()
+                            ->stylePaddingBottom('0px')
+                            ->styleMarginBottom('0px')
+                            ->styleBorderBottom('1px', '#000')
+                            ->styleMarginTop('10px')
+                            , '37%');
+                        $SubjectSection->addElementColumn((new Element()), '2%');
+                    } elseif ($isShrinkMarginTop) {
+                        $SubjectSection->addElementColumn((new Element())
+                            ->setContent($Subject['SubjectName'])
+                            ->stylePaddingTop()
+                            ->styleMarginTop('0px')
+                            , '39%');
+                    } else {
+                        $SubjectSection->addElementColumn((new Element())
+                            ->setContent($Subject['SubjectName'])
+                            ->stylePaddingTop()
+                            ->styleMarginTop('10px')
+                            , '39%');
+                    }
+
                     $SubjectSection->addElementColumn((new Element())
                         ->setContent('{% if(Content.Grade.Data.' . $Subject['SubjectAcronym'] . ' is not empty) %}
                                              {{ Content.Grade.Data.' . $Subject['SubjectAcronym'] . ' }}
@@ -426,29 +457,72 @@ abstract class Certificate extends Extension
                         ->styleAlignCenter()
                         ->styleBackgroundColor('#BBB')
                         ->styleBorderBottom('1px', '#000')
-                        ->stylePaddingTop()
+                        ->stylePaddingTop('0px')
                         ->stylePaddingBottom()
-                        ->styleMarginTop('5px')
+                        ->styleMarginTop($isShrinkMarginTop ? '0px' : '10px')
                         , '9%');
 
+                    if ($isShrinkMarginTop && $Lane == 2) {
+                        $isShrinkMarginTop = false;
+                    }
                 }
 
                 if (count($SubjectList) == 1 && isset($SubjectList[1])) {
                     $SubjectSection->addElementColumn((new Element()), '52%');
+                    $isShrinkMarginTop = false;
                 }
 
                 $SubjectSlice->addSection($SubjectSection);
+                $SectionList[] = $SubjectSection;
+
+                if ($hasAdditionalLine) {
+                    $SubjectSection = (new Section());
+
+                    if ($hasAdditionalLine['Lane'] == 2) {
+                        $SubjectSection->addElementColumn((new Element()), '52%');
+                    }
+                    $SubjectSection->addElementColumn((new Element())
+                        ->setContent($hasAdditionalLine['Ranking'] . '. Fremdsprache (ab Klassenstufe ' .
+                            '{% if(Content.Subject.Level.' . $hasAdditionalLine['SubjectAcronym'] . ' is not empty) %}
+                                     {{ Content.Subject.Level.' . $hasAdditionalLine['SubjectAcronym'] . ' }}
+                                 {% else %}
+                                    -
+                                 {% endif %}'
+                            . ')')
+                        ->stylePaddingTop('0px')
+                        ->stylePaddingBottom('0px')
+                        ->styleMarginTop('0px')
+                        ->styleMarginBottom('0px')
+                        ->styleTextSize('9px')
+                        , '39%');
+
+                    if ($hasAdditionalLine['Lane'] == 1) {
+                        $SubjectSection->addElementColumn((new Element()), '52%');
+                    }
+
+                    $hasAdditionalLine = false;
+                    $isShrinkMarginTop = true;
+
+                    $SubjectSlice->addSection($SubjectSection);
+                    $SectionList[] = $SubjectSection;
+                }
+
             }
         }
 
-        return $SubjectSlice;
+        if ($isSlice) {
+            return $SubjectSlice;
+        } else {
+            return $SectionList;
+        }
     }
 
     /**
      * @return Slice
      * @throws \Exception
      */
-    protected function getGradeLanes()
+    protected
+    function getGradeLanes()
     {
 
         $GradeSlice = (new Slice());
@@ -498,7 +572,7 @@ abstract class Certificate extends Extension
                     $GradeSection->addElementColumn((new Element())
                         ->setContent($Grade['GradeName'])
                         ->stylePaddingTop()
-                        ->styleMarginTop('5px')
+                        ->styleMarginTop('10px')
                         , '39%');
                     $GradeSection->addElementColumn((new Element())
                         ->setContent('{% if(Content.Input.' . $Grade['GradeAcronym'] . ' is not empty) %}
@@ -511,7 +585,7 @@ abstract class Certificate extends Extension
                         ->styleBorderBottom('1px', '#000')
                         ->stylePaddingTop()
                         ->stylePaddingBottom()
-                        ->styleMarginTop('5px')
+                        ->styleMarginTop('10px')
                         , '9%');
                 }
 

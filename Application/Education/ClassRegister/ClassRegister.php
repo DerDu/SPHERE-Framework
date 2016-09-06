@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Kauschke
- * Date: 08.07.2016
- * Time: 09:03
- */
-
 namespace SPHERE\Application\Education\ClassRegister;
 
 use SPHERE\Application\Education\ClassRegister\Absence\Absence;
@@ -16,9 +9,13 @@ use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Account;
 use SPHERE\Common\Frontend\Icon\Repository\Ban;
 use SPHERE\Common\Frontend\Icon\Repository\Calendar;
 use SPHERE\Common\Frontend\Icon\Repository\ChevronLeft;
+use SPHERE\Common\Frontend\Icon\Repository\Exclamation;
+use SPHERE\Common\Frontend\Icon\Repository\ResizeVertical;
 use SPHERE\Common\Frontend\Icon\Repository\Select;
 use SPHERE\Common\Frontend\Icon\Repository\Time;
 use SPHERE\Common\Frontend\Layout\Repository\Panel;
+use SPHERE\Common\Frontend\Layout\Repository\PullClear;
+use SPHERE\Common\Frontend\Layout\Repository\PullLeft;
 use SPHERE\Common\Frontend\Layout\Repository\Title;
 use SPHERE\Common\Frontend\Layout\Structure\Layout;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutColumn;
@@ -30,6 +27,7 @@ use SPHERE\Common\Frontend\Table\Structure\TableData;
 use SPHERE\Common\Frontend\Text\Repository\Success;
 use SPHERE\Common\Main;
 use SPHERE\Common\Window\Navigation\Link;
+use SPHERE\Common\Window\Redirect;
 use SPHERE\Common\Window\Stage;
 use SPHERE\Application\IApplicationInterface;
 
@@ -56,7 +54,9 @@ class ClassRegister implements IApplicationInterface
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
             __NAMESPACE__ . '\Selected', __CLASS__ . '::frontendDivisionSelected')
         );
-
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__ . '\Sort', __CLASS__ . '::frontendSortDivision')
+        );
     }
 
     /**
@@ -170,7 +170,10 @@ class ClassRegister implements IApplicationInterface
                     $absence = ($excusedDays + $unExcusedDays) . ' (' . new Success($excusedDays) . ', '
                         . new \SPHERE\Common\Frontend\Text\Repository\Danger($unExcusedDays) . ')';
                     $studentTable[] = array(
-                        'Name' => $tblPerson->getLastFirstName(),
+                        'Number' => (count($studentTable) + 1),
+                        'Name' => new PullClear(
+                            new PullLeft(new ResizeVertical() . ' ' . $tblPerson->getLastFirstName())
+                        ),
                         'Address' => $tblAddress ? $tblAddress->getGuiString() : '',
                         'Birthday' => $birthday,
                         'Course' => $course,
@@ -187,6 +190,11 @@ class ClassRegister implements IApplicationInterface
                 }
             }
 
+            $buttonList[] = new Standard(
+                'Klasse nach Nachname->Vorname sortieren', '/Education/ClassRegister/Sort', new ResizeVertical(), array(
+                    'DivisionId' => $tblDivision->getId()
+                )
+            );
             $buttonList[] = new Standard(
                 'Fehlzeiten (Monatsansicht)', '/Education/ClassRegister/Absence/Month', new Calendar(), array(
                     'DivisionId' => $tblDivision->getId()
@@ -207,6 +215,7 @@ class ClassRegister implements IApplicationInterface
                             new LayoutColumn($buttonList),
                             new LayoutColumn(array(
                                 new TableData($studentTable, null, array(
+                                    'Number' => '#',
                                     'Name' => 'Name',
                                     'Address' => 'Addresse',
                                     'Birthday' => 'Geburtsdatum',
@@ -219,6 +228,17 @@ class ClassRegister implements IApplicationInterface
                                     ),
                                     "paging" => false, // Deaktivieren Blättern
                                     "iDisplayLength" => -1,    // Alle Einträge zeigen
+                                    'ExtensionRowReorder' => array(
+                                        'Enabled' => true,
+                                        'Url' => '/Api/Education/ClassRegister/Reorder',
+//                                        'Event' => array(
+//                                            'Success' => 'console.log(1,this);',
+//                                            'Error' => 'window.location.reload();',
+//                                        ),
+                                        'Data' => array(
+                                            'DivisionId' => $tblDivision->getId()
+                                        )
+                                    )
                                 ))
                             ))
                         ))
@@ -230,5 +250,46 @@ class ClassRegister implements IApplicationInterface
         } else {
             return $Stage . new Danger('Klassenbuch nicht gefunden.', new Ban());
         }
+    }
+
+    /**
+     * @param null $DivisionId
+     *
+     * @return string
+     */
+    public function frontendSortDivision($DivisionId = null)
+    {
+
+        $Stage = new Stage('Klassenbuch', 'Schüler sortieren');
+
+        if (($tblDivision = Division::useService()->getDivisionById($DivisionId))) {
+            if (Division::useService()->sortDivisionStudentByProperty($tblDivision)) {
+                return $Stage . new \SPHERE\Common\Frontend\Message\Repository\Success(
+                    'Die Schüler der Klasse wurden erfolgreich sortiert.',
+                    new \SPHERE\Common\Frontend\Icon\Repository\Success()
+                )
+                . new Redirect('/Education/ClassRegister/Selected', Redirect::TIMEOUT_SUCCESS,
+                    array(
+                        'DivisionId' => $tblDivision->getId()
+                    )
+                );
+            } else {
+                return $Stage . new Danger(
+                    'Die Schüler der Klasse konnten nicht sortiert werden.',
+                    new Exclamation()
+                )
+                . new Redirect('/Education/ClassRegister/Selected', Redirect::TIMEOUT_ERROR,
+                    array(
+                        'DivisionId' => $tblDivision->getId()
+                    )
+                );
+            }
+        } else {
+
+            return $Stage
+            . new Danger('Klassen nicht vorhanden.', new Ban())
+            . new Redirect('/Education/ClassRegister', Redirect::TIMEOUT_ERROR);
+        }
+
     }
 }

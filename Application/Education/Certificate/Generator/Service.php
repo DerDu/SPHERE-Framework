@@ -7,6 +7,7 @@ use SPHERE\Application\Education\Certificate\Generator\Service\Entity\TblCertifi
 use SPHERE\Application\Education\Certificate\Generator\Service\Entity\TblCertificateSubject;
 use SPHERE\Application\Education\Certificate\Generator\Service\Setup;
 use SPHERE\Application\Education\Graduation\Gradebook\Gradebook;
+use SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject;
 use SPHERE\Application\Education\Lesson\Subject\Subject;
 use SPHERE\Application\People\Meta\Student\Student;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Service\Entity\TblConsumer;
@@ -236,5 +237,17 @@ class Service extends AbstractService
     {
 
         return (new Data($this->getBinding()))->getCertificateSubjectByIndex($tblCertificate, $LaneIndex, $LaneRanking);
+    }
+
+    /**
+     * @param TblCertificate $tblCertificate
+     * @param TblSubject $tblSubject
+     *
+     * @return false|TblCertificateSubject
+     */
+    public function getCertificateSubjectBySubject(TblCertificate $tblCertificate, TblSubject $tblSubject)
+    {
+
+        return (new Data($this->getBinding()))->getCertificateSubjectBySubject($tblCertificate, $tblSubject);
     }
 }

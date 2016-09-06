@@ -6,6 +6,7 @@ use Doctrine\DBAL\Schema\Table;
 use SPHERE\System\Database\Binding\AbstractSetup;
 
 /**
+ * @deprecated
  * Class Setup
  *
  * @package SPHERE\Application\Document\Explorer\Storage\Service
@@ -14,7 +15,9 @@ class Setup extends AbstractSetup
 {
 
     /**
-     * @param bool $Simulate
+     * @deprecated
+     *
+*@param bool $Simulate
      *
      * @return string
      */
@@ -35,7 +38,9 @@ class Setup extends AbstractSetup
     }
 
     /**
-     * @param Schema $Schema
+     * @deprecated
+     *
+*@param Schema $Schema
      *
      * @return Table
      */
@@ -59,7 +64,9 @@ class Setup extends AbstractSetup
     }
 
     /**
-     * @param Table $tblDirectoryParent
+     * @deprecated
+     *
+*@param Table $tblDirectoryParent
      * @param Table $tblDirectoryChild
      *
      * @return Table
@@ -71,6 +78,7 @@ class Setup extends AbstractSetup
     }
 
     /**
+     * @deprecated
      * @param Schema $Schema
      * @param Table  $tblDirectory
      *

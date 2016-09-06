@@ -68,7 +68,7 @@ class Service extends AbstractService
 
     /**
      * @param IFormInterface $Form
-     * @param array          $Company
+     * @param array $Company
      *
      * @return IFormInterface|Redirect
      */
@@ -84,32 +84,32 @@ class Service extends AbstractService
 
         $Error = false;
 
-        if (isset( $Company['Name'] ) && empty( $Company['Name'] )) {
+        if (isset($Company['Name']) && empty($Company['Name'])) {
             $Form->setError('Company[Name]', 'Bitte geben Sie einen Namen an');
             $Error = true;
         }
 
         if (!$Error) {
 
-            if (( $tblCompany = (new Data($this->getBinding()))->createCompany($Company['Name'],
+            if (($tblCompany = (new Data($this->getBinding()))->createCompany($Company['Name'],
                 $Company['ExtendedName'],
-                $Company['Description']) )
+                $Company['Description']))
             ) {
                 // Add to Group
-                if (isset( $Company['Group'] )) {
+                if (isset($Company['Group'])) {
                     foreach ((array)$Company['Group'] as $tblGroup) {
                         Group::useService()->addGroupCompany(
                             Group::useService()->getGroupById($tblGroup), $tblCompany
                         );
                     }
                 }
-                return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success() .  ' Die Firma wurde erfolgreich erstellt')
-                .new Redirect('/Corporation/Company', Redirect::TIMEOUT_SUCCESS,
+                return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success() . ' Die Firma wurde erfolgreich erstellt')
+                . new Redirect('/Corporation/Company', Redirect::TIMEOUT_SUCCESS,
                     array('Id' => $tblCompany->getId())
                 );
             } else {
                 return new Danger(new Ban() . ' Die Firma konnte nicht erstellt werden')
-                .new Redirect('/Corporation/Company', Redirect::TIMEOUT_ERROR);
+                . new Redirect('/Corporation/Company', Redirect::TIMEOUT_ERROR);
             }
         }
 
@@ -141,9 +141,9 @@ class Service extends AbstractService
 
     /**
      * @param IFormInterface $Form
-     * @param TblCompany     $tblCompany
-     * @param array          $Company
-     * @param null|int       $Group
+     * @param TblCompany $tblCompany
+     * @param array $Company
+     * @param null|int $Group
      *
      * @return IFormInterface|Redirect
      */
@@ -159,7 +159,7 @@ class Service extends AbstractService
 
         $Error = false;
 
-        if (isset( $Company['Name'] ) && empty( $Company['Name'] )) {
+        if (isset($Company['Name']) && empty($Company['Name'])) {
             $Form->setError('Company[Name]', 'Bitte geben Sie einen Namen an');
             $Error = true;
         }
@@ -170,7 +170,7 @@ class Service extends AbstractService
                 $Company['ExtendedName'], $Company['Description'])
             ) {
                 // Change Groups
-                if (isset( $Company['Group'] )) {
+                if (isset($Company['Group'])) {
                     // Remove all Groups
                     $tblGroupList = Group::useService()->getGroupAllByCompany($tblCompany);
                     foreach ($tblGroupList as $tblGroup) {
@@ -190,10 +190,10 @@ class Service extends AbstractService
                     }
                 }
                 return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success() . ' Die Firma wurde erfolgreich aktualisiert')
-                .new Redirect(null, Redirect::TIMEOUT_SUCCESS);
+                . new Redirect(null, Redirect::TIMEOUT_SUCCESS);
             } else {
                 return new Danger(new Ban() . ' Die Firma konnte nicht aktualisiert werden')
-                .new Redirect('/Corporation/Company', Redirect::TIMEOUT_ERROR);
+                . new Redirect('/Corporation/Company', Redirect::TIMEOUT_ERROR);
             }
         }
 
@@ -220,5 +220,19 @@ class Service extends AbstractService
     {
 
         return (new Data($this->getBinding()))->destroyCompany($tblCompany);
+    }
+
+    /**
+     * @param TblCompany $tblCompany
+     * @param $Name
+     * @param $ExtendedName
+     * @param $Description
+     *
+     * @return bool
+     */
+    public function updateCompanyWithoutForm(TblCompany $tblCompany, $Name, $ExtendedName = '', $Description = '')
+    {
+
+        return (new Data($this->getBinding()))->updateCompany($tblCompany, $Name, $ExtendedName, $Description);
     }
 }

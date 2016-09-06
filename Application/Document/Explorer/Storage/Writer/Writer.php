@@ -5,6 +5,7 @@ use SPHERE\Application\Document\Explorer\Storage\Writer\Type\Database;
 use SPHERE\Application\Document\Explorer\Storage\Writer\Type\Temporary;
 
 /**
+ * @deprecated
  * Class Writer
  *
  * @package SPHERE\Application\Document\Explorer\Storage\Writer
@@ -13,7 +14,9 @@ class Writer
 {
 
     /**
-     * @param string $Extension
+     * @deprecated
+     *
+*@param string $Extension
      * @param string $Prefix
      * @param bool   $Destruct
      *
@@ -26,7 +29,9 @@ class Writer
     }
 
     /**
-     * @param null|int $Id
+     * @deprecated
+     *
+*@param null|int $Id
      *
      * @return Database
      */

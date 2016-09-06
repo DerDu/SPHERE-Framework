@@ -155,16 +155,12 @@ class Frontend extends Extension implements IFrontendInterface
                             new LayoutColumn(
                                 new TableData($PersonList, null,
                                     array(
-                                        'Count'     => 'lfdNr.',
+                                        'Number'        => '#',
                                         'LastName'  => 'Name',
                                         'FirstName' => 'Vorname',
                                         'Profile'   => 'Profil',
                                     ),
                                     array(
-                                        'order'      => array(
-                                            array(1, 'asc'),
-                                            array(2, 'asc')
-                                        ),
                                         "pageLength" => -1,
                                         "responsive" => false
                                     )
@@ -315,16 +311,12 @@ class Frontend extends Extension implements IFrontendInterface
                             new LayoutColumn(
                                 new TableData($PersonList, null,
                                     array(
-                                        'Count'     => 'lfdNr.',
+                                        'Number'        => '#',
                                         'LastName'  => 'Name',
                                         'FirstName' => 'Vorname',
                                         'Empty'     => 'Unterschrift',
                                     ),
                                     array(
-                                        'order'      => array(
-                                            array(1, 'asc'),
-                                            array(2, 'asc')
-                                        ),
                                         "pageLength" => -1,
                                         "responsive" => false
                                     )
@@ -475,7 +467,7 @@ class Frontend extends Extension implements IFrontendInterface
                             new LayoutColumn(
                                 new TableData($PersonList, null,
                                     array(
-                                        'Count'        => 'lfdNr.',
+                                        'Number'        => '#',
                                         'LastName'     => 'Name',
                                         'FirstName'    => 'Vorname',
                                         'StreetName'   => 'Straße',
@@ -490,10 +482,6 @@ class Frontend extends Extension implements IFrontendInterface
                                         'FS4'          => 'FS 4',
                                     ),
                                     array(
-                                        'order'      => array(
-                                            array(1, 'asc'),
-                                            array(2, 'asc')
-                                        ),
                                         "pageLength" => -1,
                                         "responsive" => false
                                     )
@@ -645,7 +633,7 @@ class Frontend extends Extension implements IFrontendInterface
                             new LayoutColumn(
                                 new TableData($PersonList, null,
                                     array(
-                                        'Count'        => 'lfdNr.',
+                                        'Number'        => '#',
                                         'LastName'     => 'Name',
                                         'FirstName'    => 'Vorname',
                                         'Birthday'     => 'Geb.-datum',
@@ -656,10 +644,6 @@ class Frontend extends Extension implements IFrontendInterface
                                         'City'         => 'Ort',
                                     ),
                                     array(
-                                        'order'      => array(
-                                            array(1, 'asc'),
-                                            array(2, 'asc')
-                                        ),
                                         "pageLength" => -1,
                                         "responsive" => false
                                     )
@@ -811,7 +795,7 @@ class Frontend extends Extension implements IFrontendInterface
                             new LayoutColumn(
                                 new TableData($PersonList, null,
                                     array(
-                                        'Count'        => 'lfdNr.',
+                                        'Number'        => '#',
                                         'LastName'     => 'Name',
                                         'FirstName'    => 'Vorname',
                                         'PhoneNumbers' => 'Telefon-Nr.',
@@ -821,10 +805,6 @@ class Frontend extends Extension implements IFrontendInterface
                                         'Leaving'      => 'Abgang',
                                     ),
                                     array(
-                                        'order'      => array(
-                                            array(1, 'asc'),
-                                            array(2, 'asc')
-                                        ),
                                         "pageLength" => -1,
                                         "responsive" => false
                                     )

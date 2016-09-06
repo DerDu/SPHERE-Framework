@@ -8,6 +8,7 @@ use SPHERE\Application\Education\Certificate\Generator\Repository\Frame;
 use SPHERE\Application\Education\Certificate\Generator\Repository\Page;
 use SPHERE\Application\Education\Certificate\Generator\Repository\Section;
 use SPHERE\Application\Education\Certificate\Generator\Repository\Slice;
+use SPHERE\Application\Education\Lesson\Subject\Subject;
 use SPHERE\Common\Frontend\Layout\Repository\Container;
 
 /**
@@ -17,6 +18,22 @@ use SPHERE\Common\Frontend\Layout\Repository\Container;
  */
 class CheHjGymInfo extends Certificate
 {
+
+    private function getLanguagesWithStartLevel()
+    {
+
+        $tblSubject = Subject::useService()->getSubjectByAcronym('FRZ');
+        $result = array();
+        if ($tblSubject) {
+            $result[$tblSubject->getAcronym()] = array(
+                'SubjectAcronym' => $tblSubject->getAcronym(),
+                'Ranking' => 2,               // 2. Fremdsprache
+                'Lane' => 1
+            );
+        }
+
+        return $result;
+    }
 
     /**
      * @param bool $IsSample
@@ -136,7 +153,7 @@ class CheHjGymInfo extends Certificate
                         ->styleTextBold()
                     )
                 )
-                ->addSlice( $this->getSubjectLanes() )
+                ->addSlice( $this->getSubjectLanes(true, $this->getLanguagesWithStartLevel()) )
                 ->addSlice((new Slice())
                     ->addSection((new Section())
                         ->addElementColumn((new Element())

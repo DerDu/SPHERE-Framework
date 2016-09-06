@@ -529,8 +529,9 @@ class Frontend extends Extension implements IFrontendInterface
 
         /** @noinspection PhpUnusedParameterInspection */
         if (is_array($tblDivisionStudentActive)) {
-            array_walk($tblDivisionStudentActive, function (TblPerson &$Entity) use (&$Id) {
-
+            $count = 1;
+            array_walk($tblDivisionStudentActive, function (TblPerson &$Entity) use (&$Id, &$count) {
+                $Entity->Number = $count++;
                 $Entity->Name = $Entity->getLastFirstName();
                 $idAddressAll = Address::useService()->fetchIdAddressAllByPerson($Entity);
                 $tblAddressAll = Address::useService()->fetchAddressAllByIdList($idAddressAll);
@@ -604,6 +605,7 @@ class Frontend extends Extension implements IFrontendInterface
                                 ? new Warning('Keine Schüler zugewiesen')
                                 : new TableData($tblDivisionStudentActive, null,
                                     array(
+                                        'Number' => '#',
                                         'Name'    => 'Schüler',
                                         'Address' => 'Adresse',
                                         'Course' => 'Bildungsgang',
@@ -1156,12 +1158,6 @@ class Frontend extends Extension implements IFrontendInterface
         }
 
         if ($tblStudentList) {
-            foreach ($tblStudentList as $key => $row) {
-                $name[$key] = strtoupper($row->getLastName());
-                $firstName[$key] = strtoupper($row->getFirstName());
-            }
-            array_multisort($name, SORT_ASC, $firstName, SORT_ASC, $tblStudentList);
-
             if ($tblDivisionSubject->getServiceTblSubject() && $tblDivisionSubject->getTblDivision()) {
                 $tblDivisionSubjectControlList = Division::useService()->
                 getDivisionSubjectBySubjectAndDivision($tblDivisionSubject->getServiceTblSubject(),
@@ -1790,13 +1786,6 @@ class Frontend extends Extension implements IFrontendInterface
             $StudentTableCount = Division::useService()->countDivisionStudentAllByDivision($tblDivision);
             $tblDivisionStudentList = Division::useService()->getStudentAllByDivision($tblDivision);
             if ($tblDivisionStudentList) {
-                /** @var TblPerson $row */
-                foreach ($tblDivisionStudentList as $key => $row) {
-                    $LastName[$key] = strtoupper($row->getLastName());
-                    $FirstName[$key] = strtoupper($row->getFirstName());
-                }
-                array_multisort($LastName, SORT_ASC, $FirstName, SORT_ASC, $tblDivisionStudentList);
-
                 foreach ($tblDivisionStudentList as $tblDivisionStudent) {
                     $tblDivisionStudent->FullName = $tblDivisionStudent->getLastFirstName();
                     $tblCommon = Common::useService()->getCommonByPerson($tblDivisionStudent);

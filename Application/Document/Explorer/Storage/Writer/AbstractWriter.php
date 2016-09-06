@@ -4,6 +4,7 @@ namespace SPHERE\Application\Document\Explorer\Storage\Writer;
 use SPHERE\Application\Document\Explorer\Storage\AbstractStorage;
 
 /**
+ * @deprecated
  * Class AbstractWriter
  *
  * @package SPHERE\Application\Document\Explorer\Storage\Writer
@@ -12,7 +13,7 @@ abstract class AbstractWriter extends AbstractStorage
 {
 
     /**
-     *
+     * @deprecated
      */
     public function loadFile()
     {
@@ -21,7 +22,7 @@ abstract class AbstractWriter extends AbstractStorage
     }
 
     /**
-     *
+     * @deprecated
      */
     public function saveFile()
     {
@@ -33,6 +34,7 @@ abstract class AbstractWriter extends AbstractStorage
     }
 
     /**
+     * @deprecated
      * @return bool
      */
     public function getFileExists()

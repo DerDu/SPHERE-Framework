@@ -1,9 +1,7 @@
 <?php
 namespace SPHERE\Application\Document;
 
-use SPHERE\Application\Document\Designer\Designer;
 use SPHERE\Application\Document\Explorer\Explorer;
-use SPHERE\Application\Document\Search\Search;
 use SPHERE\Application\Document\Storage\Storage;
 use SPHERE\Application\IClusterInterface;
 use SPHERE\Common\Main;
@@ -22,9 +20,7 @@ class Document extends Extension implements IClusterInterface
     public static function registerCluster()
     {
 
-        Search::registerApplication();
         Explorer::registerApplication();
-        Designer::registerApplication();
         Storage::registerApplication();
 
         Main::getDisplay()->addClusterNavigation(

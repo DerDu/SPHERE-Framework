@@ -286,7 +286,7 @@ class Frontend extends Extension implements IFrontendInterface
         $tblCompanyAllSchoolNursery = Group::useService()->getCompanyAllByGroup(
             Group::useService()->getGroupByMetaTable('NURSERY')
         );
-        if ($tblCompanyAllSchoolNursery) {
+        if ($tblCompanyAllSchoolNursery && $tblCompanyAllSchool) {
             $tblCompanyAllSchoolNursery = array_merge($tblCompanyAllSchool, $tblCompanyAllSchoolNursery);
         } else {
             $tblCompanyAllSchoolNursery = $tblCompanyAllSchool;

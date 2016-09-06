@@ -62,6 +62,17 @@ class Service extends AbstractService
     }
 
     /**
+     * @param TblGroup $tblGroup
+     *
+     * @return false|TblMember[]
+     */
+    public function getMemberAllByGroup(TblGroup $tblGroup)
+    {
+
+        return (new Data($this->getBinding()))->getMemberAllByGroup($tblGroup);
+    }
+
+    /**
      * Sortierung erst feste Gruppen, dann individuelle Gruppen
      *
      * @return bool|TblGroup[]
@@ -95,6 +106,17 @@ class Service extends AbstractService
     {
 
         return (new Data($this->getBinding()))->getGroupAll();
+    }
+
+    /**
+     * @param int $Id
+     *
+     * @return bool|TblGroup
+     */
+    public function getGroupById($Id)
+    {
+
+        return (new Data($this->getBinding()))->getGroupById($Id);
     }
 
     /**
@@ -290,11 +312,53 @@ class Service extends AbstractService
 
     /**
      * @param TblGroup $tblGroup
+     * @param TblPerson $tblPerson
+     *
+     * @return bool
+     */
+    public function removeGroupPerson(TblGroup $tblGroup, TblPerson $tblPerson)
+    {
+
+        return (new Data($this->getBinding()))->removeGroupPerson($tblGroup, $tblPerson);
+    }
+
+    /**
+     * @param TblGroup $tblGroup
+     * @param TblPerson $tblPerson
+     *
+     * @return TblMember
+     */
+    public function addGroupPerson(TblGroup $tblGroup, TblPerson $tblPerson)
+    {
+
+        return (new Data($this->getBinding()))->addGroupPerson($tblGroup, $tblPerson);
+    }
+
+    /**
+     * @param TblMember $tblMember
+     *
+     * @return bool
+     */
+    public function removeMember(TblMember $tblMember)
+    {
+
+        return (new Data($this->getBinding()))->removeMember($tblMember);
+    }
+
+    /**
+     * @param TblGroup $tblGroup
      *
      * @return bool
      */
     public function destroyGroup(TblGroup $tblGroup)
     {
+
+        $tblMemberList = Group::useService()->getMemberAllByGroup($tblGroup);
+        if ($tblMemberList) {
+            foreach ($tblMemberList as $tblMember) {
+                Group::useService()->removeMember($tblMember);
+            }
+        }
 
         return (new Data($this->getBinding()))->destroyGroup($tblGroup);
     }
@@ -308,6 +372,18 @@ class Service extends AbstractService
     {
 
         return (new Data($this->getBinding()))->fetchIdPersonAllByGroup($tblGroup);
+    }
+
+    /**
+     * @param TblGroup $tblGroup
+     * @param TblPerson $tblPerson
+     *
+     * @return bool|TblMember
+     */
+    public function existsGroupPerson(TblGroup $tblGroup, TblPerson $tblPerson)
+    {
+
+        return (new Data($this->getBinding()))->existsGroupPerson($tblGroup, $tblPerson);
     }
 
     /**
@@ -386,18 +462,6 @@ class Service extends AbstractService
     }
 
     /**
-     * @param TblGroup  $tblGroup
-     * @param TblPerson $tblPerson
-     *
-     * @return bool
-     */
-    public function removeGroupPerson(TblGroup $tblGroup, TblPerson $tblPerson)
-    {
-
-        return (new Data($this->getBinding()))->removeGroupPerson($tblGroup, $tblPerson);
-    }
-
-    /**
      * @param TblGroup $tblGroup
      * @param          $DataAddPerson
      */
@@ -410,30 +474,6 @@ class Service extends AbstractService
                 $this->addGroupPerson($tblGroup, $tblPerson);
             }
         }
-    }
-
-    /**
-     * @param TblGroup  $tblGroup
-     * @param TblPerson $tblPerson
-     *
-     * @return bool|TblMember
-     */
-    public function existsGroupPerson(TblGroup $tblGroup, TblPerson $tblPerson)
-    {
-
-        return (new Data($this->getBinding()))->existsGroupPerson($tblGroup, $tblPerson);
-    }
-
-    /**
-     * @param TblGroup  $tblGroup
-     * @param TblPerson $tblPerson
-     *
-     * @return TblMember
-     */
-    public function addGroupPerson(TblGroup $tblGroup, TblPerson $tblPerson)
-    {
-
-        return (new Data($this->getBinding()))->addGroupPerson($tblGroup, $tblPerson);
     }
 
     /**
@@ -472,17 +512,6 @@ class Service extends AbstractService
     }
 
     /**
-     * @param int $Id
-     *
-     * @return bool|TblGroup
-     */
-    public function getGroupById($Id)
-    {
-
-        return (new Data($this->getBinding()))->getGroupById($Id);
-    }
-
-    /**
      * @param                  $tblPersonList
      * @param TblGroup|null    $tblGroup
      * @param TblDivision|null $tblDivision
@@ -500,38 +529,27 @@ class Service extends AbstractService
             /** @var TblPerson $tblPerson */
             foreach ($tblPersonList as $tblPerson) {
                 if ($tblGroup && $tblDivision) {
-                    $tblPersonDivisionList = Student::useService()->getCurrentDivisionListByPerson($tblPerson);
+                    $tblPersonDivision = Student::useService()->getCurrentDivisionByPerson($tblPerson);
                     if ($this->existsGroupPerson($tblGroup, $tblPerson)
-                        && $tblPersonDivisionList
+                        && $tblPersonDivision && $tblPersonDivision->getId() == $tblDivision->getId()
                     ) {
-                        foreach ($tblPersonDivisionList as $division){
-                            if ($division->getId() == $tblDivision->getId()){
-                                $resultPersonList[$tblPerson->getId()] = $tblPerson;
-                                break;
-                            }
-                        }
+                        $resultPersonList[$tblPerson->getId()] = $tblPerson;
                     }
                 } elseif ($tblGroup) {
                     if ($this->existsGroupPerson($tblGroup, $tblPerson)) {
                         $resultPersonList[$tblPerson->getId()] = $tblPerson;
                     }
                 } elseif ($tblDivision) {
-                    $tblPersonDivisionList = Student::useService()->getCurrentDivisionListByPerson($tblPerson);
-                    if ($tblPersonDivisionList) {
-                        foreach ($tblPersonDivisionList as $division){
-                            if ($division->getId() == $tblDivision->getId()){
-                                $resultPersonList[$tblPerson->getId()] = $tblPerson;
-                                break;
-                            }
-                        }
+                    $tblPersonDivision = Student::useService()->getCurrentDivisionByPerson($tblPerson);
+                    if ($tblPersonDivision && $tblPersonDivision->getId() == $tblDivision->getId()) {
+                        $resultPersonList[$tblPerson->getId()] = $tblPerson;
                     }
                 }
             }
 
-            return empty( $resultPersonList ) ? false : $resultPersonList;
+            return empty($resultPersonList) ? false : $resultPersonList;
         } else {
             return false;
         }
     }
-
 }

@@ -305,6 +305,11 @@ class Service
 
                     $tblGroupHoard = Group::useService()->insertGroup('Hort');
 
+                    $tblGroupSpring = Group::useService()->insertGroup('Frühling');
+                    $tblGroupSummer = Group::useService()->insertGroup('Sommer');
+                    $tblGroupAutumn = Group::useService()->insertGroup('Herbst');
+                    $tblGroupWinter = Group::useService()->insertGroup('Winter');
+
                     $error = array();
                     for ($RunY = 1; $RunY < $Y; $RunY++) {
                         set_time_limit(300);
@@ -369,9 +374,21 @@ class Service
                                 // division
                                 $tblDivision = false;
                                 $year = 16;
-                                $division = trim($Document->getValue($Document->getCell($Location['Schüler_Klassenstufe'],
+                                $level = trim($Document->getValue($Document->getCell($Location['Schüler_Klassenstufe'],
                                     $RunY)));
-                                if ($division !== '') {
+                                $division = trim($Document->getValue($Document->getCell($Location['Schüler_Stammgruppe'],
+                                    $RunY)));
+                                if ($level !== '' && $division !== '') {
+
+                                    if ($division == 'Frühling') {
+                                        Group::useService()->addGroupPerson($tblGroupSpring, $tblPerson);
+                                    } elseif ($division == 'Sommer') {
+                                        Group::useService()->addGroupPerson($tblGroupSummer, $tblPerson);
+                                    } elseif ($division == 'Herbst') {
+                                        Group::useService()->addGroupPerson($tblGroupAutumn, $tblPerson);
+                                    } elseif ($division == 'Winter') {
+                                        Group::useService()->addGroupPerson($tblGroupWinter, $tblPerson);
+                                    }
 
                                     $tblYear = Term::useService()->insertYear('20' . $year . '/' . ($year + 1));
                                     if ($tblYear) {
@@ -399,12 +416,12 @@ class Service
                                         }
 
                                         if ($tblSchoolType) {
-                                            $tblLevel = Division::useService()->insertLevel($tblSchoolType, $division);
+                                            $tblLevel = Division::useService()->insertLevel($tblSchoolType, $level);
                                             if ($tblLevel) {
                                                 $tblDivision = Division::useService()->insertDivision(
                                                     $tblYear,
                                                     $tblLevel,
-                                                    ''
+                                                    ' ' . $division
                                                 );
                                             }
                                         }
@@ -414,58 +431,6 @@ class Service
                                         Division::useService()->insertDivisionStudent($tblDivision, $tblPerson);
                                     } else {
                                         $error[] = 'Zeile: ' . ($RunY + 1) . ' Der Schüler konnte keiner Klasse zugeordnet werden.';
-                                    }
-                                }
-
-                                // Jahrgangsübergreifende Stammgruppe
-                                $tblDivision = false;
-                                $year = 16;
-                                $division = trim($Document->getValue($Document->getCell($Location['Schüler_Stammgruppe'],
-                                    $RunY)));
-                                if ($division !== '') {
-
-                                    $tblYear = Term::useService()->insertYear('20' . $year . '/' . ($year + 1));
-                                    if ($tblYear) {
-                                        $tblPeriodList = Term::useService()->getPeriodAllByYear($tblYear);
-                                        if (!$tblPeriodList) {
-                                            // firstTerm
-                                            $tblPeriod = Term::useService()->insertPeriod(
-                                                '1. Halbjahr',
-                                                '01.08.20' . $year,
-                                                '31.01.20' . ($year + 1)
-                                            );
-                                            if ($tblPeriod) {
-                                                Term::useService()->insertYearPeriod($tblYear, $tblPeriod);
-                                            }
-
-                                            // secondTerm
-                                            $tblPeriod = Term::useService()->insertPeriod(
-                                                '2. Halbjahr',
-                                                '01.02.20' . ($year + 1),
-                                                '31.07.20' . ($year + 1)
-                                            );
-                                            if ($tblPeriod) {
-                                                Term::useService()->insertYearPeriod($tblYear, $tblPeriod);
-                                            }
-                                        }
-
-                                        if ($tblSchoolType) {
-                                            $tblLevel = Division::useService()->insertLevel($tblSchoolType, $division,
-                                                '', true);
-                                            if ($tblLevel) {
-                                                $tblDivision = Division::useService()->insertDivision(
-                                                    $tblYear,
-                                                    $tblLevel,
-                                                    ''
-                                                );
-                                            }
-                                        }
-                                    }
-
-                                    if ($tblDivision) {
-                                        Division::useService()->insertDivisionStudent($tblDivision, $tblPerson);
-                                    } else {
-                                        $error[] = 'Zeile: ' . ($RunY + 1) . ' Der Schüler konnte keiner Klasse (Stammgruppe) zugeordnet werden.';
                                     }
                                 }
 
@@ -1969,10 +1934,10 @@ class Service
                  */
                 if (!in_array(null, $Location, true)) {
                     $countStudent = 0;
-                    $countFather = 0;
-                    $countMother = 0;
-                    $countFatherExists = 0;
-                    $countMotherExists = 0;
+//                    $countFather = 0;
+//                    $countMother = 0;
+//                    $countFatherExists = 0;
+//                    $countMotherExists = 0;
 
                     $tblFormerStudentGroup = Group::useService()->insertGroup('Ehemalige Schüler');
 
@@ -2255,13 +2220,13 @@ class Service
                     Debugger::screenDump($error);
 
                     return
-                        new Success('Es wurden ' . $countStudent . ' Schüler erfolgreich angelegt.') .
-                        new Success('Es wurden ' . $countFather . ' Sorgeberechtigte2 erfolgreich angelegt.') .
-                        ($countFatherExists > 0 ?
-                            new Warning($countFatherExists . ' Sorgeberechtigte2 exisistieren bereits.') : '') .
-                        new Success('Es wurden ' . $countMother . ' Sorgeberechtigte1 erfolgreich angelegt.') .
-                        ($countMotherExists > 0 ?
-                            new Warning($countMotherExists . ' Sorgeberechtigte1 exisistieren bereits.') : '')
+                        new Success('Es wurden ' . $countStudent . ' Ehemalige Schüler erfolgreich angelegt.')
+//                        . new Success('Es wurden ' . $countFather . ' Sorgeberechtigte2 erfolgreich angelegt.') .
+//                        ($countFatherExists > 0 ?
+//                            new Warning($countFatherExists . ' Sorgeberechtigte2 exisistieren bereits.') : '') .
+//                        new Success('Es wurden ' . $countMother . ' Sorgeberechtigte1 erfolgreich angelegt.') .
+//                        ($countMotherExists > 0 ?
+//                            new Warning($countMotherExists . ' Sorgeberechtigte1 exisistieren bereits.') : '')
                         . new Layout(new LayoutGroup(new LayoutRow(new LayoutColumn(
                             new Panel(
                                 'Fehler',

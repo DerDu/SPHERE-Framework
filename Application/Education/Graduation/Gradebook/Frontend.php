@@ -716,7 +716,7 @@ class Frontend extends Extension implements IFrontendInterface
         $dataList = array();
         $columnDefinition = array();
         $periodListCount = array();
-        $columnDefinition['Number'] = 'Nr.';
+        $columnDefinition['Number'] = '#';
         $columnDefinition['Student'] = "Schüler";
         // Tabellenkopf mit Test-Code und Datum erstellen
         if ($tblPeriodList) {
@@ -770,13 +770,6 @@ class Frontend extends Extension implements IFrontendInterface
 
         if ($tblStudentList) {
 
-            // Sortierung der Schüler nach Nachname --> Vorname
-            foreach ($tblStudentList as $key => $row) {
-                $name[$key] = strtoupper($row->getLastName());
-                $firstName[$key] = strtoupper($row->getFirstSecondName());
-            }
-            array_multisort($name, SORT_ASC, $firstName, SORT_ASC, $tblStudentList);
-
             $count = 1;
             // Ermittlung der Zensuren zu den Schülern
             foreach ($tblStudentList as $tblPerson) {
@@ -785,7 +778,7 @@ class Frontend extends Extension implements IFrontendInterface
                 $count++;
                 $data['Student'] = $tblPerson->getLastFirstName();
 
-                // Zenur des Schülers zum Test zuordnen und Durchschnitte berechnen
+                // Zensur des Schülers zum Test zuordnen und Durchschnitte berechnen
                 if (!empty($columnDefinition)) {
                     foreach ($columnDefinition as $column => $value) {
                         if (strpos($column, 'Test') !== false) {
@@ -880,9 +873,9 @@ class Frontend extends Extension implements IFrontendInterface
                             $data[$column] = new Muted($average ? $average : '');
                         }
                     } elseif (strpos($column, 'Number') !== false) {
-                        $data[$column] = new Muted('&#216;');
+//                        $data[$column] = new Muted('&#216;');
                     } elseif (strpos($column, 'Student') !== false) {
-                        $data[$column] = new Muted('Fach-Klasse');
+                        $data[$column] = new Muted('&#216; Fach-Klasse');
                     } else {
                         $data[$column] = '';
                     }
@@ -892,7 +885,16 @@ class Frontend extends Extension implements IFrontendInterface
         }
 
         $tableData = new TableData(
-            $dataList, null, $columnDefinition, array('pageLength' => -1)
+            $dataList, null, $columnDefinition,
+            array(
+                "columnDefs" => array(
+                    array(
+                        "orderable" => false,
+                        "targets" => '_all'
+                    ),
+                ),
+                'pageLength' => -1
+            )
         );
 
         // oberste Tabellen-Kopf-Zeile erstellen

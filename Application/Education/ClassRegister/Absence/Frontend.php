@@ -381,6 +381,7 @@ class Frontend extends Extension implements IFrontendInterface
 
 
             $maxDays = cal_days_in_month(CAL_GREGORIAN, $Month, $Year);
+            $tableHead['Number'] = '#';
             $tableHead['Name'] = 'Schüler';
             $holidays = array();
             for ($i = 1; $i <= $maxDays; $i++) {
@@ -405,9 +406,9 @@ class Frontend extends Extension implements IFrontendInterface
             $studentTable = array();
             $tblStudentList = Division::useService()->getStudentAllByDivision($tblDivision);
             if ($tblStudentList) {
-                $tblStudentList = $this->getSorter($tblStudentList)->sortObjectBy('LastFirstName');
                 /** @var TblPerson $tblPerson */
                 foreach ($tblStudentList as $tblPerson) {
+                    $studentTable[$tblPerson->getId()]['Number'] = count($studentTable) + 1;
                     $studentTable[$tblPerson->getId()]['Name'] = $tblPerson->getLastFirstName();
                     $countExcused = 0;
                     $countUnexcused = 0;

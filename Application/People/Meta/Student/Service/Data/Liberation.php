@@ -40,13 +40,15 @@ abstract class Liberation extends Student
 
     /**
      * @param TblStudentLiberationCategory $tblStudentLiberationCategory
-     * @param string                      $Name
+     * @param string $Name
      *
+     * @param string $Description
      * @return TblStudentLiberationType
      */
     public function createStudentLiberationType(
         TblStudentLiberationCategory $tblStudentLiberationCategory,
-        $Name
+        $Name,
+        $Description = ''
     ) {
 
         $Manager = $this->getConnection()->getEntityManager();
@@ -58,6 +60,7 @@ abstract class Liberation extends Student
             $Entity = new TblStudentLiberationType();
             $Entity->setTblStudentLiberationCategory($tblStudentLiberationCategory);
             $Entity->setName($Name);
+            $Entity->setDescription($Description);
             $Manager->saveEntity($Entity);
             Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(), $Entity);
         }

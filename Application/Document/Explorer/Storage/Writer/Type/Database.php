@@ -6,6 +6,7 @@ use SPHERE\Application\Document\Explorer\Storage\Storage;
 use SPHERE\Application\Document\Explorer\Storage\Writer\AbstractWriter;
 
 /**
+ * @deprecated
  * Class Database
  *
  * @package SPHERE\Application\Document\Explorer\Storage\Writer\Type
@@ -19,7 +20,9 @@ class Database extends AbstractWriter
     private $Container = null;
 
     /**
-     * @param null|int $Id
+     * @deprecated
+     *
+*@param null|int $Id
      */
     public function __construct($Id = null)
     {
@@ -30,7 +33,9 @@ class Database extends AbstractWriter
         $this->loadFile();
     }
 
-    /** @noinspection PhpMissingParentCallCommonInspection */
+    /**
+     * @deprecated
+     */
     public function loadFile()
     {
 
@@ -59,6 +64,7 @@ class Database extends AbstractWriter
     }
 
     /**
+     * @deprecated
      * @return bool
      */
     public function saveFile()
@@ -106,6 +112,7 @@ class Database extends AbstractWriter
     }
 
     /**
+     * @deprecated
      * @return null|Temporary
      */
     public function getFile()

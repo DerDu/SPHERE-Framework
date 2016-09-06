@@ -31,10 +31,10 @@ class Service extends Extension
         $TableContent = array();
         if (!empty( $tblPersonList )) {
 
-            $tblPersonList = $this->getSorter($tblPersonList)->sortObjectBy('LastFirstName');
+            $count = 1;
+            array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent, &$count) {
 
-            array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent) {
-
+                $Item['Number'] = $count++;
                 $Item['ExcelNameRow2'] = '';
                 $Item['Address'] = '';
                 $Item['ExcelAddressRow1'] = '';

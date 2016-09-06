@@ -104,6 +104,16 @@ class Custom implements IModuleInterface
                 __NAMESPACE__.'\Coswig\Common::downloadClassList'
             ));
         }
+
+        /*
+         * Schneeberg
+         */
+        if ($consumerAcronym === 'ESS' || $consumerAcronym === 'DEMO') {
+            Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+                __NAMESPACE__.'/Schneeberg/Person/ClassList/Download',
+                __NAMESPACE__.'\Schneeberg\Person::downloadClassList'
+            ));
+        }
     }
 
     /**

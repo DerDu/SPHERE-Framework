@@ -14,6 +14,7 @@ use SPHERE\System\Cache\CacheFactory;
 use SPHERE\System\Cache\Handler\MemcachedHandler;
 use SPHERE\System\Database\Binding\AbstractData;
 use SPHERE\System\Database\Fitting\Element;
+use SPHERE\System\Extension\Repository\Sorter\DateTimeSorter;
 
 /**
  * Class Data
@@ -267,6 +268,9 @@ class Data extends AbstractData
 
                 $V = $V->getTblPeriod();
             });
+
+            $EntityList = $this->getSorter($EntityList)->sortObjectBy(TblPeriod::ATTR_FROM_DATE, new DateTimeSorter());
+
             $Cache->setValue($tblYear->getId(), $EntityList, 0, __METHOD__);
         } else {
             $EntityList = $ResultList;

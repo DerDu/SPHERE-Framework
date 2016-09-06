@@ -69,15 +69,16 @@ class Service extends Extension
         $TableContent = array();
         if (!empty( $tblPersonList )) {
 
-            $tblPersonList = $this->getSorter($tblPersonList)->sortObjectBy('LastFirstName');
+            $count = 1;
 
-            array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent) {
+            array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent, &$count) {
                 if (($addressList = Address::useService()->getAddressAllByPerson($tblPerson))) {
                     $address = $addressList[0];
                 } else {
                     $address = null;
                 }
 
+                $Item['Number'] = $count++;
                 $Item['Salutation'] = $tblPerson->getSalutation();
                 $Item['FirstName'] = $tblPerson->getFirstSecondName();
                 $Item['LastName'] = $tblPerson->getLastName();
@@ -188,11 +189,12 @@ class Service extends Extension
         $TableContent = array();
         if (!empty( $tblPersonList )) {
 
-            $tblPersonList = $this->getSorter($tblPersonList)->sortObjectBy('LastFirstName');
+            $count = 1;
 
-            array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent) {
+            array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent, &$count) {
 
-                $Item['Number'] = '';
+                $Item['Number'] = $count++;
+                $Item['StudentNumber'] = '';
                 $Item['Gender'] = '';
                 $Item['Guardian1'] = '';
                 $Item['Guardian2'] = '';
@@ -214,7 +216,7 @@ class Service extends Extension
                     }
                     $tblStudent = Student::useService()->getStudentByPerson($tblPerson);
                     if ($tblStudent) {
-                        $Item['Number'] = $tblStudent->getIdentifier();
+                        $Item['StudentNumber'] = $tblStudent->getIdentifier();
                     }
                 }
                 if (($addressList = Address::useService()->getAddressAllByPerson($tblPerson))) {
@@ -402,8 +404,6 @@ class Service extends Extension
 
         if (!empty( $tblPersonList )) {
 
-            $tblPersonList = $this->getSorter($tblPersonList)->sortObjectBy('LastFirstName');
-
             $All = 0;
 
             array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent, &$All) {
@@ -531,12 +531,13 @@ class Service extends Extension
 
         if (!empty( $tblPersonList )) {
 
-            $tblPersonList = $this->getSorter($tblPersonList)->sortObjectBy('LastFirstName');
+            $count = 1;
 
-            array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent) {
+            array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent, &$count) {
 
+                $Item['Number'] = $count++;
                 $Item['MedicalInsurance'] = '';
-                $Item['Number'] = '';
+                $Item['StudentNumber'] = '';
                 $Item['Gender'] = '';
                 $Item['StreetName'] = $Item['StreetNumber'] = $Item['Code'] = $Item['City'] = '';
                 $Item['Address'] = '';
@@ -557,7 +558,7 @@ class Service extends Extension
                         if ($tblStudent->getTblStudentMedicalRecord()) {
                             $Item['MedicalInsurance'] = $tblStudent->getTblStudentMedicalRecord()->getInsurance();
                         }
-                        $Item['Number'] = $tblStudent->getIdentifier();
+                        $Item['StudentNumber'] = $tblStudent->getIdentifier();
                     }
                 }
                 $Item['Name'] = $tblPerson->getLastFirstName();

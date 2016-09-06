@@ -27,12 +27,6 @@ class Service
 
         $tblPersonList = Division::useService()->getStudentAllByDivision($tblDivision);
 
-        foreach ($tblPersonList as $key => $row) {
-            $lastName[$key] = strtoupper($row->getLastName());
-            $firstName[$key] = strtoupper($row->getFirstName());
-            $id[$key] = $row->getId();
-        }
-        array_multisort($lastName, SORT_ASC, $firstName, SORT_ASC, $tblPersonList);
         $TableContent = array();
 
         $CountNumber = 0;
@@ -40,7 +34,7 @@ class Service
             array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent, &$CountNumber) {
                 $CountNumber++;
                 // Content
-                $Item['Count'] = $CountNumber;
+                $Item['Number'] = $CountNumber;
 //                $Item['Name'] = $tblPerson->getLastFirstName();
                 $Item['FirstName'] = $tblPerson->getFirstSecondName();
                 $Item['LastName'] = $tblPerson->getLastName();

@@ -53,4 +53,20 @@ class Storage implements IApplicationInterface, IModuleInterface
 
         return new Frontend();
     }
+
+    /**
+     * @param string $Extension
+     * @param string $Prefix
+     * @param bool   $Destruct
+     *
+     * @return FilePointer
+     */
+    public static function createFilePointer(
+        $Extension = 'document-storage',
+        $Prefix = 'SPHERE-Temporary',
+        $Destruct = true
+    ) {
+
+        return new FilePointer($Extension, $Prefix, $Destruct);
+    }
 }

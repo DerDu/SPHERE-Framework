@@ -8,6 +8,7 @@ use SPHERE\Application\Document\Explorer\Storage\Service\Setup;
 use SPHERE\System\Database\Binding\AbstractService;
 
 /**
+ * @deprecated
  * Class Service
  *
  * @package SPHERE\Application\Document\Explorer\Storage
@@ -16,7 +17,9 @@ class Service extends AbstractService
 {
 
     /**
-     * @param bool $doSimulation
+     * @deprecated
+     *
+*@param bool $doSimulation
      * @param bool $withData
      *
      * @return string
@@ -32,7 +35,9 @@ class Service extends AbstractService
     }
 
     /**
-     * @param int $Id
+     * @deprecated
+     *
+*@param int $Id
      *
      * @return false|TblFile
      */
@@ -43,6 +48,7 @@ class Service extends AbstractService
     }
 
     /**
+     * @deprecated
      * @return false|TblFile[]
      */
     public function getFileAll()
@@ -52,7 +58,9 @@ class Service extends AbstractService
     }
 
     /**
-     * @param string       $Name
+     * @deprecated
+     *
+*@param string       $Name
      * @param string       $Description
      * @param string       $FileName
      * @param string       $FileExtension
@@ -82,6 +90,7 @@ class Service extends AbstractService
     }
 
     /**
+     * @deprecated
      * @param TblFile      $tblFile
      * @param string       $Name
      * @param string       $Description
@@ -115,6 +124,7 @@ class Service extends AbstractService
     }
 
     /**
+     * @deprecated
      * @param int $Id
      *
      * @return false|TblDirectory
@@ -126,6 +136,7 @@ class Service extends AbstractService
     }
 
     /**
+     * @deprecated
      * @param null|TblDirectory $tblDirectory
      *
      * @return false|TblDirectory[]
@@ -137,6 +148,7 @@ class Service extends AbstractService
     }
 
     /**
+     * @deprecated
      * @return false|TblDirectory[]
      */
     public function getDirectoryAll()
@@ -146,6 +158,7 @@ class Service extends AbstractService
     }
 
     /**
+     * @deprecated
      * @param string       $Name
      * @param string       $Description
      * @param TblDirectory $tblDirectoryParent
@@ -168,6 +181,7 @@ class Service extends AbstractService
     }
 
     /**
+     * @deprecated
      * @param TblDirectory $tblDirectory
      * @param string       $Name
      * @param string       $Description

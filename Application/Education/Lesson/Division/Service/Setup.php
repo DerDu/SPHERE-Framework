@@ -119,6 +119,9 @@ class Setup extends AbstractSetup
         if (!$this->getConnection()->hasColumn('tblDivisionStudent', 'serviceTblPerson')) {
             $Table->addColumn('serviceTblPerson', 'bigint', array('notnull' => false));
         }
+        if (!$Table->hasColumn('SortOrder')) {
+            $Table->addColumn('SortOrder', 'integer', array('notnull' => false));
+        }
         $this->getConnection()->addForeignKey($Table, $tblDivision);
         return $Table;
     }

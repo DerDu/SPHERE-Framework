@@ -27,6 +27,10 @@ class TblStudentLiberationType extends Element
      * @Column(type="string")
      */
     protected $Name;
+    /**
+     * @Column(type="string")
+     */
+    protected $Description;
 
     /**
      * @return string
@@ -45,7 +49,7 @@ class TblStudentLiberationType extends Element
 
         $this->Name = $Name;
     }
-    
+
     /**
      * @return bool|TblStudentLiberationCategory
      */
@@ -67,5 +71,21 @@ class TblStudentLiberationType extends Element
     ) {
 
         $this->tblStudentLiberationCategory = ( null === $tblStudentLiberationCategory ? null : $tblStudentLiberationCategory->getId() );
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->Description;
+    }
+
+    /**
+     * @param string $Description
+     */
+    public function setDescription($Description)
+    {
+        $this->Description = $Description;
     }
 }

@@ -231,157 +231,17 @@ class BeSOFS extends Certificate
                             ->stylePaddingBottom('25px')
                         )
                     )
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Deutsch')
-                            ->stylePaddingTop()
-                            , '25%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.DE is not empty) %}
-                                    {{ Content.Grade.Data.DE }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            ->styleBorderBottom()
-
-                            , '20%')
-                        ->addElementColumn((new Element())
-                            , '10%')
-                        ->addElementColumn((new Element())
-                            ->setContent('Mathematik')
-                            ->stylePaddingTop()
-                            , '25%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.MA is not empty) %}
-                                    {{ Content.Grade.Data.MA }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            ->styleBorderBottom()
-                            , '20%')
-                    )
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Geschichte')
-                            ->stylePaddingTop()
-                            ->styleMarginTop('10px')
-                            , '25%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.GE is not empty) %}
-                                    {{ Content.Grade.Data.GE }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleMarginTop('10px')
-                            ->styleAlignCenter()
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            ->styleBorderBottom()
-                            , '20%')
-                        ->addElementColumn((new Element())
-                            , '10%')
-                        ->addElementColumn((new Element())
-                            ->setContent('Biologie')
-                            ->stylePaddingTop()
-                            ->styleMarginTop('10px')
-                            , '25%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.BI is not empty) %}
-                                    {{ Content.Grade.Data.BI }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            ->styleBorderBottom()
-                            ->styleMarginTop('10px')
-                            , '20%')
-                    )
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Geographie')
-                            ->stylePaddingTop()
-                            ->styleMarginTop('10px')
-                            , '25%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.GEO is not empty) %}
-                                    {{ Content.Grade.Data.GEO }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleMarginTop('10px')
-                            ->styleAlignCenter()
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            ->styleBorderBottom()
-                            , '20%')
-                        ->addElementColumn((new Element())
-                            , '10%')
-                        ->addElementColumn((new Element())
-                            ->setContent('Chemie')
-                            ->stylePaddingTop()
-                            ->styleMarginTop('10px')
-                            , '25%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.CH is not empty) %}
-                                    {{ Content.Grade.Data.CH }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            ->styleBorderBottom()
-                            ->styleMarginTop('10px')
-                            , '20%')
-                    )
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            , '55%')
-                        ->addElementColumn((new Element())
-                            ->setContent('Physik')
-                            ->stylePaddingTop()
-                            ->styleMarginTop('10px')
-                            , '25%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.PH is not empty) %}
-                                    {{ Content.Grade.Data.PH }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            ->styleBorderBottom()
-                            ->styleMarginTop('10px')
-                            , '20%')
-                    )
+                )
+                ->addSlice( $this->getSubjectLanes() )
+                ->addSlice((new Slice())
                     ->addSection((new Section())
                         ->addElementColumn((new Element())
                             ->setContent('Durchschnitt der Noten aus den angegebenen Fächern')
                             ->styleMarginTop('20px')
                             , '80%')
                         ->addElementColumn((new Element())
-                            // ToDO EN replace to Sachunterricht
-                            ->setContent('{% if(Content.Grade.Data.DE is not empty) %}
-                                    {% if(Content.Grade.Data.MA is not empty) %}
-                                        {% if(Content.Grade.Data.EN is not empty) %}
-                                            {{ ((Content.Grade.Data.DE + Content.Grade.Data.MA + Content.Grade.Data.GE
-                                            + Content.Grade.Data.BI + Content.Grade.Data.GEO + Content.Grade.Data.CH + Content.Grade.Data.PH)
-                                             / 7)|round(2, "floor") }}
-                                        {% else %}
-                                            ---
-                                        {% endif %}
-                                    {% else %}
-                                        ---
-                                    {% endif %}
+                            ->setContent('{% if(Content.Grade.Data.Average is not empty) %}
+                                    {{ Content.Grade.Data.Average }}
                                 {% else %}
                                     ---
                                 {% endif %}')
@@ -494,15 +354,44 @@ class BeSOFS extends Certificate
                             ->stylePaddingTop('5px')
                             , '35%')
                     )
+                    ->addSection((new Section())
+                        ->addElementColumn((new Element())
+                            , '35%')
+                        ->addElementColumn((new Element())
+                            , '30%')
+                        ->addElementColumn((new Element())
+                            ->setContent(
+                                '{% if(Content.DivisionTeacher.Name is not empty) %}
+                                    {{ Content.DivisionTeacher.Name }}
+                                {% else %}
+                                    &nbsp;
+                                {% endif %}'
+                            )
+                            ->styleTextSize('11px')
+                            ->stylePaddingTop('2px')
+//                            ->styleAlignCenter()
+                            , '35%')
+                    )
                     ->stylePaddingTop()
                     ->stylePaddingBottom()
                     ->styleMarginTop('20px')
                 )
                 ->addSlice((new Slice())
-                    ->addElement((new Element())
-                        ->setContent('¹ Nichtzutreffendes streichen.')
-                        ->styleTextSize('9px')
-                        ->styleMarginTop('5px')
+                    ->addSection((new Section())
+                        ->addElementColumn((new Element())
+                            ->styleBorderBottom()
+                            , '30%')
+                        ->addElementColumn((new Element())
+                            , '70%')
+                    )->styleMarginTop('10px')
+                    ->addSection((new Section())
+                        ->addElementColumn((new Element())
+                            ->setContent(
+                                '¹ Nichtzutreffendes streichen.'
+                            )
+                            ->styleTextSize('9px')
+                            ->styleMarginTop('5px')
+                        )
                     )
                 )
             )

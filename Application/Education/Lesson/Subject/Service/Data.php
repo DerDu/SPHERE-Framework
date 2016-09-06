@@ -102,6 +102,8 @@ class Data extends AbstractData
             $this->addCategorySubject($tblCategoryElective, $tblSubject);
             $tblSubject = $this->createSubject('DASP', 'Darstellendes Spiel');
             $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblSubject = $this->createSubject('WE', 'Werken');
+            $this->addCategorySubject($tblCategory, $tblSubject);
 
             // Naturwissenschaften/Technik
             $tblCategory = $this->createCategory('Naturwissenschaften/Technik');
@@ -137,6 +139,8 @@ class Data extends AbstractData
             $tblSubject = $this->createSubject('ER', 'Erziehungswissenschaften');
             $this->addCategorySubject($tblCategory, $tblSubject);
             $tblSubject = $this->createSubject('SPO', 'Sport');
+            $this->addCategorySubject($tblCategory, $tblSubject);
+            $tblSubject = $this->createSubject('SU', 'Sachunterricht');
             $this->addCategorySubject($tblCategory, $tblSubject);
         }
 

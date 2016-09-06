@@ -8,6 +8,7 @@ use SPHERE\Application\Education\Certificate\Generator\Repository\Frame;
 use SPHERE\Application\Education\Certificate\Generator\Repository\Page;
 use SPHERE\Application\Education\Certificate\Generator\Repository\Section;
 use SPHERE\Application\Education\Certificate\Generator\Repository\Slice;
+use SPHERE\Application\Education\Lesson\Subject\Subject;
 use SPHERE\Common\Frontend\Layout\Repository\Container;
 
 /**
@@ -17,6 +18,22 @@ use SPHERE\Common\Frontend\Layout\Repository\Container;
  */
 class CheJGym extends Certificate
 {
+
+    private function getLanguagesWithStartLevel()
+    {
+
+        $tblSubject = Subject::useService()->getSubjectByAcronym('FRZ');
+        $result = array();
+        if ($tblSubject) {
+            $result[$tblSubject->getAcronym()] = array(
+                'SubjectAcronym' => $tblSubject->getAcronym(),
+                'Ranking' => 2,               // 2. Fremdsprache
+                'Lane' => 1
+            );
+        }
+
+        return $result;
+    }
 
     /**
      * @param bool $IsSample
@@ -39,7 +56,7 @@ class CheJGym extends Certificate
                         ->styleTextSize('30px')
                     )
                     ->addElementColumn(( new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
-                            '200px') )
+                            '64px') )
                         , '25%')
                 );
         } else {
@@ -48,7 +65,7 @@ class CheJGym extends Certificate
                     ->addElementColumn(( new Element() ), '25%')
                     ->addElementColumn(( new Element() ))
                     ->addElementColumn(( new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
-                            '200px') )
+                            '64px') )
                         , '25%')
                 );
         }
@@ -136,7 +153,7 @@ class CheJGym extends Certificate
                         ->styleTextBold()
                     )
                 )
-                ->addSlice( $this->getSubjectLanes() )
+                ->addSlice( $this->getSubjectLanes(true, $this->getLanguagesWithStartLevel()) )
                 ->addSlice((new Slice())
                     ->addSection((new Section())
                         ->addElementColumn((new Element())
@@ -404,7 +421,7 @@ class CheJGym extends Certificate
                             , '30%')
                         ->addElementColumn((new Element())
                             , '70%')
-                    )->styleMarginTop('51px')
+                    )->styleMarginTop('10px')
                     ->addSection((new Section())
                         ->addElementColumn((new Element())
                             ->setContent('Notenerläuterung:'

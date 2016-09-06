@@ -26,7 +26,7 @@ class Service extends \SPHERE\Application\Platform\Gatekeeper\Authorization\Acco
      * @return IFormInterface|Redirect
      */
     public function updatePassword(
-        IFormInterface &$Form,
+        IFormInterface $Form,
         TblAccount $tblAccount,
         $CredentialLock,
         $CredentialLockSafety
@@ -105,7 +105,7 @@ class Service extends \SPHERE\Application\Platform\Gatekeeper\Authorization\Acco
      * @return IFormInterface|Redirect
      */
     public function updateSetting(
-        IFormInterface &$Form,
+        IFormInterface $Form,
         TblAccount $tblAccount,
         $Setting
     ) {

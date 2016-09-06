@@ -7,6 +7,7 @@ use SPHERE\Application\Reporting\Custom\Chemnitz\Person\Person as ChemnitzPerson
 use SPHERE\Application\Reporting\Custom\Hormersdorf\Person\Person as HormersdorfPerson;
 use SPHERE\Application\Reporting\Custom\Herrnhut\Person\Person as HerrnhutPerson;
 use SPHERE\Application\Reporting\Custom\Coswig\Person\Person as CoswigPerson;
+use SPHERE\Application\Reporting\Custom\Schneeberg\Person\Person as SchneebergPerson;
 use SPHERE\Common\Main;
 use SPHERE\Common\Window\Navigation\Link;
 use SPHERE\Common\Window\Stage;
@@ -38,6 +39,10 @@ class Custom implements IApplicationInterface
         // Coswig
         if ($consumerAcronym === 'EVSC' || $consumerAcronym === 'DEMO') {
             CoswigPerson::registerModule();
+        }
+        // Schneeberg
+        if ($consumerAcronym === 'ESS' || $consumerAcronym === 'DEMO') {
+            SchneebergPerson::registerModule();
         }
 
         Main::getDisplay()->addApplicationNavigation(

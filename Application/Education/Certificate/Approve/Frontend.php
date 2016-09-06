@@ -217,7 +217,6 @@ class Frontend extends Extension implements IFrontendInterface
                             }
                         }
 
-
                         $tblPrepareStudent = Prepare::useService()->getPrepareStudentBy($tblPrepare, $tblPerson);
                         if ($tblPrepareStudent) {
                             $tblCertificate = $tblPrepareStudent->getServiceTblCertificate();
@@ -228,6 +227,7 @@ class Frontend extends Extension implements IFrontendInterface
                         }
 
                         $studentTable[] = array(
+                            'Number' => count($studentTable) + 1,
                             'Name' => $tblPerson->getLastFirstName(),
                             'Address' => $tblAddress ? $tblAddress->getGuiTwoRowString() : '',
                             'Birthday' => $birthday,
@@ -300,6 +300,7 @@ class Frontend extends Extension implements IFrontendInterface
                             new LayoutColumn(array(
                                 '<br>',
                                 new TableData($studentTable, null, array(
+                                    'Number' => '#',
                                     'Name' => 'Name',
                                     'Address' => 'Adresse',
                                     'Birthday' => 'Geburts&shy;datum',

@@ -5,6 +5,7 @@ use Doctrine\ORM\Mapping\Cache;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
+use SPHERE\System\Database\Binding\AbstractService;
 use SPHERE\System\Database\Binding\AbstractView;
 
 /**
@@ -80,5 +81,23 @@ class ViewPeopleMetaCommon extends AbstractView
         $this->setNameDefinition('TblCommonInformation_Denomination', 'Meta-Common Konfession');
         $this->setNameDefinition('TblCommonInformation_AssistanceActivity', 'Meta-Common Aktivitäten');
         $this->setNameDefinition('TblCommonInformation_IsAssistance', 'Meta-Common Mitarbeitsbereitschaft');
+    }
+
+    /**
+     * Use this method to add ForeignViews to Graph with "addForeignView()"
+     *
+     * @return void
+     */
+    public function loadViewGraph()
+    {
+        // TODO: Implement loadViewGraph() method.
+    }
+
+    /**
+     * @return AbstractService
+     */
+    public function getViewService()
+    {
+        // TODO: Implement getViewService() method.
     }
 }

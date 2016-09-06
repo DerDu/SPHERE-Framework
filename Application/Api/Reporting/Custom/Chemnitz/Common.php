@@ -28,12 +28,6 @@ class Common
             $PersonList = Person::useService()->createClassList($tblDivision);
             if ($PersonList) {
 
-                foreach ($PersonList as $key => $row) {
-                    $name[$key] = strtoupper($row['LastName']);
-                    $firstName[$key] = strtoupper($row['FirstName']);
-                }
-                array_multisort($name, SORT_ASC, $firstName, SORT_ASC, $PersonList);
-
                 $tblPersonList = Division::useService()->getStudentAllByDivision($tblDivision);
 
                 if ($tblPersonList) {
@@ -88,12 +82,6 @@ class Common
         if ($tblDivision) {
             $PersonList = Person::useService()->createMedicList($tblDivision);
             if ($PersonList) {
-                foreach ($PersonList as $key => $row) {
-                    $name[$key] = strtoupper($row['LastName']);
-                    $firstName[$key] = strtoupper($row['FirstName']);
-                }
-                array_multisort($name, SORT_ASC, $firstName, SORT_ASC, $PersonList);
-
                 $tblPersonList = Division::useService()->getStudentAllByDivision($tblDivision);
                 if ($tblPersonList) {
                     $fileLocation = Person::useService()->createMedicListExcel($PersonList, $tblPersonList);
@@ -120,12 +108,6 @@ class Common
         if ($tblDivision) {
             $PersonList = Person::useService()->createParentTeacherConferenceList($tblDivision);
             if ($PersonList) {
-                foreach ($PersonList as $key => $row) {
-                    $name[$key] = strtoupper($row['LastName']);
-                    $firstName[$key] = strtoupper($row['FirstName']);
-                }
-                array_multisort($name, SORT_ASC, $firstName, SORT_ASC, $PersonList);
-
                 $tblPersonList = Division::useService()->getStudentAllByDivision($tblDivision);
                 if ($tblPersonList) {
                     $fileLocation = Person::useService()->createParentTeacherConferenceListExcel($PersonList, $tblPersonList);

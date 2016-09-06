@@ -47,6 +47,22 @@ class Slice extends Style
     }
 
     /**
+     * @param Section[] $SectionList
+     *
+     * @return $this
+     */
+    public function addSectionList($SectionList){
+        if (is_array($SectionList)){
+            /** @var Section $Section */
+            foreach ($SectionList as $Section){
+                $this->Elements[] = $Section;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function __toString()

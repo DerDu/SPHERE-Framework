@@ -44,6 +44,7 @@ use SPHERE\Common\Frontend\Icon\Repository\PlusSign;
 use SPHERE\Common\Frontend\Icon\Repository\Quote;
 use SPHERE\Common\Frontend\Icon\Repository\Save;
 use SPHERE\Common\Frontend\Icon\Repository\Select;
+use SPHERE\Common\Frontend\Icon\Repository\Setup;
 use SPHERE\Common\Frontend\Icon\Repository\Star;
 use SPHERE\Common\Frontend\IFrontendInterface;
 use SPHERE\Common\Frontend\Layout\Repository\Panel;
@@ -63,7 +64,6 @@ use SPHERE\Common\Frontend\Text\Repository\Small;
 use SPHERE\Common\Frontend\Text\Repository\Success;
 use SPHERE\Common\Window\Stage;
 use SPHERE\System\Extension\Extension;
-use SPHERE\System\Extension\Repository\Sorter;
 
 /**
  * Class Frontend
@@ -177,11 +177,11 @@ class Frontend extends Extension implements IFrontendInterface
                                 , 'Bearbeiten'
                             ))
                             . (new Standard(
-                                '', '/Education/Certificate/Prepare/Division', new EyeOpen(),
+                                '', '/Education/Certificate/Prepare/Division', new Setup(),
                                 array(
                                     'PrepareId' => $tblPrepare->getId(),
                                 )
-                                , 'Anzeigen und Bearbeiten'
+                                , 'Einstellungen'
                             ))
                     );
                 }
@@ -242,6 +242,24 @@ class Frontend extends Extension implements IFrontendInterface
 
             return $Stage . new Danger('Klasse nicht gefunden.', new Ban());
         }
+    }
+
+    /**
+     * @return Form
+     */
+    private function formPrepare()
+    {
+
+        return new Form(new FormGroup(array(
+            new FormRow(array(
+                new FormColumn(
+                    new DatePicker('Data[Date]', '', 'Zeugnisdatum', new Calendar()), 3
+                ),
+                new FormColumn(
+                    new TextField('Data[Name]', 'Name', 'Name'), 9
+                ),
+            )),
+        )));
     }
 
     /**
@@ -317,25 +335,6 @@ class Frontend extends Extension implements IFrontendInterface
             return $Stage . new Danger('Zeugnisvorbereitung nicht gefunden.', new Ban());
         }
     }
-
-    /**
-     * @return Form
-     */
-    private function formPrepare()
-    {
-
-        return new Form(new FormGroup(array(
-            new FormRow(array(
-                new FormColumn(
-                    new DatePicker('Data[Date]', '', 'Zeugnisdatum', new Calendar()), 3
-                ),
-                new FormColumn(
-                    new TextField('Data[Name]', 'Name', 'Name'), 9
-                ),
-            )),
-        )));
-    }
-
 
     /**
      * @param null $PrepareId
@@ -474,6 +473,7 @@ class Frontend extends Extension implements IFrontendInterface
                         }
 
                         $studentTable[] = array(
+                            'Number' => count($studentTable) + 1,
                             'Name' => $tblPerson->getLastFirstName(),
                             'Address' => $tblAddress ? $tblAddress->getGuiTwoRowString() : '',
                             'Birthday' => $birthday,
@@ -652,6 +652,7 @@ class Frontend extends Extension implements IFrontendInterface
                             new LayoutColumn(array(
                                 '<br>',
                                 new TableData($studentTable, null, array(
+                                    'Number' => '#',
                                     'Name' => 'Name',
                                     'Address' => 'Adresse',
                                     'Birthday' => 'Geburts&shy;datum',
@@ -934,6 +935,7 @@ class Frontend extends Extension implements IFrontendInterface
             $tblTestType = Evaluation::useService()->getTestTypeByIdentifier('APPOINTED_DATE_TASK');
 
             $tableData = array();
+            $tableHeader['Number'] = '#';
             $tableHeader['Student'] = 'Schüler';
             if (($tblDivision = $tblPrepare->getServiceTblDivision())
                 && ($tblYear = $tblDivision->getServiceTblYear())
@@ -941,6 +943,7 @@ class Frontend extends Extension implements IFrontendInterface
                 $tblStudentAllByDivision = Division::useService()->getStudentAllByDivision($tblDivision);
                 if ($tblStudentAllByDivision) {
                     foreach ($tblStudentAllByDivision as $tblPerson) {
+                        $tableData[$tblPerson->getId()]['Number'] = count($tableData) +1;
                         $tableData[$tblPerson->getId()]['Student'] = $tblPerson->getLastFirstName();
                         $tblDivisionSubjectList = Division::useService()->getDivisionSubjectAllByPersonAndYear(
                             $tblPerson, $tblYear
@@ -1218,6 +1221,7 @@ class Frontend extends Extension implements IFrontendInterface
             $tblTestType = Evaluation::useService()->getTestTypeByIdentifier('BEHAVIOR_TASK');
 
             $dataTable = array();
+            $headerTable['Number'] = '#';
             $headerTable['Student'] = 'Name';
 
             $tblGradeTypeList = array();
@@ -1248,6 +1252,7 @@ class Frontend extends Extension implements IFrontendInterface
                             $isApproved = false;
                         }
 
+                        $dataTable[$tblPerson->getId()]['Number'] = count($dataTable) + 1;
                         $dataTable[$tblPerson->getId()]['Student'] = $tblPerson->getLastFirstName();
                         $dataTable[$tblPerson->getId()]['Option'] =
                             $isApproved
@@ -1672,7 +1677,7 @@ class Frontend extends Extension implements IFrontendInterface
                             'Content.Input.Remark' => 'TextArea',
                             'Content.Input.Rating' => 'TextArea',
                             'Content.Input.Survey' => 'TextArea',
-                            'Content.Input.Team' => 'TextArea',
+//                            'Content.Input.Team' => 'TextArea',
                             'Content.Input.Deepening' => 'TextField',
                             'Content.Input.Choose' => 'TextField',
                             'Content.Input.SchoolType' => 'SelectBox',
@@ -1688,7 +1693,7 @@ class Frontend extends Extension implements IFrontendInterface
                             'Content.Input.Remark' => 'Bemerkungen',
                             'Content.Input.Rating' => 'Einschätzung',
                             'Content.Input.Survey' => 'Gutachten',
-                            'Content.Input.Team' => 'Arbeitsgemeinschaften',
+//                            'Content.Input.Team' => 'Arbeitsgemeinschaften',
                             'Content.Input.Deepening' => 'Vertiefungsrichtung',
                             'Content.Input.Choose' => 'Wahlpflichtbereich',
                             'Content.Input.SchoolType' => 'Ausbildung fortsetzen',

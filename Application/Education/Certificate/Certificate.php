@@ -2,7 +2,6 @@
 namespace SPHERE\Application\Education\Certificate;
 
 use SPHERE\Application\Education\Certificate\Approve\Approve;
-use SPHERE\Application\Education\Certificate\Generator\Generator;
 use SPHERE\Application\Education\Certificate\Prepare\Prepare;
 use SPHERE\Application\Education\Certificate\PrintCertificate\PrintCertificate;
 use SPHERE\Application\Education\Certificate\Setting\Setting;
@@ -11,13 +10,18 @@ use SPHERE\Common\Main;
 use SPHERE\Common\Window\Navigation\Link;
 use SPHERE\Common\Window\Stage;
 
+/**
+ * Class Certificate
+ *
+ * @package SPHERE\Application\Education\Certificate
+ */
 class Certificate implements IApplicationInterface
 {
 
     public static function registerApplication()
     {
 
-        Generator::registerModule();
+//        Generator::registerModule();
         Setting::registerModule();
         Prepare::registerModule();
         Approve::registerModule();

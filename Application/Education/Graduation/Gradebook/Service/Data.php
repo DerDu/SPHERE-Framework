@@ -260,7 +260,7 @@ class Data extends AbstractData
         if (null !== $Entity) {
 
             Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(), $Entity);
-            $Manager->killEntity($Entity);
+            $Manager->removeEntity($Entity);
             return true;
         }
         return false;

@@ -21,6 +21,7 @@ use SPHERE\Common\Window\Stage;
 use SPHERE\System\Extension\Extension;
 
 /**
+ * @deprecated
  * Class Frontend
  *
  * @package SPHERE\Application\Document\Explorer
@@ -29,7 +30,9 @@ class Frontend extends Extension implements IFrontendInterface
 {
 
     /**
-     * @param int|null $Id
+     * @deprecated
+     *
+*@param int|null $Id
      *
      * @return Stage
      */

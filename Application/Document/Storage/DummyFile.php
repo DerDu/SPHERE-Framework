@@ -5,6 +5,7 @@ use MOC\V\Core\FileSystem\FileSystem;
 use MOC\V\Core\GlobalsKernel\GlobalsKernel;
 
 /**
+ * @deprecated
  * Class DummyFile
  *
  * @package SPHERE\Application\Document\Storage
@@ -12,6 +13,10 @@ use MOC\V\Core\GlobalsKernel\GlobalsKernel;
 class DummyFile
 {
 
+    /** @var string $FileName */
+    private $FileDirectory = '';
+    /** @var string $FileName */
+    private $FileName = '';
     /** @var string $FileLocation */
     private $FileLocation = '';
     /** @var string $FileContent */
@@ -21,20 +26,24 @@ class DummyFile
     private $Destruct = true;
 
     /**
-     * @param string $Extension
+     * @deprecated
+     *
+*@param string $Extension
      * @param string $Prefix
      * @param bool   $Destruct
      */
     public function __construct($Extension = 'document-storage', $Prefix = 'SPHERE-Temporary', $Destruct = true)
     {
 
-        $Location = sys_get_temp_dir().DIRECTORY_SEPARATOR.$Prefix.'-'.md5(uniqid($Prefix, true)).'.'.$Extension;
+        $this->FileDirectory = sys_get_temp_dir();
+        $this->FileName = $Prefix.'-'.md5(uniqid($Prefix, true)).'.'.$Extension;
+        $Location = $this->FileDirectory.DIRECTORY_SEPARATOR.$this->FileName;
         $this->setFileLocation($Location);
         $this->Destruct = (bool)$Destruct;
     }
 
     /**
-     *
+     * @deprecated
      */
     public function __destruct()
     {
@@ -45,6 +54,7 @@ class DummyFile
     }
 
     /**
+     * @deprecated
      * @return string
      */
     public function getRealPath()
@@ -59,6 +69,7 @@ class DummyFile
     }
 
     /**
+     * @deprecated
      * @return string
      */
     public function getFileLocation()
@@ -68,7 +79,9 @@ class DummyFile
     }
 
     /**
-     * @param string $FileLocation
+     * @deprecated
+     *
+*@param string $FileLocation
      */
     public function setFileLocation($FileLocation)
     {
@@ -77,7 +90,7 @@ class DummyFile
     }
 
     /**
-     *
+     * @deprecated
      */
     public function loadFile()
     {
@@ -86,7 +99,7 @@ class DummyFile
     }
 
     /**
-     *
+     * @deprecated
      */
     public function saveFile()
     {
@@ -98,6 +111,7 @@ class DummyFile
     }
 
     /**
+     * @deprecated
      * @return string
      */
     public function getFileContent()
@@ -107,7 +121,9 @@ class DummyFile
     }
 
     /**
-     * @param string $FileContent
+     * @deprecated
+     *
+*@param string $FileContent
      */
     public function setFileContent($FileContent)
     {
@@ -116,6 +132,7 @@ class DummyFile
     }
 
     /**
+     * @deprecated
      * @return bool
      */
     public function getFileExists()
@@ -128,11 +145,32 @@ class DummyFile
     }
 
     /**
+     * @deprecated
      * @return false|null|string
      */
     public function getMimeType()
     {
 
         return FileSystem::getFileLoader($this->getFileLocation())->getMimeType();
+    }
+
+    /**
+     * @deprecated
+     * @return string
+     */
+    public function getFileName()
+    {
+
+        return $this->FileName;
+    }
+
+    /**
+     * @deprecated
+     * @return string
+     */
+    public function getFileDirectory()
+    {
+
+        return $this->FileDirectory;
     }
 }

@@ -253,10 +253,38 @@ class Service extends AbstractService
     /**
      * @param TblGroup $tblGroup
      *
+     * @return false|TblMember[]
+     */
+    public function getMemberAllByGroup(TblGroup $tblGroup)
+    {
+        return (new Data($this->getBinding()))->getMemberAllByGroup($tblGroup);
+    }
+
+    /**
+     * @param TblMember $tblMember
+     *
+     * @return bool
+     */
+    public function removeMember(TblMember $tblMember)
+    {
+
+        return (new Data($this->getBinding()))->removeMember($tblMember);
+    }
+
+    /**
+     * @param TblGroup $tblGroup
+     *
      * @return bool
      */
     public function destroyGroup(TblGroup $tblGroup)
     {
+
+        $tblMemberList = Group::useService()->getMemberAllByGroup($tblGroup);
+        if ($tblMemberList) {
+            foreach ($tblMemberList as $tblMember) {
+                Group::useService()->removeMember($tblMember);
+            }
+        }
 
         return (new Data($this->getBinding()))->destroyGroup($tblGroup);
     }

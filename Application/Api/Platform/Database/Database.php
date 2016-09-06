@@ -20,6 +20,11 @@ use SPHERE\System\Cache\Handler\SmartyHandler;
 use SPHERE\System\Cache\Handler\TwigHandler;
 use SPHERE\System\Extension\Extension;
 
+/**
+ * Class Database
+ *
+ * @package SPHERE\Application\Api\Platform\Database
+ */
 class Database extends Extension implements IModuleInterface
 {
 
@@ -47,6 +52,11 @@ class Database extends Extension implements IModuleInterface
 
     }
 
+    /**
+     * @param string $Consumer
+     *
+     * @return string
+     */
     public function executeUpgrade($Consumer)
     {
 

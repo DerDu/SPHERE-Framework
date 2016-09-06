@@ -289,6 +289,25 @@ class Data extends AbstractData
     }
 
     /**
+     * @param TblMember $tblMember
+     *
+     * @return bool
+     */
+    public function removeMember(TblMember $tblMember)
+    {
+
+        $Manager = $this->getConnection()->getEntityManager();
+        /** @var TblMember $Entity */
+        $Entity = $Manager->getEntityById('TblMember', $tblMember->getId());
+        if (null !== $Entity) {
+            Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(), $Entity);
+            $Manager->killEntity($Entity);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * @param TblGroup $tblGroup
      *
      * @return bool

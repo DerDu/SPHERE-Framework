@@ -140,6 +140,7 @@ class Frontend extends Extension implements IFrontendInterface
                     new LayoutGroup(new LayoutRow(array(
                         new LayoutColumn(new TableData($PersonList, null,
                             array(
+                                'Number' => '#',
                                 'Salutation' => 'Anrede',
                                 'FirstName' => 'Vorname',
                                 'LastName' => 'Name',
@@ -149,10 +150,6 @@ class Frontend extends Extension implements IFrontendInterface
                                 'Address' => 'Adresse',
                             ),
                             array(
-                                'order' => array(
-                                    array(2, 'asc'),
-                                    array(1, 'asc')
-                                ),
                                 "pageLength" => -1,
                                 "responsive" => false
                             )
@@ -293,7 +290,8 @@ class Frontend extends Extension implements IFrontendInterface
                             new LayoutColumn(
                                 new TableData($PersonList, null,
                                     array(
-                                        'Number' => 'Schüler-Nr.',
+                                        'Number' => '#',
+                                        'StudentNumber' => 'Schüler-Nr.',
                                         'Name' => 'Name, Vorname',
                                         'Gender' => 'Geschlecht',
                                         'Address' => 'Adresse',
@@ -305,9 +303,6 @@ class Frontend extends Extension implements IFrontendInterface
                                         'PhoneGuardian2' => 'Tel. Sorgeber. 2',
                                     ),
                                     array(
-                                        'order' => array(
-                                            array(1, 'asc')
-                                        ),
                                         "pageLength" => -1,
                                         "responsive" => false
                                     )
@@ -456,7 +451,7 @@ class Frontend extends Extension implements IFrontendInterface
                             new LayoutColumn(
                                 new TableData($PersonList, null,
                                     array(
-                                        'Number' => 'lfd. Nr.',
+                                        'Number' => '#',
                                         'Name' => 'Name, Vorname',
                                         'Address' => 'Anschrift',
                                         'Birthplace' => 'Geburtsort',
@@ -464,9 +459,6 @@ class Frontend extends Extension implements IFrontendInterface
                                         'Age' => 'Alter',
                                     ),
                                     array(
-                                        'order' => array(
-                                            array(1, 'asc')
-                                        ),
                                         "pageLength" => -1,
                                         "responsive" => false
                                     )
@@ -614,7 +606,8 @@ class Frontend extends Extension implements IFrontendInterface
                             new LayoutColumn(
                                 new TableData($PersonList, null,
                                     array(
-                                        'Number' => 'Schüler-Nr.',
+                                        'Number' =>'#',
+                                        'StudentNumber' => 'Schüler-Nr.',
                                         'Name' => 'Name,<br/>Vorname',
                                         'Address' => 'Anschrift',
                                         'Birthday' => 'Geburtsdatum<br/>Geburtsort',
@@ -624,9 +617,6 @@ class Frontend extends Extension implements IFrontendInterface
                                         'PhoneGuardianNumber' => 'Telefon<br/>Sorgeberechtigte',
                                     ),
                                     array(
-                                        'order' => array(
-                                            array(1, 'asc')
-                                        ),
                                         "pageLength" => -1,
                                         "responsive" => false
                                     )

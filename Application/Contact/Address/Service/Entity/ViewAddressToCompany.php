@@ -5,6 +5,7 @@ use Doctrine\ORM\Mapping\Cache;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
+use SPHERE\System\Database\Binding\AbstractService;
 use SPHERE\System\Database\Binding\AbstractView;
 
 /**
@@ -154,5 +155,13 @@ class ViewAddressToCompany extends AbstractView
     {
 
 //        $this->addForeignView(self::TBL_TO_COMPANY_SERVICE_TBL_COMPANY, new ViewCompany(), ViewCompany::TBL_COMPANY_ID);
+    }
+
+    /**
+     * @return AbstractService
+     */
+    public function getViewService()
+    {
+        // TODO: Implement getViewService() method.
     }
 }

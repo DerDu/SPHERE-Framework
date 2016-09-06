@@ -28,7 +28,7 @@ class HorHjOne extends Certificate
         $Header = (new Slice())
             ->addSection((new Section())
                 ->addElementColumn((new Element())
-                    ->setContent('Hormersdorf Halbjahreszeugnis Klasse 1.pdf')
+                    ->setContent('Hormersdorf Halbjahresinformation Klasse 1.pdf')
                     ->styleTextSize('12px')
                     ->styleTextColor('#CCC')
                     ->styleAlignCenter()
@@ -47,7 +47,7 @@ class HorHjOne extends Certificate
                 )
                 ->addSlice((new Slice())
                     ->addSection((new Section())
-                        ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/Hormersdorf_logo.jpg', '150px'))
+                        ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/Hormersdorf_logo.jpg', '100px'))
                             ->styleAlignCenter()
                             , '25%')
                         ->addSliceColumn((new Slice())
@@ -136,7 +136,7 @@ class HorHjOne extends Certificate
                                 {% else %}
                                     &nbsp;
                                 {% endif %}')
-                        ->styleHeight('510px')
+                        ->styleHeight('410px')
                         ->styleMarginTop('15px')
                     )
                 )

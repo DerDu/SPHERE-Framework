@@ -9,6 +9,7 @@ use SPHERE\Application\Document\Explorer\Storage\Storage;
 use SPHERE\System\Database\Fitting\Element;
 
 /**
+ * @deprecated
  * @Entity()
  * @Table(name="tblDirectory")
  * @Cache(usage="READ_ONLY")
@@ -43,6 +44,7 @@ class TblDirectory extends Element
     protected $Description;
 
     /**
+     * @deprecated
      * @return string
      */
     public function getIdentifier()
@@ -52,7 +54,9 @@ class TblDirectory extends Element
     }
 
     /**
-     * @param string $Identifier
+     * @deprecated
+     *
+*@param string $Identifier
      */
     public function setIdentifier($Identifier)
     {
@@ -61,6 +65,7 @@ class TblDirectory extends Element
     }
 
     /**
+     * @deprecated
      * @return bool
      */
     public function isLocked()
@@ -70,7 +75,9 @@ class TblDirectory extends Element
     }
 
     /**
-     * @param bool $IsLocked
+     * @deprecated
+     *
+*@param bool $IsLocked
      */
     public function setLocked($IsLocked)
     {
@@ -79,6 +86,7 @@ class TblDirectory extends Element
     }
 
     /**
+     * @deprecated
      * Parent Directory
      *
      * @return bool|TblDirectory
@@ -94,7 +102,9 @@ class TblDirectory extends Element
     }
 
     /**
-     * @param null|TblDirectory $tblDirectory
+     * @deprecated
+     *
+*@param null|TblDirectory $tblDirectory
      */
     public function setTblDirectory(TblDirectory $tblDirectory = null)
     {
@@ -103,6 +113,7 @@ class TblDirectory extends Element
     }
 
     /**
+     * @deprecated
      * @return string
      */
     public function getName()
@@ -112,6 +123,7 @@ class TblDirectory extends Element
     }
 
     /**
+     * @deprecated
      * @param string $Name
      */
     public function setName($Name)
@@ -121,6 +133,7 @@ class TblDirectory extends Element
     }
 
     /**
+     * @deprecated
      * @return string
      */
     public function getDescription()
@@ -130,6 +143,7 @@ class TblDirectory extends Element
     }
 
     /**
+     * @deprecated
      * @param string $Description
      */
     public function setDescription($Description)

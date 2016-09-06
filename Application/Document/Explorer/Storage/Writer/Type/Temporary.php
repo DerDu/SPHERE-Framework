@@ -4,6 +4,7 @@ namespace SPHERE\Application\Document\Explorer\Storage\Writer\Type;
 use SPHERE\Application\Document\Explorer\Storage\Writer\AbstractWriter;
 
 /**
+ * @deprecated
  * Class Temporary
  *
  * @package SPHERE\Application\Document\Explorer\Storage\Writer\Type
@@ -15,7 +16,9 @@ class Temporary extends AbstractWriter
     private $Destruct = true;
 
     /**
-     * @param string $Prefix
+     * @deprecated
+     *
+*@param string $Prefix
      * @param string $Extension
      * @param bool   $Destruct
      */
@@ -29,7 +32,7 @@ class Temporary extends AbstractWriter
     }
 
     /**
-     *
+     * @deprecated
      */
     public function __destruct()
     {

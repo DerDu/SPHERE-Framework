@@ -31,12 +31,7 @@ class Service extends Extension
     {
 
         $tblPersonList = Division::useService()->getStudentAllByDivision($tblDivision);
-        foreach ($tblPersonList as $key => $row) {
-            $lastName[$key] = strtoupper($row->getLastName());
-            $firstName[$key] = strtoupper($row->getFirstName());
-            $id[$key] = $row->getId();
-        }
-        array_multisort($lastName, SORT_ASC, $firstName, SORT_ASC, $tblPersonList);
+
         $TableContent = array();
         $Consumer = Consumer::useService()->getConsumerBySession();
 
@@ -69,6 +64,7 @@ class Service extends Extension
 
                 // Content
                 $Item['Count'] = $CountNumber;
+                $Item['Number'] = $CountNumber;
                 $Item['FirstName'] = $tblPerson->getFirstSecondName();
                 $Item['LastName'] = $tblPerson->getLastName();
                 $Item['Profile'] = 'ohne';
@@ -189,12 +185,7 @@ class Service extends Extension
     {
 
         $tblPersonList = Division::useService()->getStudentAllByDivision($tblDivision);
-        foreach ($tblPersonList as $key => $row) {
-            $lastName[$key] = strtoupper($row->getLastName());
-            $firstName[$key] = strtoupper($row->getFirstName());
-            $id[$key] = $row->getId();
-        }
-        array_multisort($lastName, SORT_ASC, $firstName, SORT_ASC, $tblPersonList);
+
         $TableContent = array();
         $Consumer = Consumer::useService()->getConsumerBySession();
 
@@ -227,6 +218,7 @@ class Service extends Extension
 
                 // Content
                 $Item['Count'] = $CountNumber;
+                $Item['Number'] = $CountNumber;
                 $Item['FirstName'] = $tblPerson->getFirstSecondName();
                 $Item['LastName'] = $tblPerson->getLastName();
                 $Item['Empty'] = '';
@@ -323,12 +315,6 @@ class Service extends Extension
 
         $tblPersonList = Division::useService()->getStudentAllByDivision($tblDivision);
 
-        foreach ($tblPersonList as $key => $row) {
-            $lastName[$key] = strtoupper($row->getLastName());
-            $firstName[$key] = strtoupper($row->getFirstName());
-            $id[$key] = $row->getId();
-        }
-        array_multisort($lastName, SORT_ASC, $firstName, SORT_ASC, $tblPersonList);
         $TableContent = array();
         $Consumer = Consumer::useService()->getConsumerBySession();
 
@@ -360,6 +346,7 @@ class Service extends Extension
 
                 // Content
                 $Item['Count'] = $CountNumber;
+                $Item['Number'] = $CountNumber;
                 $Item['FirstName'] = $tblPerson->getFirstSecondName();
                 $Item['LastName'] = $tblPerson->getLastName();
                 $Item['StreetName'] = $Item['StreetNumber'] = $Item['Code'] = $Item['City'] = '';
@@ -591,12 +578,6 @@ class Service extends Extension
 
         $tblPersonList = Division::useService()->getStudentAllByDivision($tblDivision);
 
-        foreach ($tblPersonList as $key => $row) {
-            $lastName[$key] = strtoupper($row->getLastName());
-            $firstName[$key] = strtoupper($row->getFirstName());
-            $id[$key] = $row->getId();
-        }
-        array_multisort($lastName, SORT_ASC, $firstName, SORT_ASC, $tblPersonList);
         $TableContent = array();
         $Consumer = Consumer::useService()->getConsumerBySession();
 
@@ -626,7 +607,7 @@ class Service extends Extension
                     }
                 }
                 // Content
-                $Item['Count'] = $CountNumber;
+                $Item['Number'] = $CountNumber;
                 $Item['Count2'] = $CountNumber;
                 $Item['Name'] = $tblPerson->getLastFirstName();
                 $Item['FirstName'] = $tblPerson->getFirstSecondName();
@@ -702,7 +683,7 @@ class Service extends Extension
                 }
                 $Row++;
 
-                $export->setValue($export->getCell(0, $Row), $PersonData['Count']);
+                $export->setValue($export->getCell(0, $Row), $PersonData['Number']);
                 $export->setValue($export->getCell(1, $Row), $PersonData['Name']);
                 $export->setValue($export->getCell(2, $Row), $PersonData['Count2']);
                 $export->setValue($export->getCell(3, $Row), $PersonData['Birthday']);
@@ -755,12 +736,6 @@ class Service extends Extension
 
         $tblPersonList = Division::useService()->getStudentAllByDivision($tblDivision);
 
-        foreach ($tblPersonList as $key => $row) {
-            $lastName[$key] = strtoupper($row->getLastName());
-            $firstName[$key] = strtoupper($row->getFirstName());
-            $id[$key] = $row->getId();
-        }
-        array_multisort($lastName, SORT_ASC, $firstName, SORT_ASC, $tblPersonList);
         $TableContent = array();
         $Consumer = Consumer::useService()->getConsumerBySession();
 
@@ -790,6 +765,7 @@ class Service extends Extension
                     }
                 }
                 // Content
+                $Item['Number'] = $CountNumber;
                 $Item['Count'] = $CountNumber;
                 $Item['Name'] = $tblPerson->getLastFirstName();
                 $Item['FirstName'] = $tblPerson->getFirstSecondName();

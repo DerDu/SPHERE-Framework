@@ -64,11 +64,33 @@ class Style extends Extension
         $this->setSource('/Library/jQuery.iCheck/1.0.2/skins/all.css', false, true);
         $this->setSource('/Library/jQuery.Gridster/0.6.10/dist/jquery.gridster.min.css', false, true);
         $this->setSource('/Library/Bootstrap.Checkbox/0.3.3/awesome-bootstrap-checkbox.css', false, true);
-//        $this->setSource( '/Library/jQuery.DataTables/1.10.7/media/css/jquery.dataTables.min.css' );
-        $this->setSource('/Library/jQuery.DataTables/1.10.7/extensions/Responsive/css/dataTables.responsive.css', false,
+
+        //        <link rel="stylesheet" type="text/css" href="Bootstrap-3.3.6/css/bootstrap.css"/>
+        //        <link rel="stylesheet" type="text/css" href="DataTables-1.10.12/css/dataTables.bootstrap.css"/>
+        //        <link rel="stylesheet" type="text/css" href="AutoFill-2.1.2/css/autoFill.bootstrap.min.css"/>
+        //        <link rel="stylesheet" type="text/css" href="Buttons-1.2.2/css/buttons.bootstrap.css"/>
+        //        <link rel="stylesheet" type="text/css" href="ColReorder-1.3.2/css/colReorder.bootstrap.css"/>
+        //        <link rel="stylesheet" type="text/css" href="FixedColumns-3.2.2/css/fixedColumns.bootstrap.css"/>
+        //        <link rel="stylesheet" type="text/css" href="FixedHeader-3.1.2/css/fixedHeader.bootstrap.css"/>
+        //        <link rel="stylesheet" type="text/css" href="KeyTable-2.1.3/css/keyTable.bootstrap.css"/>
+        //        <link rel="stylesheet" type="text/css" href="Responsive-2.1.0/css/responsive.bootstrap.css"/>
+        //        <link rel="stylesheet" type="text/css" href="RowReorder-1.1.2/css/rowReorder.bootstrap.css"/>
+        //        <link rel="stylesheet" type="text/css" href="Scroller-1.4.2/css/scroller.bootstrap.css"/>
+        //        <link rel="stylesheet" type="text/css" href="Select-1.2.0/css/select.bootstrap.css"/>
+        //
+
+        $this->setSource('/Library/DataTables/Responsive-2.1.0/css/responsive.bootstrap.min.css', false,
             true);
-        $this->setSource('/Library/jQuery.DataTables.Plugins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.css',
-            false, true);
+        $this->setSource('/Library/DataTables/RowReorder-1.1.2/css/rowReorder.bootstrap.min.css', false,
+            true);
+
+////        $this->setSource( '/Library/jQuery.DataTables/1.10.7/media/css/jquery.dataTables.min.css' );
+//        $this->setSource('/Library/jQuery.DataTables/1.10.7/extensions/Responsive/css/dataTables.responsive.css', false,
+//            true);
+//        $this->setSource('/Library/jQuery.DataTables.Plugins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.css',
+//            false, true);
+
+
         $this->setSource('/Library/Bootstrap.DateTimePicker/4.14.30/build/css/bootstrap-datetimepicker.min.css', false,
             true);
         $this->setSource('/Library/Bootstrap.FileInput/4.1.6/css/fileinput.min.css', false, true);
@@ -96,6 +118,7 @@ class Style extends Extension
         $this->setSource('/Common/Style/CleanSlate/0.10.1/cleanslate.css',false,true);
         $this->setSource('/Common/Style/PhpInfo.css', false, true);
         $this->setSource('/Common/Style/Addition.css');
+        $this->setSource('/Common/Style/Animate.css');
     }
 
     /**

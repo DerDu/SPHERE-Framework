@@ -225,62 +225,16 @@ class CheBeMi extends Certificate
                             ->setContent('&nbsp;')
                         )
                     )
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Deutsch/Sorbisch¹ ²')
-                            , '25%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.DE is not empty) %}
-                                    {{ Content.Grade.Data.DE }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->styleBorderBottom()
-                            , '20%')
-                        ->addElementColumn((new Element())
-                            , '10%')
-                        ->addElementColumn((new Element())
-                            ->setContent('Mathematik')
-                            , '25%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.MA is not empty) %}
-                                    {{ Content.Grade.Data.MA }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->styleBorderBottom()
-                            , '20%')
-                    )
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Englisch')
-                            ->stylePaddingTop('20px')
-                            , '25%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.EN is not empty) %}
-                                    {{ Content.Grade.Data.EN }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->stylePaddingTop('20px')
-                            ->styleAlignCenter()
-                            ->styleBorderBottom()
-                            , '20%')
-                        ->addElementColumn((new Element())
-                            ->setContent('&nbsp;')
-                            ->stylePaddingTop('20px')
-                            , '55%')
-                    )
+                    ->addSectionList($this->getSubjectLanes(false))
                     ->addSection((new Section())
                         ->addElementColumn((new Element())
                             ->setContent('Durchschnitt der Noten aus den angegebenen Fächern')
                             ->stylePaddingTop('20px')
                             , '80%')
                         ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.DE is not empty) %}
-                                    {{ ((Content.Grade.Data.DE + Content.Grade.Data.MA + Content.Grade.Data.EN) / 3)|round(2, "floor") }}
+                            ->setContent('
+                                {% if(Content.Grade.Data.Average is not empty) %}
+                                    {{ Content.Grade.Data.Average }}
                                 {% else %}
                                     ---
                                 {% endif %}')
@@ -304,7 +258,12 @@ class CheBeMi extends Certificate
                             ->stylePaddingTop('10px')
                             , '80%')
                         ->addElementColumn((new Element())
-                            ->setContent('---')
+                            ->setContent('
+                                {% if(Content.Grade.Data.AverageOthers is not empty) %}
+                                    {{ Content.Grade.Data.AverageOthers }}
+                                {% else %}
+                                    ---
+                                {% endif %}')
                             ->stylePaddingTop('20px')
                             ->styleAlignCenter()
                             ->styleBorderBottom()

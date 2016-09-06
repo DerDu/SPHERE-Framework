@@ -28,6 +28,7 @@ use SPHERE\Common\Frontend\Text\Repository\Bold;
 use SPHERE\Common\Window\Redirect;
 use SPHERE\System\Database\Binding\AbstractService;
 use SPHERE\System\Database\Fitting\Element;
+use SPHERE\System\Extension\Repository\Sorter;
 
 /**
  * Class Service
@@ -248,7 +249,7 @@ class Service extends AbstractService
 
         return (new Data($this->getBinding()))->getDivisionAllByNameAndYear($Name, $tblYear);
     }
-    
+
     /**
      * @param      $Name
      * @param null $Level
@@ -369,7 +370,46 @@ class Service extends AbstractService
     public function addStudentToDivision(TblDivision $tblDivision, TblPerson $tblPerson)
     {
 
-        return (new Data($this->getBinding()))->addDivisionStudent($tblDivision, $tblPerson);
+        $orderMax = $this->getDivisionStudentSortOrderMax($tblDivision);
+        if ($orderMax == 0) {
+            $orderMax = $this->sortDivisionStudentByProperty($tblDivision);
+        }
+        $SortOrder = $orderMax + 1;
+        return (new Data($this->getBinding()))->addDivisionStudent($tblDivision, $tblPerson, $SortOrder);
+    }
+
+    /**
+     * @param TblDivision $tblDivision
+     * @param string $Property
+     * @param null $Sorter
+     * @param int $Order
+     *
+     * @return int
+     */
+    public function sortDivisionStudentByProperty(
+        TblDivision $tblDivision,
+        $Property = 'LastFirstName',
+        $Sorter = null,
+        $Order = Sorter::ORDER_ASC
+    ) {
+        $tblStudentAll = Division::useService()->getStudentAllByDivision($tblDivision);
+        if ($tblStudentAll) {
+
+            $tblStudentAll = $this->getSorter($tblStudentAll)->sortObjectBy($Property, $Sorter,
+                $Order);
+            $count = 1;
+            foreach ($tblStudentAll as $tblPerson) {
+                if (($tblDivisionStudent = $this->getDivisionStudentByDivisionAndPerson(
+                    $tblDivision, $tblPerson))
+                ) {
+                    Division::useService()->updateDivisionStudentSortOrder($tblDivisionStudent, $count++);
+                }
+            }
+
+            return $count;
+        }
+
+        return 0;
     }
 
     /**
@@ -706,6 +746,17 @@ class Service extends AbstractService
     }
 
     /**
+     * @param TblDivisionSubject $tblDivisionSubject
+     *
+     * @return bool|TblPerson[]
+     */
+    public function getStudentByDivisionSubject(TblDivisionSubject $tblDivisionSubject)
+    {
+
+        return (new Data($this->getBinding()))->getStudentByDivisionSubject($tblDivisionSubject);
+    }
+
+    /**
      * @param TblSubjectStudent $tblSubjectStudent
      *
      * @return string
@@ -787,13 +838,17 @@ class Service extends AbstractService
     /**
      * @param TblDivision $tblDivision
      * @param TblPerson $tblPerson
+     * @param null|integer $SortOrder
      *
      * @return TblDivisionStudent
      */
-    public function insertDivisionStudent(TblDivision $tblDivision, TblPerson $tblPerson)
-    {
+    public function insertDivisionStudent(
+        TblDivision $tblDivision,
+        TblPerson $tblPerson,
+        $SortOrder = null
+    ) {
 
-        return (new Data($this->getBinding()))->addDivisionStudent($tblDivision, $tblPerson);
+        return (new Data($this->getBinding()))->addDivisionStudent($tblDivision, $tblPerson, $SortOrder);
     }
 
     /**
@@ -980,6 +1035,17 @@ class Service extends AbstractService
      *
      * @return bool|TblPerson[]
      */
+    public function getStudentAllByDivision(TblDivision $tblDivision)
+    {
+
+        return (new Data($this->getBinding()))->getStudentAllByDivision($tblDivision);
+    }
+
+    /**
+     * @param TblDivision $tblDivision
+     *
+     * @return bool|TblPerson[]
+     */
     public function getTeacherAllByDivision(TblDivision $tblDivision)
     {
 
@@ -995,6 +1061,17 @@ class Service extends AbstractService
     {
 
         return (new Data($this->getBinding()))->getCustodyAllByDivision($tblDivision);
+    }
+
+    /**
+     * @param TblDivision $tblDivision
+     *
+     * @return bool|TblSubject[]
+     */
+    public function getSubjectAllByDivision(TblDivision $tblDivision)
+    {
+
+        return (new Data($this->getBinding()))->getSubjectAllByDivision($tblDivision);
     }
 
     /**
@@ -1440,11 +1517,14 @@ class Service extends AbstractService
                     $this->addSubjectWithGroups($tblDivision, $tblDivisionCopy);
                 }
 
-
-                $tblDivisionStudentList = $this->getStudentAllByDivision($tblDivision);
+                $tblDivisionStudentList = $this->getDivisionStudentAllByDivision($tblDivision);
                 if ($tblDivisionStudentList) {
                     foreach ($tblDivisionStudentList as $tblDivisionStudent) {
-                        (new Data($this->getBinding()))->addDivisionStudent($tblDivisionCopy, $tblDivisionStudent);
+                        (new Data($this->getBinding()))->addDivisionStudent(
+                            $tblDivisionCopy,
+                            $tblDivisionStudent->getServiceTblPerson(),
+                            $tblDivisionStudent->getSortOrder()
+                        );
                     }
                 }
 
@@ -1769,4 +1849,61 @@ class Service extends AbstractService
 
         return empty($resultList) ? false : $resultList;
     }
+
+    /**
+     * @param TblDivisionStudent $tblDivisionStudent
+     * @param integer $SortOrder
+     *
+     * @return bool
+     */
+    public
+    function updateDivisionStudentSortOrder(
+        TblDivisionStudent $tblDivisionStudent,
+        $SortOrder
+    ) {
+
+        return (new Data($this->getBinding()))->updateDivisionStudentSortOrder($tblDivisionStudent, $SortOrder);
+    }
+
+    /**
+     * @param TblDivision $tblDivision
+     *
+     * @return bool|TblDivisionStudent[]
+     */
+    public
+    function getDivisionStudentAllByDivision(
+        TblDivision $tblDivision
+    ) {
+
+        return (new Data($this->getBinding()))->getDivisionStudentAllByDivision($tblDivision);
+    }
+
+    /**
+     * @param TblDivision $tblDivision
+     *
+     * @return int|null
+     */
+    public
+    function getDivisionStudentSortOrderMax(
+        TblDivision $tblDivision
+    ) {
+
+        return (new Data($this->getBinding()))->getDivisionStudentSortOrderMax($tblDivision);
+    }
+
+    /**
+     * @param TblDivision $tblDivision
+     * @param TblPerson $tblPerson
+     *
+     * @return false|TblDivisionStudent
+     */
+    public
+    function getDivisionStudentByDivisionAndPerson(
+        TblDivision $tblDivision,
+        TblPerson $tblPerson
+    ) {
+
+        return (new Data($this->getBinding()))->getDivisionStudentByDivisionAndPerson($tblDivision, $tblPerson);
+    }
+
 }

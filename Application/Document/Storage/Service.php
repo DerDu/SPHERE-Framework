@@ -95,6 +95,17 @@ class Service extends AbstractService
     }
 
     /**
+     * @param TblDirectory $tblDirectory
+     *
+     * @return false|TblFile[]
+     */
+    public function getFileAllByDirectory(TblDirectory $tblDirectory)
+    {
+
+        return ( new Data($this->getBinding()) )->getFileAllByDirectory($tblDirectory);
+    }
+
+    /**
      * @param int $Id
      *
      * @return false|TblPartition
@@ -134,7 +145,7 @@ class Service extends AbstractService
      * @param TblPerson   $tblPerson
      * @param TblDivision $tblDivision
      * @param Certificate $Certificate
-     * @param DummyFile   $File
+     * @param FilePointer $File
      *
      * @return bool|TblFile
      * @throws \Exception
@@ -143,7 +154,7 @@ class Service extends AbstractService
         TblPerson $tblPerson,
         TblDivision $tblDivision,
         Certificate $Certificate,
-        DummyFile $File
+        FilePointer $File
     ) {
 
         // Load Tmp
@@ -303,5 +314,63 @@ class Service extends AbstractService
     {
 
         return (new Data($this->getBinding()))->getReferenceTypeById($Id);
+    }
+
+    /**
+     * @return false|TblFile[]
+     */
+    public function getCertificateRevisionFileAll()
+    {
+        $tblPartition = $this->getPartitionByIdentifier(
+            TblPartition::IDENTIFIER_CERTIFICATE_STORAGE
+        );
+
+        $resultList = array();
+        $tblDirectoryList = $this->getDirectoryAllByPartition($tblPartition);
+        if ($tblDirectoryList) {
+            foreach ($tblDirectoryList as $tblDirectory) {
+                $tblFileList = $this->getFileAllByDirectory($tblDirectory);
+                if ($tblFileList) {
+                    foreach ($tblFileList as $tblFile) {
+                        $resultList[] = $tblFile;
+                    }
+                }
+            }
+        }
+
+        return empty($resultList) ? false : $resultList;
+    }
+
+    /**
+     * @param TblPerson $tblPerson
+     *
+     * @return false|TblFile[]
+     */
+    public function getCertificateRevisionFileAllByPerson(TblPerson $tblPerson)
+    {
+
+        $tblPartition = $this->getPartitionByIdentifier(
+            TblPartition::IDENTIFIER_CERTIFICATE_STORAGE
+        );
+
+        $resultList = array();
+        $tblDirectoryList = $this->getDirectoryAllByPartition($tblPartition);
+        if ($tblDirectoryList) {
+            foreach ($tblDirectoryList as $tblDirectory) {
+                if (strpos($tblDirectory->getIdentifier(), 'TBL-PERSON-ID:') !== false) {
+                    $personId = substr($tblDirectory->getIdentifier(), strlen('TBL-PERSON-ID:'));
+                    if ($personId == $tblPerson->getId()) {
+                        $tblFileList = $this->getFileAllByDirectory($tblDirectory);
+                        if ($tblFileList) {
+                            foreach ($tblFileList as $tblFile) {
+                                $resultList[] = $tblFile;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return empty($resultList) ? false : $resultList;
     }
 }

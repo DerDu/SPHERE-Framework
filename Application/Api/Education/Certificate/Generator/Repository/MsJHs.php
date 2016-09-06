@@ -326,6 +326,24 @@ class MsJHs extends Certificate
                             ->styleTextSize('11px')
                             , '30%')
                     )
+                    ->addSection((new Section())
+                        ->addElementColumn((new Element())
+                            , '30%')
+                        ->addElementColumn((new Element())
+                            , '40%')
+                        ->addElementColumn((new Element())
+                            ->setContent(
+                                '{% if(Content.DivisionTeacher.Name is not empty) %}
+                                    {{ Content.DivisionTeacher.Name }}
+                                {% else %}
+                                    &nbsp;
+                                {% endif %}'
+                            )
+                            ->styleTextSize('11px')
+                            ->stylePaddingTop('2px')
+                            ->styleAlignCenter()
+                            , '30%')
+                    )
                     ->styleMarginTop('25px')
                 )
                 ->addSlice((new Slice())

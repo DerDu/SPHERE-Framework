@@ -7,6 +7,7 @@ use SPHERE\Application\Platform\System\Protocol\Protocol;
 use SPHERE\System\Database\Binding\AbstractData;
 
 /**
+ * @deprecated
  * Class Data
  *
  * @package SPHERE\Application\Document\Explorer\Storage\Service
@@ -15,6 +16,7 @@ class Data extends AbstractData
 {
 
     /**
+     * @deprecated
      * @return void
      */
     public function setupDatabaseContent()
@@ -27,7 +29,9 @@ class Data extends AbstractData
     }
 
     /**
-     * @param string       $Name
+     * @deprecated
+     *
+*@param string       $Name
      * @param string       $Description
      * @param TblDirectory $tblDirectoryParent
      * @param bool         $IsLocked
@@ -73,7 +77,9 @@ class Data extends AbstractData
     }
 
     /**
-     * @param int $Id
+     * @deprecated
+     *
+*@param int $Id
      *
      * @return false|TblFile
      */
@@ -85,6 +91,7 @@ class Data extends AbstractData
     }
 
     /**
+     * @deprecated
      * @return false|TblFile[]
      */
     public function getFileAll()
@@ -95,7 +102,9 @@ class Data extends AbstractData
     }
 
     /**
-     * @param int $Id
+     * @deprecated
+     *
+*@param int $Id
      *
      * @return false|TblDirectory
      */
@@ -107,6 +116,7 @@ class Data extends AbstractData
     }
 
     /**
+     * @deprecated
      * @param null|TblDirectory $tblDirectory
      *
      * @return false|TblDirectory[]
@@ -121,6 +131,7 @@ class Data extends AbstractData
     }
 
     /**
+     * @deprecated
      * @return false|TblDirectory[]
      */
     public function getDirectoryAll()
@@ -131,6 +142,7 @@ class Data extends AbstractData
     }
 
     /**
+     * @deprecated
      * @param string       $Name
      * @param string       $Description
      * @param string       $FileName
@@ -174,6 +186,7 @@ class Data extends AbstractData
     }
 
     /**
+     * @deprecated
      * @param TblFile      $tblFile
      * @param string       $Name
      * @param string       $Description
@@ -222,6 +235,7 @@ class Data extends AbstractData
     }
 
     /**
+     * @deprecated
      * @param TblDirectory $tblDirectory
      * @param string       $Name
      * @param string       $Description

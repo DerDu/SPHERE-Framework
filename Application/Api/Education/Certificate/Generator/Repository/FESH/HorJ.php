@@ -47,7 +47,7 @@ class HorJ extends Certificate
                 )
                 ->addSlice((new Slice())
                     ->addSection((new Section())
-                        ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/Hormersdorf_logo.jpg', '150px'))
+                        ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/Hormersdorf_logo.jpg', '100px'))
                             ->styleAlignCenter()
                             , '25%')
                         ->addSliceColumn((new Slice())
@@ -174,7 +174,7 @@ class HorJ extends Certificate
                                 {% else %}
                                     &nbsp;
                                 {% endif %}')
-                        ->styleHeight('175px')
+                        ->styleHeight('120px')
                         ->styleMarginTop('5px')
                     )
                 )

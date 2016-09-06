@@ -19,6 +19,28 @@ class BeMi extends Certificate
 {
 
     /**
+     * @return array
+     */
+    public function selectValuesType()
+    {
+        return array(
+            1 => "der Halbjahresinformation",
+            2 => "der für das Jahreszeugnis vorgesehene Noten gemäß Beschluss der Klassenkonferenz"
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function selectValuesSchoolType()
+    {
+        return array(
+            1 => "am Gymnasium",
+            2 => "an der Mittelschule"
+        );
+    }
+
+    /**
      * @param bool $IsSample
      *
      * @return Frame
@@ -234,80 +256,17 @@ class BeMi extends Certificate
                             ->stylePaddingBottom('25px')
                         )
                     )
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Deutsch/Sorbisch¹ ²')
-                            ->stylePaddingTop()
-                            , '25%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.DE is not empty) %}
-                                    {{ Content.Grade.Data.DE }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            ->styleBorderBottom()
-
-                            , '20%')
-                        ->addElementColumn((new Element())
-                            , '10%')
-                        ->addElementColumn((new Element())
-                            ->setContent('Mathematik')
-                            ->stylePaddingTop()
-                            , '25%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.MA is not empty) %}
-                                    {{ Content.Grade.Data.MA }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleAlignCenter()
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            ->styleBorderBottom()
-                            , '20%')
-                    )
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Englisch')
-                            ->stylePaddingTop()
-                            ->styleMarginTop('10px')
-                            , '25%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.EN is not empty) %}
-                                    {{ Content.Grade.Data.EN }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                            ->styleMarginTop('10px')
-                            ->styleAlignCenter()
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            ->styleBorderBottom()
-                            , '20%')
-                        ->addElementColumn((new Element())
-                            ->setContent('&nbsp;')
-                            ->styleMarginTop('10px')
-                            , '55%')
-                    )
+                )
+                ->addSlice( $this->getSubjectLanes() )
+                ->addSlice((new Slice())
                     ->addSection((new Section())
                         ->addElementColumn((new Element())
                             ->setContent('Durchschnitt der Noten aus den angegebenen Fächern')
                             ->styleMarginTop('15px')
                             , '80%')
                         ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Grade.Data.DE is not empty) %}
-                                    {% if(Content.Grade.Data.MA is not empty) %}
-                                        {% if(Content.Grade.Data.EN is not empty) %}
-                                            {{ ((Content.Grade.Data.DE + Content.Grade.Data.MA + Content.Grade.Data.EN) / 3)|round(2, "floor") }}
-                                        {% else %}
-                                            ---
-                                        {% endif %}
-                                    {% else %}
-                                        ---
-                                    {% endif %}
+                            ->setContent('{% if(Content.Grade.Data.Average is not empty) %}
+                                    {{ Content.Grade.Data.Average }}
                                 {% else %}
                                     ---
                                 {% endif %}')
@@ -334,7 +293,12 @@ class BeMi extends Certificate
                             ->styleMarginTop('10px')
                             , '80%')
                         ->addElementColumn((new Element())
-                            ->setContent('---')
+                            ->setContent('
+                                {% if(Content.Grade.Data.AverageOthers is not empty) %}
+                                    {{ Content.Grade.Data.AverageOthers }}
+                                {% else %}
+                                    ---
+                                {% endif %}')
                             ->stylePaddingTop()
                             ->stylePaddingBottom()
                             ->styleMarginTop('5px')
@@ -355,7 +319,7 @@ class BeMi extends Certificate
                 )
                 ->addSlice((new Slice())
                     ->addElement((new Element())
-                        ->setContent('2. Gutachten³')
+                        ->setContent('2. Gutachten²')
                         ->styleTextSize('16px')
                         ->styleTextBold()
                         ->styleMarginTop('6px')
@@ -491,18 +455,46 @@ class BeMi extends Certificate
                     ->stylePaddingTop()
                     ->stylePaddingBottom()
                     ->styleMarginTop('20px')
+                    ->addSection((new Section())
+                        ->addElementColumn((new Element())
+                            , '35%')
+                        ->addElementColumn((new Element())
+                            , '30%')
+                        ->addElementColumn((new Element())
+                            ->setContent(
+                                '{% if(Content.DivisionTeacher.Name is not empty) %}
+                                    {{ Content.DivisionTeacher.Name }}
+                                {% else %}
+                                    &nbsp;
+                                {% endif %}'
+                            )
+                            ->styleTextSize('11px')
+                            ->stylePaddingTop('2px')
+//                            ->styleAlignCenter()
+                            , '35%')
+                    )
                 )
                 ->addSlice((new Slice())
-                    ->addElement((new Element())
-                        ->setContent('¹ Nichtzutreffendes streichen.'
-                            .new Container('² An sorbische Schulen, an denen Sorbisch je nach Unterrichtsfach und Klassenstufe
-                            Unterrichtssprache ist, kann nach Entscheidung ')
-                            .new Container('&nbsp;&nbsp;der Schulkonferenz gem. § 21 Abs. 5 SOGS das
-                            Fach Deutsch durch das Fach Sorbisch ersetzt werden.')
-                            .new Container('³ Falls der Raum für Eintragungen nicht ausreicht, ist ein Beiblatt zu verwenden.')
+                    ->addSection((new Section())
+                        ->addElementColumn((new Element())
+                            ->styleBorderBottom()
+                            , '30%')
+                        ->addElementColumn((new Element())
+                            , '70%')
+                    )->styleMarginTop('10px')
+                    ->addSection((new Section())
+                        ->addElementColumn((new Element())
+                            ->setContent(
+                                '¹ Nichtzutreffendes streichen.'
+//                            . new Container('² An sorbische Schulen, an denen Sorbisch je nach Unterrichtsfach und Klassenstufe
+//                            Unterrichtssprache ist, kann nach Entscheidung ')
+//                            . new Container('&nbsp;&nbsp;der Schulkonferenz gem. § 21 Abs. 5 SOGS das
+//                            Fach Deutsch durch das Fach Sorbisch ersetzt werden.')
+                                . new Container('² Falls der Raum für Eintragungen nicht ausreicht, ist ein Beiblatt zu verwenden.')
+                            )
+                            ->styleTextSize('9px')
+                            ->styleMarginTop('5px')
                         )
-                        ->styleTextSize('9px')
-                        ->styleMarginTop('5px')
                     )
                 )
             )

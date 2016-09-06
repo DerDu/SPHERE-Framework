@@ -8,6 +8,7 @@ use SPHERE\Common\Frontend\IFrontendInterface;
 use SPHERE\System\Database\Link\Identifier;
 
 /**
+ * @deprecated
  * Class Storage
  *
  * @package SPHERE\Application\Document\Explorer\Storage
@@ -15,12 +16,16 @@ use SPHERE\System\Database\Link\Identifier;
 class Storage implements IModuleInterface
 {
 
+    /**
+     * @deprecated
+     */
     public static function registerModule()
     {
 
     }
 
     /**
+     * @deprecated
      * @return Service
      */
     public static function useService()
@@ -33,6 +38,7 @@ class Storage implements IModuleInterface
     }
 
     /**
+     * @deprecated
      * @return IFrontendInterface
      */
     public static function useFrontend()
@@ -41,6 +47,7 @@ class Storage implements IModuleInterface
     }
 
     /**
+     * @deprecated
      * @return Writer
      */
     public static function useWriter()
