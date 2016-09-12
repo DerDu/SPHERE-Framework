@@ -6,7 +6,6 @@ use SPHERE\Application\Education\Lesson\Division\Division;
 use SPHERE\Application\IModuleInterface;
 use SPHERE\Application\IServiceInterface;
 use SPHERE\Common\Frontend\Icon\Repository\HazardSign;
-use SPHERE\Common\Frontend\Icon\Repository\Remove;
 use SPHERE\Common\Frontend\Icon\Repository\Success;
 use SPHERE\Common\Frontend\IFrontendInterface;
 use SPHERE\Common\Main;

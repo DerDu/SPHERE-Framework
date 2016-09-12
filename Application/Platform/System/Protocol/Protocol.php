@@ -192,7 +192,13 @@ class Protocol implements IModuleInterface
                                 'EntityDiff'   => 'Daten-Änderung',
                                 'EntityTo'     => 'Daten-Ergebnis',
                             ), array(
-                                'responsive' => false
+                                'responsive' => false,
+                                'order' => array(
+                                    array(0, 'desc')
+                                ),
+                                'columnDefs' => array(
+                                    array('type' => 'de_datetime', 'targets' => 0)
+                                )
                             ))
                         ))
                     )

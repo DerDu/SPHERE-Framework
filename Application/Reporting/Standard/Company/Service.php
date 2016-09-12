@@ -82,13 +82,15 @@ class Service extends Extension
                     $tblCompany->StreetNumber = $address->getTblAddress()->getStreetNumber();
                     $tblCompany->Code = $address->getTblAddress()->getTblCity()->getCode();
                     $tblCompany->City = $address->getTblAddress()->getTblCity()->getName();
+                    $tblCompany->District = $address->getTblAddress()->getTblCity()->getDistrict();
 
                     $tblCompany->Address = $address->getTblAddress()->getStreetName().' '.
                         $address->getTblAddress()->getStreetNumber().' '.
                         $address->getTblAddress()->getTblCity()->getCode().' '.
-                        $address->getTblAddress()->getTblCity()->getName();
+                        $address->getTblAddress()->getTblCity()->getName().' '.
+                        ( $address->getTblAddress()->getTblCity()->getDistrict() != '' ? 'OT '.$address->getTblAddress()->getTblCity()->getDistrict() : '' );
                 } else {
-                    $tblCompany->StreetName = $tblCompany->StreetNumber = $tblCompany->Code = $tblCompany->City = '';
+                    $tblCompany->StreetName = $tblCompany->StreetNumber = $tblCompany->Code = $tblCompany->City = $tblCompany->District = '';
                     $tblCompany->Address = '';
                 }
 

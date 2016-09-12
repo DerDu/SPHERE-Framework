@@ -1,12 +1,18 @@
 <?php
 namespace SPHERE\Application\Education\Lesson\Subject;
 
+use SPHERE\Application\Education\Lesson\Division\Division;
 use SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblCategory;
 use SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblGroup;
 use SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject;
+use SPHERE\Application\Education\Lesson\Term\Term;
+use SPHERE\Application\People\Group\Group;
+use SPHERE\Application\People\Meta\Student\Student;
+use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Common\Frontend\Form\Repository\Button\Primary;
 use SPHERE\Common\Frontend\Form\Repository\Field\AutoCompleter;
 use SPHERE\Common\Frontend\Form\Repository\Field\CheckBox;
+use SPHERE\Common\Frontend\Form\Repository\Field\SelectBox;
 use SPHERE\Common\Frontend\Form\Repository\Field\TextField;
 use SPHERE\Common\Frontend\Form\Structure\Form;
 use SPHERE\Common\Frontend\Form\Structure\FormColumn;
@@ -17,9 +23,13 @@ use SPHERE\Common\Frontend\Icon\Repository\Check;
 use SPHERE\Common\Frontend\Icon\Repository\ChevronLeft;
 use SPHERE\Common\Frontend\Icon\Repository\Disable;
 use SPHERE\Common\Frontend\Icon\Repository\Edit;
+use SPHERE\Common\Frontend\Icon\Repository\Enable;
+use SPHERE\Common\Frontend\Icon\Repository\Exclamation;
+use SPHERE\Common\Frontend\Icon\Repository\Filter;
 use SPHERE\Common\Frontend\Icon\Repository\ListingTable;
 use SPHERE\Common\Frontend\Icon\Repository\Ok;
 use SPHERE\Common\Frontend\Icon\Repository\Pencil;
+use SPHERE\Common\Frontend\Icon\Repository\PersonGroup;
 use SPHERE\Common\Frontend\Icon\Repository\PlusSign;
 use SPHERE\Common\Frontend\Icon\Repository\Question;
 use SPHERE\Common\Frontend\Icon\Repository\Remove;
@@ -35,14 +45,16 @@ use SPHERE\Common\Frontend\Layout\Structure\LayoutGroup;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutRow;
 use SPHERE\Common\Frontend\Link\Repository\Standard;
 use SPHERE\Common\Frontend\Message\Repository\Danger;
+use SPHERE\Common\Frontend\Message\Repository\Warning;
 use SPHERE\Common\Frontend\Table\Structure\TableData;
 use SPHERE\Common\Frontend\Text\Repository\Bold;
+use SPHERE\Common\Frontend\Text\Repository\Center;
 use SPHERE\Common\Frontend\Text\Repository\Muted;
 use SPHERE\Common\Frontend\Text\Repository\Small;
+use SPHERE\Common\Frontend\Text\Repository\Success;
 use SPHERE\Common\Window\Redirect;
 use SPHERE\Common\Window\Stage;
 use SPHERE\System\Extension\Extension;
-use SPHERE\System\Extension\Repository\Sorter;
 
 /**
  * Class Frontend
@@ -167,7 +179,7 @@ class Frontend extends Extension implements IFrontendInterface
      * @param $Id
      * @param $Subject
      *
-     * @return Stage
+     * @return Stage|string
      */
     public function frontendChangeSubject($Id, $Subject)
     {
@@ -416,6 +428,433 @@ class Frontend extends Extension implements IFrontendInterface
         );
 
         return $Stage;
+    }
+
+    /**
+     * @param null $Id
+     *
+     * @return Stage
+     */
+    public function frontendLinkPerson($Id = null)
+    {
+
+        $Stage = new Stage('', 'Zuordnung');
+        $Stage->addButton(new Standard('Zurück', '/Education/Lesson/Subject', new ChevronLeft()));
+        $SubjectList = array();
+        $Content = array();
+
+        $tblGroup = Subject::useService()->getGroupById($Id);
+        if ($tblGroup) {
+            $Stage->setTitle($tblGroup->getName());
+            $Stage->setMessage($tblGroup->getName().' für viele Schüler gleichzeitig ändern');
+
+            $tblCategoryList = Subject::useService()->getCategoryAllByGroup($tblGroup);
+            if ($tblCategoryList) {
+                foreach ($tblCategoryList as $tblCategory) {
+                    $tblSubjectList = Subject::useService()->getSubjectAllByCategory($tblCategory);
+                    if ($tblSubjectList) {
+                        foreach ($tblSubjectList as $tblSubject) {
+                            $SubjectList[] = $tblSubject;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!empty( $SubjectList )) {
+            /** @var TblSubject $Subject */
+            foreach ($SubjectList as $Subject) {
+                $Content[$Subject->getId()]['Name'] = $Subject->getName();
+                $Content[$Subject->getId()]['Short'] = $Subject->getAcronym();
+                $Content[$Subject->getId()]['Description'] = $Subject->getDescription();
+                $Content[$Subject->getId()]['Option'] = ( $tblGroup->getName() == 'Wahlfach' ?
+                    new Standard('1. '.$tblGroup->getName(), '/Education/Lesson/Subject/Link/Person/Add', new PersonGroup(), array(
+                        'Id'        => $tblGroup->getId(),
+                        'SubjectId' => $Subject->getId(),
+                        'Group'     => 1
+                    )).new Standard('2. '.$tblGroup->getName(), '/Education/Lesson/Subject/Link/Person/Add', new PersonGroup(), array(
+                        'Id'        => $tblGroup->getId(),
+                        'SubjectId' => $Subject->getId(),
+                        'Group'     => 2
+                    )) :
+                    new Standard('', '/Education/Lesson/Subject/Link/Person/Add', new PersonGroup(), array(
+                        'Id'        => $tblGroup->getId(),
+                        'SubjectId' => $Subject->getId(),
+                    ))
+                );
+            }
+        }
+
+        $Stage->setContent(
+            new Layout(
+                new LayoutGroup(
+                    new LayoutRow(
+                        new LayoutColumn(
+                            new TableData($Content, new \SPHERE\Common\Frontend\Table\Repository\Title($tblGroup->getName(), ' Auswahl')
+                                , array('Name'        => 'Fach',
+                                        'Short'       => 'Kürzel',
+                                        'Description' => 'Beschreibung',
+                                        'Option'      => '',
+                                ))
+                        )
+                    )
+                )
+            )
+        );
+
+        return $Stage;
+    }
+
+    /**
+     * @param null $Id
+     * @param null $SubjectId
+     * @param null $Group
+     * @param null $DataAddPerson
+     * @param null $DataRemovePerson
+     * @param null $Filter
+     * @param null $FilterDivisionId
+     *
+     * @return Stage|string
+     */
+    public function frontendSubjectPersonAdd(
+        $Id = null,
+        $SubjectId = null,
+        $Group = null,
+        $DataAddPerson = null,
+        $DataRemovePerson = null,
+        $Filter = null,
+        $FilterDivisionId = null
+    ) {
+
+        $Stage = new Stage('Kategorie', 'Fach:');
+        $tblGroup = Group::useService()->getGroupByMetaTable('STUDENT');
+        $tblSubjectGroup = Subject::useService()->getGroupById($Id);
+        $SubjectGroup = '';
+        if ($tblSubjectGroup) {
+            $SubjectGroup = $tblSubjectGroup->getName();
+        }
+        if ($Group == null) {
+            $Group = 1;
+        }
+
+        $tblSubject = Subject::useService()->getSubjectById($SubjectId);
+        if ($Id == null) {
+            $Stage->addButton(new Standard('Zurück', '/Education/Lesson/Subject', new ChevronLeft()));
+            return $Stage->setContent(new Warning('Gruppe nicht gefunden'));
+        }
+        if (!$tblSubject) {
+            $Stage->addButton(new Standard('Zurück', '/Education/Lesson/Subject/Link/Person', new ChevronLeft(), array('Id' => $Id)));
+            return $Stage->setContent(new Warning('Fach nicht gefunden'));
+        }
+
+        if ($SubjectGroup == 'Wahlfach') {
+
+            $Stage->setTitle($Group.'. '.$SubjectGroup);
+        } else {
+            $Stage->setTitle($SubjectGroup);
+        }
+        $Stage->setDescription('Fach: '.new Success($tblSubject->getName()));
+        $Stage->setMessage($SubjectGroup.' für viele Schüler gleichzeitig ändern');
+        $Stage->addButton(new Standard('Zurück', '/Education/Lesson/Subject/Link/Person', new ChevronLeft(), array('Id' => $Id)));
+
+        if ($tblGroup) {   //  = Group::useService()->getGroupById($Id))
+
+            $tblFilterDivision = Division::useService()->getDivisionById($FilterDivisionId);
+
+            // Set Filter Post
+            if ($Filter == null && ( $tblFilterDivision )) {
+                $GLOBAL = $this->getGlobal();
+                $GLOBAL->POST['Filter']['Division'] = $tblFilterDivision ? $tblFilterDivision->getId() : 0;
+
+                $GLOBAL->savePost();
+            }
+            $tblPersonList = array();
+            $tblPersonStudentList = Group::useService()->getPersonAllByGroup(Group::useService()->getGroupByMetaTable('STUDENT'));
+            if ($tblPersonStudentList) {
+                foreach ($tblPersonStudentList as $tblPersonStudent) {
+                    $Student = Student::useService()->getStudentByPerson($tblPersonStudent);
+                    if ($Student) {
+                        if ($SubjectGroup == 'Wahlfach') {
+                            $tblSubjectType = Student::useService()->getStudentSubjectTypeByIdentifier('ELECTIVE');
+                        }
+                        if ($SubjectGroup == 'Neigungskurs') {
+                            $tblSubjectType = Student::useService()->getStudentSubjectTypeByIdentifier('ORIENTATION');
+                        }
+                        $tblSubjectRanking = Student::useService()->getStudentSubjectRankingByIdentifier($Group);
+                        if (isset( $tblSubjectType ) && $tblSubjectType && $tblSubjectRanking) {
+                            $StudentSubject = Student::useService()->getStudentSubjectByStudentAndSubjectAndSubjectRanking($Student, $tblSubjectType, $tblSubjectRanking);
+                            if ($StudentSubject && $StudentSubject->getServiceTblSubject()) {
+                                if ($StudentSubject->getServiceTblSubject()->getName() == $tblSubject->getName()) {
+                                    $tblPersonList[] = $tblPersonStudent;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            $tblPersonAll = Group::useService()->getPersonAllByGroup(Group::useService()->getGroupByMetaTable('STUDENT'));  // Nur Schüler
+
+            // filter
+            if ($tblFilterDivision) {
+                $tblPersonAll = Subject::useService()->filterPersonListByDivision(
+                    $tblPersonAll,
+                    $tblFilterDivision ? $tblFilterDivision : null
+                );
+            }
+
+            if ($tblPersonList && $tblPersonAll) {
+                $tblPersonAll = array_udiff($tblPersonAll, $tblPersonList,
+                    function (TblPerson $tblPersonA, TblPerson $tblPersonB) {
+
+                        return $tblPersonA->getId() - $tblPersonB->getId();
+                    }
+                );
+            }
+
+            if ($tblPersonList) {
+                $tempList = array();
+                foreach ($tblPersonList as $personListPerson) {
+                    $tempList[] = $this->setPersonData($personListPerson, 'DataRemovePerson');
+                }
+                $tblPersonList = $tempList;
+            }
+
+            if (is_array($tblPersonAll)) {
+                $tempList = array();
+                foreach ($tblPersonAll as $personAllPerson) {
+                    $tempList[] = $this->setPersonData($personAllPerson, 'DataAddPerson');
+                }
+                $tblPersonAll = $tempList;
+            }
+
+            if (!$tblFilterDivision) {
+                $displayAvailablePersons = new Warning(
+                    'Zum eintragen vom Fach: '.$tblSubject->getName().' als '.$SubjectGroup.' für mehrere Personen schränken Sie bitte den Personenkreis über die Suche (Klasse) ein.',
+                    new Exclamation()
+                );
+            } elseif ($tblPersonAll) {
+
+                $displayAvailablePersons = new TableData(
+                    $tblPersonAll,
+                    new \SPHERE\Common\Frontend\Table\Repository\Title('Fach "'.$tblSubject->getName().'" von der Kategorie "'.$SubjectGroup.'" der Personen',
+                        'hinzufügen'),
+                    array(
+                        'Check'       => new Center(new Small('Hinzufügen ').new Enable()),
+                        'DisplayName' => 'Name',
+                        'Address'     => 'Adresse',
+                        'Groups'      => 'Klasse'
+                    ),
+                    array(
+                        "columnDefs"     => array(
+                            array(
+                                "orderable" => false,
+                                "width"     => "35px",
+                                "targets"   => 0
+                            ),
+                            array(
+                                "width"   => "20%",
+                                "targets" => 1
+                            ),
+                            array(
+                                "width"   => "40%",
+                                "targets" => 2
+                            )
+                        ),
+                        'order'          => array(
+                            array('1', 'asc')
+                        ),
+                        "paging"         => false, // Deaktivieren Blättern
+                        "iDisplayLength" => -1,    // Alle Einträge zeigen
+                        "searching"      => false, // Deaktivieren Suchen
+                        "info"           => false  // Deaktivieren Such-Info
+                    )
+                );
+            } else {
+                $displayAvailablePersons = new Warning('Keine weiteren Personen verfügbar.', new Exclamation());
+            }
+
+            $form = new Form(array(
+                new FormGroup(
+                    new FormRow(array(
+                        new FormColumn(array(
+                            ( $tblPersonList
+                                ? new TableData(
+                                    $tblPersonList,
+                                    new \SPHERE\Common\Frontend\Table\Repository\Title('Fach "'.$tblSubject->getName().'" von der Kategorie "'.$SubjectGroup.'" der Personen',
+                                        'entfernen'),
+                                    array(
+                                        'Check'       => new Center(new Small('Entfernen ').new Disable()),
+                                        'DisplayName' => 'Name',
+                                        'Address'     => 'Adresse',
+                                        'Groups'      => 'Klasse'
+                                    ),
+                                    array(
+                                        "columnDefs"     => array(
+                                            array(
+                                                "orderable" => false,
+                                                "width"     => "35px",
+                                                "targets"   => 0
+                                            ),
+                                            array(
+                                                "width"   => "20%",
+                                                "targets" => 1
+                                            ),
+                                            array(
+                                                "width"   => "40%",
+                                                "targets" => 2
+                                            )
+                                        ),
+                                        'order'          => array(
+                                            array('1', 'asc')
+                                        ),
+                                        "paging"         => false, // Deaktivieren Blättern
+                                        "iDisplayLength" => -1,    // Alle Einträge zeigen
+                                        "searching"      => false, // Deaktivieren Suchen
+                                        "info"           => false  // Deaktivieren Such-Info
+                                    )
+                                )
+                                : new Warning('Keine Personen zugewiesen.', new Exclamation())
+                            )
+                        ), 6),
+                        new FormColumn(array(
+                            $displayAvailablePersons
+                        ), 6),
+                    ))
+                ),
+            ));
+
+            $form->appendFormButton(new Primary('Speichern', new Save()));
+            $form->setConfirm('Die Zuweisung der Personen wurde noch nicht gespeichert.');
+
+            $Stage->setContent(new Layout(array(
+                new LayoutGroup(array(
+                    new LayoutRow(array())
+                )),
+                new LayoutGroup(array(
+                    new LayoutRow(array(
+                        new LayoutColumn(
+                            new Well(new Layout(
+                                    new LayoutGroup(
+                                        new LayoutRow(array(
+                                            new LayoutColumn(
+                                                new Panel('Gruppe', $tblGroup->getName().' '.new Small(new Muted($tblGroup->getDescription())))
+                                                , 6),
+                                            new LayoutColumn(
+                                                Subject::useService()->getFilter(
+                                                    $this->formFilter(), $Id, $SubjectId, $Filter
+                                                ), 6
+                                            )
+                                        ))
+                                    ))
+                            )
+                        )
+                    ))
+                ), new Title('Personensuche')),
+                ( $Filter == null ?
+                    new LayoutGroup(array(
+                        // TODO: Describe possible Action
+//                        new LayoutRow(array(
+//                            new LayoutColumn(
+//                                new Info('Links können neue Personsn... rechts ...')
+//                            )
+//                        )),
+                        new LayoutRow(array(
+                            new LayoutColumn(array(
+                                new Well(
+                                    Subject::useService()->addPersonsToSubject(
+                                        $form,
+                                        $Id,
+                                        $SubjectGroup,
+                                        $Group,
+                                        $tblSubject,
+                                        $DataAddPerson,
+                                        $DataRemovePerson,
+                                        $tblFilterDivision ? $tblFilterDivision : null
+                                    )
+                                )
+                            ))
+                        ))
+                    ), new Title('Personen mit dem Fach "'.$tblSubject->getName().'" ', 'der Kategorie "'.$SubjectGroup.'"')) : null )
+            )));
+
+        } else {
+            return $Stage
+            .new Danger('Gruppe nicht gefunden.', new Ban())
+            .new Redirect('/People/Group', Redirect::TIMEOUT_ERROR);
+        }
+
+        return $Stage;
+    }
+
+    /**
+     * @param TblPerson $tblPerson
+     * @param           $DataName
+     *
+     * @return array
+     */
+    private function setPersonData(TblPerson $tblPerson, $DataName)
+    {
+        $result = array();
+        $result['Check'] = new CheckBox(
+            $DataName.'['.$tblPerson->getId().']',
+            ' ',
+            1
+        );
+        $result['DisplayName'] = $tblPerson->getLastFirstName();
+        $tblAddress = $tblPerson->fetchMainAddress();
+        $result['Address'] = $tblAddress ? $tblAddress->getGuiString() : '';
+        $tblGroupList = Group::useService()->getGroupAllByPerson($tblPerson);
+        $groups = array();
+        if ($tblGroupList) {
+            foreach ($tblGroupList as $item) {
+                if ($item->getMetaTable() !== 'COMMON') {
+                    $groups[] = $item->getName();
+                }
+            }
+        }
+
+        // current Divisions
+        $displayDivisionList = Student::useService()->getDisplayCurrentDivisionListByPerson($tblPerson);
+        // current Groups
+//        $displayDivisionList = array();
+//        $result['Groups'] = ( !empty( $groups ) ? implode(', ', $groups).( $displayDivisionList ? ', '.$displayDivisionList : '' ) : '' );
+        $result['Groups'] = $displayDivisionList;
+
+        return $result;
+    }
+
+    private function formFilter()
+    {
+
+//        $tblGroupAll = Group::useService()->getGroupAllSorted();
+        $tblDivisionList = array();
+        $tblYearList = Term::useService()->getYearByNow();
+        if ($tblYearList) {
+            foreach ($tblYearList as $tblYear) {
+                $tblDivisionAllByYear = Division::useService()->getDivisionByYear($tblYear);
+                if ($tblDivisionAllByYear) {
+                    foreach ($tblDivisionAllByYear as $tblDivision) {
+                        $tblDivisionList[$tblDivision->getId()] = $tblDivision;
+                    }
+                }
+            }
+        }
+
+        return new Form(
+            new FormGroup(
+                new FormRow(array(
+//                    new FormColumn(
+//                        new SelectBox('Filter[Group]', 'Gruppe', array('Name' => $tblGroupAll)), 6
+//                    ),
+                    new FormColumn(
+                        new SelectBox('Filter[Division]', 'Klasse', array('DisplayName' => $tblDivisionList)), 12
+                    ),
+                    new FormColumn(
+                        new Primary('Suchen', new Filter())
+                    ),
+                ))
+            )
+        );
     }
 
     /**

@@ -1,7 +1,9 @@
 <?php
 namespace SPHERE\Application\Document;
 
+use SPHERE\Application\Document\Custom\Custom;
 use SPHERE\Application\Document\Explorer\Explorer;
+use SPHERE\Application\Document\Standard\Standard;
 use SPHERE\Application\Document\Storage\Storage;
 use SPHERE\Application\IClusterInterface;
 use SPHERE\Common\Main;
@@ -20,6 +22,8 @@ class Document extends Extension implements IClusterInterface
     public static function registerCluster()
     {
 
+        Standard::registerApplication();
+        Custom::registerApplication();
         Explorer::registerApplication();
         Storage::registerApplication();
 

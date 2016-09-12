@@ -5,6 +5,8 @@ use SPHERE\Application\Corporation\Company\Company;
 use SPHERE\Application\Corporation\Company\Service\Entity\TblCompany;
 use SPHERE\Application\Education\Lesson\Division\Division;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
+use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblLevel;
+use SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject;
 use SPHERE\Application\Education\Lesson\Subject\Subject;
 use SPHERE\Application\Education\Lesson\Term\Term;
 use SPHERE\Application\Education\School\Course\Course;
@@ -17,6 +19,9 @@ use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentBaptism;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentBilling;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentLocker;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentMedicalRecord;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentSubject;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentSubjectRanking;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentSubjectType;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentTransport;
 use SPHERE\Application\People\Meta\Student\Service\Service\Integration;
 use SPHERE\Application\People\Meta\Student\Service\Setup;
@@ -577,7 +582,7 @@ class Service extends Integration
                                     }
                                 }
 
-                                (new Data($this->getBinding()))->addStudentSubject(
+                                $this->addStudentSubject(
                                     $tblStudent,
                                     $tblStudentSubjectType,
                                     $tblStudentSubjectRanking ? $tblStudentSubjectRanking : null,
@@ -756,5 +761,35 @@ class Service extends Integration
 
             return '';
         }
+    }
+
+    /**
+     * @param TblStudentSubject $tblStudentSubject
+     */
+    public function removeStudentSubject(TblStudentSubject $tblStudentSubject)
+    {
+        ( new Data($this->getBinding()) )->removeStudentSubject($tblStudentSubject);
+    }
+
+    /**
+     * @param TblStudent               $tblStudent
+     * @param TblStudentSubjectType    $tblStudentSubjectType
+     * @param TblStudentSubjectRanking $tblStudentSubjectRanking
+     * @param TblSubject               $tblSubject
+     * @param TblLevel                 $tblLevelFrom
+     * @param TblLevel                 $tblLevelTill
+     *
+     * @return TblStudentSubject
+     */
+    public function addStudentSubject(
+        TblStudent $tblStudent,
+        TblStudentSubjectType $tblStudentSubjectType,
+        TblStudentSubjectRanking $tblStudentSubjectRanking,
+        TblSubject $tblSubject,
+        TblLevel $tblLevelFrom = null,
+        TblLevel $tblLevelTill = null
+    ) {
+
+        return ( new Data($this->getBinding()) )->addStudentSubject($tblStudent, $tblStudentSubjectType, $tblStudentSubjectRanking, $tblSubject, null, null);
     }
 }

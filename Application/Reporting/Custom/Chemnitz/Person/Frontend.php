@@ -116,6 +116,12 @@ class Frontend extends Extension implements IFrontendInterface
                                         'Type' => 'Schulart',
                                         'Count' => 'Schüler',
                                         'Option' => ''
+                                    ), array(
+                                        'order' => array(
+                                            array(0, 'desc'),
+                                            array(2, 'asc'),
+                                            array(1, 'asc')
+                                        )
                                     )
                                 )
                                 , 12)
@@ -446,7 +452,14 @@ class Frontend extends Extension implements IFrontendInterface
                                         'Type' => 'Schulart',
                                         'Count' => 'Schüler',
                                         'Option' => '',
-                                    ))
+                                    ), array(
+                                        'order' => array(
+                                            array(0, 'desc'),
+                                            array(2, 'asc'),
+                                            array(1, 'asc')
+                                        )
+                                    )
+                                )
                                 , 12)
                         ), new Title(new Listing() . ' Übersicht')
                     )
@@ -700,7 +713,14 @@ class Frontend extends Extension implements IFrontendInterface
                                         'Type' => 'Schulart',
                                         'Count' => 'Schüler',
                                         'Option' => '',
-                                    ))
+                                    ), array(
+                                        'order' => array(
+                                            array(0, 'desc'),
+                                            array(2, 'asc'),
+                                            array(1, 'asc')
+                                        )
+                                    )
+                                )
                                 , 12)
                         ), new Title(new Listing() . ' Übersicht')
                     )
@@ -941,7 +961,14 @@ class Frontend extends Extension implements IFrontendInterface
                                         'Type' => 'Schulart',
                                         'Count' => 'Schüler',
                                         'Option' => '',
-                                    ))
+                                    ), array(
+                                        'order' => array(
+                                            array(0, 'desc'),
+                                            array(2, 'asc'),
+                                            array(1, 'asc')
+                                        )
+                                    )
+                                )
                                 , 12)
                         ), new Title(new Listing() . ' Übersicht')
                     )

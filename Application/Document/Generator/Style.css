@@ -1,0 +1,127 @@
+/* Test */
+@media screen {
+    div.Document {
+        /*width: 794px !important;*/
+
+        /*border: 1px dotted #CCC !important;*/
+        /*margin: 5px auto 5px auto !important;*/
+    }
+}
+
+/* Test */
+@media screen {
+    div.Page {
+        /*height: 1123px !important;*/
+
+        /*border: 1px dashed blue !important;*/
+        /*margin: 5px !important;*/
+    }
+}
+
+/* Test */
+@media screen {
+    div.Slice {
+        /*margin: 5px !important;*/
+    }
+}
+
+/* FIX: BOOTSTRAP FLOAT DISABLE, FOR PAGE-BREAK TO WORK */
+
+@media print {
+    table {
+        float: none !important;
+    }
+
+    div {
+        float: none !important;
+    }
+}
+
+/* DOCUMENT */
+
+div.Document {
+    position: relative !important;
+    /*width: 794px !important;*/
+
+    font-family: Helvetica, serif !important;
+}
+
+/* DOCUMENT.PAGE */
+
+div.Page {
+    position: relative !important;
+    /*height: 1123px !important;*/
+    /*height: 1000px !important;*/
+
+    font-size: 14px !important;
+    page-break-after: always !important;
+    page-break-inside: avoid !important;
+}
+
+div.Page:last-child {
+    page-break-after: avoid !important;
+}
+
+/* DOCUMENT.PAGE.SLICE */
+
+div.Slice {
+
+    position: relative !important;
+}
+
+div.Slice:after {
+    content: "." !important;
+    clear: both !important;
+    display: block !important;
+    visibility: hidden !important;
+    height: 0 !important;
+}
+
+/* DOCUMENT.PAGE.SLICE: ELEMENT */
+
+/*div.Slice img {*/
+/*width: 100% !important;*/
+/*height: auto !important;*/
+/*}*/
+
+div.Slice hr {
+    margin: 0 !important;
+}
+
+/* DOCUMENT.PAGE.SLICE: SECTION */
+
+table.Section {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+table.Section td {
+    vertical-align: top !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* DOCUMENT.PAGE.SLICE: ELEMENT.FLOAT */
+
+div.Float.Left {
+    float: left !important;
+}
+
+div.Float.Right {
+    float: right !important;
+}
+
+/* DOCUMENT.PAGE.SLICE: ELEMENT.ALIGN */
+
+div.Align.Center {
+    text-align: center !important;
+}
+
+div.Align.Left {
+    text-align: left !important;
+}
+
+div.Align.Right {
+    text-align: right !important;
+}

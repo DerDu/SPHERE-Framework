@@ -9,7 +9,7 @@ var Client = (function ()
             Depending: Depending,
             Source: window.location.pathname.slice(
                 0, window.location.pathname.search('/')
-            ) + '/Common/Script/' + Module + '.js?cTag=' + cTag,
+            ) + '/Common/Script/' + Module + '.js' + cTag,
             /**
              * @return {boolean}
              */

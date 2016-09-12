@@ -114,10 +114,10 @@ class Frontend extends Extension implements IFrontendInterface
                                         'Type'     => 'Schulart',
                                         'Count'    => 'Schüler',
                                         'Option'   => ''
-                                    ),
-                                    array(
+                                    ), array(
                                         'order' => array(
                                             array(0, 'desc'),
+                                            array(2, 'asc'),
                                             array(1, 'asc')
                                         )
                                     )
@@ -270,10 +270,10 @@ class Frontend extends Extension implements IFrontendInterface
                                         'Type'     => 'Schulart',
                                         'Count'    => 'Schüler',
                                         'Option'   => ''
-                                    ),
-                                    array(
+                                    ), array(
                                         'order' => array(
                                             array(0, 'desc'),
+                                            array(2, 'asc'),
                                             array(1, 'asc')
                                         )
                                     )
@@ -426,10 +426,10 @@ class Frontend extends Extension implements IFrontendInterface
                                         'Type'     => 'Schulart',
                                         'Count'    => 'Schüler',
                                         'Option'   => ''
-                                    ),
-                                    array(
+                                    ), array(
                                         'order' => array(
                                             array(0, 'desc'),
+                                            array(2, 'asc'),
                                             array(1, 'asc')
                                         )
                                     )
@@ -592,10 +592,10 @@ class Frontend extends Extension implements IFrontendInterface
                                         'Type'     => 'Schulart',
                                         'Count'    => 'Schüler',
                                         'Option'   => ''
-                                    ),
-                                    array(
+                                    ), array(
                                         'order' => array(
                                             array(0, 'desc'),
+                                            array(2, 'asc'),
                                             array(1, 'asc')
                                         )
                                     )
@@ -754,10 +754,10 @@ class Frontend extends Extension implements IFrontendInterface
                                         'Type'     => 'Schulart',
                                         'Count'    => 'Schüler',
                                         'Option'   => ''
-                                    ),
-                                    array(
+                                    ), array(
                                         'order' => array(
                                             array(0, 'desc'),
+                                            array(2, 'asc'),
                                             array(1, 'asc')
                                         )
                                     )

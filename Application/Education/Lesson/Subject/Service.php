@@ -1,6 +1,8 @@
 <?php
 namespace SPHERE\Application\Education\Lesson\Subject;
 
+use SPHERE\Application\Education\Lesson\Division\Division;
+use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
 use SPHERE\Application\Education\Lesson\Subject\Service\Data;
 use SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblCategory;
 use SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblCategorySubject;
@@ -8,6 +10,9 @@ use SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblGroup;
 use SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblGroupCategory;
 use SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject;
 use SPHERE\Application\Education\Lesson\Subject\Service\Setup;
+use SPHERE\Application\People\Meta\Student\Student;
+use SPHERE\Application\People\Person\Person;
+use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Common\Frontend\Form\IFormInterface;
 use SPHERE\Common\Frontend\Message\Repository\Danger;
 use SPHERE\Common\Frontend\Message\Repository\Success;
@@ -783,5 +788,180 @@ class Service extends AbstractService
     {
 
         return (new Data($this->getBinding()))->addCategorySubject($tblCategory, $tblSubject);
+    }
+
+    /**
+     * @param                  $tblPersonList
+     * @param TblDivision|null $tblDivision
+     *
+     * @return false|TblPerson[]
+     */
+    public function filterPersonListByDivision(
+        $tblPersonList,
+        TblDivision $tblDivision = null
+    ) {
+
+        if (is_array($tblPersonList)) {
+            $resultPersonList = array();
+            /** @var TblPerson $tblPerson */
+            foreach ($tblPersonList as $tblPerson) {
+                if ($tblDivision) {
+
+                    $tblPersonDivisionList = Student::useService()->getCurrentDivisionListByPerson($tblPerson);
+                    if ($tblPersonDivisionList) {
+                        foreach ($tblPersonDivisionList as $division) {
+                            if ($division->getId() == $tblDivision->getId()) {
+                                $resultPersonList[$tblPerson->getId()] = $tblPerson;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return empty( $resultPersonList ) ? false : $resultPersonList;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param IFormInterface   $Form
+     * @param string           $Id // SubjectGroupId
+     * @param string           $SubjectGroup
+     * @param string           $Group
+     * @param TblSubject       $tblSubject
+     * @param null             $DataAddPerson
+     * @param null             $DataRemovePerson
+     * @param TblDivision|null $tblFilterDivision
+     *
+     * @return IFormInterface|string
+     */
+    public function addPersonsToSubject(
+        IFormInterface $Form,
+        $Id,
+        $SubjectGroup,
+        $Group,
+        TblSubject $tblSubject,
+        $DataAddPerson = null,
+        $DataRemovePerson = null,
+        TblDivision $tblFilterDivision = null
+    ) {
+
+        /**
+         * Skip to Frontend
+         */
+        $Global = $this->getGlobal();
+        if (!isset( $Global->POST['Button']['Submit'] )) {
+            return $Form;
+        }
+
+        // entfernen
+        if ($DataRemovePerson !== null) {
+            $this->removePersonListFromSubject($DataRemovePerson, $SubjectGroup, $Group);
+        }
+
+        // hinzufügen
+        if ($DataAddPerson !== null) {
+            $this->addPersonListFromSubject($DataAddPerson, $tblSubject, $SubjectGroup, $Group);
+        }
+
+        return new Success('Daten erfolgreich gespeichert', new \SPHERE\Common\Frontend\Icon\Repository\Success())
+        .new Redirect('/Education/Lesson/Subject/Link/Person/Add', Redirect::TIMEOUT_SUCCESS, array(
+            'Id'               => $Id,
+            'SubjectId'        => $tblSubject->getId(),
+            'FilterDivisionId' => $tblFilterDivision ? $tblFilterDivision->getId() : null,
+        ));
+    }
+
+    /**
+     * @param IFormInterface $Form
+     * @param                $Id
+     * @param null           $Filter
+     *
+     * @return IFormInterface|string
+     */
+    public function getFilter(IFormInterface $Form, $Id, $SubjectId, $Filter = null)
+    {
+
+        /**
+         * Skip to Frontend
+         */
+        if ($Filter === null) {
+            return $Form;
+        }
+
+        $tblDivision = false;
+        if (isset( $Filter['Division'] )) {
+            $tblDivision = Division::useService()->getDivisionById($Filter['Division']);
+        }
+
+        return new Success('Die verfügbaren Personen werden gefiltert.',
+            new \SPHERE\Common\Frontend\Icon\Repository\Success())
+        .new Redirect('/Education/Lesson/Subject/Link/Person/Add', Redirect::TIMEOUT_SUCCESS, array(
+            'Id'               => $Id,
+            'SubjectId'        => $SubjectId,
+            'FilterDivisionId' => $tblDivision ? $tblDivision->getId() : null,
+        ));
+    }
+
+    /**
+     * @param            $DataRemovePerson
+     * @param            $SubjectGroup
+     * @param            $Group
+     */
+    private function removePersonListFromSubject($DataRemovePerson, $SubjectGroup, $Group)
+    {
+
+        foreach ($DataRemovePerson as $personId => $value) {
+            $tblPerson = Person::useService()->getPersonById($personId);
+            if ($tblPerson) {
+                $tblStudent = Student::useService()->getStudentByPerson($tblPerson);
+                if ($tblStudent) {
+                    if ($SubjectGroup == 'Wahlfach') {
+                        $SubjectType = Student::useService()->getStudentSubjectTypeByIdentifier('ELECTIVE');
+                    }
+                    if ($SubjectGroup == 'Neigungskurs') {
+                        $SubjectType = Student::useService()->getStudentSubjectTypeByIdentifier('ORIENTATION');
+                    }
+                    $SubjectRanking = Student::useService()->getStudentSubjectRankingByIdentifier($Group);
+                    if (isset( $SubjectType ) && $SubjectType && $SubjectRanking) {
+                        $Subject = Student::useService()->getStudentSubjectByStudentAndSubjectAndSubjectRanking($tblStudent, $SubjectType, $SubjectRanking);
+                        if ($Subject) {
+                            Student::useService()->removeStudentSubject($Subject);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param array      $DataAddPerson
+     * @param TblSubject $tblSubject
+     * @param string     $SubjectGroup
+     * @param string     $Group
+     */
+    private function addPersonListFromSubject($DataAddPerson, TblSubject $tblSubject, $SubjectGroup, $Group)
+    {
+
+        foreach ($DataAddPerson as $personId => $value) {
+            $tblPerson = Person::useService()->getPersonById($personId);
+            if ($tblPerson) {
+                $tblStudent = Student::useService()->getStudentByPerson($tblPerson);
+                if ($tblStudent) {
+                    if ($SubjectGroup == 'Wahlfach') {
+                        $tblSubjectType = Student::useService()->getStudentSubjectTypeByIdentifier('ELECTIVE');
+                    }
+                    if ($SubjectGroup == 'Neigungskurs') {
+                        $tblSubjectType = Student::useService()->getStudentSubjectTypeByIdentifier('ORIENTATION');
+                    }
+                    $tblSubjectRanking = Student::useService()->getStudentSubjectRankingByIdentifier($Group);
+                    if (isset( $tblSubjectType ) && $tblSubjectType && $tblSubjectRanking) {
+                        Student::useService()->addStudentSubject($tblStudent, $tblSubjectType, $tblSubjectRanking, $tblSubject);
+                    }
+                }
+            }
+        }
     }
 }

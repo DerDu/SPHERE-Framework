@@ -88,13 +88,15 @@ class Service extends Extension
                     $Item['StreetNumber'] = $address->getTblAddress()->getStreetNumber();
                     $Item['Code'] = $address->getTblAddress()->getTblCity()->getCode();
                     $Item['City'] = $address->getTblAddress()->getTblCity()->getName();
+                    $Item['District'] = $address->getTblAddress()->getTblCity()->getDistrict();
 
                     $Item['Address'] = $address->getTblAddress()->getStreetName().' '.
                         $address->getTblAddress()->getStreetNumber() . ' ' .
                         $address->getTblAddress()->getTblCity()->getCode() . ' ' .
-                        $address->getTblAddress()->getTblCity()->getName();
+                        $address->getTblAddress()->getTblCity()->getName().' '.
+                        ( $Item['District'] != '' ? 'OT '.$Item['District'] : '' );
                 } else {
-                    $Item['StreetName'] = $Item['StreetNumber'] = $Item['Code'] = $Item['City'] = '';
+                    $Item['StreetName'] = $Item['StreetNumber'] = $Item['Code'] = $Item['City'] = $Item['District'] = '';
                     $Item['Address'] = '';
                 }
 
@@ -141,6 +143,7 @@ class Service extends Extension
             $export->setValue($export->getCell("7", "0"), "Hausnr.");
             $export->setValue($export->getCell("8", "0"), "PLZ");
             $export->setValue($export->getCell("9", "0"), "Ort");
+            $export->setValue($export->getCell("10", "0"), "Ortsteil");
 
             $Row = 1;
 
@@ -156,6 +159,7 @@ class Service extends Extension
                 $export->setValue($export->getCell("7", $Row), $PersonData['StreetNumber']);
                 $export->setValue($export->getCell("8", $Row), $PersonData['Code']);
                 $export->setValue($export->getCell("9", $Row), $PersonData['City']);
+                $export->setValue($export->getCell("10", $Row), $PersonData['District']);
 
                 $Row++;
             }
@@ -229,11 +233,13 @@ class Service extends Extension
                     $Item['StreetNumber'] = $address->getTblAddress()->getStreetNumber();
                     $Item['Code'] = $address->getTblAddress()->getTblCity()->getCode();
                     $Item['City'] = $address->getTblAddress()->getTblCity()->getName();
+                    $Item['District'] = $address->getTblAddress()->getTblCity()->getDistrict();
 
                     $Item['Address'] = $address->getTblAddress()->getStreetName().' '.
                         $address->getTblAddress()->getStreetNumber() . ' ' .
                         $address->getTblAddress()->getTblCity()->getCode() . ' ' .
-                        $address->getTblAddress()->getTblCity()->getName();
+                        $address->getTblAddress()->getTblCity()->getName().' '.
+                        ( $Item['District'] != '' ? 'OT '.$Item['District'] : '' );;
                 }
                 $common = Common::useService()->getCommonByPerson($tblPerson);
                 if ($common) {
@@ -436,11 +442,13 @@ class Service extends Extension
                     $Item['StreetNumber'] = $address->getTblAddress()->getStreetNumber();
                     $Item['Code'] = $address->getTblAddress()->getTblCity()->getCode();
                     $Item['City'] = $address->getTblAddress()->getTblCity()->getName();
+                    $Item['District'] = $address->getTblAddress()->getTblCity()->getDistrict();
 
                     $Item['Address'] = $address->getTblAddress()->getStreetName().' '.
                         $address->getTblAddress()->getStreetNumber() . ' ' .
                         $address->getTblAddress()->getTblCity()->getCode() . ' ' .
-                        $address->getTblAddress()->getTblCity()->getName();
+                        $address->getTblAddress()->getTblCity()->getName().' '.
+                        ( $Item['District'] != '' ? 'OT '.$Item['District'] : '' );;
                 }
 
                 $common = Common::useService()->getCommonByPerson($tblPerson);
@@ -572,11 +580,13 @@ class Service extends Extension
                     $Item['StreetNumber'] = $address->getTblAddress()->getStreetNumber();
                     $Item['Code'] = $address->getTblAddress()->getTblCity()->getCode();
                     $Item['City'] = $address->getTblAddress()->getTblCity()->getName();
+                    $Item['District'] = $address->getTblAddress()->getTblCity()->getDistrict();
 
                     $Item['Address'] = $address->getTblAddress()->getStreetName().' '.
                         $address->getTblAddress()->getStreetNumber() . '<br/>' .
                         $address->getTblAddress()->getTblCity()->getCode() . ' ' .
-                        $address->getTblAddress()->getTblCity()->getName();
+                        $address->getTblAddress()->getTblCity()->getName().' '.
+                        ( $Item['District'] != '' ? 'OT '.$Item['District'] : '' );
                 }
 
                 $common = Common::useService()->getCommonByPerson($tblPerson);
@@ -813,11 +823,13 @@ class Service extends Extension
                     $Item['StreetNumber'] = $address->getTblAddress()->getStreetNumber();
                     $Item['Code'] = $address->getTblAddress()->getTblCity()->getCode();
                     $Item['City'] = $address->getTblAddress()->getTblCity()->getName();
+                    $Item['District'] = $address->getTblAddress()->getTblCity()->getDistrict();
 
                     $Item['Address'] = $address->getTblAddress()->getStreetName().' '.
                         $address->getTblAddress()->getStreetNumber() . ' ' .
                         $address->getTblAddress()->getTblCity()->getCode() . ' ' .
-                        $address->getTblAddress()->getTblCity()->getName();
+                        $address->getTblAddress()->getTblCity()->getName().' '.
+                        ( $Item['District'] != '' ? 'OT '.$Item['District'] : '' );
                 }
 
                 $common = Common::useService()->getCommonByPerson($tblPerson);

@@ -43,6 +43,7 @@ use SPHERE\Common\Frontend\Icon\Repository\Disable;
 use SPHERE\Common\Frontend\Icon\Repository\Edit;
 use SPHERE\Common\Frontend\Icon\Repository\Equalizer;
 use SPHERE\Common\Frontend\Icon\Repository\Exclamation;
+use SPHERE\Common\Frontend\Icon\Repository\EyeOpen;
 use SPHERE\Common\Frontend\Icon\Repository\Group;
 use SPHERE\Common\Frontend\Icon\Repository\Listing;
 use SPHERE\Common\Frontend\Icon\Repository\ListingTable;
@@ -411,6 +412,16 @@ class Frontend extends Extension implements IFrontendInterface
                     }
                 }
             }
+
+            $studentViewLinkButton = new Standard(
+                'Schülerübersichten',
+                '/Education/Graduation/Gradebook/Gradebook/Teacher/Division',
+                null,
+                array(),
+                'Anzeige aller Noten eines Schülers über alle Fächer'
+            );
+        } else {
+            $studentViewLinkButton = false;
         }
 
         if (!empty($divisionSubjectList)) {
@@ -473,6 +484,10 @@ class Frontend extends Extension implements IFrontendInterface
                 new LayoutGroup(array(
                     new LayoutRow(array(
                         new LayoutColumn(array(
+                            $studentViewLinkButton
+                                ? $studentViewLinkButton
+                                : null,
+                            new Title(new Select() . ' Auswahl'),
                             new TableData($divisionSubjectTable, null, array(
                                 'Year' => 'Schuljahr',
                                 'Type' => 'Schulart',
@@ -491,7 +506,7 @@ class Frontend extends Extension implements IFrontendInterface
                             ))
                         ))
                     ))
-                ), new Title(new Select() . ' Auswahl'))
+                ))
             ))
         );
 
@@ -3177,4 +3192,374 @@ class Frontend extends Extension implements IFrontendInterface
 
         return $Stage;
     }
+
+    /**
+     * @return Stage
+     */
+    public function frontendTeacherDivisionList()
+    {
+
+        $Stage = new Stage('Schülerübersicht', 'Klasse des Schülers Auswählen');
+        $Stage->addButton(
+            new Standard('Zurück', '/Education/Graduation/Gradebook/Gradebook', new ChevronLeft())
+        );
+
+        $tblPerson = false;
+        $tblAccount = Account::useService()->getAccountBySession();
+        if ($tblAccount) {
+            $tblPersonAllByAccount = Account::useService()->getPersonAllByAccount($tblAccount);
+            if ($tblPersonAllByAccount) {
+                $tblPerson = $tblPersonAllByAccount[0];
+            }
+        }
+
+        $tblDivisionList = array();
+        if ($tblPerson) {
+            $tblDivisionTeacherList = Division::useService()->getDivisionTeacherAllByTeacher($tblPerson);
+            if ($tblDivisionTeacherList) {
+                foreach ($tblDivisionTeacherList as $tblDivisionTeacher) {
+                    if ($tblDivisionTeacher->getTblDivision()) {
+                        $tblDivisionList[] = $tblDivisionTeacher->getTblDivision();
+                    }
+                }
+            }
+        }
+
+        $divisionTable = array();
+        if (!empty($tblDivisionList)) {
+            /** @var TblDivision $tblDivision */
+            foreach ($tblDivisionList as $tblDivision) {
+                $divisionTable[] = array(
+                    'Year' => $tblDivision->getServiceTblYear() ? $tblDivision->getServiceTblYear()->getDisplayName() : '',
+                    'Type' => $tblDivision->getTypeName(),
+                    'Division' => $tblDivision->getDisplayName(),
+                    'Option' => new Standard(
+                        '', '/Education/Graduation/Gradebook/Gradebook/Teacher/Division/Student', new Select(),
+                        array(
+                            'DivisionId' => $tblDivision->getId()
+                        ),
+                        'Auswählen'
+                    )
+                );
+            }
+        }
+
+        $Stage->setContent(
+            new Layout(array(
+                new LayoutGroup(array(
+                    new LayoutRow(array(
+                        new LayoutColumn(array(
+                            new TableData($divisionTable, null, array(
+                                'Year' => 'Schuljahr',
+                                'Type' => 'Schulart',
+                                'Division' => 'Klasse',
+                                'Option' => ''
+                            ), array(
+                                'order' => array(
+                                    array('0', 'desc'),
+                                    array('2', 'asc'),
+                                )
+                            ))
+                        ))
+                    ))
+                ), new Title(new Select() . ' Auswahl'))
+            ))
+        );
+
+        return $Stage;
+    }
+
+    /**
+     * @param null $DivisionId
+     *
+     * @return Stage
+     */
+    public function frontendTeacherSelectStudent($DivisionId = null)
+    {
+
+        $Stage = new Stage('Schülerübersicht', 'Schüler auswählen');
+        $Stage->addButton(new Standard(
+            'Zurück', '/Education/Graduation/Gradebook/Gradebook/Teacher/Division', new ChevronLeft()
+        ));
+
+        $tblDivision = Division::useService()->getDivisionById($DivisionId);
+        if ($tblDivision) {
+            $studentTable = array();
+            $tblStudentList = Division::useService()->getStudentAllByDivision($tblDivision);
+            if ($tblStudentList) {
+                $count = 1;
+                foreach ($tblStudentList as $tblPerson) {
+                    $studentTable[] = array(
+                        'Number' => $count++,
+                        'Name' => $tblPerson->getLastFirstName(),
+                        'Option' => new Standard(
+                            '',
+                            '/Education/Graduation/Gradebook/Gradebook/Teacher/Division/Student/Overview',
+                            new EyeOpen(),
+                            array(
+                                'DivisionId' => $tblDivision->getId(),
+                                'PersonId' => $tblPerson->getId()
+                            ),
+                            'Schülerübersicht anzeigen'
+                        )
+                    );
+                }
+            }
+
+            $Stage->setContent(
+                new Layout(array(
+                    new LayoutGroup(array(
+                        new LayoutRow(array(
+                            new LayoutColumn(array(
+                                new Panel(
+                                    'Klasse',
+                                    $tblDivision->getDisplayName(),
+                                    Panel::PANEL_TYPE_INFO
+                                ),
+                            )),
+                            new LayoutColumn(array(
+                                new TableData($studentTable, null, array(
+                                    'Number' => '#',
+                                    'Name' => 'Name',
+                                    'Option' => ''
+                                ),
+                                    array(
+                                        'pageLength' => -1
+                                    )
+                                )
+                            ))
+                        ))
+                    ))
+                ))
+            );
+
+            return $Stage;
+        } else {
+            return $Stage . new Danger('Klasse nicht gefunden.', new Ban());
+        }
+    }
+
+    /**
+     * @param null $DivisionId
+     * @param null $PersonId
+     *
+     * @return Stage|string
+     */
+    public function frontendTeacherStudentOverview($DivisionId = null, $PersonId = null)
+    {
+
+        $Stage = new Stage('Schülerübersicht', 'Schüler anzeigen');
+        $Stage->addButton(new Standard(
+            'Zurück', '/Education/Graduation/Gradebook/Gradebook/Teacher/Division/Student', new ChevronLeft(), array(
+                'DivisionId' => $DivisionId
+            )
+        ));
+
+        $tblDivision = Division::useService()->getDivisionById($DivisionId);
+        if (!$tblDivision) {
+            return $Stage
+            . new Danger('Klasse nicht gefunden.', new Ban());
+        }
+
+        $tblPerson = Person::useService()->getPersonById($PersonId);
+        if (!$tblPerson) {
+            return $Stage
+            . new Danger('Schüler nicht gefunden.', new Ban());
+        }
+
+        $tblTestType = Evaluation::useService()->getTestTypeByIdentifier('TEST');
+
+        $dataList = array();
+        $columnDefinition = array();
+        $columnDefinition['Subject'] = 'Fach';
+        $periodListCount = array();
+        if (($tblYear = $tblDivision->getServiceTblYear())) {
+            $tblDivisionSubjectList = Division::useService()->getDivisionSubjectAllByPersonAndYear(
+                $tblPerson, $tblYear
+            );
+            $tblPeriodList = Term::useService()->getPeriodAllByYear($tblYear);
+            if ($tblPeriodList && $tblDivisionSubjectList) {
+                foreach ($tblPeriodList as $tblPeriod) {
+                    $maxGradeCount = 0;
+                    foreach ($tblDivisionSubjectList as $tblDivisionSubject) {
+                        if (($tblSubject = $tblDivisionSubject->getServiceTblSubject())) {
+                            $dataList[$tblDivisionSubject->getId()]['Subject'] = $tblSubject->getAcronym()
+                                . ' ' . new Muted($tblSubject->getName());
+                            $count = 0;
+                            $tblTestList = Evaluation::useService()->getTestAllByTypeAndDivisionAndSubjectAndPeriodAndSubjectGroup(
+                                $tblDivision,
+                                $tblDivisionSubject->getServiceTblSubject(),
+                                $tblTestType,
+                                $tblPeriod,
+                                $tblDivisionSubject->getTblSubjectGroup() ? $tblDivisionSubject->getTblSubjectGroup() : null
+                            );
+                            if ($tblTestList) {
+
+                                // Sortierung der Tests nach Datum
+                                $tblTestList = $this->getSorter($tblTestList)->sortObjectBy('Date',
+                                    new DateTimeSorter());
+
+                                /** @var TblTest $tblTest */
+                                foreach ($tblTestList as $tblTest) {
+                                    if ($tblTest->getServiceTblGradeType()
+                                        && ($tblGrade = Gradebook::useService()->getGradeByTestAndStudent(
+                                            $tblTest, $tblPerson
+                                        ))
+                                    ) {
+                                        if ($tblGrade->getGrade()) {
+                                            $count++;
+                                            if (!isset($columnDefinition['Grade' . $tblPeriod->getId() . $count])) {
+                                                $columnDefinition['Grade' . $tblPeriod->getId() . $count] = '';
+                                            }
+                                            $value = $tblGrade->getDisplayGrade()
+                                                . ' (' . $tblGrade->getTblGradeType()->getCode() . ')';
+                                            $dataList[$tblDivisionSubject->getId()]['Grade' . $tblPeriod->getId() . $count] =
+                                                $tblGrade->getTblGradeType()->isHighlighted() ? new Bold($value) : $value;
+                                        }
+                                    }
+                                }
+                            }
+                            if ($count > $maxGradeCount){
+                                $maxGradeCount = $count;
+                            }
+                        }
+                    }
+                    $columnDefinition['PeriodAverage' . $tblPeriod->getId()] = '&#216;';
+                    $maxGradeCount++;
+                    $periodListCount[$tblPeriod->getId()] = $maxGradeCount;
+                }
+                $columnDefinition['YearAverage'] = '&#216;';
+            }
+        }
+
+        if (!empty($dataList)){
+            foreach ($dataList as $divisionSubjectId => $array){
+                foreach($columnDefinition as $column => $name) {
+                    if (($tblDivisionSubject = Division::useService()->getDivisionSubjectById($divisionSubjectId))) {
+                        $tblScoreRule = Gradebook::useService()->getScoreRuleByDivisionAndSubjectAndGroup(
+                            $tblDivisionSubject->getTblDivision(),
+                            $tblDivisionSubject->getServiceTblSubject(),
+                            $tblDivisionSubject->getTblSubjectGroup() ? $tblDivisionSubject->getTblSubjectGroup() : null
+                        );
+                        if (strpos($column, 'PeriodAverage') !== false) {
+                            $periodId = substr($column, strlen('PeriodAverage'));
+                            $tblPeriod = Term::useService()->getPeriodById($periodId);
+                            if ($tblPeriod) {
+                                /*
+                                * Calc Average
+                                */
+                                $average = Gradebook::useService()->calcStudentGrade(
+                                    $tblPerson,
+                                    $tblDivision,
+                                    $tblDivisionSubject->getServiceTblSubject(),
+                                    $tblTestType,
+                                    $tblScoreRule ? $tblScoreRule : null,
+                                    $tblPeriod,
+                                    $tblDivisionSubject->getTblSubjectGroup() ? $tblDivisionSubject->getTblSubjectGroup() : null
+                                );
+                                if (is_array($average)) {
+                                    $average = '';
+                                } else {
+                                    $posStart = strpos($average, '(');
+                                    if ($posStart !== false) {
+                                        $average = substr($average, 0, $posStart);
+                                    }
+                                }
+                                $dataList[$tblDivisionSubject->getId()][$column] = new Bold($average);
+                            }
+                        } elseif (strpos($column, 'YearAverage') !== false) {
+
+                            /*
+                            * Calc Average
+                            */
+                            $average = Gradebook::useService()->calcStudentGrade(
+                                $tblPerson,
+                                $tblDivision,
+                                $tblDivisionSubject->getServiceTblSubject(),
+                                $tblTestType,
+                                $tblScoreRule ? $tblScoreRule : null,
+                                null,
+                                $tblDivisionSubject->getTblSubjectGroup() ? $tblDivisionSubject->getTblSubjectGroup() : null
+                            );
+                            if (is_array($average)) {
+                                $average = '';
+                            } else {
+                                $posStart = strpos($average, '(');
+                                if ($posStart !== false) {
+                                    $average = substr($average, 0, $posStart);
+                                }
+                            }
+                            $dataList[$tblDivisionSubject->getId()][$column] = new Bold($average);
+                        } elseif (strpos($column, 'Grade') !== false) {
+                            if (!isset($dataList[$tblDivisionSubject->getId()][$column])) {
+                                $dataList[$tblDivisionSubject->getId()][$column] = '';
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        $tableData = new TableData(
+            $dataList, null, $columnDefinition,
+            array(
+                "columnDefs" => array(
+                    array(
+                        "orderable" => false,
+                        "targets" => '_all'
+                    ),
+                ),
+                'pageLength' => -1
+            )
+        );
+
+        // oberste Tabellen-Kopf-Zeile erstellen
+        $headTableColumnList = array();
+        $headTableColumnList[] = new TableColumn('', 1, '20%');
+        if (!empty($periodListCount)) {
+            foreach ($periodListCount as $periodId => $value) {
+                $tblPeriod = Term::useService()->getPeriodById($periodId);
+                if ($tblPeriod) {
+                    $headTableColumnList[] = new TableColumn($tblPeriod->getDisplayName(), $value);
+                }
+            }
+            $headTableColumnList[] = new TableColumn('Gesamt');
+        }
+        $tableData->prependHead(
+            new TableHead(
+                new TableRow(
+                    $headTableColumnList
+                )
+            )
+        );
+
+        $Stage->setContent(
+            new Layout(array(
+                new LayoutGroup(array(
+                    new LayoutRow(array(
+                        new LayoutColumn(array(
+                            new Panel(
+                                'Klasse',
+                                $tblDivision->getDisplayName(),
+                                Panel::PANEL_TYPE_INFO
+                            ),
+                        ), 6),
+                        new LayoutColumn(array(
+                            new Panel(
+                                'Schüler',
+                                $tblPerson->getLastFirstName(),
+                                Panel::PANEL_TYPE_INFO
+                            ),
+                        ), 6),
+                        new LayoutColumn(
+                            $tableData
+                        )
+                    ))
+                ))
+            ))
+        );
+
+        return $Stage;
+    }
+
 }

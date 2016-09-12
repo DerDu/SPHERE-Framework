@@ -245,6 +245,26 @@ abstract class Subject extends Transfer
     }
 
     /**
+     * @param TblStudent               $tblStudent
+     * @param TblStudentSubjectType    $tblStudentSubjectType
+     * @param TblStudentSubjectRanking $tblStudentSubjectRanking
+     *
+     * @return false|TblStudentSubject
+     */
+    public function getStudentSubjectByStudentAndSubjectAndSubjectRanking(
+        TblStudent $tblStudent,
+        TblStudentSubjectType $tblStudentSubjectType,
+        TblStudentSubjectRanking $tblStudentSubjectRanking
+    ) {
+        return $this->getCachedEntityBy(__METHOD__, $this->getConnection()->getEntityManager(),
+            'TblStudentSubject', array(TblStudentSubject::ATTR_TBL_STUDENT                 => $tblStudent->getId(),
+                                       TblStudentSubject::ATTR_TBL_STUDENT_SUBJECT_TYPE    => $tblStudentSubjectType->getId(),
+                                       TblStudentSubject::ATTR_TBL_STUDENT_SUBJECT_RANKING => $tblStudentSubjectRanking->getId(),
+            )
+        );
+    }
+
+    /**
      * @param TblStudent            $tblStudent
      * @param TblStudentSubjectType $tblStudentSubjectType
      *
