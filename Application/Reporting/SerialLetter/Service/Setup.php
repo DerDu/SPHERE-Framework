@@ -28,6 +28,7 @@ class Setup extends AbstractSetup
          */
         $Schema = clone $this->getConnection()->getSchema();
         $tblSerialLetter = $this->setTableSerialLetter($Schema);
+        $this->setTableSerialPerson($Schema, $tblSerialLetter);
         $this->setTableAddressPerson($Schema, $tblSerialLetter);
 
         /**
@@ -53,9 +54,24 @@ class Setup extends AbstractSetup
         if (!$this->getConnection()->hasColumn('tblSerialLetter', 'Description')) {
             $Table->addColumn('Description', 'string');
         }
-        if (!$this->getConnection()->hasColumn('tblSerialLetter', 'serviceTblGroup')) {
-            $Table->addColumn('serviceTblGroup', 'bigint', array('notnull' => false));
+
+        return $Table;
+    }
+
+    /**
+     * @param Schema $Schema
+     * @param Table  $tblSerialLetter
+     *
+     * @return Table
+     */
+    private function setTableSerialPerson(Schema $Schema, Table $tblSerialLetter)
+    {
+
+        $Table = $this->getConnection()->createTable($Schema, 'tblSerialPerson');
+        if (!$this->getConnection()->hasColumn('tblSerialPerson', 'serviceTblPerson')) {
+            $Table->addColumn('serviceTblPerson', 'bigint', array('notnull' => false));
         }
+        $this->getConnection()->addForeignKey($Table, $tblSerialLetter, true);
 
         return $Table;
     }

@@ -3,7 +3,11 @@ namespace SPHERE\Application\Education\Lesson\Division\Service;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
+use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
+use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionStudent;
+use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblLevel;
 use SPHERE\System\Database\Binding\AbstractSetup;
+use SPHERE\System\Database\Fitting\View;
 
 /**
  * Class Setup
@@ -36,6 +40,13 @@ class Setup extends AbstractSetup
          */
         $this->getConnection()->addProtocol(__CLASS__);
         $this->getConnection()->setMigration($Schema, $Simulate);
+
+        $this->getConnection()->createView(
+            (new View($this->getConnection(), 'viewDivisionStudent'))
+                ->addLink(new TblDivisionStudent(), 'tblDivision', new TblDivision(), 'Id')
+                ->addLink(new TblDivision(), 'tblLevel', new TblLevel(), 'Id')
+        );
+
         return $this->getConnection()->getProtocol($Simulate);
     }
 

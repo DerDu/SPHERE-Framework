@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Kauschke
- * Date: 19.04.2016
- * Time: 08:10
- */
 
 namespace SPHERE\Application\Reporting\SerialLetter;
 
@@ -13,14 +7,14 @@ use MOC\V\Component\Document\Component\Parameter\Repository\FileParameter;
 use MOC\V\Component\Document\Document;
 use SPHERE\Application\Contact\Address\Address;
 use SPHERE\Application\Contact\Address\Service\Entity\TblToPerson;
-use SPHERE\Application\Document\Explorer\Storage\Storage;
-use SPHERE\Application\People\Group\Group;
+use SPHERE\Application\Document\Storage\Storage;
 use SPHERE\Application\People\Person\Person;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\People\Person\Service\Entity\TblSalutation;
 use SPHERE\Application\Reporting\SerialLetter\Service\Data;
 use SPHERE\Application\Reporting\SerialLetter\Service\Entity\TblAddressPerson;
 use SPHERE\Application\Reporting\SerialLetter\Service\Entity\TblSerialLetter;
+use SPHERE\Application\Reporting\SerialLetter\Service\Entity\TblSerialPerson;
 use SPHERE\Application\Reporting\SerialLetter\Service\Setup;
 use SPHERE\Common\Frontend\Form\IFormInterface;
 use SPHERE\Common\Frontend\Message\Repository\Success;
@@ -58,12 +52,54 @@ class Service extends AbstractService
     }
 
     /**
+     * @param $Id
+     *
+     * @return bool|TblSerialPerson
+     */
+    public function getSerialPersonById($Id)
+    {
+
+        return ( new Data($this->getBinding()) )->getSerialPersonById($Id);
+    }
+
+    /**
      * @return bool|TblSerialLetter[]
      */
     public function getSerialLetterAll()
     {
 
         return (new Data($this->getBinding()))->getSerialLetterAll();
+    }
+
+    /**
+     * @param TblSerialLetter $tblSerialLetter
+     *
+     * @return false|int
+     */
+    public function getSerialLetterCount(TblSerialLetter $tblSerialLetter)
+    {
+
+        return ( new Data($this->getBinding()) )->getSerialLetterCount($tblSerialLetter);
+    }
+
+    /**
+     * @param TblSerialLetter $tblSerialLetter
+     *
+     * @return false|TblSerialPerson[]
+     */
+    public function getSerialPersonBySerialLetter(TblSerialLetter $tblSerialLetter)
+    {
+
+        return ( new Data($this->getBinding()) )->getSerialPersonBySerialLetter($tblSerialLetter);
+    }
+
+    /**
+     * @param TblSerialLetter $tblSerialLetter
+     * @return false|TblPerson[]
+     */
+    public function getPersonBySerialLetter(TblSerialLetter $tblSerialLetter)
+    {
+        return ( new Data($this->getBinding()) )->getPersonBySerialLetter($tblSerialLetter);
     }
 
     /**
@@ -112,15 +148,10 @@ class Service extends AbstractService
             $Stage->setError('SerialLetter[Name]', 'Bitte geben Sie einen Namen an');
             $Error = true;
         }
-        if (!($tblGroup = Group::useService()->getGroupById($SerialLetter['Group']))) {
-            $Stage->setError('SerialLetter[Group]', 'Bitte wählen Sie eine Personengruppe aus');
-            $Error = true;
-        }
 
         if (!$Error) {
             (new Data($this->getBinding()))->createSerialLetter(
                 $SerialLetter['Name'],
-                $tblGroup,
                 $SerialLetter['Description']
             );
             return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success() . ' Die Adressliste für Serienbriefe ist erfasst worden')
@@ -132,11 +163,11 @@ class Service extends AbstractService
 
 
     /**
-     * @param IFormInterface $Form
+     * @param IFormInterface  $Form
      * @param TblSerialLetter $tblSerialLetter
-     * @param $Check
+     * @param                 $Check
      *
-     * @return IFormInterface
+     * @return IFormInterface|string
      */
     public function setPersonAddressSelection(
         IFormInterface $Form,
@@ -151,13 +182,12 @@ class Service extends AbstractService
             return $Form;
         }
 
-        // alle Einträge zum Serienbrief löschen
-        (new Data($this->getBinding()))->destroyAddressPersonAllBySerialLetter($tblSerialLetter);
-
         if (!empty($Check)) {
             foreach ($Check as $personId => $list) {
                 $tblPerson = Person::useService()->getPersonById($personId);
                 if ($tblPerson) {
+                    // alle Einträge zum Serienbrief dieser Person löschen
+                    ( new Data($this->getBinding()) )->destroyAddressPersonAllBySerialLetterAndPerson($tblSerialLetter, $tblPerson);
                     if (is_array($list) && !empty($list)) {
                         foreach ($list as $key => $item) {
                             if (isset($item['Address'])) {
@@ -179,12 +209,15 @@ class Service extends AbstractService
                             }
                         }
                     }
+                    return new Success('Erfolgreich gespeichert.', new \SPHERE\Common\Frontend\Icon\Repository\Success())
+                    .new Redirect('/Reporting/SerialLetter/Address/Edit', Redirect::TIMEOUT_SUCCESS,
+                        array('Id' => $tblSerialLetter->getId(), 'PersonId' => $tblPerson->getId()));
                 }
             }
         }
 
         return new Success('Erfolgreich gespeichert.', new \SPHERE\Common\Frontend\Icon\Repository\Success())
-        . new Redirect('/Reporting/SerialLetter/Select', Redirect::TIMEOUT_SUCCESS,
+        .new Redirect('/Reporting/SerialLetter/Address', Redirect::TIMEOUT_SUCCESS,
             array('Id' => $tblSerialLetter->getId()));
     }
 
@@ -209,6 +242,11 @@ class Service extends AbstractService
             $tblToPerson, $tblSalutation);
     }
 
+    /**
+     * @param TblSerialLetter $tblSerialLetter
+     *
+     * @return bool|\SPHERE\Application\Document\Explorer\Storage\Writer\Type\Temporary
+     */
     public function createSerialLetterExcel(TblSerialLetter $tblSerialLetter)
     {
 
@@ -217,7 +255,7 @@ class Service extends AbstractService
 
             $row = 0;
             $column = 0;
-            $fileLocation = Storage::useWriter()->getTemporary('xlsx');
+            $fileLocation = Storage::createFilePointer('xlsx');
             /** @var PhpExcel $export */
             $export = Document::getDocument($fileLocation->getFileLocation());
             $export->setValue($export->getCell($column++, $row), "Anrede");
@@ -263,6 +301,41 @@ class Service extends AbstractService
     }
 
     /**
+     * @param TblSerialLetter $tblSerialLetter
+     * @param TblPerson       $tblPerson
+     *
+     * @return null|object|TblSerialPerson
+     */
+    public function addSerialPerson(TblSerialLetter $tblSerialLetter, TblPerson $tblPerson)
+    {
+
+        return ( new Data($this->getBinding()) )->addSerialPerson($tblSerialLetter, $tblPerson);
+    }
+
+    /**
+     * @param TblSerialLetter $tblSerialLetter
+     * @param TblPerson       $tblPerson
+     *
+     * @return bool
+     */
+    public function removeSerialPerson(TblSerialLetter $tblSerialLetter, TblPerson $tblPerson)
+    {
+
+        return ( new Data($this->getBinding()) )->removeSerialPerson($tblSerialLetter, $tblPerson);
+    }
+
+    /**
+     * @param TblSerialPerson $tblSerialPerson
+     *
+     * @return bool
+     */
+    public function destroySerialPerson(TblSerialPerson $tblSerialPerson)
+    {
+
+        return ( new Data($this->getBinding()) )->destroySerialPerson($tblSerialPerson);
+    }
+
+    /**
      * @param IFormInterface|null $Stage
      * @param TblSerialLetter $tblSerialLetter
      * @param $SerialLetter
@@ -287,16 +360,11 @@ class Service extends AbstractService
             $Stage->setError('SerialLetter[Name]', 'Bitte geben Sie einen Namen an');
             $Error = true;
         }
-        if (!($tblGroup = Group::useService()->getGroupById($SerialLetter['Group']))) {
-            $Stage->setError('SerialLetter[Group]', 'Bitte wählen Sie eine Personengruppe aus');
-            $Error = true;
-        }
 
         if (!$Error) {
             (new Data($this->getBinding()))->updateSerialLetter(
                 $tblSerialLetter,
                 $SerialLetter['Name'],
-                $tblGroup,
                 $SerialLetter['Description']
             );
             return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success() . ' Die Adressliste für Serienbriefe ist geändert worden')
@@ -314,6 +382,31 @@ class Service extends AbstractService
     public function destroySerialLetter(TblSerialLetter $tblSerialLetter)
     {
 
-        return (new Data($this->getBinding()))->destroySerialLetter($tblSerialLetter);
+        $tblSerialPersonList = SerialLetter::useService()->getSerialPersonBySerialLetter($tblSerialLetter);
+        if ($tblSerialPersonList) {
+            foreach ($tblSerialPersonList as $tblSerialPerson) {
+                $tblPerson = $tblSerialPerson->getServiceTblPerson();
+                if ($tblPerson) {
+                    // Destroy Address
+                    SerialLetter::useService()->destroyAddressPersonAllBySerialLetterAndPerson($tblSerialLetter, $tblPerson);
+                }
+                // Destroy SerialPerson
+                SerialLetter::useService()->destroySerialPerson($tblSerialPerson);
+            }
+        }
+        // Destroy SerialLetter
+        return ( new Data($this->getBinding()) )->destroySerialLetter($tblSerialLetter);
+    }
+
+    /**
+     * @param TblSerialLetter $tblSerialLetter
+     * @param TblPerson       $tblPerson
+     *
+     * @return bool
+     */
+    public function destroyAddressPersonAllBySerialLetterAndPerson(TblSerialLetter $tblSerialLetter, TblPerson $tblPerson)
+    {
+
+        return ( new Data($this->getBinding()) )->destroyAddressPersonAllBySerialLetterAndPerson($tblSerialLetter, $tblPerson);
     }
 }

@@ -49,7 +49,7 @@ class View
      *
      * @return $this
      */
-    public function addLink(Element $From, $FromKey, Element $To, $ToKey = 'Id')
+    public function addLink(Element $From, $FromKey, Element $To = null, $ToKey = 'Id')
     {
 
         array_push($this->LinkList, array('From' => $From, 'FromKey' => $FromKey, 'To' => $To, 'ToKey' => $ToKey));
@@ -98,9 +98,13 @@ class View
             if ($Index === 0) {
                 $Select[] = $this->convertPropertyList($Link['From'], false);
                 $Select[] = $this->convertPropertyList($Link['From']);
-                $Select[] = $this->convertPropertyList($Link['To']);
+                if( $Link['To'] ) {
+                    $Select[] = $this->convertPropertyList($Link['To']);
+                }
             } else {
-                $Select[] = $this->convertPropertyList($Link['To']);
+                if( $Link['To'] ) {
+                    $Select[] = $this->convertPropertyList($Link['To']);
+                }
             }
         }
         $Select = implode(', ', $Select);
@@ -118,16 +122,18 @@ class View
             $From = $Link['From'];
             /** @var Element $To */
             $To = $Link['To'];
-            $QueryBuilder->leftJoin(
-                $From->getEntityShortName(),
-                $this->convertWordCase($To->getEntityShortName()),
-                $To->getEntityShortName(),
-                $QueryBuilder->expr()->andX(
-                    $QueryBuilder->expr()->eq($From->getEntityShortName().'.'.$Link['FromKey'],
-                        $To->getEntityShortName().'.'.$Link['ToKey']),
-                    $QueryBuilder->expr()->isNull($To->getEntityShortName().'.EntityRemove')
-                )
-            );
+            if( $Link['To'] ) {
+                $QueryBuilder->leftJoin(
+                    $From->getEntityShortName(),
+                    $this->convertWordCase($To->getEntityShortName()),
+                    $To->getEntityShortName(),
+                    $QueryBuilder->expr()->andX(
+                        $QueryBuilder->expr()->eq($From->getEntityShortName() . '.' . $Link['FromKey'],
+                            $To->getEntityShortName() . '.' . $Link['ToKey']),
+                        $QueryBuilder->expr()->isNull($To->getEntityShortName() . '.EntityRemove')
+                    )
+                );
+            }
         }
         $QueryBuilder->where(
             $QueryBuilder->expr()->isNull($FromSource->getEntityShortName().'.EntityRemove')

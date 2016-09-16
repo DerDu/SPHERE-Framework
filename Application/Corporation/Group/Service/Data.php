@@ -325,4 +325,19 @@ class Data extends AbstractData
         }
         return false;
     }
+
+    /**
+     * @param TblGroup $tblGroup
+     * @param TblCompany $tblCompany
+     *
+     * @return bool|TblMember
+     */
+    public function existsGroupCompany(TblGroup $tblGroup, TblCompany $tblCompany)
+    {
+
+        return $this->getCachedEntityBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblMember', array(
+            TblMember::ATTR_TBL_GROUP     => $tblGroup->getId(),
+            TblMember::SERVICE_TBL_COMPANY => $tblCompany->getId()
+        ));
+    }
 }

@@ -7,6 +7,10 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
 use SPHERE\Application\Contact\Address\Address;
 use SPHERE\Application\Contact\Address\Service\Entity\TblAddress;
+use SPHERE\Application\People\Meta\Common\Common;
+use SPHERE\Application\People\Meta\Common\Service\Entity\TblCommon;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudent;
+use SPHERE\Application\People\Meta\Student\Student;
 use SPHERE\Application\People\Person\Person;
 use SPHERE\System\Database\Fitting\Element;
 
@@ -209,5 +213,23 @@ class TblPerson extends Element
     {
 
         return trim($this->FirstName . ' ' . $this->SecondName);
+    }
+
+    /**
+     * @return bool|TblCommon
+     */
+    public function getCommon()
+    {
+
+        return Common::useService()->getCommonByPerson($this);
+    }
+
+    /**
+     * @return bool|TblStudent
+     */
+    public function getStudent()
+    {
+
+        return Student::useService()->getStudentByPerson($this);
     }
 }

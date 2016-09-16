@@ -12,8 +12,6 @@ use Doctrine\ORM\Mapping\Cache;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
-use SPHERE\Application\People\Group\Group;
-use SPHERE\Application\People\Group\Service\Entity\TblGroup;
 use SPHERE\System\Database\Fitting\Element;
 
 /**
@@ -26,7 +24,6 @@ class TblSerialLetter extends Element
 
     const ATTR_NAME = 'Name';
     const ATTR_DESCRIPTION = 'Description';
-    const ATTR_SERVICE_TBL_GROUP = 'serviceTblGroup';
 
     /**
      * @Column(type="string")
@@ -37,11 +34,6 @@ class TblSerialLetter extends Element
      * @Column(type="string")
      */
     protected $Description;
-
-     /**
-      * @Column(type="bigint")
-      */
-    protected $serviceTblGroup;
 
     /**
      * @return string
@@ -77,27 +69,5 @@ class TblSerialLetter extends Element
     {
 
         $this->Description = $Description;
-    }
-
-    /**
-     * @return bool|TblGroup
-     */
-    public function getServiceTblGroup()
-    {
-
-        if (null === $this->serviceTblGroup) {
-            return false;
-        } else {
-            return Group::useService()->getGroupById($this->serviceTblGroup);
-        }
-    }
-
-    /**
-     * @param TblGroup|null $tblGroup
-     */
-    public function setServiceTblGroup($tblGroup)
-    {
-
-        $this->serviceTblGroup = ( null === $tblGroup ? null : $tblGroup->getId() );
     }
 }

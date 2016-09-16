@@ -366,7 +366,7 @@
                 })
             }
 
-            Table.on('click', 'tbody tr .' + settings.ExtensionRowExchange.Handler.From, function()
+            Table.on('click', 'tbody tr span.btn:has(span.' + settings.ExtensionRowExchange.Handler.From+')', function()
             {
 
                 Table.processing(true);
@@ -376,11 +376,19 @@
                 var Payload = $(this).closest('td').find('span.ExchangeData').html();
                 var PostData = $.parseJSON(Payload);
 
-                $(this).removeClass(
-                    settings.ExtensionRowExchange.Handler.From
-                ).addClass(
-                    settings.ExtensionRowExchange.Handler.To
-                );
+                if( $(this).hasClass('btn') ) {
+                    $(this).find('span').removeClass(
+                        settings.ExtensionRowExchange.Handler.From
+                    ).addClass(
+                        settings.ExtensionRowExchange.Handler.To
+                    );
+                } else {
+                    $(this).removeClass(
+                        settings.ExtensionRowExchange.Handler.From
+                    ).addClass(
+                        settings.ExtensionRowExchange.Handler.To
+                    );
+                }
 
                 var TargetRow = Table.row(SourceRow);
                 ExchangeTarget.row.add(SourceRow).draw();

@@ -1573,31 +1573,13 @@ class Frontend extends Extension implements IFrontendInterface
                     if ($tblGrade->getGrade() === null) {
                         $Global->POST['Grade'][$tblGrade->getServiceTblPerson()->getId()]['Attendance'] = 1;
                     } else {
-                        if ($IsEdit) {
-                            $Global->POST['Grade'][$tblGrade->getServiceTblPerson()->getId()]['Grade'] =
-                                str_replace('.', ',', $tblGrade->getGrade());
+                        $Global->POST['Grade'][$tblGrade->getServiceTblPerson()->getId()]['Grade'] =
+                            str_replace('.', ',', $tblGrade->getGrade());
 
-                            $trend = $tblGrade->getTrend();
-                            if ($trend !== null) {
-                                $Global->POST['Grade'][$tblGrade->getServiceTblPerson()->getId()]['Trend'] = $trend;
-                            }
-                        } else {
-                            $trend = $tblGrade->getTrend();
-                            if ($trend !== null) {
-                                if ($trend == TblGrade::VALUE_TREND_PLUS) {
-                                    $trend = '+';
-                                } elseif ($trend == TblGrade::VALUE_TREND_MINUS) {
-                                    $trend = '-';
-                                } else {
-                                    $trend = '';
-                                }
-                            } else {
-                                $trend = '';
-                            }
-                            $Global->POST['Grade'][$tblGrade->getServiceTblPerson()->getId()]['Grade'] =
-                                str_replace('.', ',', $tblGrade->getGrade()) . $trend;
+                        $trend = $tblGrade->getTrend();
+                        if ($trend !== null) {
+                            $Global->POST['Grade'][$tblGrade->getServiceTblPerson()->getId()]['Trend'] = $trend;
                         }
-
                     }
                     $Global->POST['Grade'][$tblGrade->getServiceTblPerson()->getId()]['Comment'] = $tblGrade->getComment();
                 }

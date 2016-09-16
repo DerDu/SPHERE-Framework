@@ -608,7 +608,7 @@ class Data extends AbstractData
             $this->removeSessionByTimeout();
 
             /** @var false|TblSession $Entity */
-            $Entity = $this->getCachedEntityBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblSession',
+            $Entity = $this->getForceEntityBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblSession',
                 array(
                     TblSession::ATTR_SESSION => $Session
                 ));

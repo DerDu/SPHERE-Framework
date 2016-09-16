@@ -288,4 +288,16 @@ class Service extends AbstractService
 
         return (new Data($this->getBinding()))->destroyGroup($tblGroup);
     }
+
+    /**
+     * @param TblGroup $tblGroup
+     * @param TblCompany $tblCompany
+     *
+     * @return bool|TblMember
+     */
+    public function existsGroupCompany(TblGroup $tblGroup, TblCompany $tblCompany)
+    {
+
+        return (new Data($this->getBinding()))->existsGroupCompany($tblGroup, $tblCompany);
+    }
 }

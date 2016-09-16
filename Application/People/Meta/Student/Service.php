@@ -743,17 +743,18 @@ class Service extends Integration
 
     /**
      * @param TblPerson $tblPerson
+     * @param string $Prefix
      *
      * @return string
      */
-    public function getDisplayCurrentDivisionListByPerson(TblPerson $tblPerson)
+    public function getDisplayCurrentDivisionListByPerson(TblPerson $tblPerson, $Prefix = 'Klasse' )
     {
 
         $tblDivisionList = $this->getCurrentDivisionListByPerson($tblPerson);
         $list = array();
         if ($tblDivisionList){
             foreach ($tblDivisionList as $tblDivision){
-                $list[] = 'Klasse ' . $tblDivision->getDisplayName();
+                $list[] = trim($Prefix . ' ' . $tblDivision->getDisplayName());
             }
 
             return implode(', ', $list);

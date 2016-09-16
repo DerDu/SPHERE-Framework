@@ -114,6 +114,36 @@ class Custom implements IModuleInterface
                 __NAMESPACE__.'\Schneeberg\Person::downloadClassList'
             ));
         }
+
+        /*
+        * Radebeul
+        */
+        if ($consumerAcronym === 'EVSR' || $consumerAcronym === 'DEMO') {
+            Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+                __NAMESPACE__.'/Radebeul/Person/ParentTeacherConferenceList/Download',
+                __NAMESPACE__.'\Radebeul\Person::downloadParentTeacherConferenceList'
+            ));
+            Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+                __NAMESPACE__.'/Radebeul/Person/DenominationList/Download',
+                __NAMESPACE__.'\Radebeul\Person::downloadDenominationList'
+            ));
+            Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+                __NAMESPACE__.'/Radebeul/Person/PhoneList/Download',
+                __NAMESPACE__.'\Radebeul\Person::downloadPhoneList'
+            ));
+            Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+                __NAMESPACE__.'/Radebeul/Person/KindergartenList/Download',
+                __NAMESPACE__.'\Radebeul\Person::downloadKindergartenList'
+            ));
+            Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+                __NAMESPACE__.'/Radebeul/Person/RegularSchoolList/Download',
+                __NAMESPACE__.'\Radebeul\Person::downloadRegularSchoolList'
+            ));
+            Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+                __NAMESPACE__.'/Radebeul/Person/DiseaseList/Download',
+                __NAMESPACE__.'\Radebeul\Person::downloadDiseaseList'
+            ));
+        }
     }
 
     /**
