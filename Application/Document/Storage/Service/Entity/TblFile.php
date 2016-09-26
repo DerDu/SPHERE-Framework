@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
 use SPHERE\Application\Document\Storage\DummyFile;
+use SPHERE\Application\Document\Storage\FilePointer;
 use SPHERE\Application\Document\Storage\Storage;
 use SPHERE\System\Database\Fitting\Element;
 
@@ -106,16 +107,26 @@ class TblFile extends Element
     }
 
     /**
-     * @return DummyFile
+     * @return FilePointer
+     */
+    public function getFilePointer()
+    {
+        return $this->getDummyFile();
+    }
+
+    /**
+     * @deprecated
+     * @see getFilePointer
+     * @return FilePointer
      */
     public function getDummyFile()
     {
 
-        $Dummy = new DummyFile($this->getTblFileType()->getExtension(), $this->getName());
-        $Dummy->setFileContent($this->getTblBinary()->getBinaryBlob());
-        $Dummy->saveFile();
+        $FilePointer = new FilePointer($this->getTblFileType()->getExtension(), $this->getName());
+        $FilePointer->setFileContent($this->getTblBinary()->getBinaryBlob());
+        $FilePointer->saveFile();
 
-        return $Dummy;
+        return $FilePointer;
     }
 
     /**

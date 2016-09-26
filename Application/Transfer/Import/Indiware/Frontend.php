@@ -121,7 +121,7 @@ class Frontend extends Extension implements IFrontendInterface
         $Stage = new Stage('Indiware-Import', 'Lehraufträge');
 
         $tblFile = Storage::useService()->getFileById($Id);
-        $Dummy = $tblFile->getDummyFile();
+        $FilePointer = $tblFile->getFilePointer();
 
         $tblYear = Term::useService()->getYearById(3);
         $Stage->setMessage(
@@ -130,7 +130,7 @@ class Frontend extends Extension implements IFrontendInterface
             .'Datei: '.$tblFile->getName()
         );
 
-        $Converter = new PrepareIndiwareLectureship($Dummy->getRealPath(), $tblYear);
+        $Converter = new PrepareIndiwareLectureship($FilePointer->getRealPath(), $tblYear);
 
         // TODO: Improve Result
         $Protocol = $Converter->scanFile(1);
@@ -239,6 +239,10 @@ class Frontend extends Extension implements IFrontendInterface
         return $Stage;
     }
 
+    /**
+     * @param $LectureshipList
+     * @return array
+     */
     private function createLectureship($LectureshipList)
     {
 
