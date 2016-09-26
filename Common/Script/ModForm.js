@@ -20,7 +20,28 @@
          * @file ModForm.js
          */
         if (settings.saveDraftData) {
-            thisForm.sisyphus();
+            thisForm.sisyphus({
+                locationBased: true,
+                onRestore: function(){
+                    $.notifyClose();
+                    $.notify({
+                        // options
+                        message:
+                                    '<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>'
+                                    + '&nbsp; Ihre noch nicht gespeicherten Eingaben wurden wieder hergestellt'
+
+                    }, {
+                        // settings
+                        newest_on_top: true,
+                        type: 'info',
+                        delay: 20000,
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        }
+                    });
+                }
+            });
         }
 
         /**
@@ -62,6 +83,12 @@
         {
             notifyFieldList.attr('data-form-leave-prevention', 0);
         });
+
+        /**
+         * Enable: Form-Validator
+         */
+        $.fn.validator.Constructor.INPUT_SELECTOR = ':input:not([type="hidden"], [type="submit"], [type="reset"], select, button)'
+        this.validator();
 
         return this;
     };

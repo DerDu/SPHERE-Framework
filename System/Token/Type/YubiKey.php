@@ -5,6 +5,7 @@ use SPHERE\System\Debugger\DebuggerFactory;
 use SPHERE\System\Debugger\Logger\BenchmarkLogger;
 use SPHERE\System\Debugger\Logger\ErrorLogger;
 use SPHERE\System\Debugger\Logger\QueryLogger;
+use SPHERE\System\Extension\Repository\Debugger;
 use SPHERE\System\Proxy\Proxy;
 use SPHERE\System\Proxy\Type\Http;
 use SPHERE\System\Token\ITypeInterface;
@@ -24,7 +25,7 @@ class YubiKey implements ITypeInterface
     /** @var string $KeyDelimiter */
     private $KeyDelimiter = '[:]';
     /** @var int $YubiApiTimeout */
-    private $YubiApiTimeout = 3;
+    private $YubiApiTimeout = 2;
 
     /** @var int $YubiApiId */
     private $YubiApiId = 0;
@@ -33,16 +34,15 @@ class YubiKey implements ITypeInterface
 
     /** @var array $YubiApiEndpoint */
     private $YubiApiEndpoint = array(
-        'api1.yubico.com',
+        'api.yubico.com',
         'api2.yubico.com',
         'api3.yubico.com',
         'api4.yubico.com',
-        'api5.yubico.com'
+        'api5.yubico.com',
     );
 
     /** @var string $YubiApiLocation */
     private $YubiApiLocation = '/wsapi/2.0/verify';
-
 
     /**
      * @param string $Value
@@ -150,14 +150,14 @@ class YubiKey implements ITypeInterface
         (new DebuggerFactory())->createLogger(new BenchmarkLogger())->addLog('YubiKey-Api Verification: '.json_encode($Decision).' Decision');
         $Decision = array_sum($Decision) / ( count($Decision) > 0 ? count($Decision) : 1 );
 
-        if ($Decision >= 0.5) {
+        if ($Decision > 0) {
             (new DebuggerFactory())->createLogger(new BenchmarkLogger())->addLog('YubiKey-Api Verification: '.$Decision.' OK');
             return true;
         } elseif ($Decision == 0) {
             (new DebuggerFactory())->createLogger(new BenchmarkLogger())->addLog('YubiKey-Api Verification: '.$Decision.' Failed');
             throw new ReplayedOTPException();
         } else {
-            (new DebuggerFactory())->createLogger(new BenchmarkLogger())->addLog('YubiKey-Api Verification: '.$Decision.' Failed');
+            (new DebuggerFactory())->createLogger(new BenchmarkLogger())->addLog('YubiKey-Api Verification: '.$Decision.' Corrupt');
             return false;
         }
     }
@@ -217,11 +217,14 @@ class YubiKey implements ITypeInterface
     private function getHostIpAddress($Host)
     {
 
-        $Address = gethostbyname($Host);
-
-        if ($Address == $Host) {
-            (new DebuggerFactory())->createLogger(new ErrorLogger())->addLog('YubiKey-Api Offline! (DNS: '.$Host.')');
-            return false;
+        if (false === filter_var($Host, FILTER_VALIDATE_IP)) {
+            $Address = gethostbyname($Host);
+            if ($Address == $Host) {
+                (new DebuggerFactory())->createLogger(new ErrorLogger())->addLog('YubiKey-Api Offline! (DNS: '.$Host.')');
+                return false;
+            }
+        } else {
+            $Address = $Host;
         }
 
         $ErrorNumber = null;

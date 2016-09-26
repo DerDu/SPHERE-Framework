@@ -381,12 +381,12 @@ class Frontend extends Extension implements IFrontendInterface
                         ), Panel::PANEL_TYPE_INFO), 2),
                     new FormColumn(
                         new Panel('Vorname', array(
-                            new TextField('Person[FirstName]', 'Rufname', 'Vorname'),
+                            (new TextField('Person[FirstName]', 'Rufname', 'Vorname'))->setRequired(),
                             new TextField('Person[SecondName]', 'weitere Vornamen', 'Zweiter Vorname'),
                         ), Panel::PANEL_TYPE_INFO), 3),
                     new FormColumn(
                         new Panel('Nachname', array(
-                            new TextField('Person[LastName]', 'Nachname', 'Nachname'),
+                            (new TextField('Person[LastName]', 'Nachname', 'Nachname'))->setRequired(),
                             new TextField('Person[BirthName]', 'Geburtsname', 'Geburtsname'),
                         ), Panel::PANEL_TYPE_INFO), 3),
                     new FormColumn(

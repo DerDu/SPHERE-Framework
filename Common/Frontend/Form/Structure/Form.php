@@ -28,14 +28,16 @@ class Form extends Extension implements IFormInterface
     protected $Hash = '';
     /** @var IBridgeInterface $Template */
     protected $Template = null;
+    /** @var bool $EnableSaveDraft */
+    private $EnableSaveDraft = false;
 
     /**
      * @param FormGroup|FormGroup[]                    $FormGroup
      * @param null|IButtonInterface|IButtonInterface[] $FormButtonList
      * @param string                                   $FormAction
-     * @param array                                    $FormData
+     * @param array                                    $FormActionData
      */
-    public function __construct($FormGroup, $FormButtonList = null, $FormAction = '', $FormData = array())
+    public function __construct($FormGroup, $FormButtonList = null, $FormAction = '', $FormActionData = array())
     {
 
         if (!is_array($FormGroup)) {
@@ -51,11 +53,11 @@ class Form extends Extension implements IFormInterface
         $this->GridButtonList = $FormButtonList;
 
         $this->Template = $this->getTemplate(__DIR__.'/Form.twig');
-        if (!empty( $FormData )) {
+        if (!empty( $FormActionData )) {
             $this->Template->setVariable('FormAction', $this->getRequest()->getUrlBase().$FormAction);
             $this->Template->setVariable('FormData', '?'.http_build_query(
                     (new Authenticator(new Get()))->getAuthenticator()->createSignature(
-                        $FormData, $FormAction
+                        $FormActionData, $FormAction
                     )
                 ));
         } else {
@@ -160,6 +162,15 @@ class Form extends Extension implements IFormInterface
     }
 
     /**
+     * @return Form
+     */
+    public function enableSaveDraft()
+    {
+        $this->EnableSaveDraft = true;
+        return $this;
+    }
+
+    /**
      * @param IButtonInterface $Button
      *
      * @return Form
@@ -225,6 +236,11 @@ class Form extends Extension implements IFormInterface
         $this->Template->setVariable('FormButtonList', $this->GridButtonList);
         $this->Template->setVariable('GridGroupList', $this->GridGroupList);
         $this->Template->setVariable('Hash', $this->getHash());
+        if( $this->EnableSaveDraft ) {
+            $this->Template->setVariable('EnableSaveDraft', true);
+        } else {
+            $this->Template->setVariable('EnableSaveDraft', false);
+        }
         return $this->Template->getContent();
     }
 
@@ -233,16 +249,37 @@ class Form extends Extension implements IFormInterface
      */
     public function getHash()
     {
+        $HashList = array();
 
         if (empty( $this->Hash )) {
             $GroupList = $this->GridGroupList;
-            array_walk($GroupList, function (&$G) {
-
-                if (is_object($G)) {
-                    $G = serialize($G);
+            array_walk($GroupList, function ($FormGroup) use(&$HashList) {
+                if (is_object($FormGroup)) {
+                    $HashList[] = get_class($FormGroup);
+                    /** @var FormGroup $FormGroup */
+                    $RowList = $FormGroup->getFormRow();
+                    array_walk($RowList, function ($FormRow) use(&$HashList) {
+                        if (is_object($FormRow)) {
+                            $HashList[] = get_class($FormRow);
+                            /** @var FormRow $FormRow */
+                            $ColumnList = $FormRow->getFormColumn();
+                            array_walk($ColumnList, function ($FormColumn) use(&$HashList) {
+                                if (is_object($FormColumn)) {
+                                    $HashList[] = get_class($FormColumn);
+                                    /** @var FormColumn $FormColumn */
+                                    $FrontendList = $FormColumn->getFrontend();
+                                    array_walk($FrontendList, function ($Frontend) use(&$HashList) {
+                                        if (is_object($Frontend)) {
+                                            $HashList[] = get_class($Frontend);
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
                 }
             });
-            $this->Hash = md5(json_encode($GroupList));
+            $this->Hash = md5(json_encode($HashList).date('Ymd'));
         }
         return $this->Hash;
     }

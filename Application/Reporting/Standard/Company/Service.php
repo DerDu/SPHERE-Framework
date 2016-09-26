@@ -11,10 +11,11 @@ use SPHERE\Application\Contact\Phone\Phone;
 use SPHERE\Application\Corporation\Company\Service\Entity\TblCompany;
 use SPHERE\Application\Corporation\Group\Service\Entity\TblGroup;
 use SPHERE\Application\Corporation\Search\Group\Group;
-use SPHERE\Application\Document\Explorer\Storage\Storage;
+use SPHERE\Application\Document\Storage\Storage;
 use SPHERE\Common\Frontend\Form\IFormInterface;
 use SPHERE\Common\Window\Redirect;
 use SPHERE\System\Extension\Extension;
+use SPHERE\System\Extension\Repository\Sorter\StringGermanOrderSorter;
 
 /**
  * Class Service
@@ -64,7 +65,7 @@ class Service extends Extension
         $count = 0;
         if ($groupList) {
 
-            $groupList = $this->getSorter($groupList)->sortObjectBy('DisplayName');
+            $groupList = $this->getSorter($groupList)->sortObjectBy('DisplayName', new StringGermanOrderSorter());
 
             /** @var TblCompany $tblCompany */
             foreach ($groupList as $tblCompany) {
@@ -149,7 +150,7 @@ class Service extends Extension
 
         if (!empty( $groupList )) {
 
-            $fileLocation = Storage::useWriter()->getTemporary('xlsx');
+            $fileLocation = Storage::createFilePointer('xlsx');
             /** @var PhpExcel $export */
             $export = Document::getDocument($fileLocation->getFileLocation());
             $export->setValue($export->getCell("0", "0"), "lfd. Nr.");

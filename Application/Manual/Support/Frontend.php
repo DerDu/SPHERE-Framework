@@ -4,13 +4,18 @@ namespace SPHERE\Application\Manual\Support;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Account;
 use SPHERE\Common\Frontend\Form\Repository\Button\Primary;
 use SPHERE\Common\Frontend\Form\Repository\Field\FileUpload;
+use SPHERE\Common\Frontend\Form\Repository\Field\MailField;
 use SPHERE\Common\Frontend\Form\Repository\Field\TextArea;
 use SPHERE\Common\Frontend\Form\Repository\Field\TextField;
 use SPHERE\Common\Frontend\Form\Structure\Form;
 use SPHERE\Common\Frontend\Form\Structure\FormColumn;
 use SPHERE\Common\Frontend\Form\Structure\FormGroup;
 use SPHERE\Common\Frontend\Form\Structure\FormRow;
+use SPHERE\Common\Frontend\Icon\Repository\FileType;
+use SPHERE\Common\Frontend\Icon\Repository\Flash;
 use SPHERE\Common\Frontend\Icon\Repository\Mail;
+use SPHERE\Common\Frontend\Icon\Repository\Phone;
+use SPHERE\Common\Frontend\Icon\Repository\Quote;
 use SPHERE\Common\Frontend\IFrontendInterface;
 use SPHERE\Common\Frontend\Layout\Repository\Panel;
 use SPHERE\Common\Frontend\Layout\Structure\Layout;
@@ -141,12 +146,14 @@ class Frontend extends Extension implements IFrontendInterface
                 new FormRow(array(
                     new FormColumn(
                         new Panel('Feedback oder Support-Anfrage', array(
-                            new TextField('Ticket[Mail]', 'meine@email.de', 'Ihre Email-Adresse'.new Danger(' *')),
-                            new TextField('Ticket[Subject]', 'Thema', 'Betreff der Anfrage'.new Danger(' *')),
-                            new TextField('Ticket[CallBackNumber]', 'Vorwahl/Telefonnummer', 'Rückrufnummer'),
-                            new TextArea('Ticket[Body]', 'Meine Frage oder mein Problem',
-                                'Inhalt der Nachricht'.new Danger(' *')),
-                            new FileUpload('Attachment', 'z.B. ein Screenshot', 'Optionaler Datei-Anhang'),
+                            (new MailField('Ticket[Mail]', 'meine@email.de', 'Ihre Email-Adresse', new Mail()))->setRequired(),
+                            (new TextField('Ticket[Subject]', 'Thema', 'Betreff der Anfrage', new Flash()))->setRequired(),
+                            (new TextArea('Ticket[Body]', 'Meine Frage oder mein Problem',
+                                'Inhalt der Nachricht', new Quote()))->setRequired(),
+                            new TextField('Ticket[CallBackNumber]', 'Vorwahl/Telefonnummer', 'Rückrufnummer', new Phone()),
+                            new FileUpload('Attachment', 'z.B. ein Screenshot', 'Optionaler Datei-Anhang', null, array(
+                                'showPreview' => false
+                            )),
                         ), Panel::PANEL_TYPE_INFO,
                             new Primary('Absenden', new Mail()).new Danger(new Small(' (* Pflichtfeld)')))),
                 ))

@@ -133,6 +133,9 @@ class Setup extends AbstractSetup
         if (!$this->getConnection()->hasColumn('tblListElementList', 'Name')) {
             $Table->addColumn('Name', 'string');
         }
+        if (!$Table->hasColumn('SortOrder')) {
+            $Table->addColumn('SortOrder', 'integer', array('notnull' => false));
+        }
 
         $this->getConnection()->addForeignKey($Table, $tblList, true);
         $this->getConnection()->addForeignKey($Table, $tblElementType, true);

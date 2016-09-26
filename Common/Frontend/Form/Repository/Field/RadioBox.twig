@@ -6,7 +6,7 @@
                value="{{ ElementValue }}"
                autocomplete="off" {{ ElementChecked }} {% if( Disabled is not empty ) %}disabled{% endif %} {% if( TabIndex is not empty ) %}tabindex="{{ TabIndex }}"{% endif %}/>
         {% if( ElementLabel is not empty ) %}
-            <label class="sphere-label" for="{{ ElementHash }}">{{ ElementLabel }}</label>
+            <label class="sphere-label" for="{{ ElementHash }}">{{ ElementLabel }}{% if( Required is not empty ) %}<span class="text-danger"> *</span>{% endif %}</label>
         {% endif %}
         {{ ElementFeedbackIcon }}
     </div>

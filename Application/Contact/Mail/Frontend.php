@@ -10,6 +10,7 @@ use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\People\Relationship\Relationship;
 use SPHERE\Common\Frontend\Form\Repository\Button\Primary;
 use SPHERE\Common\Frontend\Form\Repository\Field\AutoCompleter;
+use SPHERE\Common\Frontend\Form\Repository\Field\MailField;
 use SPHERE\Common\Frontend\Form\Repository\Field\SelectBox;
 use SPHERE\Common\Frontend\Form\Repository\Field\TextArea;
 use SPHERE\Common\Frontend\Form\Structure\Form;
@@ -130,12 +131,13 @@ class Frontend extends Extension implements IFrontendInterface
                     new FormColumn(
                         new Panel('E-Mail Adresse',
                             array(
-                                new SelectBox('Type[Type]', 'Typ',
+                                (new SelectBox('Type[Type]', 'Typ',
                                     array('{{ Name }} {{ Description }}' => $tblTypeAll), new TileBig()
-                                ),
-                                new AutoCompleter('Address', 'E-Mail Adresse', 'E-Mail Adresse',
-                                    array('Address' => $tblMailAll), new MailIcon()
-                                )
+                                ))->setRequired(),
+                                (new MailField('Address', 'E-Mail Adresse', 'E-Mail Adresse', new MailIcon() ))->setRequired()
+//                                (new AutoCompleter('Address', 'E-Mail Adresse', 'E-Mail Adresse',
+//                                    array('Address' => $tblMailAll), new MailIcon()
+//                                ))->setRequired()
                             ), Panel::PANEL_TYPE_INFO
                         ), 6),
                     new FormColumn(

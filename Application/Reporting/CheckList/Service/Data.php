@@ -193,6 +193,58 @@ class Data extends AbstractData
     }
 
     /**
+     * @param TblObjectType $tblObjectType
+     * @param TblList       $tblList
+     * @param               $ObjectId
+     *
+     * @return bool|TblListObjectList
+     */
+    public function getObjectByObjectTypeAndListAndId(TblObjectType $tblObjectType, TblList $tblList, $ObjectId)
+    {
+
+        $tblListObjectElementList = $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(),
+            'TblListObjectElementList',
+            array(
+                TblListObjectElementList::ATTR_TBL_LIST           => $tblList->getId(),
+                TblListObjectElementList::ATTR_TBL_OBJECT_TYPE    => $tblObjectType->getId(),
+                TblListObjectElementList::ATTR_SERVICE_TBL_OBJECT => $ObjectId
+            ));
+        $result = '';
+        if ($tblListObjectElementList) {
+            /** @var TblListObjectList $tblListObjectElement */
+            foreach ($tblListObjectElementList as $tblListObjectElement) {
+                $result = $tblListObjectElement->getServiceTblObject();
+            }
+        }
+        return ( $result == '' ) ? false : $result;
+    }
+
+    /**
+     * @param TblList            $tblList
+     * @param TblListElementList $tblListElementList
+     * @param TblObjectType      $tblObjectType
+     * @param                    $ObjectId
+     *
+     * @return false|TblListObjectElementList
+     */
+    public function getListObjectElementListByListAndListElementListAndObjectTypeAndObjectId(
+        TblList $tblList,
+        TblListElementList $tblListElementList,
+        TblObjectType $tblObjectType,
+        $ObjectId
+    ) {
+
+        return $this->getCachedEntityBy(__METHOD__, $this->getConnection()->getEntityManager(),
+            'TblListObjectElementList',
+            array(
+                TblListObjectElementList::ATTR_TBL_LIST              => $tblList->getId(),
+                TblListObjectElementList::ATTR_TBL_LIST_ELEMENT_LIST => $tblListElementList->getId(),
+                TblListObjectElementList::ATTR_TBL_OBJECT_TYPE       => $tblObjectType->getId(),
+                TblListObjectElementList::ATTR_SERVICE_TBL_OBJECT    => $ObjectId
+            ));
+    }
+
+    /**
      * @param $Id
      *
      * @return bool|TblListElementList
@@ -212,9 +264,37 @@ class Data extends AbstractData
     public function getListElementListByList(TblList $tblList)
     {
 
-        return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(),
+        $TempList = $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(),
             'TblListElementList',
-            array(TblListElementList::ATTR_TBL_LIST => $tblList->getId()));
+            array(TblListElementList::ATTR_TBL_LIST => $tblList->getId()), array('EntityCreate' => self::ORDER_ASC));
+        $EntityList = array();
+        if (!empty ( $TempList )) {
+
+            // ist Check-List sortiert
+            $isSorted = false;
+            /** @var TblListElementList $tblListElementList */
+            foreach ($TempList as $tblListElementList) {
+                if ($tblListElementList->getSortOrder() !== null) {
+                    $isSorted = true;
+                    break;
+                }
+            }
+
+            if ($isSorted) {
+                $TempList = $this->getSorter($TempList)->sortObjectBy('SortOrder');
+                /** @var TblListElementList $tblListElementList */
+                if ($TempList) {
+                    foreach ($TempList as $tblListElementList) {
+                        array_push($EntityList, $tblListElementList);
+                    }
+                }
+            }
+
+            if (!$isSorted) {
+                $EntityList = $TempList;
+            }
+        }
+        return empty( $EntityList ) ? false : $EntityList;
     }
 
     /**
@@ -299,6 +379,28 @@ class Data extends AbstractData
     }
 
     /**
+     * @param TblList       $tblList
+     * @param TblObjectType $tblObjectType
+     * @param Element       $ObjectId
+     *
+     * @return bool|TblListObjectElementList[]
+     */
+    public function getListObjectElementListByListAndObjectTypeAndListElementListAndObjectId(
+        TblList $tblList,
+        TblObjectType $tblObjectType,
+        $ObjectId
+    ) {
+
+        return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(),
+            'TblListObjectElementList',
+            array(
+                TblListObjectElementList::ATTR_TBL_LIST           => $tblList->getId(),
+                TblListObjectElementList::ATTR_TBL_OBJECT_TYPE    => $tblObjectType->getId(),
+                TblListObjectElementList::ATTR_SERVICE_TBL_OBJECT => $ObjectId
+            ));
+    }
+
+    /**
      * @param $Id
      *
      * @return bool|TblElementType
@@ -336,7 +438,7 @@ class Data extends AbstractData
     /**
      * @param TblList $tblList
      *
-     * @return int
+     * @return false|int|Element
      */
     public function countListElementListByList(TblList $tblList)
     {
@@ -543,15 +645,38 @@ class Data extends AbstractData
     }
 
     /**
-     * add Entity if not exists
+     * @param TblListElementList $tblListElementList
+     * @param integer            $SortOrder
      *
+     * @return bool
+     */
+    public function updateListElementListSortOrder(TblListElementList $tblListElementList, $SortOrder)
+    {
+
+        $Manager = $this->getConnection()->getEntityManager();
+
+        /** @var TblListElementList $Entity */
+        $Entity = $Manager->getEntityById('TblListElementList', $tblListElementList->getId());
+        $Protocol = clone $Entity;
+        if (null !== $Entity) {
+            $Entity->setSortOrder($SortOrder);
+            $Manager->saveEntity($Entity);
+            Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(),
+                $Protocol,
+                $Entity);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * @param TblList            $tblList
      * @param TblObjectType      $tblObjectType
      * @param TblListElementList $tblListElementList
      * @param Element            $tblObject
      * @param                    $Value
      *
-     * @return TblListElementList
+     * @return TblListObjectElementList
      */
     public function updateObjectElementToList(
         TblList $tblList,
@@ -578,13 +703,14 @@ class Data extends AbstractData
             $Entity->setValue($Value);
             $Manager->saveEntity($Entity);
             Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(), $Entity);
+            return $Entity;
         } else {
             $Protocol = clone $Entity;
             $Entity->setValue($Value);
             $Manager->saveEntity($Entity);
             Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(), $Protocol, $Entity);
+            return $Entity;
         }
-        return $Entity;
     }
 
     /**

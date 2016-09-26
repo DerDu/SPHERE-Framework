@@ -154,9 +154,10 @@ class Frontend extends Extension implements IFrontendInterface
                     new FormRow(
                         new FormColumn(
                             new Panel('Benutzername & Passwort', array(
-                                new TextField('CredentialName', 'Benutzername', 'Benutzername',
-                                    new Person()),
-                                new PasswordField('CredentialLock', 'Passwort', 'Passwort', new Lock())
+                                (new TextField('CredentialName', 'Benutzername', 'Benutzername', new Person()))
+                                    ->setRequired(),
+                                    (new PasswordField('CredentialLock', 'Passwort', 'Passwort', new Lock()))
+                                        ->setRequired()->setDefaultValue($CredentialLock,true)
                             ), Panel::PANEL_TYPE_INFO)
                         )
                     ),

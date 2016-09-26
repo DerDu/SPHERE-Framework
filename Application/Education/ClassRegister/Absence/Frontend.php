@@ -61,19 +61,31 @@ use SPHERE\System\Extension\Extension;
 class Frontend extends Extension implements IFrontendInterface
 {
 
-    public function frontendAbsence($DivisionId = null, $PersonId = null, $Data = null)
-    {
+    /**
+     * @param null $DivisionId
+     * @param null $PersonId
+     * @param string $BasicRoute
+     * @param null $Data
+     *
+     * @return Stage|string
+     */
+    public function frontendAbsence(
+        $DivisionId = null,
+        $PersonId = null,
+        $BasicRoute = '/Education/ClassRegister/Teacher',
+        $Data = null
+    ) {
 
         $Stage = new Stage('Fehlzeiten', 'Übersicht');
         $tblDivision = Division::useService()->getDivisionById($DivisionId);
         if ($tblDivision) {
             $Stage->addButton(new Standard(
-                'Zurück', '/Education/ClassRegister/Selected', new ChevronLeft(),
+                'Zurück', $BasicRoute . '/Selected', new ChevronLeft(),
                 array('DivisionId' => $tblDivision->getId())
             ));
         } else {
             $Stage->addButton(new Standard(
-                'Zurück', '/Education/ClassRegister', new ChevronLeft()
+                'Zurück', $BasicRoute, new ChevronLeft()
             ));
         }
         $tblPerson = Person::useService()->getPersonById($PersonId);
@@ -107,14 +119,20 @@ class Frontend extends Extension implements IFrontendInterface
                                 '',
                                 '/Education/ClassRegister/Absence/Edit',
                                 new Edit(),
-                                array('Id' => $tblAbsence->getId()),
+                                array(
+                                    'Id' => $tblAbsence->getId(),
+                                    'BasicRoute' => $BasicRoute
+                                ),
                                 'Bearbeiten'
                             ))
                             . (new Standard(
                                 '',
                                 '/Education/ClassRegister/Absence/Destroy',
                                 new Remove(),
-                                array('Id' => $tblAbsence->getId()),
+                                array(
+                                    'Id' => $tblAbsence->getId(),
+                                    'BasicRoute' => $BasicRoute
+                                ),
                                 'Löschen'
                             ))
                     );
@@ -166,7 +184,7 @@ class Frontend extends Extension implements IFrontendInterface
                             new LayoutRow(array(
                                 new LayoutColumn(
                                     new Well(Absence::useService()->createAbsence($Form, $tblPerson, $tblDivision,
-                                        $Data))
+                                        $BasicRoute, $Data))
                                 )
                             ))
                         ), new Title(new PlusSign() . ' Hinzufügen'))
@@ -218,11 +236,12 @@ class Frontend extends Extension implements IFrontendInterface
 
     /**
      * @param null $Id
+     * @param string $BasicRoute
      * @param null $Data
      *
      * @return Stage|string
      */
-    public function frontendEditAbsence($Id = null, $Data = null)
+    public function frontendEditAbsence($Id = null, $BasicRoute = '', $Data = null)
     {
 
         $Stage = new Stage('Fehlzeiten', 'Bearbeiten');
@@ -234,7 +253,8 @@ class Frontend extends Extension implements IFrontendInterface
                 'Zurück', '/Education/ClassRegister/Absence', new ChevronLeft(),
                 array(
                     'PersonId' => $tblPerson->getId(),
-                    'DivisionId' => $tblDivision->getId()
+                    'DivisionId' => $tblDivision->getId(),
+                    'BasicRoute' => $BasicRoute
                 )
             ));
 
@@ -267,7 +287,7 @@ class Frontend extends Extension implements IFrontendInterface
                         new LayoutGroup(array(
                             new LayoutRow(array(
                                 new LayoutColumn(
-                                    new Well(Absence::useService()->updateAbsence($Form, $tblAbsence, $Data))
+                                    new Well(Absence::useService()->updateAbsence($Form, $tblAbsence, $BasicRoute, $Data))
                                 )
                             ))
                         ))
@@ -278,7 +298,7 @@ class Frontend extends Extension implements IFrontendInterface
             return $Stage;
         } else {
             $Stage->addButton(new Standard(
-                'Zurück', '/Education/ClassRegister', new ChevronLeft()
+                'Zurück', $BasicRoute, new ChevronLeft()
             ));
 
             return $Stage . new Danger('Fehlzeit nicht gefunden.', new Ban());
@@ -289,17 +309,18 @@ class Frontend extends Extension implements IFrontendInterface
      * @param null $DivisionId
      * @param null $Month
      * @param null $Year
+     * @param string $BasicRoute
      *
      * @return Stage|string
      */
-    public function frontendAbsenceMonth($DivisionId = null, $Month = null, $Year = null)
+    public function frontendAbsenceMonth($DivisionId = null, $Month = null, $Year = null, $BasicRoute = '')
     {
 
         $Stage = new Stage('Fehlzeiten', 'Monatsübersicht');
         $tblDivision = Division::useService()->getDivisionById($DivisionId);
         if ($tblDivision) {
             $Stage->addButton(new Standard(
-                'Zurück', '/Education/ClassRegister/Selected', new ChevronLeft(),
+                'Zurück', $BasicRoute . '/Selected', new ChevronLeft(),
                 array('DivisionId' => $tblDivision->getId())
             ));
 
@@ -370,7 +391,8 @@ class Frontend extends Extension implements IFrontendInterface
                         array(
                             'DivisionId' => $tblDivision->getId(),
                             'Month' => $startDateMonth,
-                            'Year' => $startDateYear
+                            'Year' => $startDateYear,
+                            'BasicRoute' => $BasicRoute
                         )
                     );
                     $startDate->modify('+1 month');
@@ -479,7 +501,7 @@ class Frontend extends Extension implements IFrontendInterface
             return $Stage;
         } else {
             $Stage->addButton(new Standard(
-                'Zurück', '/Education/ClassRegister', new ChevronLeft()
+                'Zurück', $BasicRoute, new ChevronLeft()
             ));
 
             return $Stage . new Danger('Person nicht gefunden.', new Ban());
@@ -532,10 +554,11 @@ class Frontend extends Extension implements IFrontendInterface
     /**
      * @param int $Id
      * @param bool $Confirm
+     * @param string $BasicRoute
      *
      * @return Stage
      */
-    public function frontendDestroyAbsence($Id = null, $Confirm = false)
+    public function frontendDestroyAbsence($Id = null, $Confirm = false, $BasicRoute = '')
     {
 
         $Stage = new Stage('Fehlzeit', 'Löschen');
@@ -548,7 +571,8 @@ class Frontend extends Extension implements IFrontendInterface
                 'Zurück', '/Education/ClassRegister/Absence', new ChevronLeft(),
                 array(
                     'PersonId' => $tblPerson->getId(),
-                    'DivisionId' => $tblDivision->getId()
+                    'DivisionId' => $tblDivision->getId(),
+                    'BasicRoute' => $BasicRoute
                 )
             ));
 
@@ -570,13 +594,18 @@ class Frontend extends Extension implements IFrontendInterface
                             Panel::PANEL_TYPE_DANGER,
                             new Standard(
                                 'Ja', '/Education/ClassRegister/Absence/Destroy', new Ok(),
-                                array('Id' => $Id, 'Confirm' => true)
+                                array(
+                                    'Id' => $Id,
+                                    'Confirm' => true,
+                                    'BasicRoute' => $BasicRoute
+                                )
                             )
                             . new Standard(
                                 'Nein', '/Education/ClassRegister/Absence', new Disable(),
                                 array(
                                     'PersonId' => $tblPerson->getId(),
-                                    'DivisionId' => $tblDivision->getId()
+                                    'DivisionId' => $tblDivision->getId(),
+                                    'BasicRoute' => $BasicRoute
                                 )
                             )
                         ),
@@ -592,14 +621,16 @@ class Frontend extends Extension implements IFrontendInterface
                                 . new Redirect('/Education/ClassRegister/Absence', Redirect::TIMEOUT_SUCCESS,
                                     array(
                                         'PersonId' => $tblPerson->getId(),
-                                        'DivisionId' => $tblDivision->getId()
+                                        'DivisionId' => $tblDivision->getId(),
+                                        'BasicRoute' => $BasicRoute
                                     )
                                 )
                                 : new Danger(new Ban() . ' Die Fehlzeit konnte nicht gelöscht werden')
                                 . new Redirect('/Education/ClassRegister/Absence', Redirect::TIMEOUT_ERROR,
                                     array(
                                         'PersonId' => $tblPerson->getId(),
-                                        'DivisionId' => $tblDivision->getId()
+                                        'DivisionId' => $tblDivision->getId(),
+                                        'BasicRoute' => $BasicRoute
                                     )
                                 )
                             )
@@ -612,7 +643,7 @@ class Frontend extends Extension implements IFrontendInterface
                 new Layout(new LayoutGroup(array(
                     new LayoutRow(new LayoutColumn(array(
                         new Danger(new Ban() . ' Die Fehlzeit konnte nicht gefunden werden'),
-                        new Redirect('/Education/ClassRegister', Redirect::TIMEOUT_ERROR)
+                        new Redirect($BasicRoute, Redirect::TIMEOUT_ERROR)
                     )))
                 )))
             );

@@ -339,7 +339,7 @@ class Frontend extends Extension implements IFrontendInterface
     /**
      * @param null $PrepareId
      *
-     * @return Stage
+     * @return Stage|string
      */
     public function frontendDivision($PrepareId = null)
     {
@@ -689,7 +689,7 @@ class Frontend extends Extension implements IFrontendInterface
     /**
      * @param null $PrepareId
      *
-     * @return Stage
+     * @return Stage|string
      */
     public function frontendAppointedDateTask($PrepareId = null)
     {
@@ -1022,7 +1022,7 @@ class Frontend extends Extension implements IFrontendInterface
     /**
      * @param null $PrepareId
      *
-     * @return Stage
+     * @return Stage|string
      */
     public function frontendBehaviorTask($PrepareId = null)
     {
@@ -1323,14 +1323,14 @@ class Frontend extends Extension implements IFrontendInterface
      * @param null $PrepareId
      * @param null $PersonId
      * @param null $Data
-     * @return Stage
+     * @return Stage|string
      */
     public function frontendEditBehaviorGrades($PrepareId = null, $PersonId = null, $Data = null)
     {
 
         $Stage = new Stage('Kopfnoten', 'Festlegen');
         $Stage->addButton(new Standard(
-            'Zurück', '/Education/Certificate/Prepare/BehaviorTask', new ChevronLeft(), array(
+            'Zurück', '/Education/Certificate/Prepare/BehaviorGrades', new ChevronLeft(), array(
                 'PrepareId' => $PrepareId
             )
         ));
@@ -1537,7 +1537,7 @@ class Frontend extends Extension implements IFrontendInterface
      * @param null $PrepareId
      * @param null $Data
      *
-     * @return Stage
+     * @return Stage|string
      */
     public function frontendSigner($PrepareId = null, $Data = null)
     {
@@ -1618,7 +1618,7 @@ class Frontend extends Extension implements IFrontendInterface
      * @param null $Content
      * @param bool $IsChange
      *
-     * @return Stage
+     * @return Stage|string
      */
     public function frontendCertificate(
         $PrepareId = null,
@@ -2019,7 +2019,7 @@ class Frontend extends Extension implements IFrontendInterface
      * @param null $PrepareId
      * @param null $PersonId
      *
-     * @return Stage
+     * @return Stage|string
      */
     public function frontendShowCertificate($PrepareId = null, $PersonId = null)
     {

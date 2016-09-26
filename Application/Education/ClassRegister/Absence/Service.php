@@ -69,12 +69,18 @@ class Service extends AbstractService
      * @param IFormInterface|null $Stage
      * @param TblPerson $tblPerson
      * @param TblDivision $tblDivision
+     * @param string $BasicRoute
      * @param $Data
      *
      * @return IFormInterface|string
      */
-    public function createAbsence(IFormInterface $Stage = null, TblPerson $tblPerson, TblDivision $tblDivision, $Data)
-    {
+    public function createAbsence(
+        IFormInterface $Stage = null,
+        TblPerson $tblPerson,
+        TblDivision $tblDivision,
+        $BasicRoute = '',
+        $Data
+    ) {
 
         /**
          * Skip to Frontend
@@ -106,7 +112,8 @@ class Service extends AbstractService
             return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success() . ' Die Fehlzeit ist erfasst worden.')
             . new Redirect('/Education/ClassRegister/Absence', Redirect::TIMEOUT_SUCCESS, array(
                 'DivisionId' => $tblDivision->getId(),
-                'PersonId' => $tblPerson->getId()
+                'PersonId' => $tblPerson->getId(),
+                'BasicRoute' => $BasicRoute
             ));
         }
 
@@ -116,11 +123,12 @@ class Service extends AbstractService
     /**
      * @param IFormInterface|null $Stage
      * @param TblAbsence $tblAbsence
+     * @param string $BasicRoute
      * @param $Data
      *
      * @return IFormInterface|string
      */
-    public function updateAbsence(IFormInterface $Stage = null, TblAbsence $tblAbsence, $Data)
+    public function updateAbsence(IFormInterface $Stage = null, TblAbsence $tblAbsence, $BasicRoute = '', $Data)
     {
 
         /**
@@ -152,7 +160,8 @@ class Service extends AbstractService
             return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success() . ' Die Fehlzeit ist geändert worden.')
             . new Redirect('/Education/ClassRegister/Absence', Redirect::TIMEOUT_SUCCESS, array(
                 'DivisionId' => $tblAbsence->getServiceTblDivision()->getId(),
-                'PersonId' => $tblAbsence->getServiceTblPerson()->getId()
+                'PersonId' => $tblAbsence->getServiceTblPerson()->getId(),
+                'BasicRoute' => $BasicRoute
             ));
         }
 

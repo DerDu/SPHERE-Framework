@@ -72,6 +72,7 @@ use SPHERE\Common\Window\Redirect;
 use SPHERE\Common\Window\Stage;
 use SPHERE\System\Database\Filter\Link\Pile;
 use SPHERE\System\Extension\Extension;
+use SPHERE\System\Extension\Repository\Sorter\StringGermanOrderSorter;
 
 /**
  * Class Frontend
@@ -1017,7 +1018,7 @@ class Frontend extends Extension implements IFrontendInterface
                 }
             }
             if ($tblPersonList) {
-                $tblPersonList = $this->getSorter($tblPersonList)->sortObjectBy('LastFirstName');
+                $tblPersonList = $this->getSorter($tblPersonList)->sortObjectBy('LastFirstName', new StringGermanOrderSorter());
                 /** @var TblPerson $tblPerson */
                 foreach ($tblPersonList as $tblPerson) {
                     $tblAddressPersonAllByPerson = SerialLetter::useService()->getAddressPersonAllByPerson($tblSerialLetter,

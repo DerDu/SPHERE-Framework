@@ -40,6 +40,9 @@ class PasswordField extends AbstractField implements IFieldInterface
     public function getContent()
     {
 
+        if( $this->isForceDefaultValue ) {
+            $this->setPostValue($this->Template, $this->getName(), 'ElementValue');
+        }
         return $this->Template->getContent();
     }
 }

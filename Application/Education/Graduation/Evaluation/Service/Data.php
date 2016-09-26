@@ -3,6 +3,7 @@ namespace SPHERE\Application\Education\Graduation\Evaluation\Service;
 
 use SPHERE\Application\Education\Graduation\Evaluation\Service\Entity\TblTask;
 use SPHERE\Application\Education\Graduation\Evaluation\Service\Entity\TblTest;
+use SPHERE\Application\Education\Graduation\Evaluation\Service\Entity\TblTestLink;
 use SPHERE\Application\Education\Graduation\Evaluation\Service\Entity\TblTestType;
 use SPHERE\Application\Education\Graduation\Gradebook\Gradebook;
 use SPHERE\Application\Education\Graduation\Gradebook\Service\Entity\TblGradeType;
@@ -305,6 +306,7 @@ class Data extends AbstractData
      * @param null $Date
      * @param null $CorrectionDate
      * @param null $ReturnDate
+     * @param bool $IsContinues
      *
      * @return TblTest
      */
@@ -319,7 +321,8 @@ class Data extends AbstractData
         $Description = '',
         $Date = null,
         $CorrectionDate = null,
-        $ReturnDate = null
+        $ReturnDate = null,
+        $IsContinues = false
     ) {
 
         $Manager = $this->getConnection()->getEntityManager();
@@ -336,6 +339,7 @@ class Data extends AbstractData
         $Entity->setDate($Date ? new \DateTime($Date) : null);
         $Entity->setCorrectionDate($CorrectionDate ? new \DateTime($CorrectionDate) : null);
         $Entity->setReturnDate($ReturnDate ? new \DateTime($ReturnDate) : null);
+        $Entity->setIsContinues($IsContinues);
 
         $Manager->saveEntity($Entity);
         Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(), $Entity);
@@ -663,9 +667,100 @@ class Data extends AbstractData
 
         if ($list) {
             /** @var TblTest $tblTest */
-            foreach ($list as $tblTest){
-                if ($tblTest->getTblTask()){
+            foreach ($list as $tblTest) {
+                if ($tblTest->getTblTask()) {
                     $resultList[$tblTest->getTblTask()->getId()] = $tblTest->getTblTask();
+                }
+            }
+        }
+
+        return empty($resultList) ? false : $resultList;
+    }
+
+    /**
+     * @param TblTest $tblTest
+     * @param int $LinkId
+     *
+     * @return TblTestLink
+     */
+    public function createTestLink(TblTest $tblTest, $LinkId)
+    {
+
+        $Manager = $this->getConnection()->getEntityManager();
+
+        $Entity = $Manager->getEntity('TblTestLink')
+            ->findOneBy(
+                array(
+                    TblTestLink::ATTR_TBL_TEST => $tblTest->getId(),
+                    TblTestLink::ATTR_TBL_LINK_ID => $LinkId
+                )
+            );
+
+        if (null === $Entity) {
+            $Entity = new TblTestLink();
+            $Entity->setTblTest($tblTest);
+            $Entity->setLinkId($LinkId);
+
+            $Manager->saveEntity($Entity);
+            Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(), $Entity);
+        }
+
+        return $Entity;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNextLinkId()
+    {
+
+        $list = $this->getCachedEntityList(__METHOD__, $this->getConnection()->getEntityManager(), 'TblTestLink');
+        $max = 0;
+        if ($list) {
+            $max = 0;
+            /** @var TblTestLink $tblTestLink */
+            foreach ($list as $tblTestLink) {
+                if ($tblTestLink->getLinkId() !== null
+                    && $tblTestLink->getLinkId() > $max
+                ) {
+                    $max = $tblTestLink->getLinkId();
+                }
+            }
+        }
+
+        return $max + 1;
+    }
+
+    /**
+     * @param TblTest $tblTest
+     * @return false | TblTest[]
+     */
+    public function getTestLinkAllByTest(TblTest $tblTest)
+    {
+
+        $resultList = array();
+        /** @var TblTestLink $tblTestLink */
+        $tblTestLink = $this->getCachedEntityBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblTestLink',
+            array(
+                TblTestLink::ATTR_TBL_TEST => $tblTest->getId()
+            )
+        );
+        if ($tblTestLink
+            && ($LinkId = $tblTestLink->getLinkId())
+        ) {
+            $tblTestLinkList = $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(),
+                'TblTestLink', array(
+                    TblTestLink::ATTR_TBL_LINK_ID => $LinkId
+                )
+            );
+            if ($tblTestLinkList){
+                /** @var TblTestLink $item */
+                foreach ($tblTestLinkList as $item){
+                    if ($item->getTblTest()
+                        && $item->getTblTest()->getId() != $tblTest->getId()
+                    ){
+                        $resultList[] = $item->getTblTest();
+                    }
                 }
             }
         }

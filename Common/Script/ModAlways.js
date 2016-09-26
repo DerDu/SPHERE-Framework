@@ -19,7 +19,7 @@
              */
             worldForm.on("submit", function()
             {
-                $('button[type="submit"]').html(
+                $('button[type="submit"]:not(.disabled)').html(
                     '<span class="loading-indicator-animate"></span> Bitte warten');
             });
 

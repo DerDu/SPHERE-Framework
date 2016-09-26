@@ -35,6 +35,10 @@ class TblListElementList extends Element
      * @Column(type="bigint")
      */
     protected $tblElementType;
+    /**
+     * @Column(type="integer")
+     */
+    protected $SortOrder;
 
     /**
      * @return mixed
@@ -96,5 +100,21 @@ class TblListElementList extends Element
     {
 
         $this->tblElementType = ( null === $tblElementType ? null : $tblElementType->getId() );
+    }
+
+    /**
+     * @return integer|null
+     */
+    public function getSortOrder()
+    {
+        return $this->SortOrder;
+    }
+
+    /**
+     * @param integer|null $SortOrder
+     */
+    public function setSortOrder($SortOrder)
+    {
+        $this->SortOrder = $SortOrder;
     }
 }

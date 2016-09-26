@@ -1,6 +1,6 @@
 <div class="form-group {{ ElementGroup }}">
     {% if( ElementLabel is not empty ) %}
-        <label>{{ ElementLabel }}</label>
+        <label>{{ ElementLabel }}{% if( Required is not empty ) %}<span class="text-danger"> *</span>{% endif %}</label>
     {% endif %}
     {% if( ElementIcon is not empty ) %}
     <div class="input-group">
@@ -10,6 +10,7 @@
         {% endif %}
         <textarea name="{{ ElementName }}" class="form-control" placeholder="{{ ElementPlaceholder }}"
                   rows="5"
+                  {% if( Disabled is not empty ) %}disabled{% endif %} {% if( Required is not empty ) %}required{% endif %}
                   {% if( TabIndex is not empty ) %}tabindex="{{ TabIndex }}"{% endif %}>{{ ElementValue }}</textarea>
         {{ ElementFeedbackIcon }}
         {% if( ElementIcon is not empty ) %}

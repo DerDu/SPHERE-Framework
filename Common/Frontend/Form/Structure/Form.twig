@@ -2,6 +2,8 @@
       action="{{ FormAction }}{{ FormData }}{% if( Hash is not empty ) %}#{{ Hash }}{% endif %}"
       method="post"
       enctype="multipart/form-data"
+      data-toggle="validator"
+      role="form"
     >
     {% for FormGroup in GridGroupList %}
         {% if( FormGroup.getFormTitle is not empty ) %}
@@ -55,9 +57,11 @@
     {
         Client.Use('ModForm', function()
         {
-            {% if FormConfirm is not empty %}
-            jQuery("form#{{ Hash }}").ModForm({notifyChangedMessage: "{{ FormConfirm }}"});
-            {% endif %}
+            jQuery("form#{{ Hash }}").ModForm({
+                {% if FormConfirm is not empty %}notifyChangedMessage: "{{ FormConfirm }}"{% endif %}
+                {% if EnableSaveDraft is not empty %}{% if FormConfirm is not empty %},{% endif %}saveDraftData: {{ EnableSaveDraft }}{% endif %}
+            });
+
         });
     });
 </script>

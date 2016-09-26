@@ -1,18 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: kauschke
- * Date: 16.08.2016
- * Time: 13:52
- */
-
 namespace SPHERE\Application\Reporting\Custom\Schneeberg\Person;
 
 use MOC\V\Component\Document\Component\Bridge\Repository\PhpExcel;
 use MOC\V\Component\Document\Component\Parameter\Repository\FileParameter;
 use MOC\V\Component\Document\Document;
 use SPHERE\Application\Contact\Phone\Phone;
-use SPHERE\Application\Document\Explorer\Storage\Storage;
+use SPHERE\Application\Document\Storage\Storage;
 use SPHERE\Application\Education\Lesson\Division\Division;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
 use SPHERE\Application\People\Meta\Common\Common;
@@ -168,7 +161,7 @@ class Service extends Extension
     /**
      * @param array $PersonList
      *
-     * @return \SPHERE\Application\Document\Explorer\Storage\Writer\Type\Temporary
+     * @return bool|\SPHERE\Application\Document\Explorer\Storage\Writer\Type\Temporary
      * @throws \MOC\V\Component\Document\Component\Exception\Repository\TypeFileException
      * @throws \MOC\V\Component\Document\Exception\DocumentTypeException
      */
@@ -177,7 +170,7 @@ class Service extends Extension
 
         if (!empty( $PersonList )) {
 
-            $fileLocation = Storage::useWriter()->getTemporary('xlsx');
+            $fileLocation = Storage::createFilePointer('xlsx');
             /** @var PhpExcel $export */
             $export = Document::getDocument($fileLocation->getFileLocation());
 

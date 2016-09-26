@@ -1,6 +1,6 @@
 <div class="form-group {{ ElementGroup }}">
     {% if( ElementLabel is not empty ) %}
-        <label for="{{ ElementName }}">{{ ElementLabel }}</label>
+        <label for="{{ ElementName }}">{{ ElementLabel }}{% if( Required is not empty ) %}<span class="text-danger"> *</span>{% endif %}</label>
     {% endif %}
     {% if( ElementIcon is not empty ) %}
     <div class="input-group">

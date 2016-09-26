@@ -8,7 +8,7 @@ use MOC\V\Component\Document\Document;
 use SPHERE\Application\Contact\Address\Address;
 use SPHERE\Application\Contact\Mail\Mail;
 use SPHERE\Application\Contact\Phone\Phone;
-use SPHERE\Application\Document\Explorer\Storage\Storage;
+use SPHERE\Application\Document\Storage\Storage;
 use SPHERE\Application\Education\Lesson\Division\Division;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
 use SPHERE\Application\People\Meta\Common\Common;
@@ -39,7 +39,7 @@ class Service
                 $Item['FirstName'] = $tblPerson->getFirstSecondName();
                 $Item['LastName'] = $tblPerson->getLastName();
                 $Item['Birthday'] = '';
-                $Item['StreetName'] = $Item['StreetNumber'] = $Item['ExcelStreet'] = $Item['Code'] = $Item['City'] = '';
+                $Item['StreetName'] = $Item['StreetNumber'] = $Item['ExcelStreet'] = $Item['Code'] = $Item['City'] = $Item['District'] = '';
                 $Item['PhoneNumbersPrivate'] = $Item['ExcelPhoneNumbersPrivate'] = '';
                 $Item['PhoneNumbersBusiness'] = $Item['ExcelPhoneNumbersBusiness'] = '';
                 $Item['MailAddress'] = $Item['ExcelMailAddress'] = '';
@@ -61,6 +61,13 @@ class Service
                     $Item['ExcelStreet'] = $address->getTblAddress()->getStreetName().' '.$address->getTblAddress()->getStreetNumber();
                     $Item['Code'] = $address->getTblAddress()->getTblCity()->getCode();
                     $Item['City'] = $address->getTblAddress()->getTblCity()->getName();
+                    $Item['District'] = $address->getTblAddress()->getTblCity()->getDistrict();
+                    if ($Item['District'] !== '') {
+                        $Pre = substr($Item['District'], 0, 2);
+                        if ($Pre != 'OT') {
+                            $Item['District'] = 'OT '.$Item['District'];
+                        }
+                    }
 //                    $Item['Address'] = $address->getTblAddress()->getStreetName().' '.
 //                        $address->getTblAddress()->getStreetNumber().', '.
 //                        $address->getTblAddress()->getTblCity()->getCode().' '.
@@ -115,7 +122,7 @@ class Service
      * @param array $PersonList
      * @param array $tblPersonList
      *
-     * @return \SPHERE\Application\Document\Explorer\Storage\Writer\Type\Temporary
+     * @return bool|\SPHERE\Application\Document\Explorer\Storage\Writer\Type\Temporary
      * @throws \MOC\V\Component\Document\Component\Exception\Repository\TypeFileException
      * @throws \MOC\V\Component\Document\Exception\DocumentTypeException
      */
@@ -124,7 +131,7 @@ class Service
 
         if (!empty( $PersonList )) {
 
-            $fileLocation = Storage::useWriter()->getTemporary('xlsx');
+            $fileLocation = Storage::createFilePointer('xlsx');
             /** @var PhpExcel $export */
             $export = Document::getDocument($fileLocation->getFileLocation());
             $export->setValue($export->getCell(0, 0), "Nachname");
@@ -151,7 +158,10 @@ class Service
             $Row = 0;
             foreach ($PersonList as $PersonData) {
                 $Row++;
-                $PhonePRow = $PhoneBRow = $MailRow = $Row;
+                // set border for each Person
+                $export->setStyle($export->getCell(0, $Row), $export->getCell(8, $Row))
+                    ->setBorderTop();
+                $PhonePRow = $PhoneBRow = $MailRow = $DistrictRow = $Row;
                 $export->setValue($export->getCell(0, $Row), $PersonData['LastName']);
                 $export->setValue($export->getCell(1, $Row), $PersonData['FirstName']);
                 $export->setValue($export->getCell(2, $Row), $PersonData['Birthday']);
@@ -174,6 +184,10 @@ class Service
                         $export->setValue($export->getCell(8, $MailRow++), $Mail);
                     }
                 }
+                if (isset( $PersonData['District'] ) && $PersonData['District'] !== '') {
+                    $DistrictRow = $DistrictRow + 1;
+                    $export->setValue($export->getCell(5, $DistrictRow++), $PersonData['District']);
+                }
 
                 if ($Row < ( $PhonePRow - 1 )) {
                     $Row = ( $PhonePRow - 1 );
@@ -184,12 +198,19 @@ class Service
                 if ($Row < ( $MailRow - 1 )) {
                     $Row = ( $MailRow - 1 );
                 }
+                if ($Row < ( $DistrictRow - 1 )) {
+                    $Row = ( $DistrictRow - 1 );
+                }
             }
 
             // Table Border
             $export->setStyle($export->getCell(0, 1), $export->getCell(8, $Row))
                 ->setFontSize(9)
-                ->setBorderAll();
+                ->setBorderVertical()
+                ->setBorderLeft()
+                ->setBorderRight()
+                ->setBorderBottom();
+//                ->setBorderAll();
 
             // Column Width
             $export->setStyle($export->getCell(0, 0), $export->getCell(0, $Row))->setColumnWidth(12);

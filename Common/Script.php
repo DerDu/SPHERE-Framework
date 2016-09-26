@@ -170,6 +170,11 @@ class Script extends Extension
             "'undefined' !== typeof jQuery.notify"
         );
         $this->setSource(
+            'Bootstrap.Validator',
+            '/Library/Bootstrap.Validator/master-0.11.x/dist/validator.min.js',
+            "'undefined' !== typeof jQuery.fn.validator"
+        );
+        $this->setSource(
             'Twitter.Typeahead', '/Library/Twitter.Typeahead/0.11.1/dist/typeahead.bundle.min.js',
             "'undefined' !== typeof jQuery.fn.typeahead"
         );
@@ -256,7 +261,7 @@ class Script extends Extension
             'ModSortable', array('jQuery.Ui', 'jQuery')
         );
         $this->setModule(
-            'ModForm', array('jQuery.Sisyphus', 'jQuery.Mask', 'jQuery')
+            'ModForm', array( 'Bootstrap.Validator', 'jQuery.Sisyphus', 'jQuery.Mask', 'jQuery')
         );
         $this->setModule(
             'ModCleanStorage', array('jQuery')

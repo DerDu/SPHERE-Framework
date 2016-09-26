@@ -372,7 +372,7 @@ class Service extends AbstractService
 
         $orderMax = $this->getDivisionStudentSortOrderMax($tblDivision);
         if ($orderMax == 0) {
-            $orderMax = $this->sortDivisionStudentByProperty($tblDivision);
+            $orderMax = $this->sortDivisionStudentByProperty($tblDivision, 'LastFirstName', new Sorter\StringGermanOrderSorter());
         }
         $SortOrder = $orderMax + 1;
         return (new Data($this->getBinding()))->addDivisionStudent($tblDivision, $tblPerson, $SortOrder);
@@ -593,8 +593,8 @@ class Service extends AbstractService
      * @param IFormInterface $Form
      * @param TblDivision $tblDivision
      * @param TblSubject $tblSubject
-     * @param array $Group
-     * @param int $DivisionSubjectId
+     * @param $Group
+     * @param $DivisionSubjectId
      *
      * @return IFormInterface|string
      */
@@ -1244,10 +1244,15 @@ class Service extends AbstractService
 
                 if ($DivisionSubject->getTblSubjectGroup()) {
                     $SubjectTeacherList = Division::useService()->getSubjectTeacherByDivisionSubject($DivisionSubject);
-                    $tblDivisionSubject = Division::useService()->getDivisionSubjectBySubjectAndDivisionWithoutGroup($DivisionSubject->getServiceTblSubject(), $tblDivision);
-                    $tblSubjectTeacherList = Division::useService()->getTeacherAllByDivisionSubject($tblDivisionSubject);
-                    if (!$SubjectTeacherList && !$tblSubjectTeacherList) {
-                        $TeacherGroupCount++;
+                    if ($DivisionSubject->getServiceTblSubject()) {
+                        $tblDivisionSubject = Division::useService()->getDivisionSubjectBySubjectAndDivisionWithoutGroup($DivisionSubject->getServiceTblSubject(),
+                            $tblDivision);
+                        if ($tblDivisionSubject) {
+                            $tblSubjectTeacherList = Division::useService()->getTeacherAllByDivisionSubject($tblDivisionSubject);
+                            if (!$SubjectTeacherList && !$tblSubjectTeacherList) {
+                                $TeacherGroupCount++;
+                            }
+                        }
                     }
                 }
             }
@@ -1872,5 +1877,4 @@ class Service extends AbstractService
 
         return (new Data($this->getBinding()))->getDivisionStudentByDivisionAndPerson($tblDivision, $tblPerson);
     }
-
 }

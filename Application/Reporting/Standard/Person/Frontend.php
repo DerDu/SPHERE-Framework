@@ -390,7 +390,10 @@ class Frontend extends Extension implements IFrontendInterface
                                     ),
                                     array(
                                         "pageLength" => -1,
-                                        "responsive" => false
+                                        "responsive" => false,
+                                        'columnDefs' => array(
+                                            array('type' => 'de_date', 'targets' => 4)
+                                        )
                                     )
                                 )
                             )

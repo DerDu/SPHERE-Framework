@@ -6,6 +6,7 @@ use MOC\V\Component\Document\Component\Exception\Repository\TypeFileException;
 use MOC\V\Component\Document\Component\Parameter\Repository\FileParameter;
 use MOC\V\Component\Document\Document;
 use MOC\V\Component\Document\Exception\DocumentTypeException;
+use SPHERE\Application\Billing\Accounting\Banking\Banking;
 use SPHERE\Application\Contact\Address\Address;
 use SPHERE\Application\Contact\Mail\Mail;
 use SPHERE\Application\Contact\Phone\Phone;
@@ -51,7 +52,7 @@ class Service extends Extension
                 $Item['Number'] = $count++;
                 $Item['FirstName'] = $tblPerson->getFirstSecondName();
                 $Item['LastName'] = $tblPerson->getLastName();
-                $Item['StreetName'] = $Item['StreetNumber'] = $Item['City'] = $Item['Address'] = '';
+                $Item['StreetName'] = $Item['StreetNumber'] = $Item['City'] = $Item['Address'] = $Item['District'] = '';
                 $Item['Denomination'] = $Item['Birthday'] = $Item['Birthplace'] = '';
                 $father = null;
                 $mother = null;
@@ -91,11 +92,19 @@ class Service extends Extension
                     $Item['StreetNumber'] = $address->getTblAddress()->getStreetNumber();
                     $Item['City'] = $address->getTblAddress()->getTblCity()->getCode()
                         . ' ' . $address->getTblAddress()->getTblCity()->getName();
+                    $Item['District'] = $address->getTblAddress()->getTblCity()->getDistrict();
+                    if ($Item['District'] !== '') {
+                        $Pre = substr($Item['District'], 0, 2);
+                        if ($Pre != 'OT') {
+                            $Item['District'] = 'OT '.$Item['District'];
+                        }
+                    }
 
                     $Item['Address'] = $address->getTblAddress()->getStreetName() . ' ' .
                         $address->getTblAddress()->getStreetNumber() . ' ' .
                         $address->getTblAddress()->getTblCity()->getCode() . ' ' .
-                        $address->getTblAddress()->getTblCity()->getName();
+                        $address->getTblAddress()->getTblCity()->getName().' '.
+                        $Item['District'];
                 }
 
                 $common = Common::useService()->getCommonByPerson($tblPerson);
@@ -136,9 +145,10 @@ class Service extends Extension
             $export->setValue($export->getCell("5", "0"), "Straße");
             $export->setValue($export->getCell("6", "0"), "Hausnr.");
             $export->setValue($export->getCell("7", "0"), "PLZ Ort");
-            $export->setValue($export->getCell("8", "0"), "Schüler");
-            $export->setValue($export->getCell("9", "0"), "Geburtsdatum");
-            $export->setValue($export->getCell("10", "0"), "Geburtsort");
+            $export->setValue($export->getCell("8", "0"), "Ortsteil");
+            $export->setValue($export->getCell("9", "0"), "Schüler");
+            $export->setValue($export->getCell("10", "0"), "Geburtsdatum");
+            $export->setValue($export->getCell("11", "0"), "Geburtsort");
 
             $Row = 1;
             foreach ($PersonList as $PersonData) {
@@ -151,9 +161,10 @@ class Service extends Extension
                 $export->setValue($export->getCell("5", $Row), $PersonData['StreetName']);
                 $export->setValue($export->getCell("6", $Row), $PersonData['StreetNumber']);
                 $export->setValue($export->getCell("7", $Row), $PersonData['City']);
-                $export->setValue($export->getCell("8", $Row), $PersonData['FirstName']);
-                $export->setValue($export->getCell("9", $Row), $PersonData['Birthday']);
-                $export->setValue($export->getCell("10", $Row), $PersonData['Birthplace']);
+                $export->setValue($export->getCell("8", $Row), $PersonData['District']);
+                $export->setValue($export->getCell("9", $Row), $PersonData['FirstName']);
+                $export->setValue($export->getCell("10", $Row), $PersonData['Birthday']);
+                $export->setValue($export->getCell("11", $Row), $PersonData['Birthplace']);
 
                 $Row++;
             }
@@ -190,7 +201,7 @@ class Service extends Extension
                 $Item['FirstName'] = $tblPerson->getFirstSecondName();
                 $Item['LastName'] = $tblPerson->getLastName();
                 $Item['Birthday'] = '';
-                $Item['StreetName'] = $Item['StreetNumber'] = $Item['City'] = $Item['Code'] = '';
+                $Item['StreetName'] = $Item['StreetNumber'] = $Item['City'] = $Item['Code'] = $Item['District'] = '';
                 $Item['Address'] = '';
                 $Item['Division'] = '';
                 $Item['Phone1'] = $Item['Phone2'] = $Item['Mail'] = '';
@@ -213,11 +224,19 @@ class Service extends Extension
                     $Item['StreetNumber'] = $address->getTblAddress()->getStreetNumber();
                     $Item['Code'] = $address->getTblAddress()->getTblCity()->getCode();
                     $Item['City'] = $address->getTblAddress()->getTblCity()->getName();
+                    $Item['District'] = $address->getTblAddress()->getTblCity()->getDistrict();
+                    if ($Item['District'] !== '') {
+                        $Pre = substr($Item['District'], 0, 2);
+                        if ($Pre != 'OT') {
+                            $Item['District'] = 'OT '.$Item['District'];
+                        }
+                    }
 
                     $Item['Address'] = $address->getTblAddress()->getStreetName() . ' ' .
                         $address->getTblAddress()->getStreetNumber() . ' ' .
                         $address->getTblAddress()->getTblCity()->getCode() . ' ' .
-                        $address->getTblAddress()->getTblCity()->getName();
+                        $address->getTblAddress()->getTblCity()->getName().' '.
+                        $Item['District'];
                 }
 
                 // Todo JohK Unterbereich ermitteln über Gruppen
@@ -267,9 +286,10 @@ class Service extends Extension
             $export->setValue($export->getCell("6", "0"), "Hausnr.");
             $export->setValue($export->getCell("7", "0"), "PLZ");
             $export->setValue($export->getCell("8", "0"), "Ort");
-            $export->setValue($export->getCell("9", "0"), "Telefon 1");
-            $export->setValue($export->getCell("10", "0"), "Telefon 2");
-            $export->setValue($export->getCell("11", "0"), "Mail");
+            $export->setValue($export->getCell("9", "0"), "Ortsteil");
+            $export->setValue($export->getCell("10", "0"), "Telefon 1");
+            $export->setValue($export->getCell("11", "0"), "Telefon 2");
+            $export->setValue($export->getCell("12", "0"), "Mail");
 
             $Row = 1;
             foreach ($PersonList as $PersonData) {
@@ -283,9 +303,10 @@ class Service extends Extension
                 $export->setValue($export->getCell("6", $Row), $PersonData['StreetNumber']);
                 $export->setValue($export->getCell("7", $Row), $PersonData['Code']);
                 $export->setValue($export->getCell("8", $Row), $PersonData['City']);
-                $export->setValue($export->getCell("9", $Row), $PersonData['Phone1']);
-                $export->setValue($export->getCell("10", $Row), $PersonData['Phone2']);
-                $export->setValue($export->getCell("11", $Row), $PersonData['Mail']);
+                $export->setValue($export->getCell("9", $Row), $PersonData['District']);
+                $export->setValue($export->getCell("10", $Row), $PersonData['Phone1']);
+                $export->setValue($export->getCell("11", $Row), $PersonData['Phone2']);
+                $export->setValue($export->getCell("12", $Row), $PersonData['Mail']);
 
                 $Row++;
             }
@@ -319,16 +340,25 @@ class Service extends Extension
         if (!empty($tblPersonList)) {
             array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent) {
 
+                //Sortierung
+                $Item['FirstName'] = $tblPerson->getFirstName();
+                $Item['LastName'] = $tblPerson->getLastName();
+
                 $Item['DebtorNumber'] = '';
-                $Item['StreetName'] = $Item['StreetNumber'] = $Item['Code'] = $Item['City'] = '';
+                $Item['StreetName'] = $Item['StreetNumber'] = $Item['Code'] = $Item['City'] = $Item['District'] = '';
                 $Item['Address'] = '';
                 $Item['FatherSalutation'] = $Item['FatherLastName'] = $Item['FatherFirstName'] = $Item['Father'] = '';
                 $Item['MotherSalutation'] = $Item['MotherLastName'] = $Item['MotherFirstName'] = $Item['Mother'] = '';
                 $Item['Reply'] = $Item['Records'] = $Item['LastSchoolFee'] = $Item['Remarks'] = '';
-                // ToDo Sydney Debitorennummer
-//                if (($debtorList = Banking::useService()->getDebtorAllByPerson($tblPerson))) {
-//                    $Item['DebtorNumber'] = $debtorList[0]->getDebtorNumber();
-//                }
+                if (( $tblDebtorList = Banking::useService()->getDebtorByPerson($tblPerson) )) {
+                    foreach ($tblDebtorList as $tblDebtor) {
+                        if ($Item['DebtorNumber'] === '') {
+                            $Item['DebtorNumber'] = $tblDebtor->getDebtorNumber();
+                        } else {
+                            $Item['DebtorNumber'] = ' '.$tblDebtor->getDebtorNumber();
+                        }
+                    }
+                }
 
                 if (($addressList = Address::useService()->getAddressAllByPerson($tblPerson))) {
                     $address = $addressList[0];
@@ -341,11 +371,19 @@ class Service extends Extension
                     $Item['StreetNumber'] = $address->getTblAddress()->getStreetNumber();
                     $Item['Code'] = $address->getTblAddress()->getTblCity()->getCode();
                     $Item['City'] = $address->getTblAddress()->getTblCity()->getName();
+                    $Item['District'] = $address->getTblAddress()->getTblCity()->getDistrict();
+                    if ($Item['District'] !== '') {
+                        $Pre = substr($Item['District'], 0, 2);
+                        if ($Pre != 'OT') {
+                            $Item['District'] = 'OT '.$Item['District'];
+                        }
+                    }
 
                     $Item['Address'] = $address->getTblAddress()->getStreetName() . ' ' .
                         $address->getTblAddress()->getStreetNumber() . ' ' .
                         $address->getTblAddress()->getTblCity()->getCode() . ' ' .
-                        $address->getTblAddress()->getTblCity()->getName();
+                        $address->getTblAddress()->getTblCity()->getName().' '.
+                        $Item['District'];
                 }
 
                 $father = null;
@@ -363,8 +401,27 @@ class Service extends Extension
                             } else {
                                 if ($father === null) {
                                     $father = $guardian->getServiceTblPersonFrom();
+                                    if (( $tblDebtorList = Banking::useService()->getDebtorByPerson($father) )) {
+
+                                        foreach ($tblDebtorList as $tblDebtor) {
+                                            if ($Item['DebtorNumber'] === '') {
+                                                $Item['DebtorNumber'] = $tblDebtor->getDebtorNumber();
+                                            } else {
+                                                $Item['DebtorNumber'] = ' '.$tblDebtor->getDebtorNumber();
+                                            }
+                                        }
+                                    }
                                 } else {
                                     $mother = $guardian->getServiceTblPersonFrom();
+                                    if (( $tblDebtorList = Banking::useService()->getDebtorByPerson($mother) )) {
+                                        foreach ($tblDebtorList as $tblDebtor) {
+                                            if ($Item['DebtorNumber'] === '') {
+                                                $Item['DebtorNumber'] = $tblDebtor->getDebtorNumber();
+                                            } else {
+                                                $Item['DebtorNumber'] = ' '.$tblDebtor->getDebtorNumber();
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -433,6 +490,7 @@ class Service extends Extension
             $export->setValue($export->getCell("24", "0"), "Hausnummer");
             $export->setValue($export->getCell("25", "0"), "PLZ");
             $export->setValue($export->getCell("26", "0"), "Ort");
+            $export->setValue($export->getCell("27", "0"), "Ortsteil");
 
             $Row = 1;
             foreach ($PersonList as $PersonData) {
@@ -450,6 +508,7 @@ class Service extends Extension
                 $export->setValue($export->getCell("24", $Row), $PersonData['StreetNumber']);
                 $export->setValue($export->getCell("25", $Row), $PersonData['Code']);
                 $export->setValue($export->getCell("26", $Row), $PersonData['City']);
+                $export->setValue($export->getCell("27", $Row), $PersonData['District']);
 
                 $Row++;
             }
@@ -489,7 +548,7 @@ class Service extends Extension
                 $Item['FirstName'] = $tblPerson->getFirstSecondName();
                 $Item['LastName'] = $tblPerson->getLastName();
                 $Item['Birthday'] = '';
-                $Item['StreetName'] = $Item['StreetNumber'] = $Item['City'] = $Item['Code'] = '';
+                $Item['StreetName'] = $Item['StreetNumber'] = $Item['City'] = $Item['Code'] = $Item['District'] = '';
                 $Item['Address'] = '';
 
                 if (($addressList = Address::useService()->getAddressAllByPerson($tblPerson))) {
@@ -507,10 +566,19 @@ class Service extends Extension
                     $Item['StreetNumber'] = $address->getTblAddress()->getStreetNumber();
                     $Item['Code'] = $address->getTblAddress()->getTblCity()->getCode();
                     $Item['City'] = $address->getTblAddress()->getTblCity()->getName();
+                    $Item['District'] = $address->getTblAddress()->getTblCity()->getDistrict();
+                    if ($Item['District'] !== '') {
+                        $Pre = substr($Item['District'], 0, 2);
+                        if ($Pre != 'OT') {
+                            $Item['District'] = 'OT '.$Item['District'];
+                        }
+                    }
+
                     $Item['Address'] = $address->getTblAddress()->getStreetName() . ' ' .
                         $address->getTblAddress()->getStreetNumber() . ' ' .
                         $address->getTblAddress()->getTblCity()->getCode() . ' ' .
-                        $address->getTblAddress()->getTblCity()->getName();
+                        $address->getTblAddress()->getTblCity()->getName().' '.
+                        $Item['District'];
                 }
                 array_push($TableContent, $Item);
             });
@@ -542,6 +610,7 @@ class Service extends Extension
             $export->setValue($export->getCell("4", "0"), "Hausnr.");
             $export->setValue($export->getCell("5", "0"), "PLZ");
             $export->setValue($export->getCell("6", "0"), "Wohnort");
+            $export->setValue($export->getCell("7", "0"), "Ortsteil");
 
             $Row = 1;
             foreach ($PersonList as $PersonData) {
@@ -553,6 +622,7 @@ class Service extends Extension
                 $export->setValue($export->getCell("4", $Row), $PersonData['StreetNumber']);
                 $export->setValue($export->getCell("5", $Row), $PersonData['Code']);
                 $export->setValue($export->getCell("6", $Row), $PersonData['City']);
+                $export->setValue($export->getCell("7", $Row), $PersonData['District']);
 
                 $Row++;
             }
@@ -588,7 +658,7 @@ class Service extends Extension
 
                 $Item['FirstName'] = $tblPerson->getFirstSecondName();
                 $Item['LastName'] = $tblPerson->getLastName();
-                $Item['StreetName'] = $Item['StreetNumber'] = $Item['Code'] = $Item['City'] = '';
+                $Item['StreetName'] = $Item['StreetNumber'] = $Item['Code'] = $Item['City'] = $Item['District'] = '';
                 $Item['Address'] = '';
                 $Item['TypeOptionA'] = $Item['TypeOptionB'] = $Item['DivisionLevel'] = $Item['RegistrationDate'] = '';
                 $Item['SchoolYear'] = '';
@@ -608,10 +678,19 @@ class Service extends Extension
                     $Item['StreetNumber'] = $address->getTblAddress()->getStreetNumber();
                     $Item['Code'] = $address->getTblAddress()->getTblCity()->getCode();
                     $Item['City'] = $address->getTblAddress()->getTblCity()->getName();
+                    $Item['District'] = $address->getTblAddress()->getTblCity()->getDistrict();
+                    if ($Item['District'] !== '') {
+                        $Pre = substr($Item['District'], 0, 2);
+                        if ($Pre != 'OT') {
+                            $Item['District'] = 'OT '.$Item['District'];
+                        }
+                    }
+
                     $Item['Address'] = $address->getTblAddress()->getStreetName() . ' ' .
                         $address->getTblAddress()->getStreetNumber() . ' ' .
                         $address->getTblAddress()->getTblCity()->getCode() . ' ' .
-                        $address->getTblAddress()->getTblCity()->getName();
+                        $address->getTblAddress()->getTblCity()->getName().' '.
+                        $Item['District'];
                 }
 
                 $tblProspect = Prospect::useService()->getProspectByPerson($tblPerson);
@@ -739,18 +818,19 @@ class Service extends Extension
             $export->setValue($export->getCell("8", "0"), "Hausnummer");
             $export->setValue($export->getCell("9", "0"), "PLZ");
             $export->setValue($export->getCell("10", "0"), "Ort");
-            $export->setValue($export->getCell("11", "0"), "Geburtsdatum");
-            $export->setValue($export->getCell("12", "0"), "Geburtsort");
-            $export->setValue($export->getCell("13", "0"), "Staatsangeh.");
-            $export->setValue($export->getCell("14", "0"), "Bekenntnis");
-            $export->setValue($export->getCell("15", "0"), "Geschwister");
-            $export->setValue($export->getCell("16", "0"), "Hort");
-            $export->setValue($export->getCell("17", "0"), "Anrede Sorgeberechtigter 1");
-            $export->setValue($export->getCell("18", "0"), "Name Sorgeberechtigter 1");
-            $export->setValue($export->getCell("19", "0"), "Vorname Sorgeberechtigter 1");
-            $export->setValue($export->getCell("20", "0"), "Anrede Sorgeberechtigter 2");
-            $export->setValue($export->getCell("21", "0"), "Name Sorgeberechtigter 2");
-            $export->setValue($export->getCell("22", "0"), "Vorname Sorgeberechtigter 2");
+            $export->setValue($export->getCell("11", "0"), "Ortsteil");
+            $export->setValue($export->getCell("12", "0"), "Geburtsdatum");
+            $export->setValue($export->getCell("13", "0"), "Geburtsort");
+            $export->setValue($export->getCell("14", "0"), "Staatsangeh.");
+            $export->setValue($export->getCell("15", "0"), "Bekenntnis");
+            $export->setValue($export->getCell("16", "0"), "Geschwister");
+            $export->setValue($export->getCell("17", "0"), "Hort");
+            $export->setValue($export->getCell("18", "0"), "Anrede Sorgeberechtigter 1");
+            $export->setValue($export->getCell("19", "0"), "Name Sorgeberechtigter 1");
+            $export->setValue($export->getCell("20", "0"), "Vorname Sorgeberechtigter 1");
+            $export->setValue($export->getCell("21", "0"), "Anrede Sorgeberechtigter 2");
+            $export->setValue($export->getCell("22", "0"), "Name Sorgeberechtigter 2");
+            $export->setValue($export->getCell("23", "0"), "Vorname Sorgeberechtigter 2");
 
             $Row = 1;
             foreach ($PersonList as $PersonData) {
@@ -766,18 +846,19 @@ class Service extends Extension
                 $export->setValue($export->getCell("8", $Row), $PersonData['StreetNumber']);
                 $export->setValue($export->getCell("9", $Row), $PersonData['Code']);
                 $export->setValue($export->getCell("10", $Row), $PersonData['City']);
-                $export->setValue($export->getCell("11", $Row), $PersonData['Birthday']);
-                $export->setValue($export->getCell("12", $Row), $PersonData['Birthplace']);
-                $export->setValue($export->getCell("13", $Row), $PersonData['Nationality']);
-                $export->setValue($export->getCell("14", $Row), $PersonData['Denomination']);
-                $export->setValue($export->getCell("15", $Row), $PersonData['Siblings']);
-                $export->setValue($export->getCell("16", $Row), $PersonData['Hoard']);
-                $export->setValue($export->getCell("17", $Row), $PersonData['FatherSalutation']);
-                $export->setValue($export->getCell("18", $Row), $PersonData['FatherLastName']);
-                $export->setValue($export->getCell("19", $Row), $PersonData['FatherFirstName']);
-                $export->setValue($export->getCell("20", $Row), $PersonData['MotherSalutation']);
-                $export->setValue($export->getCell("21", $Row), $PersonData['MotherLastName']);
-                $export->setValue($export->getCell("22", $Row), $PersonData['MotherFirstName']);
+                $export->setValue($export->getCell("11", $Row), $PersonData['District']);
+                $export->setValue($export->getCell("12", $Row), $PersonData['Birthday']);
+                $export->setValue($export->getCell("13", $Row), $PersonData['Birthplace']);
+                $export->setValue($export->getCell("14", $Row), $PersonData['Nationality']);
+                $export->setValue($export->getCell("15", $Row), $PersonData['Denomination']);
+                $export->setValue($export->getCell("16", $Row), $PersonData['Siblings']);
+                $export->setValue($export->getCell("17", $Row), $PersonData['Hoard']);
+                $export->setValue($export->getCell("18", $Row), $PersonData['FatherSalutation']);
+                $export->setValue($export->getCell("19", $Row), $PersonData['FatherLastName']);
+                $export->setValue($export->getCell("20", $Row), $PersonData['FatherFirstName']);
+                $export->setValue($export->getCell("21", $Row), $PersonData['MotherSalutation']);
+                $export->setValue($export->getCell("22", $Row), $PersonData['MotherLastName']);
+                $export->setValue($export->getCell("23", $Row), $PersonData['MotherFirstName']);
 
                 $Row++;
             }
@@ -889,7 +970,7 @@ class Service extends Extension
                     $Item['FirstName'] = $tblPerson->getFirstSecondName();
                     $Item['LastName'] = $tblPerson->getLastName();
                     $Item['Salutation'] = $tblPerson->getSalutation();
-                    $Item['StreetName'] = $Item['StreetNumber'] = $Item['Code'] = $Item['City'] = '';
+                    $Item['StreetName'] = $Item['StreetNumber'] = $Item['Code'] = $Item['City'] = $Item['District'] = '';
                     $Item['Address'] = '';
                     $Item['Phone'] = $Item['Mail'] = '';
                     $Item['Directorate'] = '';
@@ -904,10 +985,19 @@ class Service extends Extension
                         $Item['StreetNumber'] = $address->getTblAddress()->getStreetNumber();
                         $Item['Code'] = $address->getTblAddress()->getTblCity()->getCode();
                         $Item['City'] = $address->getTblAddress()->getTblCity()->getName();
+                        $Item['District'] = $address->getTblAddress()->getTblCity()->getDistrict();
+                        if ($Item['District'] !== '') {
+                            $Pre = substr($Item['District'], 0, 2);
+                            if ($Pre != 'OT') {
+                                $Item['District'] = 'OT '.$Item['District'];
+                            }
+                        }
+
                         $Item['Address'] = $address->getTblAddress()->getStreetName() . ' ' .
                             $address->getTblAddress()->getStreetNumber() . ' ' .
                             $address->getTblAddress()->getTblCity()->getCode() . ' ' .
-                            $address->getTblAddress()->getTblCity()->getName();
+                            $address->getTblAddress()->getTblCity()->getName().' '.
+                            $Item['District'];
                     }
                     $phoneList = Phone::useService()->getPhoneAllByPerson($tblPerson);
                     if ($phoneList) {
@@ -951,9 +1041,10 @@ class Service extends Extension
             $export->setValue($export->getCell("4", "0"), "Hausnr.");
             $export->setValue($export->getCell("5", "0"), "PLZ");
             $export->setValue($export->getCell("6", "0"), "Ort");
-            $export->setValue($export->getCell("7", "0"), "Telefon");
-            $export->setValue($export->getCell("8", "0"), "Mail");
-            $export->setValue($export->getCell("9", "0"), "Vorstand");
+            $export->setValue($export->getCell("7", "0"), "Ortsteil");
+            $export->setValue($export->getCell("8", "0"), "Telefon");
+            $export->setValue($export->getCell("9", "0"), "Mail");
+            $export->setValue($export->getCell("10", "0"), "Vorstand");
 
             $Row = 1;
             foreach ($PersonList as $PersonData) {
@@ -965,9 +1056,10 @@ class Service extends Extension
                 $export->setValue($export->getCell("4", $Row), $PersonData['StreetNumber']);
                 $export->setValue($export->getCell("5", $Row), $PersonData['Code']);
                 $export->setValue($export->getCell("6", $Row), $PersonData['City']);
-                $export->setValue($export->getCell("7", $Row), $PersonData['Phone']);
-                $export->setValue($export->getCell("8", $Row), $PersonData['Mail']);
-                $export->setValue($export->getCell("9", $Row), $PersonData['Directorate']);
+                $export->setValue($export->getCell("7", $Row), $PersonData['District']);
+                $export->setValue($export->getCell("8", $Row), $PersonData['Phone']);
+                $export->setValue($export->getCell("9", $Row), $PersonData['Mail']);
+                $export->setValue($export->getCell("10", $Row), $PersonData['Directorate']);
 
                 $Row++;
             }

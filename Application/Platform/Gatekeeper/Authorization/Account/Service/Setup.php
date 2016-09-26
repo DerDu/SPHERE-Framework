@@ -53,16 +53,13 @@ class Setup extends AbstractSetup
         if (!$this->getConnection()->hasColumn('tblAccount', 'Username')) {
             $Table->addColumn('Username', 'string');
         }
-        $this->getConnection()->removeIndex($Table, array('Username'));
-        if (!$this->getConnection()->hasIndex($Table, array('Username', Element::ENTITY_REMOVE))) {
-            $Table->addUniqueIndex(array('Username', Element::ENTITY_REMOVE));
-        }
+        $this->removeIndex($Table, array('Username'));
+        $this->removeIndex($Table, array('Username', Element::ENTITY_REMOVE));
+        $this->createIndex($Table, array('Username'), true);
         if (!$this->getConnection()->hasColumn('tblAccount', 'Password')) {
             $Table->addColumn('Password', 'string');
         }
-        if (!$this->getConnection()->hasIndex($Table, array('Username', 'Password'))) {
-            $Table->addIndex(array('Username', 'Password'));
-        }
+        $this->createIndex($Table, array('Username', 'Password'));
         if (!$this->getConnection()->hasColumn('tblAccount', 'serviceTblToken')) {
             $Table->addColumn('serviceTblToken', 'bigint', array('notnull' => false));
         }
@@ -80,20 +77,13 @@ class Setup extends AbstractSetup
     private function setTableIdentification(Schema &$Schema)
     {
 
-        $Table = $this->getConnection()->createTable($Schema, 'tblIdentification');
-        if (!$this->getConnection()->hasColumn('tblIdentification', 'Name')) {
-            $Table->addColumn('Name', 'string');
-        }
-        $this->getConnection()->removeIndex($Table, array('Name'));
-        if (!$this->getConnection()->hasIndex($Table, array('Name', Element::ENTITY_REMOVE))) {
-            $Table->addUniqueIndex(array('Name', Element::ENTITY_REMOVE));
-        }
-        if (!$this->getConnection()->hasColumn('tblIdentification', 'Description')) {
-            $Table->addColumn('Description', 'string');
-        }
-        if (!$this->getConnection()->hasIndex($Table, array('Description'))) {
-            $Table->addIndex(array('Description'));
-        }
+        $Table = $this->createTable($Schema, 'tblIdentification');
+        $this->createColumn($Table, 'Name', self::FIELD_TYPE_STRING);
+        $this->removeIndex($Table, array('Name'));
+        $this->removeIndex($Table, array('Name', Element::ENTITY_REMOVE));
+        $this->createIndex($Table, array('Name'), true);
+        $this->createColumn($Table, 'Description', self::FIELD_TYPE_STRING);
+        $this->createIndex($Table, array('Description'));
         if (!$this->getConnection()->hasColumn('tblIdentification', 'IsActive')) {
             $Table->addColumn('IsActive', 'boolean', array('default' => 1));
         }
@@ -102,17 +92,15 @@ class Setup extends AbstractSetup
 
     /**
      * @param Schema $Schema
-     * @param Table  $tblAccount
+     * @param Table $tblAccount
      *
      * @return Table
      */
     private function setTableSession(Schema &$Schema, Table $tblAccount)
     {
 
-        $Table = $this->getConnection()->createTable($Schema, 'tblSession');
-        if (!$this->getConnection()->hasColumn('tblSession', 'Session')) {
-            $Table->addColumn('Session', 'string');
-        }
+        $Table = $this->createTable($Schema, 'tblSession');
+        $this->createColumn($Table, 'Session', self::FIELD_TYPE_STRING);
         if (!$this->getConnection()->hasIndex($Table, array('Session'))) {
             $Table->addIndex(array('Session'));
         }
@@ -126,7 +114,7 @@ class Setup extends AbstractSetup
     /**
      * @param Schema $Schema
      *
-     * @param Table  $tblAccount
+     * @param Table $tblAccount
      *
      * @return Table
      */
@@ -144,8 +132,8 @@ class Setup extends AbstractSetup
     /**
      * @param Schema $Schema
      *
-     * @param Table  $tblAccount
-     * @param Table  $tblIdentification
+     * @param Table $tblAccount
+     * @param Table $tblIdentification
      *
      * @return Table
      */
@@ -160,24 +148,22 @@ class Setup extends AbstractSetup
 
     /**
      * @param Schema $Schema
-     * @param Table  $tblAccount
+     * @param Table $tblAccount
      *
      * @return Table
      */
     private function setTableUser(Schema &$Schema, Table $tblAccount)
     {
 
-        $Table = $this->getConnection()->createTable($Schema, 'tblUser');
-        if (!$this->getConnection()->hasColumn('tblUser', 'serviceTblPerson')) {
-            $Table->addColumn('serviceTblPerson', 'bigint', array('notnull' => false));
-        }
-        $this->getConnection()->addForeignKey($Table, $tblAccount);
+        $Table = $this->createTable($Schema, 'tblUser');
+        $this->createColumn($Table, 'serviceTblPerson', self::FIELD_TYPE_BIGINT, true );
+        $this->createForeignKey( $Table, $tblAccount );
         return $Table;
     }
 
     /**
      * @param Schema $Schema
-     * @param Table  $tblAccount
+     * @param Table $tblAccount
      *
      * @return Table
      */

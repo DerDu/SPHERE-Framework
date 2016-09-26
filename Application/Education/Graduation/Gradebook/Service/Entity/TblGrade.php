@@ -36,6 +36,7 @@ class TblGrade extends Element
     const ATTR_SERVICE_TBL_SUBJECT_GROUP = 'serviceTblSubjectGroup';
     const ATTR_SERVICE_TBL_PERIOD = 'serviceTblPeriod';
     const ATTR_SERVICE_TBL_DIVISION = 'serviceTblDivision';
+    const ATTR_DATE = 'Date';
 
     const VALUE_TREND_NULL = 0;
     const VALUE_TREND_PLUS = 1;
@@ -95,6 +96,11 @@ class TblGrade extends Element
      * @Column(type="bigint")
      */
     protected $serviceTblDivision;
+
+    /**
+     * @Column(type="datetime")
+     */
+    protected $Date;
 
     /**
      * @return string
@@ -342,5 +348,32 @@ class TblGrade extends Element
     {
 
         $this->Trend = $Trend;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDate()
+    {
+
+        if (null === $this->Date) {
+            return false;
+        }
+        /** @var \DateTime $Date */
+        $Date = $this->Date;
+        if ($Date instanceof \DateTime) {
+            return $Date->format('d.m.Y');
+        } else {
+            return (string)$Date;
+        }
+    }
+
+    /**
+     * @param null|\DateTime $Date
+     */
+    public function setDate(\DateTime $Date = null)
+    {
+
+        $this->Date = $Date;
     }
 }

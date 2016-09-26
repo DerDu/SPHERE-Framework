@@ -269,7 +269,7 @@ class Frontend extends Extension implements IFrontendInterface
                 new FormRow(array(
                     new FormColumn(
                         new Panel('Firmenname', array(
-                            new TextField('Company[Name]', 'Name', 'Name'),
+                            (new TextField('Company[Name]', 'Name', 'Name'))->setRequired(),
                             new TextField('Company[ExtendedName]', 'Zusatz', 'Zusatz'),
                             new TextField('Company[Description]', 'Beschreibung', 'Beschreibung'),
                         ), Panel::PANEL_TYPE_INFO), 8),

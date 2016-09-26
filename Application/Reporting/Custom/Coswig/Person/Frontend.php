@@ -153,6 +153,7 @@ class Frontend extends Extension implements IFrontendInterface
                                         'StreetNumber'         => 'Nr.',
                                         'Code'                 => 'PLZ',
                                         'City'                 => 'Ort',
+                                        'District'             => 'Ortsteil',
                                         'PhoneNumbersPrivate'  => 'Tel. Privat',
                                         'PhoneNumbersBusiness' => 'Tel. Geschäftlich',
                                         'MailAddress'          => 'E-Mail',

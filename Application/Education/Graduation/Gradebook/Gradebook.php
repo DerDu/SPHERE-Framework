@@ -39,6 +39,10 @@ class Gradebook implements IModuleInterface
                 new Link\Icon(new Quantity()))
         );
         Main::getDisplay()->addModuleNavigation(
+            new Link(new Link\Route(__NAMESPACE__.'\MinimumGradeCount'), new Link\Name('Mindestnotenanzahl'),
+                new Link\Icon(new Quantity()))
+        );
+        Main::getDisplay()->addModuleNavigation(
             new Link(new Link\Route(__NAMESPACE__.'\Gradebook'), new Link\Name('Notenbuch'),
                 new Link\Icon(new Book()))
         );
@@ -198,6 +202,22 @@ class Gradebook implements IModuleInterface
         Main::getDispatcher()->registerRoute(
             Main::getDispatcher()->createRoute(__NAMESPACE__.'\Type\Select',
                 __NAMESPACE__.'\Frontend::frontendScoreTypeSelect')
+        );
+
+        /*
+         * MinimumGradeCount
+         */
+        Main::getDispatcher()->registerRoute(
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\MinimumGradeCount',
+                __NAMESPACE__.'\MinimumGradeCount\Frontend::frontendMinimumGradeCount')
+        );
+        Main::getDispatcher()->registerRoute(
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\MinimumGradeCount\Edit',
+                __NAMESPACE__.'\MinimumGradeCount\Frontend::frontendEditMinimumGradeCount')
+        );
+        Main::getDispatcher()->registerRoute(
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'\MinimumGradeCount\Destroy',
+                __NAMESPACE__.'\MinimumGradeCount\Frontend::frontendDestroyMinimumGradeCount')
         );
     }
 

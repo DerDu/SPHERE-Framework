@@ -10,7 +10,7 @@ use SPHERE\Application\Corporation\Company\Company;
 use SPHERE\Application\Corporation\Company\Service\Entity\TblCompany;
 use SPHERE\Application\Corporation\Group\Group as CompanyGroup;
 use SPHERE\Application\Corporation\Group\Service\Entity\TblGroup as CompanyGroupEntity;
-use SPHERE\Application\Document\Explorer\Storage\Storage;
+use SPHERE\Application\Document\Storage\Storage;
 use SPHERE\Application\Education\Lesson\Division\Division;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
 use SPHERE\Application\Education\School\Type\Service\Entity\TblType;
@@ -110,6 +110,30 @@ class Service extends AbstractService
     {
 
         return (new Data($this->getBinding()))->getObjectAllByListAndObjectType($tblList, $tblObjectType);
+    }
+
+    public function getObjectByObjectTypeAndListAndId(TblObjectType $tblObjectType, TblList $tblList, $ObjectId)
+    {
+
+        return ( new Data($this->getBinding()) )->getObjectByObjectTypeAndListAndId($tblObjectType, $tblList, $ObjectId);
+    }
+
+    /**
+     * @param TblList            $tblList
+     * @param TblListElementList $tblListElementList
+     * @param TblObjectType      $tblObjectType
+     * @param                    $ObjectId
+     *
+     * @return false|TblListObjectElementList
+     */
+    public function getListObjectElementListByListAndListElementListAndObjectTypeAndObjectId(
+        TblList $tblList,
+        TblListElementList $tblListElementList,
+        TblObjectType $tblObjectType,
+        $ObjectId
+    ) {
+
+        return ( new Data($this->getBinding()) )->getListObjectElementListByListAndListElementListAndObjectTypeAndObjectId($tblList, $tblListElementList, $tblObjectType, $ObjectId);
     }
 
     /**
@@ -467,6 +491,98 @@ class Service extends AbstractService
     }
 
     /**
+     * @param TblListElementList $tblListElementList
+     * @param                    $SortOrder
+     *
+     * @return bool
+     */
+    public function updateListElementListSortOrder(TblListElementList $tblListElementList, $SortOrder)
+    {
+
+        return ( new Data($this->getBinding()) )->updateListElementListSortOrder($tblListElementList, $SortOrder);
+    }
+
+    /**
+     * @param IFormInterface|null $Stage
+     * @param TblList|null        $tblList
+     * @param TblObjectType|null  $tblObjectType
+     * @param null                $ObjectId
+     * @param null                $Data
+     *
+     * @return IFormInterface|string
+     */
+    public function updateListObjectElement(
+        IFormInterface $Stage = null,
+        TblList $tblList = null,
+        TblObjectType $tblObjectType = null,
+        $ObjectId = null,
+        $Data = null
+    ) {
+        /**
+         * Skip to Frontend
+         */
+        $Global = $this->getGlobal();
+        if (null === $Data && !isset( $Global->POST['Button'] )) {
+            return $Stage;
+        }
+
+        $tblObject = false;
+        if ($tblObjectType->getIdentifier() === 'PERSON') {
+            $tblObject = Person::useService()->getPersonById($ObjectId);
+        } elseif ($tblObjectType->getIdentifier() === 'COMPANY') {   // COMPANY
+            $tblObject = Company::useService()->getCompanyById($ObjectId);
+        }
+        $tblListObjectElementList = false;
+        if ($tblList != null && $tblObjectType != null && $tblObject) {
+            $tblListObjectElementList = CheckList::useService()->getListObjectElementListByListAndObjectTypeAndListElementListAndObject($tblList, $tblObjectType, $tblObject);
+        }
+        if ($tblListObjectElementList) {
+            foreach ($tblListObjectElementList as $tblListObjectElement) {
+                $ElementTypeIdentifier = '';
+                if (( $tblElementList = $tblListObjectElement->getTblListElementList() )) {
+                    if (( $tblElementType = $tblElementList->getTblElementType() )) {
+                        $ElementTypeIdentifier = $tblElementType->getIdentifier();
+                    }
+                }
+                if (( $tblObjectElement = $tblListObjectElement->getTblListElementList() )) {
+                    $ElementId = $tblObjectElement->getId();
+                    if ($ElementTypeIdentifier == 'CHECKBOX') {
+                        if (!isset( $Data[$ElementId] )) {
+                            $tblListElementList = $this->getListElementListById($ElementId);
+                            ( new Data($this->getBinding()) )->updateObjectElementToList(
+                                $tblList,
+                                $tblObjectType,
+                                $tblListElementList,
+                                $tblObject,
+                                null
+                            );
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!empty( $Data ) && $tblObjectType) {
+            foreach ($Data as $ElementId => $Element) {
+                $tblListElementList = $this->getListElementListById($ElementId);
+
+                ( new Data($this->getBinding()) )->updateObjectElementToList(
+                    $tblList,
+                    $tblObjectType,
+                    $tblListElementList,
+                    $tblObject,
+                    $Element
+                );
+
+            }
+        }
+
+        return $Stage;
+//        .new Redirect('/Reporting/CheckList/Object/Element/Show', Redirect::TIMEOUT_SUCCESS,
+//            array('Id' => $tblList->getId()));
+    }
+
+    /**
      * @param IFormInterface|null $Stage
      * @param null $Id
      * @param null $Data
@@ -640,6 +756,24 @@ class Service extends AbstractService
     }
 
     /**
+     * @param TblList       $tblList
+     * @param TblObjectType $tblObjectType
+     * @param               $ObjectId
+     *
+     * @return bool|Service\Entity\TblListObjectElementList[]
+     */
+    public function getListObjectElementListByListAndObjectTypeAndListElementListAndObjectId(
+        TblList $tblList,
+        TblObjectType $tblObjectType,
+        $ObjectId
+    ) {
+
+        return ( new Data($this->getBinding()) )->getListObjectElementListByListAndObjectTypeAndListElementListAndObjectId(
+            $tblList, $tblObjectType, $ObjectId
+        );
+    }
+
+    /**
      * @param TblList $tblList
      * @param null $YearPersonId
      * @param null $LevelPersonId
@@ -660,7 +794,7 @@ class Service extends AbstractService
 
         if ($tblList) {
 
-            $fileLocation = Storage::useWriter()->getTemporary('xlsx');
+            $fileLocation = Storage::createFilePointer('xlsx');
             /** @var PhpExcel $export */
             $export = Document::getDocument($fileLocation->getFileLocation());
 
@@ -1125,7 +1259,7 @@ class Service extends AbstractService
             return $Stage;
         }
 
-        return new Redirect('/Reporting/CheckList/Object/Element/Edit', Redirect::TIMEOUT_SUCCESS, array(
+        return new Redirect('/Reporting/CheckList/Object/Element/Show', Redirect::TIMEOUT_SUCCESS, array(
             'Id'              => $ListId,
             'YearPersonId'    => $Filter['Year'],
             'LevelPersonId'   => $Filter['Level'],

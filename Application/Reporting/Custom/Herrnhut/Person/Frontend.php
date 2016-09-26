@@ -467,13 +467,14 @@ class Frontend extends Extension implements IFrontendInterface
                             new LayoutColumn(
                                 new TableData($PersonList, null,
                                     array(
-                                        'Number'        => '#',
+                                        'Number'       => '#',
                                         'LastName'     => 'Name',
                                         'FirstName'    => 'Vorname',
                                         'StreetName'   => 'Straße',
                                         'StreetNumber' => 'Nummer',
                                         'Code'         => 'PLZ',
                                         'City'         => 'Ort',
+                                        'District'     => 'Ortsteil',
                                         'Birthday'     => 'Geb.-datum',
                                         'Birthplace'   => 'Geburtsort',
                                         'FS1'          => 'FS 1',
@@ -633,7 +634,7 @@ class Frontend extends Extension implements IFrontendInterface
                             new LayoutColumn(
                                 new TableData($PersonList, null,
                                     array(
-                                        'Number'        => '#',
+                                        'Number'       => '#',
                                         'LastName'     => 'Name',
                                         'FirstName'    => 'Vorname',
                                         'Birthday'     => 'Geb.-datum',
@@ -642,6 +643,7 @@ class Frontend extends Extension implements IFrontendInterface
                                         'StreetNumber' => 'Nr.',
                                         'Code'         => 'PLZ',
                                         'City'         => 'Ort',
+                                        'District'     => 'Ortsteil',
                                     ),
                                     array(
                                         "pageLength" => -1,

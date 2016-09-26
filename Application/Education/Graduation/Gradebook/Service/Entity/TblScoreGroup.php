@@ -33,6 +33,11 @@ class TblScoreGroup extends Element
     protected $Round;
 
     /**
+     * @Column(type="boolean")
+     */
+    protected $IsEveryGradeASingleGroup;
+
+    /**
      * @return string
      */
     public function getName()
@@ -93,5 +98,21 @@ class TblScoreGroup extends Element
     {
 
         $this->Round = $Round;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isEveryGradeASingleGroup()
+    {
+        return $this->IsEveryGradeASingleGroup;
+    }
+
+    /**
+     * @param boolean $IsEveryGradeASingleGroup
+     */
+    public function setIsEveryGradeASingleGroup($IsEveryGradeASingleGroup)
+    {
+        $this->IsEveryGradeASingleGroup = $IsEveryGradeASingleGroup;
     }
 }

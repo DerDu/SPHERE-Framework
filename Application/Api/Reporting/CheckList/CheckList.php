@@ -2,8 +2,12 @@
 namespace SPHERE\Application\Api\Reporting\CheckList;
 
 use MOC\V\Core\FileSystem\FileSystem;
+use SPHERE\Application\Api\Response;
 use SPHERE\Application\IModuleInterface;
 use SPHERE\Application\IServiceInterface;
+use SPHERE\Application\Reporting\CheckList\CheckList as CheckListApp;
+use SPHERE\Common\Frontend\Icon\Repository\HazardSign;
+use SPHERE\Common\Frontend\Icon\Repository\Success;
 use SPHERE\Common\Frontend\IFrontendInterface;
 use SPHERE\Common\Main;
 
@@ -20,6 +24,9 @@ class CheckList implements IModuleInterface
 
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
             __NAMESPACE__.'/Download', __NAMESPACE__.'\CheckList::downloadCheckList'
+        ));
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__.'/Reorder', __CLASS__.'::reorderCheckList'
         ));
     }
 
@@ -57,9 +64,9 @@ class CheckList implements IModuleInterface
     )
     {
 
-        $tblList = \SPHERE\Application\Reporting\CheckList\CheckList::useService()->getListById($ListId);
+        $tblList = CheckListApp::useService()->getListById($ListId);
         if ($tblList) {
-            $fileLocation = \SPHERE\Application\Reporting\CheckList\CheckList::useService()
+            $fileLocation = CheckListApp::useService()
                 ->createCheckListExcel($tblList, $YearPersonId, $LevelPersonId, $SchoolOption1Id, $SchoolOption2Id);
             if ($fileLocation) {
                 return FileSystem::getDownload($fileLocation->getRealPath(),
@@ -68,5 +75,43 @@ class CheckList implements IModuleInterface
         }
 
         return false;
+    }
+
+    /**
+     * @param null|array $Reorder
+     * @param null|array $Additional
+     *
+     * @return Response
+     */
+    public function reorderCheckList($Reorder = null, $Additional = null)
+    {
+
+        if ($Additional
+            && $Reorder
+            && isset( $Additional['Id'] )
+            && ( $tblList = CheckListApp::useService()->getListById($Additional['Id']) )
+        ) {
+
+            $tblListElementList = CheckListApp::useService()->getListElementListByList($tblList);
+            if ($tblListElementList) {
+                // update SortOrder for deleted Person etc.
+                $count = 1;
+                foreach ($tblListElementList as $tblListElement) {
+                    CheckListApp::useService()->updateListElementListSortOrder($tblListElement, $count++);
+                }
+                foreach ($Reorder as $item) {
+                    if (isset( $item['pre'] ) && isset( $item['post'] )) {
+                        $pre = $item['pre'] - 1;
+                        $post = $item['post'];
+
+                        if (isset( $tblListElementList[$pre] )) {
+                            CheckListApp::useService()->updateListElementListSortOrder($tblListElementList[$pre], $post);
+                        }
+                    }
+                }
+            }
+            return ( new Response() )->addData(new Success().' Die Sortierung der Check-Liste wurde erfolgreich aktualisiert.');
+        }
+        return ( new Response() )->addError('Fehler!', new HazardSign().' Die Sortierung der Check-Liste konnte nicht aktualisiert werden.', 0);
     }
 }

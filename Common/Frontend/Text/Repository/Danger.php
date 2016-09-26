@@ -50,4 +50,10 @@ class Danger implements ITextInterface
 
         return $this->Value;
     }
+
+    public function getName()
+    {
+
+        return null;
+    }
 }

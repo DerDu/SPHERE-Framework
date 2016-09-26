@@ -4,20 +4,25 @@ namespace SPHERE\Application\Education\Graduation\Evaluation;
 use SPHERE\Application\Education\Graduation\Evaluation\Service\Data;
 use SPHERE\Application\Education\Graduation\Evaluation\Service\Entity\TblTask;
 use SPHERE\Application\Education\Graduation\Evaluation\Service\Entity\TblTest;
+use SPHERE\Application\Education\Graduation\Evaluation\Service\Entity\TblTestLink;
 use SPHERE\Application\Education\Graduation\Evaluation\Service\Entity\TblTestType;
 use SPHERE\Application\Education\Graduation\Evaluation\Service\Setup;
 use SPHERE\Application\Education\Graduation\Gradebook\Gradebook;
 use SPHERE\Application\Education\Graduation\Gradebook\Service\Entity\TblGradeType;
 use SPHERE\Application\Education\Lesson\Division\Division;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
+use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectGroup;
 use SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject;
 use SPHERE\Application\Education\Lesson\Term\Service\Entity\TblPeriod;
 use SPHERE\Application\Education\Lesson\Term\Service\Entity\TblYear;
 use SPHERE\Application\Education\Lesson\Term\Term;
+use SPHERE\Application\Setting\Authorization\Account\Account;
 use SPHERE\Common\Frontend\Form\IFormInterface;
+use SPHERE\Common\Frontend\Form\Repository\Field\CheckBox;
 use SPHERE\Common\Frontend\Icon\Repository\Ban;
 use SPHERE\Common\Frontend\Icon\Repository\Exclamation;
+use SPHERE\Common\Frontend\Layout\Repository\Panel;
 use SPHERE\Common\Frontend\Message\Repository\Danger;
 use SPHERE\Common\Frontend\Message\Repository\Success;
 use SPHERE\Common\Window\Redirect;
@@ -189,7 +194,7 @@ class Service extends AbstractService
                 array('DivisionSubjectId' => $tblDivisionSubject->getId()));
         }
 
-        (new Data($this->getBinding()))->createTest(
+        $tblTest = (new Data($this->getBinding()))->createTest(
             $tblDivisionSubject->getTblDivision(),
             $tblDivisionSubject->getServiceTblSubject(),
             $tblDivisionSubject->getTblSubjectGroup() ? $tblDivisionSubject->getTblSubjectGroup() : null,
@@ -198,10 +203,35 @@ class Service extends AbstractService
             $this->getTestTypeByIdentifier('TEST'),
             null,
             $Test['Description'],
-            $Test['Date'],
-            $Test['CorrectionDate'],
-            $Test['ReturnDate']
+            isset($Test['IsContinues']) ? null : $Test['Date'],
+            isset($Test['IsContinues']) ? null : $Test['CorrectionDate'],
+            isset($Test['IsContinues']) ? null : $Test['ReturnDate'],
+            isset($Test['IsContinues'])
         );
+        if (isset($Test['Link']) && $tblTest) {
+            $LinkId = $this->getNextLinkId();
+            $this->createTestLink($tblTest, $LinkId);
+            foreach ($Test['Link'] as $divisionSubjectToLinkId => $value) {
+                if (($tblDivisionSubjectToLink = Division::useService()->getDivisionSubjectById($divisionSubjectToLinkId))) {
+                    $tblTestAdd = (new Data($this->getBinding()))->createTest(
+                        $tblDivisionSubjectToLink->getTblDivision(),
+                        $tblDivisionSubjectToLink->getServiceTblSubject(),
+                        $tblDivisionSubjectToLink->getTblSubjectGroup() ? $tblDivisionSubjectToLink->getTblSubjectGroup() : null,
+                        $tblPeriod,
+                        $tblGradeType,
+                        $this->getTestTypeByIdentifier('TEST'),
+                        null,
+                        $Test['Description'],
+                        isset($Test['IsContinues']) ? null : $Test['Date'],
+                        isset($Test['IsContinues']) ? null : $Test['CorrectionDate'],
+                        isset($Test['IsContinues']) ? null : $Test['ReturnDate'],
+                        isset($Test['IsContinues'])
+                    );
+
+                    $this->createTestLink($tblTestAdd, $LinkId);
+                }
+            }
+        }
 
         return new Success('Die Leistungsüberprüfung ist angelegt worden',
             new \SPHERE\Common\Frontend\Icon\Repository\Success())
@@ -223,11 +253,11 @@ class Service extends AbstractService
 
     /**
      * @param IFormInterface|null $Stage
-     * @param                     $Id
-     * @param                     $Test
-     * @param string $BasicRoute
+     * @param $Id
+     * @param $Test
+     * @param $BasicRoute
      *
-     * @return IFormInterface|Redirect
+     * @return IFormInterface|string
      */
     public function updateTest(IFormInterface $Stage = null, $Id, $Test, $BasicRoute)
     {
@@ -239,14 +269,36 @@ class Service extends AbstractService
             return $Stage;
         }
 
+        $Error = false;
+        if (isset($Test['Date']) && empty($Test['Date'])) {
+            $Stage->setError('Test[Date]', 'Bitte geben Sie ein Datum an');
+            $Error = true;
+        }
+        if ($Error) {
+            return $Stage;
+        }
+
         $tblTest = $this->getTestById($Id);
-        (new Data($this->getBinding()))->updateTest(
-            $tblTest,
-            $Test['Description'],
-            $Test['Date'],
-            $Test['CorrectionDate'],
-            $Test['ReturnDate']
-        );
+        if ($tblTest) {
+            (new Data($this->getBinding()))->updateTest(
+                $tblTest,
+                $Test['Description'],
+                isset($Test['Date']) ?  $Test['Date'] : null,
+                isset($Test['CorrectionDate']) ? $Test['CorrectionDate'] : null,
+                isset($Test['ReturnDate']) ? $Test['ReturnDate'] : null
+            );
+            if (($tblTestLinkList = $tblTest->getLinkedTestAll())){
+                foreach ($tblTestLinkList as $tblTestItem){
+                    (new Data($this->getBinding()))->updateTest(
+                        $tblTestItem,
+                        $Test['Description'],
+                        isset($Test['Date']) ?  $Test['Date'] : null,
+                        isset($Test['CorrectionDate']) ? $Test['CorrectionDate'] : null,
+                        isset($Test['ReturnDate']) ? $Test['ReturnDate'] : null
+                    );
+                }
+            }
+        }
 
         if (!$tblTest->getServiceTblDivision()) {
             return new Danger(new Ban() . ' Klasse nicht gefunden')
@@ -545,7 +597,7 @@ class Service extends AbstractService
         }
 
         return new Success('Daten erfolgreich gespeichert.', new \SPHERE\Common\Frontend\Icon\Repository\Success())
-            . new Redirect('/Education/Graduation/Evaluation/Task/Headmaster/Division', Redirect::TIMEOUT_SUCCESS,
+        . new Redirect('/Education/Graduation/Evaluation/Task/Headmaster/Division', Redirect::TIMEOUT_SUCCESS,
             array('Id' => $tblTask->getId()));
     }
 
@@ -606,10 +658,10 @@ class Service extends AbstractService
     }
 
     /**
-     * @param TblTask              $tblTask
-     * @param TblDivision          $tblDivision
-     * @param TblSubject           $tblSubject
-     * @param TblGradeType         $tblGradeType
+     * @param TblTask $tblTask
+     * @param TblDivision $tblDivision
+     * @param TblSubject $tblSubject
+     * @param TblGradeType $tblGradeType
      * @param TblSubjectGroup|null $tblSubjectGroup
      *
      * @return bool
@@ -647,9 +699,9 @@ class Service extends AbstractService
 
         $resultList = array();
         $tblTestList = $this->getTestAllByTask($tblTask);
-        if ($tblTestList){
-            foreach ($tblTestList as $tblTest){
-                if ($tblTest->getServiceTblDivision()){
+        if ($tblTestList) {
+            foreach ($tblTestList as $tblTest) {
+                if ($tblTest->getServiceTblDivision()) {
                     $resultList[$tblTest->getServiceTblDivision()->getId()] = $tblTest->getServiceTblDivision();
                 }
             }
@@ -659,7 +711,7 @@ class Service extends AbstractService
     }
 
     /**
-     * @param TblTask     $tblTask
+     * @param TblTask $tblTask
      * @param TblDivision $tblDivision
      */
     public function removeDivisionFromTask(
@@ -737,8 +789,8 @@ class Service extends AbstractService
     }
 
     /**
-     * @param TblTask         $tblTask
-     * @param TblDivision     $tblDivision
+     * @param TblTask $tblTask
+     * @param TblDivision $tblDivision
      * @param TblSubject $tblSubject
      * @param TblSubjectGroup $tblSubjectGroup
      *
@@ -772,6 +824,11 @@ class Service extends AbstractService
      */
     public function destroyTest(TblTest $tblTest)
     {
+        if (($tblTestLinkList = $tblTest->getLinkedTestAll())) {
+            foreach ($tblTestLinkList as $tblTestItem) {
+                (new Data($this->getBinding()))->destroyTest($tblTestItem);
+            }
+        }
 
         return (new Data($this->getBinding()))->destroyTest($tblTest);
     }
@@ -825,4 +882,127 @@ class Service extends AbstractService
         return (new Data($this->getBinding()))->getTaskAllByDivision($tblDivision, $tblTestType);
     }
 
+    /**
+     * @param TblYear $tblYear
+     * @param TblDivisionSubject $tblDivisionSubjectSelected
+     *
+     * @return bool|Panel
+     */
+    public function getTestLinkPanel(
+        TblYear $tblYear,
+        TblDivisionSubject $tblDivisionSubjectSelected
+    ) {
+        $panel = false;
+        if ($tblDivisionSubjectSelected !== null) {
+            $tblPerson = false;
+            $tblAccount = Account::useService()->getAccountBySession();
+            if ($tblAccount) {
+                $tblPersonAllByAccount = Account::useService()->getPersonAllByAccount($tblAccount);
+                if ($tblPersonAllByAccount) {
+                    $tblPerson = $tblPersonAllByAccount[0];
+                }
+            }
+
+            $list = array();
+            if ($tblPerson) {
+                $tblSubjectTeacherList = Division::useService()->getSubjectTeacherAllByTeacher($tblPerson);
+                if ($tblSubjectTeacherList) {
+                    foreach ($tblSubjectTeacherList as $tblSubjectTeacher) {
+                        if (($tblDivisionSubject = $tblSubjectTeacher->getTblDivisionSubject())) {
+                            if (($tblDivision = $tblDivisionSubject->getTblDivision())
+                                && $tblDivision->getServiceTblYear()
+                                && $tblYear->getId() == $tblDivision->getServiceTblYear()
+                                && ($tblSubject = $tblDivisionSubject->getServiceTblSubject())
+                                && ($tblDivisionSubjectSelected->getServiceTblSubject())
+                                && ($tblSubject->getId() == $tblDivisionSubjectSelected->getServiceTblSubject()->getId())
+                            ) {
+
+                                if (!$tblDivisionSubject->getTblSubjectGroup()
+                                    && ($tblDivisionSubjectListHavingGroup = Division::useService()->getDivisionSubjectAllWhereSubjectGroupByDivisionAndSubject(
+                                        $tblDivision,
+                                        $tblSubject))
+                                ) {
+                                    foreach ($tblDivisionSubjectListHavingGroup as $groupDivisionSubject) {
+                                        if ($groupDivisionSubject->getId() !== $tblDivisionSubjectSelected->getId()) {
+                                            $list[$groupDivisionSubject->getId()] = array(
+                                                'tblDivision' => $groupDivisionSubject->getTblDivision(),
+                                                'tblSubject' => $groupDivisionSubject->getServiceTblSubject(),
+                                                'tblSubjectGroup' => $groupDivisionSubject->getTblSubjectGroup()
+                                            );
+                                        }
+                                    }
+                                } else {
+                                    if ($tblDivisionSubject->getId() !== $tblDivisionSubjectSelected->getId()) {
+                                        $list[$tblDivisionSubject->getId()] = array(
+                                            'tblDivision' => $tblDivision,
+                                            'tblSubject' => $tblSubject,
+                                            'tblSubjectGroup' => $tblDivisionSubject->getTblSubjectGroup()
+                                        );
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (!empty($list)) {
+                $itemList = array();
+                foreach ($list as $key => $item) {
+                    /** @var TblDivision $division */
+                    $division = $item['tblDivision'];
+                    /** @var TblSubject $subject */
+                    $subject = $item['tblSubject'];
+                    /** @var TblSubjectGroup | false $group */
+                    $group = $item['tblSubjectGroup'];
+                    $name = $division->getDisplayName() . ' - ' . $subject->getAcronym()
+                        . ($group ? ' - ' . $group->getName() : '');
+                    $itemList[$name] =
+                         new CheckBox(
+                            'Test[Link][' . $key . ']',
+                            $name,
+                            1
+                        );
+                }
+                ksort($itemList);
+                $panel = new Panel(
+                    'Leistungsüberprüfungen verknüpfen',
+                    $itemList,
+                    Panel::PANEL_TYPE_PRIMARY
+                );
+            }
+        }
+
+        return $panel;
+    }
+
+    /**
+     * @param TblTest $tblTest
+     * @param int $LinkId
+     *
+     * @return TblTestLink
+     */
+    public function createTestLink(TblTest $tblTest, $LinkId)
+    {
+
+        return (new Data($this->getBinding()))->createTestLink($tblTest, $LinkId);
+    }
+
+    /**
+     * @return int
+     */
+    public function getNextLinkId()
+    {
+
+        return (new Data($this->getBinding()))->getNextLinkId();
+    }
+
+    /**
+     * @param TblTest $tblTest
+     * @return false | TblTest[]
+     */
+    public function getTestLinkAllByTest(TblTest $tblTest)
+    {
+
+        return (new Data($this->getBinding()))->getTestLinkAllByTest($tblTest);
+    }
 }

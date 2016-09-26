@@ -58,7 +58,7 @@ class Custom implements IModuleInterface
         /*
         * Hormersdorf
         */
-        if ($consumerAcronym === 'FEGH' || $consumerAcronym === 'FESH') {
+        if ($consumerAcronym === 'FEGH' || $consumerAcronym === 'FESH' || $consumerAcronym === 'DEMO') {
             Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
                 __NAMESPACE__.'/Hormersdorf/Person/ClassList/Download',
                 __NAMESPACE__.'\Hormersdorf\Person::downloadClassList'

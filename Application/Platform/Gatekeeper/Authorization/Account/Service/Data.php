@@ -554,6 +554,55 @@ class Data extends AbstractData
         /** @var TblAccount $Entity */
         $Entity = $Manager->getEntityById('TblAccount', $tblAccount->getId());
         if (null !== $Entity) {
+            // Remove Identification
+            $tblAuthentication = $this->getAuthenticationByAccount( $Entity );
+            if( $tblAuthentication ) {
+                if( $tblAuthentication->getTblAccount() && $tblAuthentication->getTblIdentification() ) {
+                    $this->removeAccountAuthentication(
+                        $tblAuthentication->getTblAccount(), $tblAuthentication->getTblIdentification()
+                    );
+                }
+            }
+            // Remove Role
+            $tblAuthorizationList = $this->getAuthorizationAllByAccount( $Entity );
+            if( $tblAuthorizationList ) {
+                /** @var TblAuthorization $tblAuthorization */
+                foreach( $tblAuthorizationList as $tblAuthorization ) {
+                    if( $tblAuthorization->getTblAccount() && $tblAuthorization->getServiceTblRole() ) {
+                        $this->removeAccountAuthorization(
+                            $tblAuthorization->getTblAccount(), $tblAuthorization->getServiceTblRole()
+                        );
+                    }
+                }
+            }
+            // Remove Person
+            $tblUserList = $this->getUserAllByAccount( $Entity );
+            if( $tblUserList ) {
+                /** @var TblUser $tblUser */
+                foreach( $tblUserList as $tblUser ) {
+                    if( $tblUser->getTblAccount() && $tblUser->getServiceTblPerson() ) {
+                        $this->removeAccountPerson(
+                            $tblUser->getTblAccount(), $tblUser->getServiceTblPerson()
+                        );
+                    }
+                }
+            }
+            // Remove Setting
+            $tblSettingList = $this->getSettingAllByAccount( $Entity );
+            if( $tblSettingList ) {
+                /** @var TblSetting $tblSetting */
+                foreach ( $tblSettingList as $tblSetting ) {
+                    $this->destroySetting( $tblSetting );
+                }
+            }
+            // Remove Session
+            $tblSessionList = $this->getSessionAllByAccount( $Entity );
+            if( $tblSessionList ) {
+                /** @var TblSession $tblSession */
+                foreach( $tblSessionList as $tblSession ) {
+                    $this->destroySession( $tblSession->getSession() );
+                }
+            }
             Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(), $Entity);
             $Manager->killEntity($Entity);
             return true;
@@ -696,11 +745,11 @@ class Data extends AbstractData
         /**
          * @var TblSession $Entity
          */
-        $Entity = $Manager->getEntityById('TblSession', $tblSession->getId());
+        $Entity = $this->getForceEntityById( __METHOD__, $Manager, 'TblSession', $tblSession->getId() );
 
-        if (null !== $Entity) {
-            // Skip till half of Timeout
-            $Gap = ( ( time() + $Timeout ) - ( $Timeout / 10 ) );
+        if ($Entity) {
+            // Skip permanent Timeout
+            $Gap = ( ( time() + $Timeout ) - ( $Timeout / 100 ) );
 
             if ($Gap > $Entity->getTimeout()) {
                 $Entity->setTimeout(time() + $Timeout);
