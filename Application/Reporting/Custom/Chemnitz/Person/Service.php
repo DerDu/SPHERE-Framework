@@ -24,6 +24,7 @@ use SPHERE\Application\People\Meta\Prospect\Prospect;
 use SPHERE\Application\People\Meta\Student\Student;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\People\Relationship\Relationship;
+use SPHERE\Common\Frontend\Text\Repository\Bold;
 use SPHERE\System\Extension\Extension;
 
 /**
@@ -1112,6 +1113,7 @@ class Service extends Extension
                 $Item['Education'] = '';
                 $Item['Group'] = '';
                 $Item['Elective'] = '';
+                $Item['Integration'] = '';
 
                 $father = null;
                 $mother = null;
@@ -1145,11 +1147,15 @@ class Service extends Extension
                         }
                         if ($guardian->getTblType()->getName() == 'Geschwisterkind') {
                             if ($guardian->getServiceTblPersonFrom()->getId() != $tblPerson->getId()) {
-                                $DivisionDisplay = $this->getDivisionDisplayStringByPerson($guardian->getServiceTblPersonFrom(), $tblDivision);
-                                $Sibling[] = '['.$guardian->getServiceTblPersonFrom()->getFirstName().$DivisionDisplay.']';
-                            } elseif ($guardian->getServiceTblPersonTo()->getId() != $tblPerson->getId()) {
-                                $DivisionDisplay = $this->getDivisionDisplayStringByPerson($guardian->getServiceTblPersonTo(), $tblDivision);
-                                $Sibling[] = '['.$guardian->getServiceTblPersonTo()->getFirstName().$DivisionDisplay.']';
+                                if (( $tblStudent = Student::useService()->getStudentByPerson($guardian->getServiceTblPersonFrom()) )) {
+                                    $DivisionDisplay = $this->getDivisionDisplayStringByPerson($guardian->getServiceTblPersonFrom(), $tblDivision);
+                                    $Sibling[] = '['.$guardian->getServiceTblPersonFrom()->getFirstName().$DivisionDisplay.']';
+                                }
+                            } elseif (( $tblStudent = Student::useService()->getStudentByPerson($guardian->getServiceTblPersonTo()) )) {
+                                if ($guardian->getServiceTblPersonTo()->getId() != $tblPerson->getId()) {
+                                    $DivisionDisplay = $this->getDivisionDisplayStringByPerson($guardian->getServiceTblPersonTo(), $tblDivision);
+                                    $Sibling[] = '['.$guardian->getServiceTblPersonTo()->getFirstName().$DivisionDisplay.']';
+                                }
                             }
                         }
                     }
@@ -1211,7 +1217,20 @@ class Service extends Extension
                     ? $father->getFirstSecondName() : $father->getFirstSecondName() . ' ' . $father->getLastName()) : '';
                 $Item['MotherName'] = $mother ? ($tblPerson->getLastName() == $mother->getLastName()
                     ? $mother->getFirstSecondName() : $mother->getFirstSecondName() . ' ' . $mother->getLastName()) : '';
-                $Item['DisplayName'] = $tblPerson->getLastFirstName()
+
+                $tblStudent = Student::useService()->getStudentByPerson($tblPerson);
+                if ($tblStudent) {
+                    $tblIntegration = Student::useService()->getStudentIntegrationById($tblStudent->getTblStudentIntegration());
+                    if ($tblIntegration) {
+                        if ($tblIntegration->getCoachingRequired()) {
+                            $Item['Integration'] = '1';
+                        }
+                    }
+                }
+
+                $Item['DisplayName'] = ( $Item['Integration'] === '1'
+                        ? new Bold($tblPerson->getLastFirstName())
+                        : $tblPerson->getLastFirstName() )
                     . ($father || $mother ? '<br>(' . ($father ? $Item['FatherName']
                             . ($mother ? ', ' : '') : '')
                         .( $mother ? $Item['MotherName'] : '' ).')' : '' )
@@ -1255,31 +1274,35 @@ class Service extends Extension
                 if ($phoneList) {
                     foreach ($phoneList as $phone) {
                         $type = $this->getPhoneTypeShort($phone->getTblType());
-                        $phoneNumbers[] = $phone->getTblPhone()->getNumber() . ' ' . $type
+                        $phoneNumbers[$phone->getId()] = $phone->getTblPhone()->getNumber().' '.$type
                             . ($phone->getRemark() ? ' ' . $phone->getRemark() : '');
                     }
                 }
                 if ($fatherPhoneList) {
                     foreach ($fatherPhoneList as $phone) {
                         if ($phone->getServiceTblPerson()) {
-                            $phoneNumbers[] = $this->getPhoneGuardianString($phone);
+                            if (!isset( $phoneNumbers[$phone->getTblPhone()->getId()] )) {
+                                $phoneNumbers[$phone->getTblPhone()->getId()] = $this->getPhoneGuardianString($phone);
+                            }
                         }
                     }
                 }
                 if ($motherPhoneList) {
                     foreach ($motherPhoneList as $phone) {
                         if ($phone->getServiceTblPerson()) {
-                            $phoneNumbers[] = $this->getPhoneGuardianString($phone);
+                            if (!isset( $phoneNumbers[$phone->getTblPhone()->getId()] )) {
+                                $phoneNumbers[$phone->getTblPhone()->getId()] = $this->getPhoneGuardianString($phone);
+                            }
                         }
                     }
                 }
 
                 if (!empty($phoneNumbers)) {
+//                    $phoneNumbers = array_unique($phoneNumbers);
                     $Item['PhoneNumbers'] = implode('<br>', $phoneNumbers);
                     $Item['ExcelPhoneNumbers'] = $phoneNumbers;
                 }
 
-                $tblStudent = Student::useService()->getStudentByPerson($tblPerson);
                 if ($tblStudent) {
                     $isSet = false;
                     // Profil
@@ -1473,15 +1496,16 @@ class Service extends Extension
 
         if (!empty($PersonList)) {
 
-            // sortieren
-            foreach ($PersonList as $key => $row) {
-                $sort[$key] = strtoupper($row['ExcelNameRow1']);
-            }
-            array_multisort($sort, SORT_ASC, $PersonList);
+//            // sortieren
+//            foreach ($PersonList as $key => $row) {
+//                $sort[$key] = strtoupper($row['ExcelNameRow1']);
+//            }
+//            array_multisort($sort, SORT_ASC, $PersonList);
 
             $fileLocation = Storage::createFilePointer('xlsx');
             /** @var PhpExcel $export */
             $export = Document::getDocument($fileLocation->getFileLocation());
+            $SetIntegrationNotice = false;
 
             if (($tblDivision = Division::useService()->getDivisionById($DivisionId))) {
                 $teacherList = array();
@@ -1512,6 +1536,10 @@ class Service extends Extension
 
             $Row = 2;
             foreach ($PersonList as $PersonData) {
+                if ($PersonData['Integration'] === '1') {
+                    $export->setStyle($export->getCell(0, $Row), $export->getCell(0, $Row))->setFontBold();
+                    $SetIntegrationNotice = true;
+                }
                 $rowPerson = $Row;
                 $export->setValue($export->getCell(0, $Row), $PersonData['ExcelNameRow1']);
                 $export->setValue($export->getCell(1, $Row), $PersonData['Birthday']);
@@ -1582,6 +1610,13 @@ class Service extends Extension
             $Row++;
             $export->setValue($export->getCell(0, $Row), 'Gesamt:');
             $export->setValue($export->getCell(1, $Row), count($tblPersonList));
+
+            if ($SetIntegrationNotice) {
+                $Row++;
+                $export->setStyle($export->getCell(0, $Row), $export->getCell(2, $Row))->mergeCells()
+                    ->setFontBold();
+                $export->setValue($export->getCell(0, $Row), '*Schriftart-Fett für Kinder mit Förderbedarf');
+            }
 
             // Stand
             $Row += 2;

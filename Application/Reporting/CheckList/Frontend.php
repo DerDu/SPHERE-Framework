@@ -16,6 +16,7 @@ use SPHERE\Application\People\Meta\Prospect\Prospect;
 use SPHERE\Application\People\Person\Person;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Reporting\CheckList\Service\Entity\TblList;
+use SPHERE\Application\Reporting\CheckList\Service\Entity\TblListObjectList;
 use SPHERE\Application\Reporting\CheckList\Service\Entity\TblObjectType;
 use SPHERE\Common\Frontend\Form\Repository\Button\Primary;
 use SPHERE\Common\Frontend\Form\Repository\Field\CheckBox;
@@ -329,24 +330,25 @@ class Frontend extends Extension implements IFrontendInterface
                 $tblListElementListByList = CheckList::useService()->getListElementListByList($tblList);
 
                 $count = 0;
+                $contentTable = array();
                 if ($tblListElementListByList) {
                     foreach ($tblListElementListByList as &$tblListElementList) {
                         $count++;
-                        if ($tblListElementList->getSortOrder() != '') {
-                            $tblListElementList->Number = $tblListElementList->getSortOrder();
-                        } else {
-                            $tblListElementList->Number = $count;
-                        }
-                        $tblListElementList->Named = new PullClear(
-                            new PullLeft(new ResizeVertical().' '.$tblListElementList->getName())
-                        );
-                        $tblListElementList->Type = $tblListElementList->getTblElementType()->getName();
-                        $tblListElementList->Option =
-                            (new \SPHERE\Common\Frontend\Link\Repository\Primary('Entfernen',
+                        $contentTable[] = array(
+                            'Number' => ( $tblListElementList->getSortOrder() != ''
+                                ? $tblListElementList->getSortOrder()
+                                : $count
+                            ),
+                            'Named' => new PullClear(
+                                new PullLeft(new ResizeVertical().' '.$tblListElementList->getName())
+                            ),
+                            'Type' => $tblListElementList->getTblElementType()->getName(),
+                            'Option' => (new \SPHERE\Common\Frontend\Link\Repository\Primary('Entfernen',
                                 '/Reporting/CheckList/Element/Remove',
                                 new Minus(), array(
                                     'Id' => $tblListElementList->getId()
-                                )))->__toString();
+                                )))->__toString()
+                        );
                     }
                 }
 
@@ -369,17 +371,8 @@ class Frontend extends Extension implements IFrontendInterface
                         )),
                         new LayoutGroup(array(
                             new LayoutRow(array(
-//                                new LayoutColumn(array(
-//                                    new TableData($tblListElementListByList, null,
-//                                        array(
-//                                            'Name' => 'Name',
-//                                            'Type' => 'Typ',
-//                                            'Option' => ''
-//                                        )
-//                                    )
-//                                )),
                                 new LayoutColumn(array(
-                                    new TableData($tblListElementListByList, null,
+                                    new TableData($contentTable, null,
                                         array(
                                             'Number' => '#',
                                             'Named'  => 'Name',
@@ -481,14 +474,15 @@ class Frontend extends Extension implements IFrontendInterface
                 $Stage->setContent(new Warning('Die Check-Liste konnte nicht abgerufen werden'));
             } else {
 
+                $contentListObjectList = array();
                 $tblListObjectListByList = CheckList::useService()->getListObjectListByList($tblList);
                 if ($tblListObjectListByList) {
-                    foreach ($tblListObjectListByList as &$tblListObjectList) {
+                    /** @var TblListObjectList $tblListObjectList */
+                    foreach ($tblListObjectListByList as $tblListObjectList) {
+                        $item = array();
                         if (($tblObject = $tblListObjectList->getServiceTblObject())) {
                             if ($tblListObjectList->getTblObjectType()->getIdentifier() === 'PERSON') {
                                 /** @var TblPerson $tblObject */
-                                $tblListObjectList->DisplayName = $tblObject->getLastFirstName();
-
                                 // display groups
                                 $groups = array();
                                 $tblGroupList = Group::useService()->getGroupAllByPerson($tblObject);
@@ -501,15 +495,17 @@ class Frontend extends Extension implements IFrontendInterface
                                     }
                                 }
                                 if (empty($groups)) {
-                                    $tblListObjectList->Groups = '';
+                                    $groups = '';
                                 } else {
-                                    $tblListObjectList->Groups = implode(', ', $groups);
+                                    $groups = implode(', ', $groups);
                                 }
 
+                                $item = array(
+                                    'DisplayName' => $tblObject->getLastFirstName(),
+                                    'Groups' => $groups
+                                );
                             } elseif ($tblListObjectList->getTblObjectType()->getIdentifier() === 'COMPANY') {
                                 /** @var TblCompany $tblObject */
-                                $tblListObjectList->DisplayName = $tblObject->getName().new Container($tblObject->getExtendedName());
-
                                 // display groups
                                 $groups = array();
                                 $tblGroupList = CompanyGroup::useService()->getGroupAllByCompany($tblObject);
@@ -522,45 +518,59 @@ class Frontend extends Extension implements IFrontendInterface
                                     }
                                 }
                                 if (empty($groups)) {
-                                    $tblListObjectList->Groups = '';
+                                    $groups = '';
                                 } else {
-                                    $tblListObjectList->Groups = implode(', ', $groups);
+                                    $groups = implode(', ', $groups);
                                 }
 
+                                $item = array(
+                                    'DisplayName' => $tblObject->getName() . new Container($tblObject->getExtendedName()),
+                                    'Groups' => $groups
+                                );
                             } elseif ($tblListObjectList->getTblObjectType()->getIdentifier() === 'PERSONGROUP') {
                                 /** @var PersonGroupEntity $tblObject */
-                                $tblListObjectList->DisplayName = $tblObject->getName()
-                                    .' ('.PersonGroup::useService()->countMemberAllByGroup($tblObject).')';
-                                $tblListObjectList->Groups = '';
+
+                                $item = array(
+                                    'DisplayName' => $tblObject->getName()
+                                        . ' (' . PersonGroup::useService()->countMemberAllByGroup($tblObject) . ')',
+                                    'Groups' => ''
+                                );
                             } elseif ($tblListObjectList->getTblObjectType()->getIdentifier() === 'COMPANYGROUP') {
                                 /** @var CompanyGroupEntity $tblObject */
-                                $tblListObjectList->DisplayName = $tblObject->getName()
-                                    .' ('.CompanyGroup::useService()->countMemberAllByGroup($tblObject).')';
-                                $tblListObjectList->Groups = '';
+
+                                $item = array(
+                                    'DisplayName' => $tblObject->getName()
+                                        . ' (' . CompanyGroup::useService()->countMemberAllByGroup($tblObject) . ')',
+                                    'Groups' => ''
+                                );
                             } elseif ($tblListObjectList->getTblObjectType()->getIdentifier() === 'DIVISIONGROUP') {
                                 /** @var TblDivision $tblObject */
                                 $tblYear = $tblObject->getServiceTblYear();
-                                $tblListObjectList->DisplayName = ( $tblYear ? $tblYear->getDisplayName().' ' : '' )
-                                    . $tblObject->getDisplayName()
-                                    . ' (' . Division::useService()->countDivisionStudentAllByDivision($tblObject) . ')';
-                                $tblListObjectList->Groups = '';
+
+                                $item = array(
+                                    'DisplayName' => ($tblYear ? $tblYear->getDisplayName() . ' ' : '')
+                                        . $tblObject->getDisplayName()
+                                        . ' (' . Division::useService()->countDivisionStudentAllByDivision($tblObject) . ')',
+                                    'Groups' => ''
+                                );
                             } else {
-                                $tblListObjectList->Name = '';
-                                $tblListObjectList->Groups = '';
+                                $item = false;
                             }
 
-                            $tblListObjectList->Option =
-                                (new \SPHERE\Common\Frontend\Link\Repository\Primary('Entfernen',
-                                    '/Reporting/CheckList/Object/Remove',
-                                    new Minus(), array(
-                                        'Id' => $tblListObjectList->getId()
-                                    )))->__toString();
-                        } else {
-                            $tblListObjectList = false;
+                            if ($item) {
+                                $item['Option'] =
+                                    (new \SPHERE\Common\Frontend\Link\Repository\Primary('Entfernen',
+                                        '/Reporting/CheckList/Object/Remove',
+                                        new Minus(), array(
+                                            'Id' => $tblListObjectList->getId()
+                                        )))->__toString();
+                            }
+                        }
+
+                        if ($item) {
+                            $contentListObjectList[] = $item;
                         }
                     }
-
-                    $tblListObjectListByList = array_filter($tblListObjectListByList);
                 }
 
                 $tblObjectTypeAll = CheckList::useService()->getObjectTypeAll();
@@ -595,8 +605,6 @@ class Frontend extends Extension implements IFrontendInterface
 
                             if ($tblPersonAll) {
                                 foreach ($tblPersonAll as $tblPerson) {
-                                    $tblPerson->DisplayName = $tblPerson->getLastFirstName();
-
                                     // display groups
                                     $groups = array();
                                     if ($tblPerson) {
@@ -611,13 +619,15 @@ class Frontend extends Extension implements IFrontendInterface
                                         }
                                     }
                                     if (empty($groups)) {
-                                        $tblPerson->Groups = '';
+                                        $groups = '';
                                     } else {
-                                        $tblPerson->Groups = implode(', ', $groups);
+                                        $groups = implode(', ', $groups);
                                     }
 
-                                    $tblPerson->Option =
-                                        (new Form(
+                                    $selectList[] = array(
+                                        'DisplayName' => $tblPerson->getLastFirstName(),
+                                        'Groups' => $groups,
+                                        'Option' => (new Form(
                                             new FormGroup(
                                                 new FormRow(array(
                                                     new FormColumn(
@@ -631,9 +641,9 @@ class Frontend extends Extension implements IFrontendInterface
                                                 'ObjectId' => $tblPerson->getId(),
                                                 'ObjectTypeId' => $tblObjectType->getId()
                                             )
-                                        ))->__toString();
+                                        ))->__toString()
+                                    );
                                 }
-                                $selectList = $tblPersonAll;
                             }
                         } elseif ($tblObjectType->getIdentifier() === 'COMPANY') {
 
@@ -650,9 +660,8 @@ class Frontend extends Extension implements IFrontendInterface
                             }
 
                             if ($tblCompanyAll) {
+                                /** @var TblCompany $tblCompany */
                                 foreach ($tblCompanyAll as $tblCompany) {
-                                    $tblCompany->DisplayName = $tblCompany->getName().new Container($tblCompany->getExtendedName());
-
                                     // display groups
                                     $groups = array();
                                     $tblGroupList = CompanyGroup::useService()->getGroupAllByCompany($tblCompany);
@@ -663,15 +672,17 @@ class Frontend extends Extension implements IFrontendInterface
                                                 $groups[] = $tblGroup->getName();
                                             }
                                         }
-                                        if (empty($groups)) {
-                                            $tblCompany->Groups = '';
-                                        } else {
-                                            $tblCompany->Groups = implode(', ', $groups);
-                                        }
+                                    }
+                                    if (empty($groups)) {
+                                        $groups = '';
+                                    } else {
+                                        $groups = implode(', ', $groups);
                                     }
 
-                                    $tblCompany->Option =
-                                        (new Form(
+                                    $selectList[] = array(
+                                        'DisplayName' => $tblCompany->getName() . new Container($tblCompany->getExtendedName()),
+                                        'Groups' => $groups,
+                                        'Option' => (new Form(
                                             new FormGroup(
                                                 new FormRow(array(
                                                     new FormColumn(
@@ -685,9 +696,9 @@ class Frontend extends Extension implements IFrontendInterface
                                                 'ObjectId' => $tblCompany->getId(),
                                                 'ObjectTypeId' => $tblObjectType->getId()
                                             )
-                                        ))->__toString();
+                                        ))->__toString()
+                                    );
                                 }
-                                $selectList = $tblCompanyAll;
                             }
                         } elseif ($tblObjectType->getIdentifier() === 'PERSONGROUP') {
 
@@ -707,11 +718,12 @@ class Frontend extends Extension implements IFrontendInterface
                                 foreach ($tblPersonGroupAll as $tblPersonGroup) {
                                     $Global->POST['Option'][$tblPersonGroup->getId()] = 1;
                                     $Global->savePost();
-                                    $tblPersonGroup->DisplayName = $tblPersonGroup->getName()
-                                        .' ('.PersonGroup::useService()->countMemberAllByGroup($tblPersonGroup).')';
-                                    $tblPersonGroup->Groups = '';
-                                    $tblPersonGroup->Option =
-                                        (new Form(
+
+                                    $selectList[] = array(
+                                        'DisplayName' => $tblPersonGroup->getName()
+                                            . ' (' . PersonGroup::useService()->countMemberAllByGroup($tblPersonGroup) . ')',
+                                        'Groups' => '',
+                                        'Option' => (new Form(
                                             new FormGroup(
                                                 new FormRow(array(
                                                     new FormColumn(
@@ -729,9 +741,9 @@ class Frontend extends Extension implements IFrontendInterface
                                                 'ObjectId' => $tblPersonGroup->getId(),
                                                 'ObjectTypeId' => $tblObjectType->getId()
                                             )
-                                        ))->__toString();
+                                        ))->__toString()
+                                    );
                                 }
-                                $selectList = $tblPersonGroupAll;
                             }
                         } elseif ($tblObjectType->getIdentifier() === 'COMPANYGROUP') {
 
@@ -751,11 +763,12 @@ class Frontend extends Extension implements IFrontendInterface
                                 foreach ($tblCompanyGroupAll as $tblCompanyGroup) {
                                     $Global->POST['Option'][$tblCompanyGroup->getId()] = 1;
                                     $Global->savePost();
-                                    $tblCompanyGroup->DisplayName = $tblCompanyGroup->getName()
-                                        .' ('.CompanyGroup::useService()->countMemberAllByGroup($tblCompanyGroup).')';
-                                    $tblCompanyGroup->Groups = '';
-                                    $tblCompanyGroup->Option =
-                                        (new Form(
+
+                                    $selectList[] = array(
+                                        'DisplayName' => $tblCompanyGroup->getName()
+                                            . ' (' . CompanyGroup::useService()->countMemberAllByGroup($tblCompanyGroup) . ')',
+                                        'Groups' => '',
+                                        'Option' => (new Form(
                                             new FormGroup(
                                                 new FormRow(array(
                                                     new FormColumn(
@@ -773,9 +786,9 @@ class Frontend extends Extension implements IFrontendInterface
                                                 'ObjectId' => $tblCompanyGroup->getId(),
                                                 'ObjectTypeId' => $tblObjectType->getId()
                                             )
-                                        ))->__toString();
+                                        ))->__toString()
+                                    );
                                 }
-                                $selectList = $tblCompanyGroupAll;
                             }
                         } elseif ($tblObjectType->getIdentifier() === 'DIVISIONGROUP') {
 
@@ -796,32 +809,34 @@ class Frontend extends Extension implements IFrontendInterface
                                     $Global->POST['Option'][$tblDivision->getId()] = 1;
                                     $Global->savePost();
                                     $tblYear = $tblDivision->getServiceTblYear();
-                                    $tblDivision->DisplayName = ( $tblYear ? $tblYear->getDisplayName().' ' : '' )
-                                        . $tblDivision->getDisplayName()
-                                        . ' (' . Division::useService()->countDivisionStudentAllByDivision($tblDivision) . ')';
-                                    $tblDivision->Groups = '';
-                                    $tblDivision->Option =
-                                        (new Form(
-                                            new FormGroup(
-                                                new FormRow(array(
-                                                    new FormColumn(
-                                                        new CheckBox('Option[' . $tblDivision->getId() . ']',
-                                                            'dynamisch', 1)
-                                                        , 7),
-                                                    new FormColumn(
-                                                        new Primary('Hinzufügen',
-                                                            new Plus())
-                                                        , 5)
-                                                ))
-                                            ), null,
-                                            '/Reporting/CheckList/Object/Add', array(
-                                                'ListId' => $tblList->getId(),
-                                                'ObjectId' => $tblDivision->getId(),
-                                                'ObjectTypeId' => $tblObjectType->getId()
-                                            )
-                                        ))->__toString();
+
+                                    $selectList[] = array(
+                                        'DisplayName' => ($tblYear ? $tblYear->getDisplayName() . ' ' : '')
+                                            . $tblDivision->getDisplayName()
+                                            . ' (' . Division::useService()->countDivisionStudentAllByDivision($tblDivision) . ')',
+                                        'Groups' => '',
+                                        'Option' =>
+                                            (new Form(
+                                                new FormGroup(
+                                                    new FormRow(array(
+                                                        new FormColumn(
+                                                            new CheckBox('Option[' . $tblDivision->getId() . ']',
+                                                                'dynamisch', 1)
+                                                            , 7),
+                                                        new FormColumn(
+                                                            new Primary('Hinzufügen',
+                                                                new Plus())
+                                                            , 5)
+                                                    ))
+                                                ), null,
+                                                '/Reporting/CheckList/Object/Add', array(
+                                                    'ListId' => $tblList->getId(),
+                                                    'ObjectId' => $tblDivision->getId(),
+                                                    'ObjectTypeId' => $tblObjectType->getId()
+                                                )
+                                            ))->__toString()
+                                    );
                                 }
-                                $selectList = $tblDivisionAll;
                             }
                         }
 
@@ -880,7 +895,7 @@ class Frontend extends Extension implements IFrontendInterface
                             new LayoutRow(array(
                                 new LayoutColumn(array(
                                     new Title('Ausgewählte', 'Objekte'),
-                                    new TableData($tblListObjectListByList, null,
+                                    new TableData($contentListObjectList, null,
                                         array(
                                             'DisplayName' => 'Name',
                                             'Groups' => 'Gruppen',
@@ -899,7 +914,7 @@ class Frontend extends Extension implements IFrontendInterface
                             new LayoutRow(array(
                                 new LayoutColumn(array(
                                     new Title('Ausgewählte', 'Objekte'),
-                                    new TableData($tblListObjectListByList, null,
+                                    new TableData($contentListObjectList, null,
                                         array(
                                             'DisplayName' => 'Name',
                                             'Groups' => 'Gruppen',

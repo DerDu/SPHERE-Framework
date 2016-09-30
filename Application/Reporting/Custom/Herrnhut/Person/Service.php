@@ -1098,8 +1098,13 @@ class Service extends Extension
                                 } else {
                                     $result[$tblStudentSubject->getTblStudentSubjectRanking()->getIdentifier()][$tblStudentSubject->getServiceTblSubject()->getName()] += 1;
                                 }
+                                // sort Subject
+                                ksort($result[$tblStudentSubject->getTblStudentSubjectRanking()->getIdentifier()]);
                             }
-                            ksort($result[$tblStudentSubject->getTblStudentSubjectRanking()->getIdentifier()]);
+                        }
+                        if (!empty( $result )) {
+                            // sort Number of SubjectList (Wahlfach1, Wahlfach2 etc.)
+                            ksort($result);
                         }
                     }
                 }

@@ -55,9 +55,6 @@ class Frontend extends Extension implements IFrontendInterface
 
         if (( $tblCertificate = Generator::useService()->getCertificateById($Certificate) )) {
 
-//            Debugger::screenDump( Generator::useService()->getCertificateGradeAll( $tblCertificate ) );
-//            Debugger::screenDump( Generator::useService()->getCertificateSubjectAll( $tblCertificate ) );
-
             // Kopf-Noten-Definition
             $tblTestTypeBehavior = Evaluation::useService()->getTestTypeByIdentifier('BEHAVIOR');
             $tblGradeTypeBehavior = Gradebook::useService()->getGradeTypeAllByTestType($tblTestTypeBehavior);
@@ -65,10 +62,14 @@ class Frontend extends Extension implements IFrontendInterface
             // Fach-Noten-Definition
             $tblSubjectAll = Subject::useService()->getSubjectAll();
 
-            $LaneLength = floor(( count($tblSubjectAll) + 1 ) / 3);
+            if ($tblSubjectAll) {
+                $LaneLength = ceil(count($tblSubjectAll) / 2);
+            } else {
+                $LaneLength = 2;
+            }
             $SubjectLaneLeft = array();
             $SubjectLaneRight = array();
-            for ($Run = 1; $Run < $LaneLength; $Run++) {
+            for ($Run = 1; $Run <= $LaneLength; $Run++) {
                 array_push($SubjectLaneLeft,
                     $this->getSubject($tblCertificate, $tblSubjectAll, 1, $Run,
                         ( $Run == 1 ? 'Linke Zeugnis-Spalte' : '' ))
@@ -85,14 +86,14 @@ class Frontend extends Extension implements IFrontendInterface
                         new FormGroup(array(
                             new FormRow(array(
                                 new FormColumn(array(
-                                    $this->getGrade($tblCertificate, $tblGradeTypeBehavior, 1, 1, 'Betragen',
+                                    $this->getGrade($tblCertificate, $tblGradeTypeBehavior, 1, 1, 'Kopfnote',
                                         'Linke Zeugnis-Spalte'),
-                                    $this->getGrade($tblCertificate, $tblGradeTypeBehavior, 1, 2, 'Fleiß')
+                                    $this->getGrade($tblCertificate, $tblGradeTypeBehavior, 1, 2, 'Kopfnote')
                                 ), 6),
                                 new FormColumn(array(
-                                    $this->getGrade($tblCertificate, $tblGradeTypeBehavior, 2, 1, 'Mitarbeit',
+                                    $this->getGrade($tblCertificate, $tblGradeTypeBehavior, 2, 1, 'Kopfnote',
                                         'Rechte Zeugnis-Spalte'),
-                                    $this->getGrade($tblCertificate, $tblGradeTypeBehavior, 2, 2, 'Ordnung')
+                                    $this->getGrade($tblCertificate, $tblGradeTypeBehavior, 2, 2, 'Kopfnote')
                                 ), 6),
                             ))
                         ), new FormTitle('Kopfnoten')),
@@ -120,7 +121,7 @@ class Frontend extends Extension implements IFrontendInterface
      * @param string         $LaneTitle
      * @param string         $FieldName
      *
-     * @return array
+     * @return Panel
      */
     private function getSubject(
         TblCertificate $tblCertificate,
@@ -179,7 +180,7 @@ class Frontend extends Extension implements IFrontendInterface
      * @param string         $LaneTitle
      * @param string         $FieldName
      *
-     * @return array
+     * @return Panel
      */
     private function getGrade(
         TblCertificate $tblCertificate,

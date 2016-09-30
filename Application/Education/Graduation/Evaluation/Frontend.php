@@ -14,6 +14,7 @@ use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubje
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectGroup;
 use SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject;
 use SPHERE\Application\Education\Lesson\Subject\Subject;
+use SPHERE\Application\Education\Lesson\Term\Service\Entity\TblPeriod;
 use SPHERE\Application\Education\Lesson\Term\Service\Entity\TblYear;
 use SPHERE\Application\Education\Lesson\Term\Term;
 use SPHERE\Application\Education\School\Type\Type;
@@ -51,7 +52,6 @@ use SPHERE\Common\Frontend\Icon\Repository\ResizeVertical;
 use SPHERE\Common\Frontend\Icon\Repository\Save;
 use SPHERE\Common\Frontend\Icon\Repository\Select;
 use SPHERE\Common\Frontend\IFrontendInterface;
-use SPHERE\Common\Frontend\Layout\Repository\Label;
 use SPHERE\Common\Frontend\Layout\Repository\Panel;
 use SPHERE\Common\Frontend\Layout\Repository\Title;
 use SPHERE\Common\Frontend\Layout\Repository\Well;
@@ -72,10 +72,10 @@ use SPHERE\Common\Frontend\Text\Repository\Muted;
 use SPHERE\Common\Frontend\Text\Repository\Small;
 use SPHERE\Common\Frontend\Text\Repository\Success;
 use SPHERE\Common\Frontend\Text\Repository\Warning;
+use SPHERE\Common\Frontend\Text\Repository\Warning as WarningText;
 use SPHERE\Common\Window\Redirect;
 use SPHERE\Common\Window\Stage;
 use SPHERE\System\Extension\Extension;
-use SPHERE\System\Extension\Repository\Sorter;
 use SPHERE\System\Extension\Repository\Sorter\DateTimeSorter;
 
 /**
@@ -887,8 +887,8 @@ class Frontend extends Extension implements IFrontendInterface
                 $countStudents = 0;
                 $this->countGradesAndStudentsAll($tblTest, $countGrades, $countStudents);
 
-                $grades = $tblTest->Grades = $countGrades == $countStudents ? new Success($countGrades . ' von ' . $countStudents) :
-                    new Warning($countGrades . ' von ' . $countStudents);
+                $grades = ($countGrades == $countStudents ? new Success($countGrades . ' von ' . $countStudents) :
+                    new Warning($countGrades . ' von ' . $countStudents));
 
                 $contentTable[] = array(
                     'Date' => $tblTest->getDate(),
@@ -1034,7 +1034,7 @@ class Frontend extends Extension implements IFrontendInterface
                                 'Subject' => 'Fach',
                                 'DisplayPeriod' => 'Zeitraum',
                                 'GradeType' => 'Zensuren-Typ',
-                                'DisplayDescription' => 'Beschreibung',
+                                'DisplayDescription' => 'Thema',
                                 'CorrectionDate' => 'Korrekturdatum',
                                 'ReturnDate' => 'R&uuml;ckgabedatum',
                                 'Grades' => 'Noten eingetragen',
@@ -1096,6 +1096,7 @@ class Frontend extends Extension implements IFrontendInterface
         // select current period
         $Global = $this->getGlobal();
         if (!$Global->POST && $tblPeriodList) {
+            /** @var TblPeriod $tblPeriod */
             foreach ($tblPeriodList as $tblPeriod) {
                 if ($tblPeriod->getFromDate() && $tblPeriod->getToDate()) {
                     $fromDate = (new \DateTime($tblPeriod->getFromDate()))->format("Y-m-d");
@@ -1127,7 +1128,7 @@ class Frontend extends Extension implements IFrontendInterface
             )),
             new FormRow(array(
                 new FormColumn(
-                    new TextField('Test[Description]', '1. Klassenarbeit', 'Beschreibung'), 12
+                    new TextField('Test[Description]', '', 'Thema'), 12
                 ),
             )),
             new FormRow(array(
@@ -1262,7 +1263,7 @@ class Frontend extends Extension implements IFrontendInterface
             $Form = new Form(new FormGroup(array(
                 new FormRow(array(
                     new FormColumn(
-                        new TextField('Test[Description]', '1. Klassenarbeit', 'Beschreibung'), 12
+                        new TextField('Test[Description]', '', 'Thema'), 12
                     ),
                 )),
                 $tblTest->isContinues()
@@ -1307,7 +1308,7 @@ class Frontend extends Extension implements IFrontendInterface
                 }
             }
             if ($panel) {
-                $Stage->setMessage(new \SPHERE\Common\Frontend\Text\Repository\Warning(new Exclamation()
+                $Stage->setMessage(new WarningText(new Exclamation()
                     . ' Verknüpfte Leistungsüberprüfungen werden mit bearbeitet.'));
             }
 
@@ -1550,7 +1551,6 @@ class Frontend extends Extension implements IFrontendInterface
             . new Redirect('/Education/Graduation/Evaluation/Test/Teacher', Redirect::TIMEOUT_ERROR);
         }
 
-        // Klassenlehrer darf ohne Grund Noten editieren
         $tblPerson = false;
         $tblAccount = Account::useService()->getAccountBySession();
         if ($tblAccount) {
@@ -1678,7 +1678,7 @@ class Frontend extends Extension implements IFrontendInterface
                         }
                     }
                     $Global->POST['Grade'][$tblGrade->getServiceTblPerson()->getId()]['Comment'] = $tblGrade->getComment();
-                    if ($tblTest->isContinues()){
+                    if ($tblTest->isContinues()) {
                         $Global->POST['Grade'][$tblGrade->getServiceTblPerson()->getId()]['Date'] = $tblGrade->getDate();
                     }
                 }
@@ -1765,6 +1765,7 @@ class Frontend extends Extension implements IFrontendInterface
 
                 // Tabellenkopf mit Test-Code und Datum erstellen
                 if ($tblPeriodList) {
+                    /** @var TblPeriod $tblPeriod */
                     foreach ($tblPeriodList as $tblPeriod) {
                         if ($tblDivisionSubject->getServiceTblSubject()) {
                             $count = 0;
@@ -1799,6 +1800,12 @@ class Frontend extends Extension implements IFrontendInterface
                                                         ? $tblTestTemp->getServiceTblGradeType()->getCode()
                                                         : new Muted($tblTestTemp->getServiceTblGradeType()->getCode()));
                                             }
+                                        } elseif ($tblTestTemp->isContinues()) {
+                                            $count++;
+                                            $columnDefinition['Test' . $tblTestTemp->getId()] = new Small('&nbsp;') . '<br>'
+                                                . ($tblTestTemp->getServiceTblGradeType()->isHighlighted()
+                                                    ? $tblTestTemp->getServiceTblGradeType()->getCode()
+                                                    : new Muted($tblTestTemp->getServiceTblGradeType()->getCode()));
                                         }
                                     }
                                 }
@@ -1836,15 +1843,21 @@ class Frontend extends Extension implements IFrontendInterface
                                     $testId = substr($column, strlen('Test'));
                                     $tblTestTemp = Evaluation::useService()->getTestById($testId);
                                     if ($tblTestTemp) {
+                                        $data[$column] = '';
                                         $tblGrade = Gradebook::useService()->getGradeByTestAndStudent($tblTestTemp,
                                             $tblPerson);
                                         if ($tblGrade) {
-                                            $data[$column] = $tblTestTemp->getServiceTblGradeType()
-                                                ? ($tblTestTemp->getServiceTblGradeType()->isHighlighted()
-                                                    ? new Bold($tblGrade->getDisplayGrade()) : $tblGrade->getDisplayGrade())
-                                                : $tblGrade->getDisplayGrade();
-                                        } else {
-                                            $data[$column] = '';
+                                            if (!$tblTestTemp->isContinues()
+                                                || ($tblTestTemp->isContinues() && $tblGrade->getDate() && $tblTask->getDate()
+                                                    && ($taskDate = new \DateTime($tblTask->getDate()))
+                                                    && ($gradeDate = new \DateTime($tblGrade->getDate()))
+                                                    && ($taskDate->format('Y-m-d') >= $gradeDate->format('Y-m-d')))
+                                            ) {
+                                                $data[$column] = $tblTestTemp->getServiceTblGradeType()
+                                                    ? ($tblTestTemp->getServiceTblGradeType()->isHighlighted()
+                                                        ? new Bold($tblGrade->getDisplayGrade()) : $tblGrade->getDisplayGrade())
+                                                    : $tblGrade->getDisplayGrade();
+                                            }
                                         }
                                     }
                                 } elseif (strpos($column, 'PeriodAverage') !== false) {
@@ -3281,7 +3294,6 @@ class Frontend extends Extension implements IFrontendInterface
     }
 
     /**
-     * @param TblTest $tblTest
      * @param TblScoreType|null $tblScoreType
      * @param $gradeList
      * @param $Grade
@@ -3344,12 +3356,12 @@ class Frontend extends Extension implements IFrontendInterface
                     }
                 }
 
-                if ($count > 0){
-                    $average = $sum/$count;
+                if ($count > 0) {
+                    $average = $sum / $count;
                 } else {
                     $average = '';
                 }
-                $gradeMirror[] = new Bold('Fach-Klassen &#216;: ' . $average);
+                $gradeMirror[] = new Bold('Fach-Klassen &#216;: ' . ($average ? round($average, 2) : $average));
             }
         } else {
             $gradeMirror = new Bold(new Warning(

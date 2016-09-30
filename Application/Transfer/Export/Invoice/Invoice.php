@@ -3,7 +3,6 @@ namespace SPHERE\Application\Transfer\Export\Invoice;
 
 use SPHERE\Application\IModuleInterface;
 use SPHERE\Common\Main;
-use SPHERE\Common\Window\Navigation\Link;
 
 /**
  * Class Invoice
@@ -33,11 +32,11 @@ class Invoice implements IModuleInterface
                 __NAMESPACE__.'\Frontend::frontendExport'
             )
         );
-        Main::getDispatcher()->registerRoute(
-            Main::getDispatcher()->createRoute('\Billing\Bookkeeping\Export'.'/Prepare',
-                __NAMESPACE__.'\Frontend::frontendPrepare'
-            )
-        );
+//        Main::getDispatcher()->registerRoute(
+//            Main::getDispatcher()->createRoute('\Billing\Bookkeeping\Export'.'/Prepare',
+//                __NAMESPACE__.'\Frontend::frontendPrepare'
+//            )
+//        );
         Main::getDispatcher()->registerRoute(
             Main::getDispatcher()->createRoute('\Billing\Bookkeeping\Export'.'/Prepare/View',
                 __NAMESPACE__.'\Frontend::frontendPrepareView'

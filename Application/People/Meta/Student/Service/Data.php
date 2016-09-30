@@ -91,11 +91,18 @@ class Data extends Integration
         $this->createStudentTransferType('ARRIVE', 'Aufnahme');
         $this->createStudentTransferType('LEAVE', 'Abgabe');
         $this->createStudentTransferType('PROCESS', 'Process');
-        
-        $tblStudentLiberationCategory = $this->createStudentLiberationCategory('Sportbefreihung');
-        $this->createStudentLiberationType( $tblStudentLiberationCategory, 'Nicht befreit');
-        $this->createStudentLiberationType( $tblStudentLiberationCategory, 'Teilbefreit');
-        $this->createStudentLiberationType( $tblStudentLiberationCategory, 'Vollbefreit');
+
+        if (($tblStudentLiberationCategory = $this->getStudentLiberationCategoryByName('Sportbefreihung'))){
+            $this->updateStudentLiberationCategory($tblStudentLiberationCategory, 'Sportbefreiung');
+        } else {
+            $tblStudentLiberationCategory = $this->createStudentLiberationCategory('Sportbefreiung');
+        }
+
+        if ($tblStudentLiberationCategory) {
+            $this->createStudentLiberationType($tblStudentLiberationCategory, 'Nicht befreit');
+            $this->createStudentLiberationType($tblStudentLiberationCategory, 'Teilbefreit');
+            $this->createStudentLiberationType($tblStudentLiberationCategory, 'Vollbefreit');
+        }
     }
 
     /**
@@ -137,7 +144,7 @@ class Data extends Integration
      * @param int                     $InsuranceState
      * @param string                  $Insurance
      *
-     * @return TblStudentMedicalRecord
+     * @return bool
      */
     public function updateStudentMedicalRecord(
         TblStudentMedicalRecord $tblStudentMedicalRecord,
@@ -205,7 +212,7 @@ class Data extends Integration
      * @param string            $BaptismDate
      * @param string            $Location
      *
-     * @return TblStudentBaptism
+     * @return bool
      */
     public function updateStudentBaptism(
         TblStudentBaptism $tblStudentBaptism,
@@ -263,7 +270,7 @@ class Data extends Integration
      * @param TblStudentBilling   $tblStudentBilling
      * @param null|TblSiblingRank $tblSiblingRank
      *
-     * @return TblStudentBilling
+     * @return bool
      */
     public function updateStudentBilling(
         TblStudentBilling $tblStudentBilling,
@@ -327,7 +334,7 @@ class Data extends Integration
      * @param string           $LockerLocation
      * @param string           $KeyNumber
      *
-     * @return TblStudentLocker
+     * @return bool
      */
     public function updateStudentLocker(
         TblStudentLocker $tblStudentLocker,
@@ -399,7 +406,7 @@ class Data extends Integration
      * @param string              $StationExit
      * @param string              $Remark
      *
-     * @return TblStudentTransport
+     * @return bool
      */
     public function updateStudentTransport(
         TblStudentTransport $tblStudentTransport,

@@ -7,12 +7,17 @@ use SPHERE\Application\Billing\Accounting\Banking\Service\Entity\TblDebtor;
 use SPHERE\Application\Billing\Accounting\Banking\Service\Entity\TblDebtorSelection;
 use SPHERE\Application\Billing\Accounting\Banking\Service\Setup;
 use SPHERE\Application\Billing\Bookkeeping\Balance\Balance;
+use SPHERE\Application\Billing\Bookkeeping\Balance\Service\Entity\TblPaymentType;
 use SPHERE\Application\Billing\Bookkeeping\Basket\Service\Entity\TblBasket;
 use SPHERE\Application\Billing\Inventory\Item\Item;
 use SPHERE\Application\Billing\Inventory\Item\Service\Entity\TblItem;
 use SPHERE\Application\People\Person\Person;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Common\Frontend\Form\IFormInterface;
+use SPHERE\Common\Frontend\Form\Repository\Field\HiddenField;
+use SPHERE\Common\Frontend\Form\Structure\FormColumn;
+use SPHERE\Common\Frontend\Form\Structure\FormGroup;
+use SPHERE\Common\Frontend\Form\Structure\FormRow;
 use SPHERE\Common\Frontend\Message\Repository\Danger;
 use SPHERE\Common\Frontend\Message\Repository\Success;
 use SPHERE\Common\Frontend\Message\Repository\Warning;
@@ -104,14 +109,27 @@ class Service extends AbstractService
     }
 
     /**
-     * @param TblPerson $Person
+     * @deprecated
+     *
+*@param TblPerson $Person
      *
      * @return false|TblDebtor[]
      */
     public function getDebtorByPerson(TblPerson $Person)
     {
 
-        return (new Data($this->getBinding()))->getDebtorByPerson($Person);
+        return ( new Data($this->getBinding()) )->getDebtorAllByPerson($Person);
+    }
+
+    /**
+     * @param TblPerson $Person
+     *
+     * @return false|TblDebtor[]
+     */
+    public function getDebtorAllByPerson(TblPerson $Person)
+    {
+
+        return ( new Data($this->getBinding()) )->getDebtorAllByPerson($Person);
     }
 
     /**
@@ -309,6 +327,127 @@ class Service extends AbstractService
 
     /**
      * @param IFormInterface|null $Stage
+     * @param TblPerson           $tblPersonPayers
+     * @param TblPaymentType      $tblPaymentType
+     * @param null                $Data
+     *
+     * @return IFormInterface|string
+     */
+    public function createDebtorSelectionComplete(
+        IFormInterface &$Stage = null,
+        TblPerson $tblPersonPayers,
+        TblPaymentType $tblPaymentType,
+        $Data = null
+    ) {
+        /**
+         * Skip to Frontend
+         */
+        if (null === $Data) {
+            return $Stage;
+        }
+
+        $Error = false;
+        $WarningColumn = array();
+
+        if (!isset( $Data['Person'] ) || empty( $Data['Person'] )) {
+//            $Stage->setError('Data[Person]', 'Bitte geben sie eine Person an');
+            $WarningColumn[] = new FormColumn(new Warning('Bitte geben sie eine Person an'), 4);
+            $Error = true;
+        } else {
+
+            $tblPerson = Person::useService()->getPersonById($Data['Person']);
+            if (!$tblPerson) {
+                $WarningColumn[] = new FormColumn(new Warning('PersonenID nicht gefunden'), 4);
+//                $Stage->setError('Data[Person]', 'PersonenID nicht gefunden');
+                $Error = true;
+            } else {
+                $WarningColumn[] = new FormColumn(new HiddenField(''), 4);
+            }
+        }
+
+        if (!isset( $Data['Item'] ) || empty( $Data['Item'] )) {
+            $WarningColumn[] = new FormColumn(new Warning('Bitte geben sie einen Artikel an'), 4);
+//            $Stage->setError('Data[Item]', 'Bitte geben sie einen Artikel an');
+            $Error = true;
+        } else {
+            $tblItem = Item::useService()->getItemById($Data['Item']);
+            if (!$tblItem) {
+                $WarningColumn[] = new FormColumn(new Warning('ArtikelID nicht gefunden'), 4);
+//                $Stage->setError('Data[Item]', 'ArtikelID nicht gefunden');
+                $Error = true;
+            } else {
+                $WarningColumn[] = new FormColumn(new HiddenField(''), 4);
+            }
+
+        }
+        if ($Error) {
+            $Stage->appendGridGroup(new FormGroup(new FormRow($WarningColumn)));
+        }
+
+        if (!isset( $Data['Debtor'] ) || empty( $Data['Debtor'] )) {
+            $Stage->setError('Data[Debtor]', 'Bitte geben sie eine Debitor-Nr. an');
+            $Error = true;
+        } else {
+            $tblDebtor = Banking::useService()->getDebtorById($Data['Debtor']);
+            if (!$tblDebtor) {
+                $Stage->setError('Data[Debtor]', 'Debitor-Nr nicht gefunden');
+                $Error = true;
+            }
+        }
+
+        if ($tblPaymentType->getName() === 'SEPA-Lastschrift') {
+            if (!isset( $Data['Reference'] ) || empty( $Data['Reference'] )) {
+                $Stage->setError('Data[Reference]', 'Bitte geben sie eine Mandatsreferenz an');
+                $Error = true;
+            } else {
+                $tblBankReference = Banking::useService()->getBankReferenceById($Data['Reference']);
+                if (!$tblBankReference) {
+                    $Stage->setError('Data[Reference]', 'MandatsreferenzID nicht gefunden');
+                    $Error = true;
+                }
+            }
+        }
+
+        if (!$Error) {
+            if (!isset( $tblBankReference )) {
+                $tblBankReference = 'empty';
+            }
+
+            if (isset( $tblPerson ) && isset( $tblItem ) && isset( $tblDebtor ) && isset( $tblBankReference )) {
+                if ($tblBankReference == 'empty') {
+                    $tblBankReference = null;
+                }
+                $tblDebtorSelection = Banking::useService()->getDebtorSelectionByPersonAndItem($tblPerson, $tblItem);
+                if (!$tblDebtorSelection) {
+                    ( new Data ($this->getBinding()) )->createDebtorSelectionComplete(
+                        $tblPerson,
+                        $tblPersonPayers,
+                        $tblPaymentType,
+                        $tblItem,
+                        $tblDebtor,
+                        $tblBankReference);
+                } else {
+                    ( new Data($this->getBinding()) )->updateDebtorSelectionComplete(
+                        $tblDebtorSelection,
+                        $tblPersonPayers,
+                        $tblPaymentType,
+                        $tblDebtor,
+                        $tblBankReference
+                    );
+                }
+
+                return $Stage.new Redirect('/Billing/Accounting/DebtorSelection/Payment', Redirect::TIMEOUT_SUCCESS,
+                    array('Id'            => $tblPersonPayers->getId(),
+                          'PaymentTypeId' => $tblPaymentType->getId()));
+            }
+        }
+
+        $Stage->appendGridGroup(new FormGroup(new FormRow(new FormColumn(new Warning('Ihr Eintrag wurde nicht gespeichert!'), 4))));
+        return $Stage;
+    }
+
+    /**
+     * @param IFormInterface|null $Stage
      * @param TblBasket           $tblBasket
      * @param null                $Data
      *
@@ -353,7 +492,7 @@ class Service extends AbstractService
             if ($Error === true && !empty( $PersonArray )) {
                 /** @var TblPerson $Person */
                 foreach ($PersonArray as $Person) {
-                    $Stage .= new Warning('Bezahler für '.$Person->getfullName().' ist noch nicht eingerichtet');
+                    $Stage .= new Warning('Bezahler für '.$Person->getFullName().' ist noch nicht eingerichtet');
                 }
             }
         }

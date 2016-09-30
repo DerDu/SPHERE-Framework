@@ -833,7 +833,7 @@ class Frontend extends FrontendScoreRule
                                 $tblGrade = Gradebook::useService()->getGradeByTestAndStudent($tblTest, $tblPerson);
                                 if ($tblGrade) {
                                     $displayGradeDate = false;
-                                    if ($tblTest->isContinues() && $tblGrade->getDate()){
+                                    if ($tblTest->isContinues() && $tblGrade->getDate()) {
                                         if (strlen($tblGrade->getDate()) > 6) {
                                             $displayGradeDate = substr($tblGrade->getDate(), 0, 6);
                                         }
@@ -972,7 +972,8 @@ class Frontend extends FrontendScoreRule
                     $headTableColumnList[] = new TableColumn($tblPeriod->getDisplayName(), $count);
                 }
             }
-            $headTableColumnList[] = new TableColumn('Gesamt');
+            $headTableColumnList[] = new TableColumn('Gesamt',
+                $tblMinimumGradeCountList ? count($tblMinimumGradeCountList) + 1 : 1);
         }
         $tableData->prependHead(
             new TableHead(
@@ -1433,7 +1434,7 @@ class Frontend extends FrontendScoreRule
 
         $Stage = new Stage('Bewertungssystem', 'Fach-Klassen einem Bewertungssystem zuordnen');
         $Stage->setMessage('Hier können dem ausgewählten Bewertungssystem Fach-Klassen zugeordnet werden.' . '<br>'
-        . new Bold(new Exclamation() . ' Hinweis:') . ' Sobald Zensuren für eine Fach-Klasse vergeben wurden,
+            . new Bold(new Exclamation() . ' Hinweis:') . ' Sobald Zensuren für eine Fach-Klasse vergeben wurden,
         kann das Bewertungssystem dieser Fach-Klasse nicht mehr geändert werden. Außerdem kann die Fach-Klasse immer nur ein Bewertungssystem besitzen.');
         $Stage->addButton(new Standard('Zurück', '/Education/Graduation/Gradebook/Type', new ChevronLeft()));
 

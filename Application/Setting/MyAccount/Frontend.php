@@ -70,7 +70,7 @@ class Frontend extends Extension implements IFrontendInterface
 
         $tblAccount = Account::useService()->getAccountBySession();
         $Stage = new Stage('Mein Benutzerkonto', 'Passwort ändern');
-        $Stage->addButton(new Standard('Zruück', '/Setting/MyAccount', new ChevronLeft()));
+        $Stage->addButton(new Standard('Zurück', '/Setting/MyAccount', new ChevronLeft()));
         $Stage->setContent(
             new Layout(new LayoutGroup(new LayoutRow(new LayoutColumn(
                 new Well(

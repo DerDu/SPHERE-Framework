@@ -2,11 +2,9 @@
 
 namespace SPHERE\Application\Billing\Accounting;
 
-use SPHERE\Application\Billing\Accounting\Account\Account;
 use SPHERE\Application\Billing\Accounting\Banking\Banking;
 use SPHERE\Application\Billing\Accounting\SchoolAccount\SchoolAccount;
 use SPHERE\Application\IApplicationInterface;
-use SPHERE\Common\Frontend\Icon\Repository\ClipBoard;
 use SPHERE\Common\Frontend\Icon\Repository\Cog;
 use SPHERE\Common\Frontend\Icon\Repository\CogWheels;
 use SPHERE\Common\Frontend\Icon\Repository\Person;
@@ -42,7 +40,7 @@ class Accounting implements IApplicationInterface
                 new Link\Icon(new Person()))
         );
         Main::getDisplay()->addModuleNavigation(
-            new Link(new Link\Route(__NAMESPACE__.'/SchoolAccount'), new Link\Name('Kontoeinstellung'),
+            new Link(new Link\Route(__NAMESPACE__.'/SchoolAccount'), new Link\Name('Schulkontoeinstellung'),
                 new Link\Icon(new Cog()))
         );
         Main::getDisplay()->addModuleNavigation(

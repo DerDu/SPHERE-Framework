@@ -14,8 +14,8 @@ use SPHERE\Common\Frontend\Form\Structure\FormColumn;
 use SPHERE\Common\Frontend\Form\Structure\FormGroup;
 use SPHERE\Common\Frontend\Form\Structure\FormRow;
 use SPHERE\Common\Frontend\Icon\Repository\Download;
+use SPHERE\Common\Frontend\Icon\Repository\Filter;
 use SPHERE\Common\Frontend\Icon\Repository\ListingTable;
-use SPHERE\Common\Frontend\Icon\Repository\Save;
 use SPHERE\Common\Frontend\Icon\Repository\Search;
 use SPHERE\Common\Frontend\Icon\Repository\Time;
 use SPHERE\Common\Frontend\IFrontendInterface;
@@ -26,7 +26,6 @@ use SPHERE\Common\Frontend\Layout\Structure\Layout;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutColumn;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutGroup;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutRow;
-use SPHERE\Common\Frontend\Link\Repository\Backward;
 use SPHERE\Common\Frontend\Link\Repository\Standard;
 use SPHERE\Common\Frontend\Message\Repository\Info;
 use SPHERE\Common\Frontend\Message\Repository\Warning;
@@ -42,20 +41,15 @@ class Frontend extends Extension implements IFrontendInterface
 {
 
     /**
+     * @param null $Prepare
+     *
      * @return Stage
      */
-    public function frontendExport()
+    public function frontendExport($Prepare = null)
     {
 
         $Stage = new Stage('Export', 'aller offenen Posten');
 
-//        $TableHeader = array('InvoiceNumber' => 'Rechnungsnummer',
-//                             'Debtor'        => 'Debitor',
-//                             'Name'          => 'Name',
-//                             'StudentNumber' => 'Schülernummer',
-//                             'Date'          => 'Fälligkeitsdatum',
-//        );
-//        $TableContent = Invoice::useService()->createInvoiceList($TableHeader); // Dynamische Tabelle (Artikelspalten dynamisch)
         $TableContent = array();
         $tblInvoiceList = InvoiceBilling::useService()->getInvoiceByIsPaid(false);
         if($tblInvoiceList){
@@ -86,17 +80,27 @@ class Frontend extends Extension implements IFrontendInterface
 
                 array_push($TableContent, $Content);
             });
+
+            $form = $this->formPrepare($Prepare);
+            $form->appendFormButton(new Primary('Filtern', new Filter()));
         }
 
-        $Stage->addButton(new Standard('Auswahl Herunterladen', '\Billing\Bookkeeping\Export\Prepare', new Search()));
+//        $Stage->addButton(new Standard('Auswahl Herunterladen', '\Billing\Bookkeeping\Export\Prepare', new Search()));
 
         $Stage->setContent(
             new Layout(
                 new LayoutGroup(
-                    new LayoutRow(
+                    new LayoutRow(array(
                         new LayoutColumn(
+                            ( isset( $form ) ?
+                                array(
+                                    new Title(new Search().' Filterung', 'der Rechnungen'),
+                                    new Well(Invoice::useService()->controlPrepare($form, $Prepare))
+                                ) : '' )),
+                        new LayoutColumn(
+                            new Title(new ListingTable().' Übersicht der offenen Posten')
 //                            new TableData($TableContent, null, $TableHeader)
-                            new TableData($TableContent, null,
+                            .new TableData($TableContent, null,
                                 array('InvoiceNumber' => 'Rechnungsnummer',
                                     'CreateDate' => 'Rechnungsdatum',
                                     'TargetDate' => 'Fälligkeitsdatum',
@@ -116,45 +120,45 @@ class Frontend extends Extension implements IFrontendInterface
                                 )
                             )
                         )
-                    )
-                    , new Title(new ListingTable().' Übersicht der offenen Posten'))
-            )
-        );
-
-        return $Stage;
-    }
-
-    /**
-     * @param null $Prepare
-     *
-     * @return Stage
-     */
-    public function frontendPrepare($Prepare = null)
-    {
-
-        $Stage = new Stage('Export', 'nach Filterung');
-        $Stage->addButton(new Standard('Zurück', '/Billing/Bookkeeping/Export'));
-
-        $form = $this->formPrepare($Prepare);
-        $form->appendFormButton(new Primary('Speichern', new Save()));
-//        $form->setConfirm('Die Zuweisung der Personen wurde noch nicht gespeichert.');
-
-
-        $Stage->setContent(
-            new Layout(
-                new LayoutGroup(
-                    new LayoutRow(
-                        new LayoutColumn(array(
-                            new Title(new Search().' Filterung', 'der Rechnungen'),
-                            new Well(Invoice::useService()->controlPrepare($form, $Prepare))
-                        ))
-                    )
+                    ))
                 )
             )
         );
 
         return $Stage;
     }
+
+//    /**
+//     * @param null $Prepare
+//     *
+//     * @return Stage
+//     */
+//    public function frontendPrepare($Prepare = null)
+//    {
+//
+//        $Stage = new Stage('Export', 'nach Filterung');
+//        $Stage->addButton(new Standard('Zurück', '/Billing/Bookkeeping/Export'));
+//
+//        $form = $this->formPrepare($Prepare);
+//        $form->appendFormButton(new Primary('Speichern', new Save()));
+////        $form->setConfirm('Die Zuweisung der Personen wurde noch nicht gespeichert.');
+//
+//
+//        $Stage->setContent(
+//            new Layout(
+//                new LayoutGroup(
+//                    new LayoutRow(
+//                        new LayoutColumn(array(
+//                            new Title(new Search().' Filterung', 'der Rechnungen'),
+//                            new Well(Invoice::useService()->controlPrepare($form, $Prepare))
+//                        ))
+//                    )
+//                )
+//            )
+//        );
+//
+//        return $Stage;
+//    }
 
     /**
      * @param $Prepare
@@ -199,7 +203,7 @@ class Frontend extends Extension implements IFrontendInterface
                         ), 3),
                         new FormColumn(array(
                             new Info('Hinzufügen von'),
-                            new Panel('Firmendaten', array(
+                            new Panel('Schuldaten', array(
                                     new CheckBox('Prepare[Client]', 'Mandant', 1),
                                     new CheckBox('Prepare[Billers]', 'Rechnungssteller', 1),
                                 )
@@ -228,7 +232,7 @@ class Frontend extends Extension implements IFrontendInterface
     /**
      * @param $Filter
      *
-     * @return Stage
+     * @return Stage|string
      */
     public function frontendPrepareView($Filter)
     {
@@ -236,7 +240,7 @@ class Frontend extends Extension implements IFrontendInterface
         $Filter = json_decode($Filter);
 
         $Stage = new Stage('Export Filterung', 'Vorschau');
-        $Stage->addButton(new Standard('Zurück', '/Billing/Bookkeeping/Export/Prepare'));
+        $Stage->addButton(new Standard('Zurück', '/Billing/Bookkeeping/Export'));
         if (!empty( $Filter->Error )) {
             return $Stage.new Warning('Übergabe nicht auswertbar');
         }
