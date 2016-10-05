@@ -104,6 +104,46 @@ class Service extends AbstractService
     }
 
     /**
+     * @return bool|TblCertificate[]
+     */
+    public function getGradeInformationTemplateAll()
+    {
+
+        return (new Data($this->getBinding()))->getGradeInformationTemplateAll();
+    }
+
+    /**
+     * @param null|TblConsumer $tblConsumer
+     *
+     * @return bool|TblCertificate[]
+     */
+    public function getGradeInformationTemplateAllByConsumer(TblConsumer $tblConsumer = null)
+    {
+
+        return (new Data($this->getBinding()))->getGradeInformationTemplateAllByConsumer($tblConsumer);
+    }
+
+    /**
+     * @return false|TblCertificate[]
+     */
+    public function getTemplateAll()
+    {
+
+        return (new Data($this->getBinding()))->getTemplateAll();
+    }
+
+    /**
+     * @param null|TblConsumer $tblConsumer
+     *
+     * @return bool|TblCertificate[]
+     */
+    public function getTemplateAllByConsumer(TblConsumer $tblConsumer = null)
+    {
+
+        return (new Data($this->getBinding()))->getTemplateAllByConsumer($tblConsumer);
+    }
+
+    /**
      * @param IFormInterface|null $Form
      * @param TblCertificate      $tblCertificate
      * @param array               $GradeList

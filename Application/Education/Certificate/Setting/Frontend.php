@@ -50,7 +50,7 @@ class Frontend extends Extension implements IFrontendInterface
     public function frontendCertificateSetting($Certificate = 0, $Grade = array(), $Subject = array())
     {
 
-        $Stage = new Stage('Zeugnisvorlage', 'Einstellungen');
+        $Stage = new Stage('Einstellungen', 'Vorlage bearbeiten');
         $Stage->addButton(new Standard('Zurück', '/Education/Certificate/Setting', new ChevronLeft()));
 
         if (( $tblCertificate = Generator::useService()->getCertificateById($Certificate) )) {
@@ -62,11 +62,14 @@ class Frontend extends Extension implements IFrontendInterface
             // Fach-Noten-Definition
             $tblSubjectAll = Subject::useService()->getSubjectAll();
 
-            if ($tblSubjectAll) {
-                $LaneLength = ceil(count($tblSubjectAll) / 2);
-            } else {
-                $LaneLength = 2;
-            }
+//            if ($tblSubjectAll) {
+//                $LaneLength = ceil(count($tblSubjectAll) / 2);
+//            } else {
+//                $LaneLength = 2;
+//            }
+            // bei Noteninformationen stehen alle Fächer auf der linken Seite
+            $LaneLength = 15;
+
             $SubjectLaneLeft = array();
             $SubjectLaneRight = array();
             for ($Run = 1; $Run <= $LaneLength; $Run++) {
@@ -216,24 +219,28 @@ class Frontend extends Extension implements IFrontendInterface
     public function frontendSelectCertificate()
     {
 
-        $Stage = new Stage('Zeugnisvorlage', 'Einstellungen');
+        $Stage = new Stage('Einstellungen', 'Vorlage auswählen');
         $Stage->addButton(new Backward());
 
         // Find Certificate-Templates
         $tblConsumer = Consumer::useService()->getConsumerBySession();
-        if ($tblConsumer && $tblConsumer->getAcronym() == 'DEMO'){
-            $tblCertificateAll = Generator::useService()->getCertificateAll();
+        if ($tblConsumer && $tblConsumer->getAcronym() == 'DEMO') {
+            $tblTemplateAll = Generator::useService()->getTemplateAll();
         } else {
-            $tblCertificateAll = Generator::useService()->getCertificateAllByConsumer();
+            $tblTemplateAll = Generator::useService()->getTemplateAllByConsumer();
         }
         if ($tblConsumer) {
-            $tblCertificateConsumer = Generator::useService()->getCertificateAllByConsumer($tblConsumer);
-            if ($tblCertificateConsumer) {
-                $tblCertificateAll = array_merge($tblCertificateConsumer, $tblCertificateAll);
+            if (!$tblTemplateAll){
+                $tblTemplateAll = array();
+            }
+
+            $tblTemplateConsumer = Generator::useService()->getTemplateAllByConsumer($tblConsumer);
+            if ($tblTemplateConsumer) {
+                $tblTemplateAll = array_merge($tblTemplateConsumer, $tblTemplateAll);
             }
 
             $TemplateTable = array();
-            array_walk($tblCertificateAll,
+            array_walk($tblTemplateAll,
                 function (TblCertificate $tblCertificate) use (&$TemplateTable) {
 
                     $TemplateTable[] = array_merge($tblCertificate->__toArray(), array(
@@ -241,6 +248,7 @@ class Frontend extends Extension implements IFrontendInterface
                                     ? new Small(new Muted($tblCertificate->getServiceTblConsumer()->getAcronym())).'<br/>'.new Star()
                                     : new Document().'<br/>'.new Small(new Muted('Standard'))
                                 ).'</div>',
+                            'Category' => $tblCertificate->getDisplayCategory(),
                             'Option' => new Standard(
                                 'Weiter', '/Education/Certificate/Setting/Configuration', new ChevronRight(),
                                 array(
@@ -252,14 +260,15 @@ class Frontend extends Extension implements IFrontendInterface
 
             $Content = new TableData($TemplateTable, null, array(
                 'Typ'         => 'Typ',
+                'Category'         => 'Kategorie',
                 'Name'        => 'Name',
                 'Description' => 'Beschreibung',
                 'Option'      => 'Option'
             ), array(
-                'order'      => array(array(0, 'asc'), array(1, 'asc'), array(2, 'asc')),
+                'order'      => array(array(0, 'asc'), array(1, 'asc'), array(2, 'asc'), array(3, 'asc')),
                 'columnDefs' => array(
                     array('width' => '1%', 'targets' => 0),
-                    array('width' => '1%', 'targets' => 3),
+                    array('width' => '1%', 'targets' => 4),
                 )
             ));
 

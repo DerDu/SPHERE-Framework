@@ -151,6 +151,22 @@ abstract class Style extends Extension
 
     /**
      * @param string $Size
+     * @param string $Color
+     * @param string $Style
+     *
+     * @return $this
+     */
+    public function styleBorderAll($Size = '1px', $Color = '#000', $Style = 'solid')
+    {
+
+        return  $this->styleBorderLeft($Size, $Color, $Style)
+            ->styleBorderTop($Size, $Color, $Style)
+            ->styleBorderRight($Size, $Color, $Style)
+            ->styleBorderBottom($Size, $Color, $Style);
+    }
+
+    /**
+     * @param string $Size
      *
      * @return $this
      */

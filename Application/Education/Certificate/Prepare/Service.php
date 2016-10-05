@@ -20,6 +20,7 @@ use SPHERE\Application\Education\Certificate\Prepare\Service\Setup;
 use SPHERE\Application\Education\ClassRegister\Absence\Absence;
 use SPHERE\Application\Education\Graduation\Evaluation\Evaluation;
 use SPHERE\Application\Education\Graduation\Evaluation\Service\Entity\TblTask;
+use SPHERE\Application\Education\Graduation\Evaluation\Service\Entity\TblTest;
 use SPHERE\Application\Education\Graduation\Evaluation\Service\Entity\TblTestType;
 use SPHERE\Application\Education\Graduation\Gradebook\Gradebook;
 use SPHERE\Application\Education\Graduation\Gradebook\Service\Entity\TblGradeType;
@@ -78,13 +79,14 @@ class Service extends AbstractService
 
     /**
      * @param TblDivision $tblDivision
+     * @param bool $IsGradeInformation
      *
-     * @return false|TblPrepareCertificate[]
+     * @return false|Service\Entity\TblPrepareCertificate[]
      */
-    public function getPrepareAllByDivision(TblDivision $tblDivision)
+    public function getPrepareAllByDivision(TblDivision $tblDivision, $IsGradeInformation = false)
     {
 
-        return (new Data($this->getBinding()))->getPrepareAllByDivision($tblDivision);
+        return (new Data($this->getBinding()))->getPrepareAllByDivision($tblDivision, $IsGradeInformation);
     }
 
     /**
@@ -727,10 +729,10 @@ class Service extends AbstractService
      * @param TblPrepareCertificate $tblPrepare
      * @param $tblTask
      */
-    private function updatePrepareSubjectGrades(TblPrepareCertificate $tblPrepare, TblTask $tblTask)
+    public function updatePrepareSubjectGrades(TblPrepareCertificate $tblPrepare, TblTask $tblTask)
     {
         // Löschen der vorhandenen Zensuren
-        (new Data($this->getBinding()))->destroyPrepareGrades($tblPrepare, $tblTask->getTblTestType());
+        $this->destroyPrepareGrades($tblPrepare, $tblTask->getTblTestType());
 
         // Zensuren zum Stichtagsnotenauftrag ermitteln
         $tblDivision = $tblPrepare->getServiceTblDivision();
@@ -933,6 +935,21 @@ class Service extends AbstractService
                     }
                 }
             }
+            // Kopfnoten von Fachlehrern für Noteninformation
+            if ($tblPrepare->isGradeInformation() && ($tblTask = $tblPrepare->getServiceTblBehaviorTask())) {
+                if (($tblTestAllByTask = Evaluation::useService()->getTestAllByTask($tblTask))) {
+                    /** @var TblTest $testItem */
+                    foreach ($tblTestAllByTask as $testItem) {
+                        if (($tblGrade = Gradebook::useService()->getGradeByTestAndStudent($testItem, $tblPerson))
+                            && $testItem->getServiceTblGradeType()
+                            && $testItem->getServiceTblSubject()
+                        ) {
+                            $Content['Input']['BehaviorTeacher'][$testItem->getServiceTblSubject()->getAcronym()]
+                            [$testItem->getServiceTblGradeType()->getCode()] = $tblGrade->getDisplayGrade();
+                        }
+                    }
+                }
+            }
 
             // Fachnoten
             $tblPrepareGradeSubjectList = Prepare::useService()->getPrepareGradeAllByPerson(
@@ -1079,5 +1096,144 @@ class Service extends AbstractService
         }
 
         return false;
+    }
+
+    /**
+     * @param TblDivision $tblDivision
+     * @param $Date
+     * @param $Name
+     * @param bool $IsGradeInformation
+     *
+     * @return TblPrepareCertificate
+     */
+    public function createPrepareData(
+        TblDivision $tblDivision,
+        $Date,
+        $Name,
+        $IsGradeInformation = false
+    ) {
+
+        return (new Data($this->getBinding()))->createPrepare($tblDivision, $Date, $Name, $IsGradeInformation);
+    }
+
+    /**
+     * @param TblPrepareCertificate $tblPrepare
+     * @param $Date
+     * @param $Name
+     * @param TblTask|null $tblAppointedDateTask
+     * @param TblTask|null $tblBehaviorTask
+     * @param TblPerson|null $tblPersonSigner
+     *
+     * @return bool
+     */
+    public function updatePrepareData(
+        TblPrepareCertificate $tblPrepare,
+        $Date,
+        $Name,
+        TblTask $tblAppointedDateTask = null,
+        TblTask $tblBehaviorTask = null,
+        TblPerson $tblPersonSigner = null
+    ) {
+
+        return (new Data($this->getBinding()))->updatePrepare($tblPrepare, $Date, $Name, $tblAppointedDateTask,
+            $tblBehaviorTask, $tblPersonSigner);
+    }
+
+    /**
+     * @param TblPrepareCertificate $tblPrepare
+     * @param TblTestType $tblTestType
+     */
+    public function destroyPrepareGrades(
+        TblPrepareCertificate $tblPrepare,
+        TblTestType $tblTestType
+    ) {
+
+        return (new Data($this->getBinding()))->destroyPrepareGrades($tblPrepare, $tblTestType);
+    }
+
+    /**
+     * @param TblPrepareCertificate $tblPrepare
+     * @param TblPerson $tblPerson
+     * @param TblDivision $tblDivision
+     * @param TblTestType $tblTestType
+     * @param TblGradeType $tblGradeType
+     * @param $Grade
+     *
+     * @return TblPrepareGrade
+     */
+    public function updatePrepareGradeForBehavior(
+        TblPrepareCertificate $tblPrepare,
+        TblPerson $tblPerson,
+        TblDivision $tblDivision,
+        TblTestType $tblTestType,
+        TblGradeType $tblGradeType,
+        $Grade
+    ) {
+
+        return (new Data($this->getBinding()))->updatePrepareGradeForBehavior($tblPrepare, $tblPerson, $tblDivision,
+            $tblTestType, $tblGradeType, $Grade);
+    }
+
+    /**
+     * @param TblPrepareCertificate $tblPrepare
+     * @param TblPerson $tblPerson
+     * @param TblCertificate $tblCertificate
+     */
+    public function updatePrepareStudentSetTemplate(
+        TblPrepareCertificate $tblPrepare,
+        TblPerson $tblPerson,
+        TblCertificate $tblCertificate
+    ) {
+
+        if (($tblPrepareStudent = $this->getPrepareStudentBy($tblPrepare, $tblPerson))) {
+            (new Data($this->getBinding()))->updatePrepareStudent(
+                $tblPrepareStudent,
+                $tblCertificate,
+                $tblPrepareStudent->isApproved(),
+                $tblPrepareStudent->isPrinted(),
+                $tblPrepareStudent->getExcusedDays(),
+                $tblPrepareStudent->getUnexcusedDays()
+            );
+        } else {
+            (new Data($this->getBinding()))->createPrepareStudent(
+                $tblPrepare,
+                $tblPerson,
+                $tblCertificate
+            );
+        }
+    }
+
+    /**
+     * @param TblPrepareCertificate $tblPrepare
+     * @param TblPerson $tblPerson
+     * @param $Content
+     * @param Certificate $Certificate
+     */
+    public function updatePrepareInformationDataList(
+        TblPrepareCertificate $tblPrepare,
+        TblPerson $tblPerson,
+        $Content,
+        Certificate $Certificate = null
+    ) {
+
+        if (isset($Content['Input']) && is_array($Content['Input'])) {
+            foreach ($Content['Input'] as $field => $value) {
+                if ($field == 'SchoolType'
+                    && method_exists($Certificate, 'selectValuesSchoolType')
+                ) {
+                    $value = $Certificate->selectValuesSchoolType()[$value];
+                } elseif ($field == 'Type'
+                    && method_exists($Certificate, 'selectValuesType')
+                ) {
+                    $value = $Certificate->selectValuesType()[$value];
+                }
+
+                if (($tblPrepareInformation = $this->getPrepareInformationBy($tblPrepare, $tblPerson, $field))) {
+                    (new Data($this->getBinding()))->updatePrepareInformation($tblPrepareInformation, $field, $value);
+                } else {
+                    (new Data($this->getBinding()))->createPrepareInformation($tblPrepare, $tblPerson, $field, $value);
+                }
+            }
+        }
     }
 }

@@ -110,10 +110,11 @@ class Creator
     /**
      * @param null $PrepareId
      * @param null $PersonId
+     * @param string $Name
      *
      * @return Stage|string
      */
-    public function previewPdf($PrepareId = null, $PersonId = null)
+    public function previewPdf($PrepareId = null, $PersonId = null, $Name = 'Zeugnis Muster')
     {
 
         if (($tblPrepare = Prepare::useService()->getPrepareById($PrepareId))
@@ -133,7 +134,7 @@ class Creator
 
                         $File = $this->buildDummyFile($Certificate, $Content);
 
-                        $FileName = "Zeugnis Muster " . $tblPerson->getLastFirstName() . ' ' . date("Y-m-d H:i:s") . ".pdf";
+                        $FileName = $Name . " " . $tblPerson->getLastFirstName() . ' ' . date("Y-m-d H:i:s") . ".pdf";
 
                         return $this->buildDownloadFile($File, $FileName);
                     }
@@ -142,7 +143,7 @@ class Creator
 
         }
 
-        return new Stage('Zeugnis', 'Nicht gefunden');
+        return new Stage($Name, 'Nicht gefunden');
     }
 
     /**

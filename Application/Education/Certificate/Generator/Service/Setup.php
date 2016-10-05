@@ -58,6 +58,9 @@ class Setup extends AbstractSetup
         if (!$this->getConnection()->hasColumn('tblCertificate', 'serviceTblConsumer')) {
             $Table->addColumn('serviceTblConsumer', 'bigint', array('notnull' => false));
         }
+        if (!$Table->hasColumn('IsGradeInformation')){
+            $Table->addColumn('IsGradeInformation', 'boolean');
+        }
 
         return $Table;
     }

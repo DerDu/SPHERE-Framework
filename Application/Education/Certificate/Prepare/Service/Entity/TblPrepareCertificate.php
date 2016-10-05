@@ -30,6 +30,7 @@ class TblPrepareCertificate extends Element
 {
 
     const ATTR_SERVICE_TBL_DIVISION = 'serviceTblDivision';
+    const ATTR_IS_GRADE_INFORMATION = 'IsGradeInformation';
 
     /**
      * @Column(type="string")
@@ -60,6 +61,11 @@ class TblPrepareCertificate extends Element
      * @Column(type="bigint")
      */
     protected $serviceTblPersonSigner;
+
+    /**
+     * @Column(type="boolean")
+     */
+    protected $IsGradeInformation;
 
     /**
      * @return string
@@ -199,5 +205,27 @@ class TblPrepareCertificate extends Element
     {
 
         return Prepare::useService()->isAppointedDateTaskUpdated($this);
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isGradeInformation()
+    {
+        return $this->IsGradeInformation;
+    }
+
+    /**
+     * @param boolean $IsGradeInformation
+     */
+    public function setIsGradeInformation($IsGradeInformation)
+    {
+        $this->IsGradeInformation = $IsGradeInformation;
+    }
+
+    public function getDisplayTypeName()
+    {
+
+        return $this->isGradeInformation() ? 'Noteninformation' : 'Zeugnis';
     }
 }

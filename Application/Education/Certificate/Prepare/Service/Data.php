@@ -50,16 +50,18 @@ class Data extends AbstractData
 
     /**
      * @param TblDivision $tblDivision
+     * @param bool $IsGradeInformation
      *
-     * @return false|TblPrepareCertificate[]
+     * @return false|Entity\TblPrepareCertificate[]
      */
-    public function getPrepareAllByDivision(TblDivision $tblDivision)
+    public function getPrepareAllByDivision(TblDivision $tblDivision, $IsGradeInformation = false)
     {
 
         return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(),
             'TblPrepareCertificate',
             array(
-                TblPrepareCertificate::ATTR_SERVICE_TBL_DIVISION => $tblDivision->getId()
+                TblPrepareCertificate::ATTR_SERVICE_TBL_DIVISION => $tblDivision->getId(),
+                TblPrepareCertificate::ATTR_IS_GRADE_INFORMATION => $IsGradeInformation
             )
         );
     }
@@ -266,13 +268,15 @@ class Data extends AbstractData
      * @param TblDivision $tblDivision
      * @param $Date
      * @param $Name
+     * @param bool $IsGradeInformation
      *
      * @return TblPrepareCertificate
      */
     public function createPrepare(
         TblDivision $tblDivision,
         $Date,
-        $Name
+        $Name,
+        $IsGradeInformation = false
     ) {
 
         $Manager = $this->getConnection()->getEntityManager();
@@ -281,6 +285,7 @@ class Data extends AbstractData
         $Entity->setServiceTblDivision($tblDivision);
         $Entity->setDate($Date ? new \DateTime($Date) : null);
         $Entity->setName($Name);
+        $Entity->setIsGradeInformation($IsGradeInformation);
 
         $Manager->saveEntity($Entity);
         Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(), $Entity);

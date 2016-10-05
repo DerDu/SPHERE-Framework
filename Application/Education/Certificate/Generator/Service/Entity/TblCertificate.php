@@ -23,6 +23,8 @@ class TblCertificate extends Element
     const ATTR_NAME = 'Name';
     const ATTR_CERTIFICATE = 'Certificate';
     const SERVICE_TBL_CONSUMER = 'serviceTblConsumer';
+    const ATTR_IS_GRADE_INFORMATION = 'IsGradeInformation';
+
     /**
      * @Column(type="string")
      */
@@ -40,6 +42,11 @@ class TblCertificate extends Element
      * @Column(type="string")
      */
     protected $Certificate;
+
+    /**
+     * @Column(type="boolean")
+     */
+    protected $IsGradeInformation;
 
     /**
      * @return bool|TblConsumer
@@ -133,5 +140,30 @@ class TblCertificate extends Element
     {
 
         $this->Description = $Description;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isGradeInformation()
+    {
+        return $this->IsGradeInformation;
+    }
+
+    /**
+     * @param boolean $IsGradeInformation
+     */
+    public function setIsGradeInformation($IsGradeInformation)
+    {
+        $this->IsGradeInformation = $IsGradeInformation;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDisplayCategory()
+    {
+
+        return $this->isGradeInformation() ? 'Noteninformation' : 'Zeugnis';
     }
 }
