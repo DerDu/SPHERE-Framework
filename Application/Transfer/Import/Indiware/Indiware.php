@@ -25,6 +25,9 @@ class Indiware implements IModuleInterface
             __NAMESPACE__.'/Lectureship', __NAMESPACE__.'\Frontend::frontendLectureship'
         ));
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__.'/Lectureship/Year', __NAMESPACE__.'\Frontend::frontendSelectYear'
+        ));
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
             __NAMESPACE__.'/Lectureship/Prepare', __NAMESPACE__.'\Frontend::frontendLectureshipPrepare'
         ));
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(

@@ -22,6 +22,7 @@ use SPHERE\Common\Frontend\Form\Structure\FormGroup;
 use SPHERE\Common\Frontend\Form\Structure\FormRow;
 use SPHERE\Common\Frontend\Icon\Repository\ChevronRight;
 use SPHERE\Common\Frontend\Icon\Repository\PlusSign;
+use SPHERE\Common\Frontend\Icon\Repository\Select;
 use SPHERE\Common\Frontend\Icon\Repository\Transfer;
 use SPHERE\Common\Frontend\Icon\Repository\Upload;
 use SPHERE\Common\Frontend\IFrontendInterface;
@@ -78,9 +79,9 @@ class Frontend extends Extension implements IFrontendInterface
                                             'File'   => $tblFile->getName().' '.new Muted($tblFile->getDescription()),
                                             'Option' => new Standard(
                                                 'Importieren',
-                                                '/Transfer/Import/Indiware/Lectureship/Prepare',
+                                                '/Transfer/Import/Indiware/Lectureship/Year',
                                                 new ChevronRight(), array(
-                                                    'Id' => $tblFile->getId()
+                                                    'FileId' => $tblFile->getId()
                                                 )
                                             )
                                         );
@@ -111,19 +112,20 @@ class Frontend extends Extension implements IFrontendInterface
     }
 
     /**
-     * @param null|int $Id
+     * @param null|int $FileId
+     * @param null|int $YearId
      *
      * @return Stage
      */
-    public function frontendLectureshipPrepare($Id = null)
+    public function frontendLectureshipPrepare($FileId = null, $YearId = null)
     {
 
         $Stage = new Stage('Indiware-Import', 'Lehraufträge');
 
-        $tblFile = Storage::useService()->getFileById($Id);
+        $tblFile = Storage::useService()->getFileById($FileId);
         $FilePointer = $tblFile->getFilePointer();
 
-        $tblYear = Term::useService()->getYearById(3);
+        $tblYear = Term::useService()->getYearById($YearId);
         $Stage->setMessage(
             'Schuljahr: '.$tblYear->getDisplayName()
             .'<br/>'
@@ -324,5 +326,56 @@ class Frontend extends Extension implements IFrontendInterface
             }
         }
         return $SuccessList;
+    }
+
+    /**
+     * @param null $FileId
+     *
+     * @return Stage
+     */
+    public function frontendSelectYear($FileId = null)
+    {
+
+        $Stage = new Stage('Indiware-Import', 'Schuljahr auswählen');
+
+        $yearList = array();
+        if (($tblYearAll = Term::useService()->getYearAll())){
+            foreach ($tblYearAll as $tblYear){
+                $yearList[] = array(
+                    'Name' => $tblYear->getDisplayName(),
+                    'Option' => new Standard(
+                        '',
+                        '/Transfer/Import/Indiware/Lectureship/Prepare',
+                        new Select(),
+                        array(
+                            'FileId' => $FileId,
+                            'YearId' => $tblYear->getId()
+                        ),
+                        'Auswählen'
+                    )
+                );
+            }
+        }
+
+        $Stage->setContent(
+            new Layout(array(
+                new LayoutGroup(array(
+                    new LayoutRow(array(
+                        new LayoutColumn(array(
+                            new TableData($yearList, null, array(
+                                'Name' => 'Schuljahr',
+                                'Option' => 'Auswählen'
+                            ), array(
+                                'order' => array(
+                                    array('0', 'desc')
+                                )
+                            ))
+                        ))
+                    ))
+                ))
+            ))
+        );
+
+        return $Stage;
     }
 }

@@ -7,6 +7,9 @@ use SPHERE\Application\Document\Storage\Service\Entity\TblPartition;
 use SPHERE\Application\Document\Storage\Storage;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Account;
 use SPHERE\Common\Frontend\Form\IFormInterface;
+use SPHERE\Common\Frontend\Icon\Repository\Success as SuccessIcon;
+use SPHERE\Common\Frontend\Message\Repository\Success;
+use SPHERE\Common\Window\Redirect;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
@@ -21,7 +24,7 @@ class Service
      * @param IFormInterface|null $Form
      * @param UploadedFile|null   $File
      *
-     * @return IFormInterface
+     * @return IFormInterface|string
      * @throws \MOC\V\Component\Document\Exception\DocumentTypeException
      */
     public function uploadLectureshipFile(
@@ -75,7 +78,8 @@ class Service
                     if (Storage::useService()->createFile($tblBinary, $tblDirectory, $tblFileType,
                         $File->getClientOriginalName(), date('d.m.Y H:i:s'))
                     ) {
-                        // TODO: Success
+                        return new Success('Die Datei wurde erfolgreich hochgeladen.', new SuccessIcon())
+                        . new Redirect('/Transfer/Import/Indiware/Lectureship', Redirect::TIMEOUT_SUCCESS);
                     } else {
                         $Form->setError('File', 'Fehler beim Speichern der Datei');
                     }
