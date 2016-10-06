@@ -1,7 +1,7 @@
 <?php
 namespace SPHERE\Application\Transfer\Import\Indiware;
 
-use SPHERE\Application\Document\Storage\DummyFile;
+use SPHERE\Application\Document\Storage\FilePointer;
 use SPHERE\Application\Document\Storage\Service\Entity\TblFileCategory;
 use SPHERE\Application\Document\Storage\Service\Entity\TblPartition;
 use SPHERE\Application\Document\Storage\Storage;
@@ -46,7 +46,7 @@ class Service
             /**
              * Prepare
              */
-            $Dummy = new DummyFile($File->getClientOriginalExtension(), $File->getClientOriginalName());
+            $Dummy = new FilePointer($File->getClientOriginalExtension(), $File->getClientOriginalName());
             $Dummy->saveFile();
             $Upload = $File->move(dirname($Dummy->getRealPath()), basename($Dummy->getFileLocation()));
             $Dummy->loadFile();

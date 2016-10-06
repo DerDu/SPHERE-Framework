@@ -93,7 +93,7 @@ class Service extends AbstractService
     /**
      * @param $Acronym
      *
-     * @return false|\SPHERE\System\Database\Fitting\Element
+     * @return false|TblTeacher
      */
     public function getTeacherByAcronym($Acronym)
     {

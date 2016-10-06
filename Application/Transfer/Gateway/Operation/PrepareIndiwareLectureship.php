@@ -13,11 +13,15 @@ use SPHERE\Application\Transfer\Gateway\Converter\Error;
 use SPHERE\Application\Transfer\Gateway\Converter\FieldPointer;
 use SPHERE\System\Database\Fitting\Element;
 
+/**
+ * Class PrepareIndiwareLectureship
+ * @package SPHERE\Application\Transfer\Gateway\Operation
+ */
 class PrepareIndiwareLectureship extends AbstractConverter
 {
 
-    /** @var int $RowCount */
-    private static $RowCount = 0;
+//    /** @var int $RowCount */
+//    private static $RowCount = 0;
     /** @var null|TblYear $tblYear */
     private $tblYear = null;
 
@@ -50,34 +54,29 @@ class PrepareIndiwareLectureship extends AbstractConverter
         $this->addSanitizer(array($this, 'sanitizeTblDivision'), 'TblDivision');
         $this->addSanitizer(array($this, 'sanitizeTblSubjectGroup'), 'TblSubjectGroup');
 
-        $this->setPointer(new FieldPointer('D', 'TblSubject'));
+        $ColumnList = $this->findColumnByContent( '!^Fach([0-9]*)?$!s' );
+        //$this->getDebugger()->screenDump($ColumnList);
+        foreach( $ColumnList as $ColumnName ) {
+            $this->setPointer(new FieldPointer( $ColumnName, 'TblSubject'));
+        }
 
-        $this->setPointer(new FieldPointer('E', 'TblPerson'));
-        $this->setPointer(new FieldPointer('F', 'TblPerson'));
-        $this->setPointer(new FieldPointer('G', 'TblPerson'));
+        $ColumnList = $this->findColumnByContent( '!^Lehrer([0-9]*)?$!s' );
+        //$this->getDebugger()->screenDump($ColumnList);
+        foreach( $ColumnList as $ColumnName ) {
+            $this->setPointer(new FieldPointer( $ColumnName, 'TblPerson'));
+        }
 
-        $this->setPointer(new FieldPointer('L', 'TblDivision'));
-        $this->setPointer(new FieldPointer('M', 'TblDivision'));
-        $this->setPointer(new FieldPointer('N', 'TblDivision'));
-        $this->setPointer(new FieldPointer('O', 'TblDivision'));
-        $this->setPointer(new FieldPointer('P', 'TblDivision'));
-        $this->setPointer(new FieldPointer('Q', 'TblDivision'));
-        $this->setPointer(new FieldPointer('R', 'TblDivision'));
-        $this->setPointer(new FieldPointer('S', 'TblDivision'));
-        $this->setPointer(new FieldPointer('T', 'TblDivision'));
-        $this->setPointer(new FieldPointer('U', 'TblDivision'));
-        $this->setPointer(new FieldPointer('V', 'TblDivision'));
-        $this->setPointer(new FieldPointer('W', 'TblDivision'));
-        $this->setPointer(new FieldPointer('X', 'TblDivision'));
-        $this->setPointer(new FieldPointer('Y', 'TblDivision'));
-        $this->setPointer(new FieldPointer('Z', 'TblDivision'));
-        $this->setPointer(new FieldPointer('AA', 'TblDivision'));
-        $this->setPointer(new FieldPointer('AB', 'TblDivision'));
-        $this->setPointer(new FieldPointer('AC', 'TblDivision'));
-        $this->setPointer(new FieldPointer('AD', 'TblDivision'));
-        $this->setPointer(new FieldPointer('AE', 'TblDivision'));
+        $ColumnList = $this->findColumnByContent( '!^Klasse([0-9]*)?$!s' );
+        //$this->getDebugger()->screenDump($ColumnList);
+        foreach( $ColumnList as $ColumnName ) {
+            $this->setPointer(new FieldPointer( $ColumnName, 'TblDivision'));
+        }
 
-        $this->setPointer(new FieldPointer('AF', 'TblSubjectGroup'));
+        $ColumnList = $this->findColumnByContent( '!^Gruppe([0-9]*)?$!s' );
+        //$this->getDebugger()->screenDump($ColumnList);
+        foreach( $ColumnList as $ColumnName ) {
+            $this->setPointer(new FieldPointer( $ColumnName, 'TblSubjectGroup'));
+        }
     }
 
     /**
@@ -131,8 +130,9 @@ class PrepareIndiwareLectureship extends AbstractConverter
             }
         }
 
-//        Debugger::screenDump($ErrorList);
-//        Debugger::screenDump($DebugList);
+//        $this->getDebugger()->screenDump($ErrorList);
+//        $this->getDebugger()->screenDump($DebugList);
+//        $this->getDebugger()->screenDump($SuccessList);
 
         if (!empty( $ErrorList )) {
             return array('ERROR' => $ErrorList, 'DEBUG' => $DebugList, 'SUCCESS' => $SuccessList);

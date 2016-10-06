@@ -184,4 +184,30 @@ abstract class AbstractConverter extends Sanitizer
         }
         return $this;
     }
+
+    /**
+     * Find Header-Column Name
+     *
+     * @param string $Pattern RegEx
+     * @param int $Offset 0
+     * @param int $Length 1
+     * @return array List on Column-Name (on Success, empty Array on Error)
+     */
+    protected function findColumnByContent($Pattern, $Offset = 0, $Length = 1)
+    {
+
+        $ColumnList = array();
+        for ($RunHeight = ( 1 + $Offset ); $RunHeight <= ( $Length ? ( $Offset + $Length ) : $this->SizeHeight ); $RunHeight++) {
+            for ($RunWidth = 0; $RunWidth < $this->SizeWidth; $RunWidth++) {
+                $Column = \PHPExcel_Cell::stringFromColumnIndex($RunWidth);
+                $Content = $this->Document->getValue($this->Document->getCell($Column . $RunHeight));
+                if( preg_match( $Pattern, $Content ) ) {
+                    if( !in_array( $Column, $ColumnList ) ) {
+                        array_push( $ColumnList, $Column );
+                    }
+                }
+            }
+        }
+        return $ColumnList;
+    }
 }

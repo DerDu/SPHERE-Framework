@@ -137,7 +137,7 @@ class Frontend extends Extension implements IFrontendInterface
         // TODO: Improve Result
         $Protocol = $Converter->scanFile(1);
 
-//        Debugger::screenDump($Protocol);
+        $this->getDebugger()->screenDump($Protocol);
 
         $ProtocolStack = array();
         $ProtocolLayoutError = array();
