@@ -155,7 +155,7 @@ class Frontend extends Extension implements IFrontendInterface
                     if (
                         !in_array($Message, $UniqueProtocol)
                         && !in_array($Message, $ProtocolStack)
-                        && false !== strpos($Message->getDescription(), 'ist in KREDA nicht vorhanden')
+//                        && false !== strpos($Message->getDescription(), 'ist in KREDA nicht vorhanden')
                     ) {
                         $ProtocolStack[] = $Message;
                         $UniqueProtocol[] = $Message;
@@ -178,12 +178,15 @@ class Frontend extends Extension implements IFrontendInterface
             foreach ($Protocol as $LineIndex => $TypeList) {
                 if (isset($TypeList['VALID'])) {
 
-                    /** @var TblDivision[]|TblSubject[]|TblPerson[]|TblSubjectGroup[] $Lectureship */
+                    /** @var TblDivision[]|TblSubject[]|TblPerson[]|TblSubjectGroup[]|array $Lectureship */
                     foreach ($TypeList['VALID'] as $Lectureship) {
-                        if ((count($Lectureship) == 3 || count($Lectureship) == 4)
-                            && ($tblDivisionSubjectList = Division::useService()->getDivisionSubjectByDivision(
-                                $Lectureship['TblDivision']))
-                        ) {
+                        if( !is_array( $Lectureship ) ) {
+                            continue;
+                        }
+
+                        if (($tblDivisionSubjectList = Division::useService()->getDivisionSubjectByDivision(
+                                $Lectureship['TblDivision'])
+                        )) {
                             foreach ($tblDivisionSubjectList as $tblDivisionSubjectItem) {
                                 if (($tblDivision = $tblDivisionSubjectItem->getTblDivision())
                                     && ($tblSubject = $tblDivisionSubjectItem->getServiceTblSubject())
@@ -355,10 +358,13 @@ class Frontend extends Extension implements IFrontendInterface
     private function createLectureship($LectureshipList, &$ExistingLectureshipList)
     {
         $SuccessList = array();
-        /** @var TblDivision[]|TblSubject[]|TblPerson[]|TblSubjectGroup[] $Lectureship */
+        /** @var TblDivision[]|TblSubject[]|TblPerson[]|TblSubjectGroup[]|array $Lectureship */
         foreach ($LectureshipList as $Lectureship) {
-            if ((count($Lectureship) == 3 || count($Lectureship) == 4)
-                && isset($ExistingLectureshipList
+            if( !is_array( $Lectureship ) ) {
+                continue;
+            }
+
+            if (isset($ExistingLectureshipList
                     [$Lectureship['TblDivision']->getId()]
                     [$Lectureship['TblSubject']->getId()]
                     [isset($Lectureship['TblSubjectGroup']) ? $Lectureship['TblSubjectGroup']->getId() : 0]
@@ -443,6 +449,8 @@ class Frontend extends Extension implements IFrontendInterface
                     );
                     $SuccessList[] = new Info(new Transfer() . ' Verknüpfungen bereits vorhanden');
                 }
+            } else {
+                // TODO ERROR
             }
         }
 

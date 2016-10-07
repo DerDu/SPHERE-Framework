@@ -6,11 +6,20 @@ use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
 use SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject;
 use SPHERE\Application\Education\Lesson\Subject\Subject;
 use SPHERE\Application\Education\Lesson\Term\Service\Entity\TblYear;
+use SPHERE\Application\People\Group\Group;
 use SPHERE\Application\People\Meta\Teacher\Teacher;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Transfer\Gateway\Converter\AbstractConverter;
 use SPHERE\Application\Transfer\Gateway\Converter\Error;
 use SPHERE\Application\Transfer\Gateway\Converter\FieldPointer;
+use SPHERE\Common\Frontend\Icon\Repository\Blackboard;
+use SPHERE\Common\Frontend\Icon\Repository\Education;
+use SPHERE\Common\Frontend\Icon\Repository\Person;
+use SPHERE\Common\Frontend\Layout\Repository\Container;
+use SPHERE\Common\Frontend\Layout\Repository\Listing;
+use SPHERE\Common\Frontend\Layout\Repository\Paragraph;
+use SPHERE\Common\Frontend\Link\Repository\Link;
+use SPHERE\Common\Frontend\Link\Repository\Standard;
 use SPHERE\System\Database\Fitting\Element;
 
 /**
@@ -287,7 +296,10 @@ class PrepareIndiwareLectureship extends AbstractConverter
             return $tblSubject;
         }
 
-        return new Error($Value, Error::ERROR_LEVEL_DANGER_0, 'Das Fach ist in KREDA nicht vorhanden');
+        return new Error($Value, Error::ERROR_LEVEL_DANGER_0, 'Das Fach ist in KREDA nicht vorhanden'.new Container(
+                new Link('Muss manuell angelegt werden', '/Education/Lesson/Subject/Create/Subject', new Education())
+            )
+        );
     }
 
     /**
@@ -308,7 +320,10 @@ class PrepareIndiwareLectureship extends AbstractConverter
             }
         }
 
-        return new Error($Value, Error::ERROR_LEVEL_DANGER_0, 'Der Lehrer ist in KREDA nicht vorhanden');
+        return new Error($Value, Error::ERROR_LEVEL_DANGER_0, 'Der Lehrer ist in KREDA nicht vorhanden'.new Container(
+                new Link('Muss manuell angelegt werden', '/People/Person', new Person())
+            )
+        );
     }
 
     /**
@@ -369,7 +384,8 @@ class PrepareIndiwareLectureship extends AbstractConverter
                             }
                         } else {
                             $MultipleResultList[] = new Error($Division->getDisplayName().' - '.$Subject->getAcronym(),
-                                Error::ERROR_LEVEL_DANGER_3, 'Die Fach-Klasse ist in KREDA nicht vorhanden');
+                                Error::ERROR_LEVEL_DANGER_3, 'Die Fach-Klasse ist in KREDA nicht vorhanden'
+                            );
                         }
                     }
 
@@ -547,6 +563,9 @@ class PrepareIndiwareLectureship extends AbstractConverter
             }
         }
 
-        return new Error($Value, Error::ERROR_LEVEL_DANGER_0, 'Die Klasse ist in KREDA nicht vorhanden');
+        return new Error($Value, Error::ERROR_LEVEL_DANGER_0, 'Die Klasse ist in KREDA nicht vorhanden'.new Container(
+                new Link('Muss manuell angelegt werden', '/Education/Lesson/Division', new Blackboard())
+            )
+        );
     }
 }
