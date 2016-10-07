@@ -1877,4 +1877,17 @@ class Service extends AbstractService
 
         return (new Data($this->getBinding()))->getDivisionStudentByDivisionAndPerson($tblDivision, $tblPerson);
     }
+
+    /**
+     * @param TblDivisionSubject $tblDivisionSubject
+     * @param TblPerson $tblPerson
+     * @return false|TblSubjectTeacher
+     */
+    public function getSubjectTeacherBy(
+        TblDivisionSubject $tblDivisionSubject,
+        TblPerson $tblPerson
+    ) {
+
+        return (new Data($this->getBinding()))->getSubjectTeacherBy($tblDivisionSubject, $tblPerson);
+    }
 }

@@ -137,7 +137,7 @@ class PrepareIndiwareLectureship extends AbstractConverter
         if (!empty( $ErrorList )) {
             return array('ERROR' => $ErrorList, 'DEBUG' => $DebugList, 'SUCCESS' => $SuccessList);
         } else {
-            return array('VALID' => $Row['AF']['TblSubjectGroup']);
+            return array('VALID' => $SuccessList);
         }
 
         /*
