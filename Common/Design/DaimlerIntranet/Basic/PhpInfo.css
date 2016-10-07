@@ -1,0 +1,55 @@
+#phpinfo {
+    text-align: left;
+}
+
+#phpinfo a {
+    color: rgb(255, 0, 0);
+}
+
+#phpinfo a:link {
+    color: rgb(255, 0, 0);
+}
+
+#phpinfo a:hover {
+    color: rgb(255, 0, 0);
+}
+
+#phpinfo table {
+    width: 100%;
+}
+
+#phpinfo td, #phpinfo th {
+    border: 1px solid rgb(192, 192, 192);
+    padding: 5px;
+}
+
+#phpinfo th {
+    padding: 5px;
+}
+
+#phpinfo h1 {
+    font-size: 1.3em;
+}
+
+#phpinfo h2 {
+    font-size: 1.2em;
+    text-transform: capitalize;
+    border-bottom: 1px solid rgb(255, 0, 0);
+}
+
+#phpinfo .p {
+    margin: 0;
+}
+
+#phpinfo .e {
+    background: rgb(204, 204, 204);
+    width: 30%;
+}
+
+#phpinfo .h {
+    background: rgb(221, 221, 221);
+}
+
+#phpinfo img {
+    display: none;
+}

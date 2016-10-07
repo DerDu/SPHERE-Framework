@@ -1,0 +1,81 @@
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+}
+
+nav, .navbar {
+    margin-bottom: 0;
+}
+
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    /* Set the fixed height of the footer here */
+    height: 60px;
+    background-color: #f5f5f5;
+}
+
+.loading-indicator {
+    position: absolute;
+    top: 10px;
+    right: 1px;
+}
+
+.loading-error {
+    position: absolute;
+    top: 10px;
+    right: 1px;
+    display: none;
+}
+
+.loading-indicator-animate {
+    background-image: url("/Common/Style/Resource/loading.gif");
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    margin-bottom: -3px;
+
+    -animation: spin 2s infinite linear;
+    -webkit-animation: spin2 2s infinite linear;
+}
+
+@-webkit-keyframes spin2 {
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: scale(1) rotate(0deg);
+    }
+    to {
+        transform: scale(1) rotate(360deg);
+    }
+}
+
+@media print {
+    a[href]:after {
+        content: "";
+    }
+}
+
+/** DataTable FormGroup Input-Size **/
+
+table.dataTable tbody tr td div.form-group {
+    width: 100%
+}
+
+table.dataTable tbody tr td div.form-group .form-control {
+    width: inherit;
+}
