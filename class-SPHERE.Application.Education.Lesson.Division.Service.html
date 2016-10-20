@@ -1,0 +1,4496 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content="ApiGen 2.8.0" />
+
+    <title>Class SPHERE\Application\Education\Lesson\Division\Service | 1.8.5</title>
+
+    <script type="text/javascript" src="resources/combined.js?1169926265"></script>
+    <script type="text/javascript" src="elementlist.js?361755202"></script>
+    <link rel="stylesheet" type="text/css" media="all" href="resources/style.css?3639401462" />
+
+
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300,300italic|Open+Sans:300' rel='stylesheet'
+	      type='text/css' />
+</head>
+<body>
+
+<div id="TopBar">
+	<ul>
+		<li><a href="http://derdu.github.io/SPHERE-Framework" title="DerDu"
+		       onclick="window.open(this.href); return false;">Documentation</a></li>
+		<li><a href="https://github.com/DerDu/SPHERE-Framework" title="DerDu"
+		       onclick="window.open(this.href); return false;">GitHub</a></li>
+		<li><a href="https://github.com/DerDu" title="DerDu" onclick="window.open(this.href); return false;">DerDu</a>
+		</li>
+	</ul>
+</div>
+
+<div id="Header">
+	<h1>SPHERE-Framework</h1>
+
+	<p>1.8.5</p>
+</div>
+
+<div id="Navigation">
+	<ul>
+		<li>
+			<a>Documentation</a>
+		</li>
+	</ul>
+</div>
+
+<div class="Channel">
+	<h1>Api Documentation</h1>
+
+	<div id="ChannelRelease">
+
+<div id="left">
+	<div id="menu">
+		<a href="index.html" title="Overview"><span>Overview</span></a>
+
+
+		<div id="groups">
+			<h3>Namespaces</h3>
+			<ul>
+				<li><a href="namespace-None.html">None</a>
+						</li>
+				<li><a href="namespace-PHP.html">PHP</a>
+						</li>
+				<li class="active"><a href="namespace-SPHERE.html">SPHERE<span></span></a>
+						<ul>
+				<li class="active"><a href="namespace-SPHERE.Application.html">Application<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Api.html">Api<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Api.Billing.html">Billing<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Api.Billing.Invoice.html">Invoice<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Api.Billing.Invoice.Datev.html">Datev</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Api.Billing.Invoice.Sfirm.html">Sfirm</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Api.Document.html">Document<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Api.Document.Custom.html">Custom<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Api.Document.Custom.Lebenswelt.html">Lebenswelt<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Api.Document.Custom.Lebenswelt.Repository.html">Repository</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Api.Document.Standard.html">Standard<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Api.Document.Standard.Repository.html">Repository</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Api.Education.html">Education<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Api.Education.Certificate.html">Certificate<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Api.Education.Certificate.Generator.html">Generator<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Api.Education.Certificate.Generator.Repository.html">Repository<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Api.Education.Certificate.Generator.Repository.ESZC.html">ESZC</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Api.Education.Certificate.Generator.Repository.EVSC.html">EVSC</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Api.Education.Certificate.Generator.Repository.FESH.html">FESH</a>
+						</li>
+							</ul></li></ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Api.Education.ClassRegister.html">ClassRegister</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Api.Platform.html">Platform<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Api.Platform.Database.html">Database</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Api.Platform.Gatekeeper.html">Gatekeeper</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Api.Reporting.html">Reporting<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Api.Reporting.CheckList.html">CheckList</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Api.Reporting.Custom.html">Custom<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Api.Reporting.Custom.Chemnitz.html">Chemnitz</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Api.Reporting.Custom.Coswig.html">Coswig</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Api.Reporting.Custom.Herrnhut.html">Herrnhut</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Api.Reporting.Custom.Hormersdorf.html">Hormersdorf</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Api.Reporting.Custom.Radebeul.html">Radebeul</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Api.Reporting.Custom.Schneeberg.html">Schneeberg</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Api.Reporting.SerialLetter.html">SerialLetter</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Api.Reporting.Standard.html">Standard<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Api.Reporting.Standard.Company.html">Company</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Api.Reporting.Standard.Person.html">Person</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Api.Test.html">Test</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Billing.html">Billing<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Billing.Accounting.html">Accounting<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Billing.Accounting.Account.html">Account<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Billing.Accounting.Account.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Billing.Accounting.Account.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Billing.Accounting.Banking.html">Banking<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Billing.Accounting.Banking.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Billing.Accounting.Banking.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Billing.Accounting.SchoolAccount.html">SchoolAccount<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Billing.Accounting.SchoolAccount.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Billing.Accounting.SchoolAccount.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Billing.Bookkeeping.html">Bookkeeping<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Billing.Bookkeeping.Balance.html">Balance<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Billing.Bookkeeping.Balance.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Billing.Bookkeeping.Balance.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Billing.Bookkeeping.Basket.html">Basket<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Billing.Bookkeeping.Basket.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Billing.Bookkeeping.Basket.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Billing.Bookkeeping.Invoice.html">Invoice<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Billing.Bookkeeping.Invoice.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Billing.Bookkeeping.Invoice.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Billing.Inventory.html">Inventory<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Billing.Inventory.Commodity.html">Commodity<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Billing.Inventory.Commodity.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Billing.Inventory.Commodity.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Billing.Inventory.Item.html">Item<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Billing.Inventory.Item.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Billing.Inventory.Item.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li></ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Contact.html">Contact<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Contact.Address.html">Address<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Contact.Address.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Contact.Address.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Contact.Mail.html">Mail<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Contact.Mail.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Contact.Mail.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Contact.Phone.html">Phone<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Contact.Phone.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Contact.Phone.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Corporation.html">Corporation<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Corporation.Company.html">Company<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Corporation.Company.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Corporation.Company.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Corporation.Group.html">Group<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Corporation.Group.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Corporation.Group.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Corporation.Search.html">Search<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Corporation.Search.Group.html">Group</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Document.html">Document<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Document.Custom.html">Custom<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Document.Custom.Lebenswelt.html">Lebenswelt</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Document.Explorer.html">Explorer<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Document.Explorer.Storage.html">Storage<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Document.Explorer.Storage.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Document.Explorer.Storage.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Document.Explorer.Storage.Writer.html">Writer<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Document.Explorer.Storage.Writer.Type.html">Type</a>
+						</li>
+							</ul></li></ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Document.Generator.html">Generator<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Document.Generator.Repository.html">Repository</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Document.Standard.html">Standard<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Document.Standard.EnrollmentDocument.html">EnrollmentDocument</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Document.Storage.html">Storage<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Document.Storage.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Document.Storage.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li></ul></li>
+				<li class="active"><a href="namespace-SPHERE.Application.Education.html">Education<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.Certificate.html">Certificate<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.Certificate.Approve.html">Approve</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Education.Certificate.Generator.html">Generator<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.Certificate.Generator.Repository.html">Repository<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.Certificate.Generator.Repository.Element.html">Element</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Education.Certificate.Generator.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.Certificate.Generator.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Education.Certificate.GradeInformation.html">GradeInformation</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Education.Certificate.Prepare.html">Prepare<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.Certificate.Prepare.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.Certificate.Prepare.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Education.Certificate.PrintCertificate.html">PrintCertificate</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Education.Certificate.Setting.html">Setting</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Education.ClassRegister.html">ClassRegister<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.ClassRegister.Absence.html">Absence<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.ClassRegister.Absence.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.ClassRegister.Absence.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Education.ClassRegister.ReportingClassList.html">ReportingClassList</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Education.ClassRegister.Sort.html">Sort</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Education.Graduation.html">Graduation<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.Graduation.Evaluation.html">Evaluation<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.Graduation.Evaluation.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.Graduation.Evaluation.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Education.Graduation.Gradebook.html">Gradebook<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.Graduation.Gradebook.MinimumGradeCount.html">MinimumGradeCount</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Education.Graduation.Gradebook.ScoreRule.html">ScoreRule</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Education.Graduation.Gradebook.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.Graduation.Gradebook.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li></ul></li>
+				<li class="active"><a href="namespace-SPHERE.Application.Education.Lesson.html">Lesson<span></span></a>
+						<ul>
+				<li class="active"><a href="namespace-SPHERE.Application.Education.Lesson.Division.html">Division<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.Lesson.Division.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.Lesson.Division.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Education.Lesson.Subject.html">Subject<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.Lesson.Subject.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.Lesson.Subject.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Education.Lesson.Term.html">Term<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.Lesson.Term.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.Lesson.Term.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Education.School.html">School<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.School.Building.html">Building</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Education.School.Course.html">Course<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.School.Course.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.School.Course.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Education.School.Type.html">Type<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.School.Type.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Education.School.Type.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li></ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Manual.html">Manual<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Manual.General.html">General</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Manual.Kreda.html">Kreda</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Manual.StyleBook.html">StyleBook</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Manual.Support.html">Support</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.People.html">People<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.People.Group.html">Group<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.People.Group.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.People.Group.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.People.Meta.html">Meta<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.People.Meta.Club.html">Club<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.People.Meta.Club.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.People.Meta.Club.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.People.Meta.Common.html">Common<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.People.Meta.Common.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.People.Meta.Common.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.People.Meta.Custody.html">Custody<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.People.Meta.Custody.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.People.Meta.Custody.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.People.Meta.Prospect.html">Prospect<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.People.Meta.Prospect.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.People.Meta.Prospect.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.People.Meta.Student.html">Student<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.People.Meta.Student.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.People.Meta.Student.Service.Data.html">Data</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.People.Meta.Student.Service.Entity.html">Entity</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.People.Meta.Student.Service.Service.html">Service</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.People.Meta.Teacher.html">Teacher<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.People.Meta.Teacher.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.People.Meta.Teacher.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.People.Person.html">Person<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.People.Person.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.People.Person.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.People.Relationship.html">Relationship<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.People.Relationship.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.People.Relationship.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.People.Search.html">Search<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.People.Search.Filter.html">Filter</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.People.Search.Group.html">Group</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Platform.html">Platform<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Platform.Assistance.html">Assistance<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Platform.Assistance.Error.html">Error</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Platform.Assistance.Support.html">Support</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.html">Gatekeeper<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authentication.html">Authentication</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.html">Authorization<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Access.html">Access<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Access.Frontend.html">Frontend</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Access.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Access.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Account.html">Account<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Account.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Account.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Consumer.html">Consumer<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Consumer.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Consumer.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Token.html">Token<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Token.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Token.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li></ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Platform.Roadmap.html">Roadmap<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Platform.Roadmap.Youtrack.html">Youtrack</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Platform.System.html">System<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Platform.System.Archive.html">Archive<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Platform.System.Archive.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Platform.System.Archive.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Platform.System.Cache.html">Cache<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Platform.System.Cache.Frontend.html">Frontend</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Platform.System.Database.html">Database</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Platform.System.Protocol.html">Protocol<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Platform.System.Protocol.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Platform.System.Protocol.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Platform.System.Session.html">Session</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Platform.System.Test.html">Test<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Platform.System.Test.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Platform.System.Test.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li></ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Reporting.html">Reporting<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Reporting.CheckList.html">CheckList<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Reporting.CheckList.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Reporting.CheckList.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Reporting.Custom.html">Custom<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Reporting.Custom.Chemnitz.html">Chemnitz<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Reporting.Custom.Chemnitz.Person.html">Person</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Reporting.Custom.Coswig.html">Coswig<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Reporting.Custom.Coswig.Person.html">Person</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Reporting.Custom.Herrnhut.html">Herrnhut<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Reporting.Custom.Herrnhut.Person.html">Person</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Reporting.Custom.Hormersdorf.html">Hormersdorf<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Reporting.Custom.Hormersdorf.Person.html">Person</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Reporting.Custom.Radebeul.html">Radebeul<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Reporting.Custom.Radebeul.Person.html">Person</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Reporting.Custom.Schneeberg.html">Schneeberg<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Reporting.Custom.Schneeberg.Person.html">Person</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Reporting.Dynamic.html">Dynamic<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Reporting.Dynamic.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Reporting.Dynamic.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Reporting.SerialLetter.html">SerialLetter<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Reporting.SerialLetter.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Reporting.SerialLetter.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Reporting.Standard.html">Standard<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Reporting.Standard.Company.html">Company</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Reporting.Standard.Person.html">Person</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Setting.html">Setting<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Setting.Authorization.html">Authorization<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Setting.Authorization.Account.html">Account</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Setting.Authorization.Token.html">Token</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Setting.Consumer.html">Consumer<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Setting.Consumer.Responsibility.html">Responsibility<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Setting.Consumer.Responsibility.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Setting.Consumer.Responsibility.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Setting.Consumer.School.html">School<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Setting.Consumer.School.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Setting.Consumer.School.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Setting.Consumer.SponsorAssociation.html">SponsorAssociation<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Setting.Consumer.SponsorAssociation.Service.html">Service<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Setting.Consumer.SponsorAssociation.Service.Entity.html">Entity</a>
+						</li>
+							</ul></li></ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Application.Setting.MyAccount.html">MyAccount</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Transfer.html">Transfer<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Transfer.Export.html">Export<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Transfer.Export.Datev.html">Datev</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Transfer.Export.Invoice.html">Invoice</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Transfer.Gateway.html">Gateway<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Transfer.Gateway.Converter.html">Converter</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Transfer.Gateway.Fragment.html">Fragment<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Transfer.Gateway.Fragment.People.html">People</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Transfer.Gateway.Item.html">Item<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Transfer.Gateway.Item.Contact.html">Contact</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Transfer.Gateway.Item.Person.html">Person</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Transfer.Gateway.Operation.html">Operation</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Transfer.Gateway.Structure.html">Structure</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Transfer.Import.html">Import<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Transfer.Import.Annaberg.html">Annaberg</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Transfer.Import.Chemnitz.html">Chemnitz<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Transfer.Import.Chemnitz.Service.html">Service</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Transfer.Import.Coswig.html">Coswig</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Transfer.Import.FuxMedia.html">FuxMedia<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Application.Transfer.Import.FuxMedia.Service.html">Service</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Application.Transfer.Import.Herrnhut.html">Herrnhut</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Transfer.Import.Hormersdorf.html">Hormersdorf</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Transfer.Import.LebensweltZwenkau.html">LebensweltZwenkau</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Transfer.Import.Muldental.html">Muldental</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Transfer.Import.Radebeul.html">Radebeul</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Transfer.Import.Schneeberg.html">Schneeberg</a>
+						</li>
+				<li><a href="namespace-SPHERE.Application.Transfer.Import.Seelitz.html">Seelitz</a>
+						</li>
+							</ul></li></ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Common.html">Common<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Common.Frontend.html">Frontend<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Common.Frontend.Form.html">Form<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Common.Frontend.Form.Repository.html">Repository<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Common.Frontend.Form.Repository.Button.html">Button</a>
+						</li>
+				<li><a href="namespace-SPHERE.Common.Frontend.Form.Repository.Field.html">Field</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Common.Frontend.Form.Structure.html">Structure</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Common.Frontend.Icon.html">Icon<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Common.Frontend.Icon.Repository.html">Repository</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Common.Frontend.Layout.html">Layout<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Common.Frontend.Layout.Repository.html">Repository<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Common.Frontend.Layout.Repository.Label.html">Label</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Common.Frontend.Layout.Structure.html">Structure</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Common.Frontend.Link.html">Link<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Common.Frontend.Link.Repository.html">Repository<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Common.Frontend.Link.Repository.Backward.html">Backward</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Common.Frontend.Link.Structure.html">Structure</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Common.Frontend.Message.html">Message<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Common.Frontend.Message.Repository.html">Repository</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Common.Frontend.Table.html">Table<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Common.Frontend.Table.Repository.html">Repository</a>
+						</li>
+				<li><a href="namespace-SPHERE.Common.Frontend.Table.Structure.html">Structure</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.Common.Frontend.Text.html">Text<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Common.Frontend.Text.Repository.html">Repository</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.Common.Window.html">Window<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Common.Window.Navigation.html">Navigation<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.Common.Window.Navigation.Link.html">Link</a>
+						</li>
+							</ul></li></ul></li></ul></li>
+				<li><a href="namespace-SPHERE.System.html">System<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.System.Authenticator.html">Authenticator<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.System.Authenticator.Type.html">Type</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.System.Cache.html">Cache<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.System.Cache.Handler.html">Handler</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.System.Config.html">Config<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.System.Config.Reader.html">Reader</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.System.Database.html">Database<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.System.Database.Binding.html">Binding</a>
+						</li>
+				<li><a href="namespace-SPHERE.System.Database.Filter.html">Filter<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.System.Database.Filter.Criteria.html">Criteria</a>
+						</li>
+				<li><a href="namespace-SPHERE.System.Database.Filter.Link.html">Link<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.System.Database.Filter.Link.Repository.html">Repository</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.System.Database.Filter.Logic.html">Logic</a>
+						</li>
+				<li><a href="namespace-SPHERE.System.Database.Filter.Preparation.html">Preparation</a>
+						</li>
+				<li><a href="namespace-SPHERE.System.Database.Filter.Repository.html">Repository</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.System.Database.Fitting.html">Fitting</a>
+						</li>
+				<li><a href="namespace-SPHERE.System.Database.Link.html">Link</a>
+						</li>
+				<li><a href="namespace-SPHERE.System.Database.Type.html">Type</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.System.Debugger.html">Debugger<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.System.Debugger.Logger.html">Logger</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.System.Extension.html">Extension<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.System.Extension.Repository.html">Repository<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.System.Extension.Repository.Sorter.html">Sorter</a>
+						</li>
+							</ul></li></ul></li>
+				<li><a href="namespace-SPHERE.System.Proxy.html">Proxy<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.System.Proxy.Type.html">Type</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.System.Support.html">Support<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.System.Support.Type.html">Type</a>
+						</li>
+							</ul></li>
+				<li><a href="namespace-SPHERE.System.Token.html">Token<span></span></a>
+						<ul>
+				<li><a href="namespace-SPHERE.System.Token.Type.html">Type</a>
+						</li>
+				<li><a href="namespace-SPHERE.System.Token.YubiKey.html">YubiKey</a>
+						</li>
+							</ul></li></ul></li></ul></li>
+			</ul>
+		</div>
+
+		<hr />
+
+
+		<div id="elements">
+			<h3>Classes</h3>
+			<ul>
+				<li><a href="class-SPHERE.Application.Education.Lesson.Division.Division.html">Division</a></li>
+				<li><a href="class-SPHERE.Application.Education.Lesson.Division.Frontend.html">Frontend</a></li>
+				<li class="active"><a href="class-SPHERE.Application.Education.Lesson.Division.Service.html">Service</a></li>
+			</ul>
+
+
+
+
+
+		</div>
+	</div>
+</div>
+
+<div id="splitter"></div>
+
+<div id="right">
+<div id="rightInner">
+	<form id="search">
+		<input type="hidden" name="cx" value="" />
+		<input type="hidden" name="ie" value="UTF-8" />
+		<input type="text" name="q" class="text" />
+		<input type="submit" value="Search" class="Button" />
+	</form>
+
+	<div id="navigation">
+		<ul>
+			<li>
+				<a href="index.html" title="Overview"><span>Overview</span></a>
+			</li>
+			<li>
+				<a href="namespace-SPHERE.Application.Education.Lesson.Division.html" title="Summary of SPHERE\Application\Education\Lesson\Division"><span>Namespace</span></a>
+			</li>
+			<li class="active">
+<span>Class</span>			</li>
+		</ul>
+		<ul>
+			<li>
+				<a href="tree.html" title="Tree view of classes, interfaces, traits and exceptions"><span>Tree</span></a>
+			</li>
+			<li>
+				<a href="deprecated.html" title="List of deprecated elements"><span>Deprecated</span></a>
+			</li>
+			<li>
+				<a href="todo.html" title="Todo list"><span>Todo</span></a>
+			</li>
+		</ul>
+		<ul>
+		</ul>
+	</div>
+
+<div id="content" class="class">
+	<h1>Class Service</h1>
+
+
+	<div class="description">
+	
+<p>Class Service</p>
+
+	</div>
+
+	<dl class="tree">
+		<dd style="padding-left:0px">
+			<a href="class-SPHERE.System.Extension.Extension.html"><span>SPHERE\System\Extension\Extension</span></a>
+			
+			
+			
+		</dd>
+		<dd style="padding-left:30px">
+			<img src="resources/inherit.png" alt="Extended by" />
+			<a href="class-SPHERE.System.Database.Binding.AbstractService.html"><span>SPHERE\System\Database\Binding\AbstractService</span></a>
+			
+			 implements 
+				<a href="class-SPHERE.Application.IServiceInterface.html"><span>SPHERE\Application\IServiceInterface</span></a>
+			
+			
+		</dd>
+		<dd style="padding-left:60px">
+			<img src="resources/inherit.png" alt="Extended by" />
+<b><span>SPHERE\Application\Education\Lesson\Division\Service</span></b>			
+			
+			
+		</dd>
+	</dl>
+
+
+
+
+
+
+
+
+	<div class="info">
+		
+		
+		<b>Namespace:</b> <a href="namespace-SPHERE.html">SPHERE</a>\<a href="namespace-SPHERE.Application.html">Application</a>\<a href="namespace-SPHERE.Application.Education.html">Education</a>\<a href="namespace-SPHERE.Application.Education.Lesson.html">Lesson</a>\<a href="namespace-SPHERE.Application.Education.Lesson.Division.html">Division</a><br />
+		<b>Package:</b> SPHERE\Application\Education\Lesson\Division<br />
+
+		<b>Located at</b> <a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#32-2005" title="Go to source code">Application/Education/Lesson/Division/Service.php</a><br />
+	</div>
+
+
+
+	<table class="summary" id="methods">
+	<caption>Methods summary</caption>
+	<tr data-order="setupService" id="_setupService">
+
+		<td class="attributes"><code>
+			 public 
+			string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_setupService">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#40-54" title="Go to source code">setupService</a>( <span>boolean <var>$doSimulation</var></span>, <span>boolean <var>$withData</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$doSimulation</var></dt>
+					<dd><code>boolean</code><br>$doSimulation</dd>
+					<dt><var>$withData</var></dt>
+					<dd><code>boolean</code><br>$withData</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>string</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getLevelAll" id="_getLevelAll">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblLevel.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblLevel</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getLevelAll">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#56-63" title="Go to source code">getLevelAll</a>( )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblLevel.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblLevel</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getDivisionAll" id="_getDivisionAll">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getDivisionAll">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#65-72" title="Go to source code">getDivisionAll</a>( )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="createLevelDivision" id="_createLevelDivision">
+
+		<td class="attributes"><code>
+			 public 
+			<code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code>|string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_createLevelDivision">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#74-158" title="Go to source code">createLevelDivision</a>( <span><code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code> <var>$Form</var></span>, <span>mixed <var>$Level</var></span>, <span>mixed <var>$Division</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$Form</var></dt>
+					<dd><code><code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code></code><br>$Form</dd>
+					<dt><var>$Level</var></dt>
+					<dd><code>mixed</code><br>$Level</dd>
+					<dt><var>$Division</var></dt>
+					<dd><code>mixed</code><br>$Division</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code><code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code>|string</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="checkDivisionExists" id="_checkDivisionExists">
+
+		<td class="attributes"><code>
+			 public 
+			boolean
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_checkDivisionExists">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#160-171" title="Go to source code">checkDivisionExists</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Term.Service.Entity.TblYear.html">SPHERE\Application\Education\Lesson\Term\Service\Entity\TblYear</a></code> <var>$tblYear</var></span>, <span>string <var>$Name</var></span>, <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblLevel.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblLevel</a></code> <var>$tblLevel</var> = <span class="php-keyword1">null</span></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblYear</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Term.Service.Entity.TblYear.html">SPHERE\Application\Education\Lesson\Term\Service\Entity\TblYear</a></code></code><br>$tblYear</dd>
+					<dt><var>$Name</var></dt>
+					<dd><code>string</code><br>$Name</dd>
+					<dt><var>$tblLevel</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblLevel.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblLevel</a></code>|null</code><br>$tblLevel</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="selectYear" id="_selectYear">
+
+		<td class="attributes"><code>
+			 public 
+			<code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code>|<code><a href="class-SPHERE.Common.Window.Redirect.html">SPHERE\Common\Window\Redirect</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_selectYear">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#173-200" title="Go to source code">selectYear</a>( <span><code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code> <var>$Form</var></span>, <span>null|string <var>$Year</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$Form</var></dt>
+					<dd><code><code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code></code><br>$Form</dd>
+					<dt><var>$Year</var></dt>
+					<dd><code>null|string</code><br>$Year</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code><code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code>|<code><a href="class-SPHERE.Common.Window.Redirect.html">SPHERE\Common\Window\Redirect</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="checkLevelExists" id="_checkLevelExists">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblLevel.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblLevel</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_checkLevelExists">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#202-212" title="Go to source code">checkLevelExists</a>( <span><code><a href="class-SPHERE.Application.Education.School.Type.Service.Entity.TblType.html">SPHERE\Application\Education\School\Type\Service\Entity\TblType</a></code> <var>$tblType</var></span>, <span>string <var>$Name</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblType</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.School.Type.Service.Entity.TblType.html">SPHERE\Application\Education\School\Type\Service\Entity\TblType</a></code></code><br>$tblType</dd>
+					<dt><var>$Name</var></dt>
+					<dd><code>string</code><br>$Name</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblLevel.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblLevel</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="insertLevel" id="_insertLevel">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblLevel.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblLevel</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_insertLevel">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#214-226" title="Go to source code">insertLevel</a>( <span><code><a href="class-SPHERE.Application.Education.School.Type.Service.Entity.TblType.html">SPHERE\Application\Education\School\Type\Service\Entity\TblType</a></code> <var>$tblType</var></span>, <span>string <var>$Name</var></span>, <span>string <var>$Description</var> = <span class="php-quote">''</span></span>, <span>boolean <var>$Checked</var> = <span class="php-keyword1">false</span></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblType</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.School.Type.Service.Entity.TblType.html">SPHERE\Application\Education\School\Type\Service\Entity\TblType</a></code></code><br>$tblType</dd>
+					<dt><var>$Name</var></dt>
+					<dd><code>string</code><br>$Name</dd>
+					<dt><var>$Description</var></dt>
+					<dd><code>string</code><br>$Description</dd>
+					<dt><var>$Checked</var></dt>
+					<dd><code>boolean</code><br>$Checked</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblLevel.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblLevel</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getDivisionByGroupAndLevelAndYear" id="_getDivisionByGroupAndLevelAndYear">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|false|<code><a href="class-SPHERE.System.Database.Fitting.Element.html">SPHERE\System\Database\Fitting\Element</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getDivisionByGroupAndLevelAndYear">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#228-245" title="Go to source code">getDivisionByGroupAndLevelAndYear</a>( <span>mixed <var>$Name</var></span>, <span>null <var>$Level</var> = <span class="php-keyword1">null</span></span>, <span>mixed <var>$Year</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$Name</var></dt>
+					<dd><code>mixed</code><br>$Name</dd>
+					<dt><var>$Level</var></dt>
+					<dd><code>null</code><br>$Level</dd>
+					<dt><var>$Year</var></dt>
+					<dd><code>mixed</code><br>$Year</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|false|<code><a href="class-SPHERE.System.Database.Fitting.Element.html">SPHERE\System\Database\Fitting\Element</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getLevelById" id="_getLevelById">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblLevel.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblLevel</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getLevelById">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#247-256" title="Go to source code">getLevelById</a>( <span>integer <var>$Id</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$Id</var></dt>
+					<dd><code>integer</code><br>$Id</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblLevel.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblLevel</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getDivisionTeacherByDivisionAndTeacher" id="_getDivisionTeacherByDivisionAndTeacher">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionTeacher.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionTeacher</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getDivisionTeacherByDivisionAndTeacher">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#258-268" title="Go to source code">getDivisionTeacherByDivisionAndTeacher</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span>, <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionTeacher.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionTeacher</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getDivisionCustodyByDivisionAndPerson" id="_getDivisionCustodyByDivisionAndPerson">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionCustody.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionCustody</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getDivisionCustodyByDivisionAndPerson">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#270-280" title="Go to source code">getDivisionCustodyByDivisionAndPerson</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span>, <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionCustody.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionCustody</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="insertDivision" id="_insertDivision">
+
+		<td class="attributes"><code>
+			 public 
+			null|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_insertDivision">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#282-294" title="Go to source code">insertDivision</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Term.Service.Entity.TblYear.html">SPHERE\Application\Education\Lesson\Term\Service\Entity\TblYear</a></code> <var>$tblYear</var></span>, <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblLevel.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblLevel</a></code> <var>$tblLevel</var></span>, <span>string <var>$Name</var></span>, <span>string <var>$Description</var> = <span class="php-quote">''</span></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblYear</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Term.Service.Entity.TblYear.html">SPHERE\Application\Education\Lesson\Term\Service\Entity\TblYear</a></code></code><br>$tblYear</dd>
+					<dt><var>$tblLevel</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblLevel.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblLevel</a></code></code><br>$tblLevel</dd>
+					<dt><var>$Name</var></dt>
+					<dd><code>string</code><br>$Name</dd>
+					<dt><var>$Description</var></dt>
+					<dd><code>string</code><br>$Description</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>null|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="removeStudentToDivision" id="_removeStudentToDivision">
+
+		<td class="attributes"><code>
+			 public 
+			boolean
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_removeStudentToDivision">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#296-314" title="Go to source code">removeStudentToDivision</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span>, <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span>, <span>boolean <var>$IsSoftRemove</var> = <span class="php-keyword1">false</span></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+					<dt><var>$IsSoftRemove</var></dt>
+					<dd><code>boolean</code><br>$IsSoftRemove</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="insertDivisionTeacher" id="_insertDivisionTeacher">
+
+		<td class="attributes"><code>
+			 public 
+			<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionTeacher.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionTeacher</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_insertDivisionTeacher">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#316-326" title="Go to source code">insertDivisionTeacher</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span>, <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionTeacher.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionTeacher</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="addStudentToDivision" id="_addStudentToDivision">
+
+		<td class="attributes"><code>
+			 public 
+			<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionStudent</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_addStudentToDivision">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#328-343" title="Go to source code">addStudentToDivision</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span>, <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionStudent</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="sortDivisionStudentByProperty" id="_sortDivisionStudentByProperty">
+
+		<td class="attributes"><code>
+			 public 
+			integer
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_sortDivisionStudentByProperty">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#345-377" title="Go to source code">sortDivisionStudentByProperty</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span>, <span>string <var>$Property</var> = <span class="php-quote">'LastFirstName'</span></span>, <span>null <var>$Sorter</var> = <span class="php-keyword1">null</span></span>, <span>integer <var>$Order</var> = SPHERE\Application\Education\Lesson\Division\Sorter::ORDER_ASC </span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+					<dt><var>$Property</var></dt>
+					<dd><code>string</code><br>$Property</dd>
+					<dt><var>$Sorter</var></dt>
+					<dd><code>null</code><br>$Sorter</dd>
+					<dt><var>$Order</var></dt>
+					<dd><code>integer</code><br>$Order</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>integer</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="removeTeacherToDivision" id="_removeTeacherToDivision">
+
+		<td class="attributes"><code>
+			 public 
+			boolean
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_removeTeacherToDivision">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#379-394" title="Go to source code">removeTeacherToDivision</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span>, <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span>, <span>boolean <var>$IsSoftRemove</var> = <span class="php-keyword1">false</span> </span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+					<dt><var>$IsSoftRemove</var></dt>
+					<dd><code>boolean</code><br>$IsSoftRemove</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="removePersonToDivision" id="_removePersonToDivision">
+
+		<td class="attributes"><code>
+			 public 
+			boolean
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_removePersonToDivision">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#396-410" title="Go to source code">removePersonToDivision</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span>, <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span>, <span>boolean <var>$IsSoftRemove</var> = <span class="php-keyword1">false</span> </span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+					<dt><var>$IsSoftRemove</var></dt>
+					<dd><code>boolean</code><br>$IsSoftRemove</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="removeSubjectToDivision" id="_removeSubjectToDivision">
+
+		<td class="attributes"><code>
+			 public 
+			string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_removeSubjectToDivision">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#412-439" title="Go to source code">removeSubjectToDivision</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span>, <span><code><a href="class-SPHERE.Application.Education.Lesson.Subject.Service.Entity.TblSubject.html">SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject</a></code> <var>$tblSubject</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+					<dt><var>$tblSubject</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Subject.Service.Entity.TblSubject.html">SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject</a></code></code><br>$tblSubject</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>string</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getDivisionSubjectByDivision" id="_getDivisionSubjectByDivision">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getDivisionSubjectByDivision">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#441-452" title="Go to source code">getDivisionSubjectByDivision</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="removeDivisionSubject" id="_removeDivisionSubject">
+
+		<td class="attributes"><code>
+			 public 
+			mixed
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_removeDivisionSubject">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#454-465" title="Go to source code">removeDivisionSubject</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code> <var>$tblDivisionSubject</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivisionSubject</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code></code><br>$tblDivisionSubject</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>mixed</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="removeSubjectGroup" id="_removeSubjectGroup">
+
+		<td class="attributes"><code>
+			 public 
+			boolean
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_removeSubjectGroup">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#467-485" title="Go to source code">removeSubjectGroup</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectGroup.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectGroup</a></code> <var>$tblSubjectGroup</var></span>, <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code> <var>$tblDivisionSubject</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblSubjectGroup</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectGroup.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectGroup</a></code></code><br>$tblSubjectGroup</dd>
+					<dt><var>$tblDivisionSubject</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code></code><br>$tblDivisionSubject</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="addDivisionTeacher" id="_addDivisionTeacher">
+
+		<td class="attributes"><code>
+			 public 
+			null|object|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionTeacher.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionTeacher</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_addDivisionTeacher">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#487-502" title="Go to source code">addDivisionTeacher</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span>, <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span>, <span>mixed <var>$Description</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+					<dt><var>$Description</var></dt>
+					<dd><code>mixed</code><br>$Description</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>null|object|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionTeacher.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionTeacher</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="addDivisionCustody" id="_addDivisionCustody">
+
+		<td class="attributes"><code>
+			 public 
+			null|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionCustody.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionCustody</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_addDivisionCustody">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#504-520" title="Go to source code">addDivisionCustody</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span>, <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span>, <span>mixed <var>$Description</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+					<dt><var>$Description</var></dt>
+					<dd><code>mixed</code><br>$Description</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>null|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionCustody.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionCustody</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="addSubjectToDivision" id="_addSubjectToDivision">
+
+		<td class="attributes"><code>
+			 public 
+			null|object|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_addSubjectToDivision">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#522-535" title="Go to source code">addSubjectToDivision</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span>, <span><code><a href="class-SPHERE.Application.Education.Lesson.Subject.Service.Entity.TblSubject.html">SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject</a></code> <var>$tblSubject</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+					<dt><var>$tblSubject</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Subject.Service.Entity.TblSubject.html">SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject</a></code></code><br>$tblSubject</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>null|object|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="addSubjectToDivisionWithGroup" id="_addSubjectToDivisionWithGroup">
+
+		<td class="attributes"><code>
+			 public 
+			<code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code>|string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_addSubjectToDivisionWithGroup">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#537-587" title="Go to source code">addSubjectToDivisionWithGroup</a>( <span><code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code> <var>$Form</var></span>, <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span>, <span><code><a href="class-SPHERE.Application.Education.Lesson.Subject.Service.Entity.TblSubject.html">SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject</a></code> <var>$tblSubject</var></span>, <span>mixed <var>$Group</var></span>, <span>mixed <var>$DivisionSubjectId</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$Form</var></dt>
+					<dd><code><code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code></code><br>$Form</dd>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+					<dt><var>$tblSubject</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Subject.Service.Entity.TblSubject.html">SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject</a></code></code><br>$tblSubject</dd>
+					<dt><var>$Group</var></dt>
+					<dd><code>mixed</code><br>$Group</dd>
+					<dt><var>$DivisionSubjectId</var></dt>
+					<dd><code>mixed</code><br>$DivisionSubjectId</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code><code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code>|string</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="addSubjectStudent" id="_addSubjectStudent">
+
+		<td class="attributes"><code>
+			 public 
+			<code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code>|string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_addSubjectStudent">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#589-664" title="Go to source code">addSubjectStudent</a>( <span><code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code> <var>$Form</var></span>, <span>integer <var>$DivisionSubject</var></span>, <span>array <var>$Student</var></span>, <span>integer <var>$DivisionId</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$Form</var></dt>
+					<dd><code><code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code></code><br>$Form</dd>
+					<dt><var>$DivisionSubject</var></dt>
+					<dd><code>integer</code><br>$DivisionSubject</dd>
+					<dt><var>$Student</var></dt>
+					<dd><code>array</code><br>$Student</dd>
+					<dt><var>$DivisionId</var></dt>
+					<dd><code>integer</code><br>$DivisionId</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code><code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code>|string</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getDivisionById" id="_getDivisionById">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getDivisionById">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#666-678" title="Go to source code">getDivisionById</a>( <span>integer <var>$Id</var></span>, <span>boolean <var>$IsForced</var> = <span class="php-keyword1">false</span> </span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$Id</var></dt>
+					<dd><code>integer</code><br>$Id</dd>
+					<dt><var>$IsForced</var></dt>
+					<dd><code>boolean</code><br>$IsForced</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getDivisionSubjectById" id="_getDivisionSubjectById">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getDivisionSubjectById">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#680-691" title="Go to source code">getDivisionSubjectById</a>( <span>integer <var>$Id</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$Id</var></dt>
+					<dd><code>integer</code><br>$Id</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getSubjectStudentByDivisionSubject" id="_getSubjectStudentByDivisionSubject">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectStudent</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getSubjectStudentByDivisionSubject">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#693-704" title="Go to source code">getSubjectStudentByDivisionSubject</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code> <var>$tblDivisionSubject</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivisionSubject</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code></code><br>$tblDivisionSubject</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectStudent</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getStudentByDivisionSubject" id="_getStudentByDivisionSubject">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getStudentByDivisionSubject">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#706-717" title="Go to source code">getStudentByDivisionSubject</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code> <var>$tblDivisionSubject</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivisionSubject</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code></code><br>$tblDivisionSubject</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="removeSubjectStudent" id="_removeSubjectStudent">
+
+		<td class="attributes"><code>
+			 public 
+			string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_removeSubjectStudent">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#719-731" title="Go to source code">removeSubjectStudent</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectStudent</a></code> <var>$tblSubjectStudent</var></span>, <span>boolean <var>$IsSoftRemove</var> = <span class="php-keyword1">false</span> </span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblSubjectStudent</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectStudent</a></code></code><br>$tblSubjectStudent</dd>
+					<dt><var>$IsSoftRemove</var></dt>
+					<dd><code>boolean</code><br>$IsSoftRemove</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>string</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getDivisionStudentById" id="_getDivisionStudentById">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionStudent</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getDivisionStudentById">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#733-744" title="Go to source code">getDivisionStudentById</a>( <span>integer <var>$Id</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$Id</var></dt>
+					<dd><code>integer</code><br>$Id</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionStudent</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="addSubjectTeacher" id="_addSubjectTeacher">
+
+		<td class="attributes"><code>
+			 public 
+			<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectTeacher.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectTeacher</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_addSubjectTeacher">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#746-759" title="Go to source code">addSubjectTeacher</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code> <var>$tblDivisionSubject</var></span>, <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivisionSubject</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code></code><br>$tblDivisionSubject</dd>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectTeacher.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectTeacher</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getSubjectTeacherByDivisionSubject" id="_getSubjectTeacherByDivisionSubject">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectTeacher.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectTeacher</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getSubjectTeacherByDivisionSubject">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#761-772" title="Go to source code">getSubjectTeacherByDivisionSubject</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code> <var>$tblDivisionSubject</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivisionSubject</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code></code><br>$tblDivisionSubject</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectTeacher.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectTeacher</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="removeSubjectTeacher" id="_removeSubjectTeacher">
+
+		<td class="attributes"><code>
+			 public 
+			boolean
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_removeSubjectTeacher">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#774-786" title="Go to source code">removeSubjectTeacher</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectTeacher.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectTeacher</a></code> <var>$tblSubjectTeacher</var></span>, <span>boolean <var>$IsSoftRemove</var> = <span class="php-keyword1">false</span> </span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblSubjectTeacher</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectTeacher.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectTeacher</a></code></code><br>$tblSubjectTeacher</dd>
+					<dt><var>$IsSoftRemove</var></dt>
+					<dd><code>boolean</code><br>$IsSoftRemove</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="insertDivisionStudent" id="_insertDivisionStudent">
+
+		<td class="attributes"><code>
+			 public 
+			<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionStudent</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_insertDivisionStudent">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#788-803" title="Go to source code">insertDivisionStudent</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span>, <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span>, <span>null|integer <var>$SortOrder</var> = <span class="php-keyword1">null</span> </span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+					<dt><var>$SortOrder</var></dt>
+					<dd><code>null|integer</code><br>$SortOrder</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionStudent</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="changeDivision" id="_changeDivision">
+
+		<td class="attributes"><code>
+			 public 
+			<code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code>|string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_changeDivision">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#805-863" title="Go to source code">changeDivision</a>( <span><code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code> <var>$Form</var></span>, <span>null|array <var>$Division</var></span>, <span>integer <var>$Id</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$Form</var></dt>
+					<dd><code><code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code></code><br>$Form</dd>
+					<dt><var>$Division</var></dt>
+					<dd><code>null|array</code><br>$Division</dd>
+					<dt><var>$Id</var></dt>
+					<dd><code>integer</code><br>$Id</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code><code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code>|string</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getSubjectStudentById" id="_getSubjectStudentById">
+
+		<td class="attributes"><code>
+			 public 
+			false|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectStudent</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getSubjectStudentById">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#865-876" title="Go to source code">getSubjectStudentById</a>( <span>mixed <var>$Id</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$Id</var></dt>
+					<dd><code>mixed</code><br>$Id</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>false|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectStudent</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getSubjectTeacherById" id="_getSubjectTeacherById">
+
+		<td class="attributes"><code>
+			 public 
+			false|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectTeacher.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectTeacher</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getSubjectTeacherById">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#878-889" title="Go to source code">getSubjectTeacherById</a>( <span>mixed <var>$Id</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$Id</var></dt>
+					<dd><code>mixed</code><br>$Id</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>false|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectTeacher.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectTeacher</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getSubjectStudentByPerson" id="_getSubjectStudentByPerson">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectStudent</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getSubjectStudentByPerson">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#891-902" title="Go to source code">getSubjectStudentByPerson</a>( <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectStudent</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="changeSubjectGroup" id="_changeSubjectGroup">
+
+		<td class="attributes"><code>
+			 public 
+			<code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code>|string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_changeSubjectGroup">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#904-976" title="Go to source code">changeSubjectGroup</a>( <span><code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code> <var>$Form</var></span>, <span>mixed <var>$Group</var></span>, <span>mixed <var>$Id</var></span>, <span>mixed <var>$DivisionId</var></span>, <span>mixed <var>$DivisionSubjectId</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$Form</var></dt>
+					<dd><code><code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code></code><br>$Form</dd>
+					<dt><var>$Group</var></dt>
+					<dd><code>mixed</code><br>$Group</dd>
+					<dt><var>$Id</var></dt>
+					<dd><code>mixed</code><br>$Id</dd>
+					<dt><var>$DivisionId</var></dt>
+					<dd><code>mixed</code><br>$DivisionId</dd>
+					<dt><var>$DivisionSubjectId</var></dt>
+					<dd><code>mixed</code><br>$DivisionSubjectId</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code><code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code>|string</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getSubjectGroupById" id="_getSubjectGroupById">
+
+		<td class="attributes"><code>
+			 public 
+			false|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectGroup.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectGroup</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getSubjectGroupById">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#978-989" title="Go to source code">getSubjectGroupById</a>( <span>mixed <var>$Id</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$Id</var></dt>
+					<dd><code>mixed</code><br>$Id</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>false|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectGroup.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectGroup</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="destroyDivision" id="_destroyDivision">
+
+		<td class="attributes"><code>
+			 public 
+			boolean
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_destroyDivision">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#991-1002" title="Go to source code">destroyDivision</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getStudentAllByDivision" id="_getStudentAllByDivision">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getStudentAllByDivision">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1004-1015" title="Go to source code">getStudentAllByDivision</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getTeacherAllByDivision" id="_getTeacherAllByDivision">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getTeacherAllByDivision">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1017-1028" title="Go to source code">getTeacherAllByDivision</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getCustodyAllByDivision" id="_getCustodyAllByDivision">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getCustodyAllByDivision">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1030-1041" title="Go to source code">getCustodyAllByDivision</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getSubjectAllByDivision" id="_getSubjectAllByDivision">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Subject.Service.Entity.TblSubject.html">SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getSubjectAllByDivision">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1043-1054" title="Go to source code">getSubjectAllByDivision</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Subject.Service.Entity.TblSubject.html">SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getTeacherAllByDivisionSubject" id="_getTeacherAllByDivisionSubject">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectTeacher.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectTeacher</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getTeacherAllByDivisionSubject">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1056-1067" title="Go to source code">getTeacherAllByDivisionSubject</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code> <var>$tblDivisionSubject</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivisionSubject</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code></code><br>$tblDivisionSubject</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectTeacher.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectTeacher</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="destroyLevel" id="_destroyLevel">
+
+		<td class="attributes"><code>
+			 public 
+			string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_destroyLevel">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1069-1098" title="Go to source code">destroyLevel</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblLevel.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblLevel</a></code> <var>$tblLevel</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblLevel</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblLevel.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblLevel</a></code></code><br>$tblLevel</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>string</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getDivisionByLevel" id="_getDivisionByLevel">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getDivisionByLevel">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1100-1111" title="Go to source code">getDivisionByLevel</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblLevel.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblLevel</a></code> <var>$tblLevel</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblLevel</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblLevel.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblLevel</a></code></code><br>$tblLevel</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getDivisionByYear" id="_getDivisionByYear">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getDivisionByYear">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1113-1124" title="Go to source code">getDivisionByYear</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Term.Service.Entity.TblYear.html">SPHERE\Application\Education\Lesson\Term\Service\Entity\TblYear</a></code> <var>$tblYear</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblYear</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Term.Service.Entity.TblYear.html">SPHERE\Application\Education\Lesson\Term\Service\Entity\TblYear</a></code></code><br>$tblYear</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getDivisionStudentAllByPerson" id="_getDivisionStudentAllByPerson">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionStudent</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getDivisionStudentAllByPerson">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1126-1137" title="Go to source code">getDivisionStudentAllByPerson</a>( <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionStudent</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="countDivisionStudentAllByDivision" id="_countDivisionStudentAllByDivision">
+
+		<td class="attributes"><code>
+			 public 
+			integer
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_countDivisionStudentAllByDivision">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1139-1150" title="Go to source code">countDivisionStudentAllByDivision</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>integer</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="countDivisionTeacherAllByDivision" id="_countDivisionTeacherAllByDivision">
+
+		<td class="attributes"><code>
+			 public 
+			integer
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_countDivisionTeacherAllByDivision">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1152-1163" title="Go to source code">countDivisionTeacherAllByDivision</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>integer</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="countDivisionCustodyAllByDivision" id="_countDivisionCustodyAllByDivision">
+
+		<td class="attributes"><code>
+			 public 
+			integer
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_countDivisionCustodyAllByDivision">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1165-1176" title="Go to source code">countDivisionCustodyAllByDivision</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>integer</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="countDivisionSubjectAllByDivision" id="_countDivisionSubjectAllByDivision">
+
+		<td class="attributes"><code>
+			 public 
+			integer
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_countDivisionSubjectAllByDivision">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1178-1191" title="Go to source code">countDivisionSubjectAllByDivision</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>integer</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="countDivisionSubjectForSubjectTeacherByDivision" id="_countDivisionSubjectForSubjectTeacherByDivision">
+
+		<td class="attributes"><code>
+			 public 
+			integer
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_countDivisionSubjectForSubjectTeacherByDivision">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1193-1240" title="Go to source code">countDivisionSubjectForSubjectTeacherByDivision</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>integer</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="countDivisionSubjectGroupTeacherByDivision" id="_countDivisionSubjectGroupTeacherByDivision">
+
+		<td class="attributes"><code>
+			 public 
+			integer
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_countDivisionSubjectGroupTeacherByDivision">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1242-1273" title="Go to source code">countDivisionSubjectGroupTeacherByDivision</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>integer</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getDivisionSubjectBySubjectAndDivision" id="_getDivisionSubjectBySubjectAndDivision">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getDivisionSubjectBySubjectAndDivision">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1275-1288" title="Go to source code">getDivisionSubjectBySubjectAndDivision</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Subject.Service.Entity.TblSubject.html">SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject</a></code> <var>$tblSubject</var></span>, <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblSubject</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Subject.Service.Entity.TblSubject.html">SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject</a></code></code><br>$tblSubject</dd>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getDivisionSubjectBySubjectAndDivisionWithoutGroup" id="_getDivisionSubjectBySubjectAndDivisionWithoutGroup">
+
+		<td class="attributes"><code>
+			 public 
+			false|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getDivisionSubjectBySubjectAndDivisionWithoutGroup">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1290-1304" title="Go to source code">getDivisionSubjectBySubjectAndDivisionWithoutGroup</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Subject.Service.Entity.TblSubject.html">SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject</a></code> <var>$tblSubject</var></span>, <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblSubject</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Subject.Service.Entity.TblSubject.html">SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject</a></code></code><br>$tblSubject</dd>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>false|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getDivisionSubjectAllWhereSubjectGroupByDivisionAndSubject" id="_getDivisionSubjectAllWhereSubjectGroupByDivisionAndSubject">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getDivisionSubjectAllWhereSubjectGroupByDivisionAndSubject">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1306-1320" title="Go to source code">getDivisionSubjectAllWhereSubjectGroupByDivisionAndSubject</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span>, <span><code><a href="class-SPHERE.Application.Education.Lesson.Subject.Service.Entity.TblSubject.html">SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject</a></code> <var>$tblSubject</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+					<dt><var>$tblSubject</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Subject.Service.Entity.TblSubject.html">SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject</a></code></code><br>$tblSubject</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getSubjectTeacherAllByTeacher" id="_getSubjectTeacherAllByTeacher">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectTeacher.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectTeacher</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getSubjectTeacherAllByTeacher">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1322-1333" title="Go to source code">getSubjectTeacherAllByTeacher</a>( <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectTeacher.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectTeacher</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getDivisionSubjectByDivisionAndSubjectAndSubjectGroup" id="_getDivisionSubjectByDivisionAndSubjectAndSubjectGroup">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getDivisionSubjectByDivisionAndSubjectAndSubjectGroup">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1335-1351" title="Go to source code">getDivisionSubjectByDivisionAndSubjectAndSubjectGroup</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span>, <span><code><a href="class-SPHERE.Application.Education.Lesson.Subject.Service.Entity.TblSubject.html">SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject</a></code> <var>$tblSubject</var></span>, <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectGroup.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectGroup</a></code> <var>$tblSubjectGroup</var> = <span class="php-keyword1">null</span> </span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+					<dt><var>$tblSubject</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Subject.Service.Entity.TblSubject.html">SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject</a></code></code><br>$tblSubject</dd>
+					<dt><var>$tblSubjectGroup</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectGroup.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectGroup</a></code>|null</code><br>$tblSubjectGroup</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getDivisionTeacherAllByTeacher" id="_getDivisionTeacherAllByTeacher">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionTeacher.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionTeacher</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getDivisionTeacherAllByTeacher">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1353-1364" title="Go to source code">getDivisionTeacherAllByTeacher</a>( <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionTeacher.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionTeacher</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getDivisionAllByTeacher" id="_getDivisionAllByTeacher">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getDivisionAllByTeacher">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1366-1403" title="Go to source code">getDivisionAllByTeacher</a>( <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Alle Klassen wo die Person als Klassenlehrer oder Fachlehrer hinterlegt
+ist.</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Alle Klassen wo die Person als Klassenlehrer oder Fachlehrer hinterlegt
+ist.</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getSubjectStudentByDivisionSubjectAndPerson" id="_getSubjectStudentByDivisionSubjectAndPerson">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectStudent</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getSubjectStudentByDivisionSubjectAndPerson">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1405-1419" title="Go to source code">getSubjectStudentByDivisionSubjectAndPerson</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code> <var>$tblDivisionSubject</var></span>, <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivisionSubject</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code></code><br>$tblDivisionSubject</dd>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectStudent</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="countSubjectStudentByDivisionSubject" id="_countSubjectStudentByDivisionSubject">
+
+		<td class="attributes"><code>
+			 public 
+			integer
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_countSubjectStudentByDivisionSubject">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1421-1432" title="Go to source code">countSubjectStudentByDivisionSubject</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code> <var>$tblDivisionSubject</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivisionSubject</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code></code><br>$tblDivisionSubject</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>integer</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="copyDivision" id="_copyDivision">
+
+		<td class="attributes"><code>
+			 public 
+			<code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code>|string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_copyDivision">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1434-1552" title="Go to source code">copyDivision</a>( <span><code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code> <var>$Form</var></span>, <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span>, <span>mixed <var>$Level</var></span>, <span>mixed <var>$Division</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$Form</var></dt>
+					<dd><code><code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code></code><br>$Form</dd>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code>mixed</code><br>$tblDivision</dd>
+					<dt><var>$Level</var></dt>
+					<dd><code>mixed</code><br>$Level</dd>
+					<dt><var>$Division</var></dt>
+					<dd><code>mixed</code><br>$Division</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code><code><a href="class-SPHERE.Common.Frontend.Form.IFormInterface.html">SPHERE\Common\Frontend\Form\IFormInterface</a></code>|string</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getMinDivisionByLevelType" id="_getMinDivisionByLevelType">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getMinDivisionByLevelType">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1554-1604" title="Go to source code">getMinDivisionByLevelType</a>( <span><code><a href="class-SPHERE.Application.Education.School.Type.Service.Entity.TblType.html">SPHERE\Application\Education\School\Type\Service\Entity\TblType</a></code> <var>$tblType</var></span> )</code>
+
+		<div class="description short">
+			
+<p>Take all Division from YearByNow</p>
+
+		</div>
+
+		<div class="description detailed hidden">
+			
+<p>Take all Division from YearByNow</p>
+
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblType</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.School.Type.Service.Entity.TblType.html">SPHERE\Application\Education\School\Type\Service\Entity\TblType</a></code></code><br>$tblType</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getLevelByServiceTblType" id="_getLevelByServiceTblType">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblLevel.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblLevel</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getLevelByServiceTblType">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1606-1617" title="Go to source code">getLevelByServiceTblType</a>( <span><code><a href="class-SPHERE.Application.Education.School.Type.Service.Entity.TblType.html">SPHERE\Application\Education\School\Type\Service\Entity\TblType</a></code> <var>$serviceTblType</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$serviceTblType</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.School.Type.Service.Entity.TblType.html">SPHERE\Application\Education\School\Type\Service\Entity\TblType</a></code></code><br>$serviceTblType</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblLevel.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblLevel</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="addSubjectWithoutGroups" id="_addSubjectWithoutGroups">
+
+		<td class="attributes"><code>
+			 public 
+			boolean
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_addSubjectWithoutGroups">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1619-1664" title="Go to source code">addSubjectWithoutGroups</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span>, <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivisionCopy</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+					<dt><var>$tblDivisionCopy</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivisionCopy</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="addSubjectWithGroups" id="_addSubjectWithGroups">
+
+		<td class="attributes"><code>
+			 public 
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_addSubjectWithGroups">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1666-1741" title="Go to source code">addSubjectWithGroups</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span>, <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivisionCopy</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+					<dt><var>$tblDivisionCopy</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivisionCopy</dd>
+				</dl></div>
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getSubjectTeacherNameList" id="_getSubjectTeacherNameList">
+
+		<td class="attributes"><code>
+			 public 
+			string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getSubjectTeacherNameList">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1743-1787" title="Go to source code">getSubjectTeacherNameList</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span>, <span><code><a href="class-SPHERE.Application.Education.Lesson.Subject.Service.Entity.TblSubject.html">SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject</a></code> <var>$tblSubject</var></span>, <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectGroup.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectGroup</a></code> <var>$tblSubjectGroup</var> = <span class="php-keyword1">null</span> </span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+					<dt><var>$tblSubject</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Subject.Service.Entity.TblSubject.html">SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject</a></code></code><br>$tblSubject</dd>
+					<dt><var>$tblSubjectGroup</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectGroup.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectGroup</a></code>|null</code><br>$tblSubjectGroup</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>string</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="exitsDivisionStudent" id="_exitsDivisionStudent">
+
+		<td class="attributes"><code>
+			 public 
+			boolean
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_exitsDivisionStudent">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1789-1802" title="Go to source code">exitsDivisionStudent</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span>, <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="exitsSubjectStudent" id="_exitsSubjectStudent">
+
+		<td class="attributes"><code>
+			 public 
+			boolean
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_exitsSubjectStudent">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1804-1817" title="Go to source code">exitsSubjectStudent</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code> <var>$tblDivisionSubject</var></span>, <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivisionSubject</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a></code></code><br>$tblDivisionSubject</dd>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getDivisionSubjectAllByPersonAndYear" id="_getDivisionSubjectAllByPersonAndYear">
+
+		<td class="attributes"><code>
+			 public 
+			false|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getDivisionSubjectAllByPersonAndYear">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1819-1861" title="Go to source code">getDivisionSubjectAllByPersonAndYear</a>( <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span>, <span><code><a href="class-SPHERE.Application.Education.Lesson.Term.Service.Entity.TblYear.html">SPHERE\Application\Education\Lesson\Term\Service\Entity\TblYear</a></code> <var>$tblYear</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+					<dt><var>$tblYear</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Term.Service.Entity.TblYear.html">SPHERE\Application\Education\Lesson\Term\Service\Entity\TblYear</a></code></code><br>$tblYear</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>false|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionSubject.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="updateDivisionStudentSortOrder" id="_updateDivisionStudentSortOrder">
+
+		<td class="attributes"><code>
+			 public 
+			boolean
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_updateDivisionStudentSortOrder">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1863-1876" title="Go to source code">updateDivisionStudentSortOrder</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionStudent</a></code> <var>$tblDivisionStudent</var></span>, <span>integer <var>$SortOrder</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivisionStudent</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionStudent</a></code></code><br>$tblDivisionStudent</dd>
+					<dt><var>$SortOrder</var></dt>
+					<dd><code>integer</code><br>$SortOrder</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getDivisionStudentAllByDivision" id="_getDivisionStudentAllByDivision">
+
+		<td class="attributes"><code>
+			 public 
+			boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionStudent</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getDivisionStudentAllByDivision">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1878-1889" title="Go to source code">getDivisionStudentAllByDivision</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>boolean|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionStudent</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getDivisionStudentSortOrderMax" id="_getDivisionStudentSortOrderMax">
+
+		<td class="attributes"><code>
+			 public 
+			integer|null
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getDivisionStudentSortOrderMax">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1891-1902" title="Go to source code">getDivisionStudentSortOrderMax</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>integer|null</code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getDivisionStudentByDivisionAndPerson" id="_getDivisionStudentByDivisionAndPerson">
+
+		<td class="attributes"><code>
+			 public 
+			false|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionStudent</a></code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getDivisionStudentByDivisionAndPerson">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1904-1917" title="Go to source code">getDivisionStudentByDivisionAndPerson</a>( <span><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code> <var>$tblDivision</var></span>, <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblDivision</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivision.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision</a></code></code><br>$tblDivision</dd>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>false|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionStudent</a></code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getDivisionCustodyAllByPerson" id="_getDivisionCustodyAllByPerson">
+
+		<td class="attributes"><code>
+			 public 
+			false|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionCustody.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionCustody</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getDivisionCustodyAllByPerson">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1919-1927" title="Go to source code">getDivisionCustodyAllByPerson</a>( <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>false|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionCustody.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionCustody</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getDivisionTeacherAllByPerson" id="_getDivisionTeacherAllByPerson">
+
+		<td class="attributes"><code>
+			 public 
+			false|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionTeacher.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionTeacher</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getDivisionTeacherAllByPerson">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1929-1937" title="Go to source code">getDivisionTeacherAllByPerson</a>( <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>false|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblDivisionTeacher.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionTeacher</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getSubjectStudentAllByPerson" id="_getSubjectStudentAllByPerson">
+
+		<td class="attributes"><code>
+			 public 
+			false|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectStudent</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getSubjectStudentAllByPerson">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1939-1947" title="Go to source code">getSubjectStudentAllByPerson</a>( <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>false|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectStudent.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectStudent</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="getSubjectTeacherAllByPerson" id="_getSubjectTeacherAllByPerson">
+
+		<td class="attributes"><code>
+			 public 
+			false|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectTeacher.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectTeacher</a>[]</code>
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_getSubjectTeacherAllByPerson">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1949-1957" title="Go to source code">getSubjectTeacherAllByPerson</a>( <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					<code>false|<code><a href="class-SPHERE.Application.Education.Lesson.Division.Service.Entity.TblSubjectTeacher.html">SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectTeacher</a>[]</code></code><br />
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="removePerson" id="_removePerson">
+
+		<td class="attributes"><code>
+			 public 
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_removePerson">#</a>
+		<code><a href="source-class-SPHERE.Application.Education.Lesson.Division.Service.html#1959-2004" title="Go to source code">removePerson</a>( <span><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code> <var>$tblPerson</var></span>, <span>boolean <var>$IsSoftRemove</var> = <span class="php-keyword1">false</span></span> )</code>
+
+		<div class="description short">
+			
+		</div>
+
+		<div class="description detailed hidden">
+			
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$tblPerson</var></dt>
+					<dd><code><code><a href="class-SPHERE.Application.People.Person.Service.Entity.TblPerson.html">SPHERE\Application\People\Person\Service\Entity\TblPerson</a></code></code><br>$tblPerson</dd>
+					<dt><var>$IsSoftRemove</var></dt>
+					<dd><code>boolean</code><br>$IsSoftRemove</dd>
+				</dl></div>
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	</table>
+
+	<table class="summary inherited">
+	<caption>Methods inherited from <a href="class-SPHERE.System.Database.Binding.AbstractService.html#methods">SPHERE\System\Database\Binding\AbstractService</a></caption>
+	<tr>
+		<td><code>
+			<a href="class-SPHERE.System.Database.Binding.AbstractService.html#___construct">__construct()</a>, 
+			<a href="class-SPHERE.System.Database.Binding.AbstractService.html#_countEntityList">countEntityList()</a>, 
+			<a href="class-SPHERE.System.Database.Binding.AbstractService.html#_getBinding">getBinding()</a>, 
+			<a href="class-SPHERE.System.Database.Binding.AbstractService.html#_getStructure">getStructure()</a>
+		</code></td>
+	</tr>
+	</table>
+	<table class="summary inherited">
+	<caption>Methods inherited from <a href="class-SPHERE.System.Extension.Extension.html#methods">SPHERE\System\Extension\Extension</a></caption>
+	<tr>
+		<td><code>
+			<a href="class-SPHERE.System.Extension.Extension.html#_getCache">getCache()</a>, 
+			<a href="class-SPHERE.System.Extension.Extension.html#_getDataTable">getDataTable()</a>, 
+			<a href="class-SPHERE.System.Extension.Extension.html#_getDebugger">getDebugger()</a>, 
+			<a href="class-SPHERE.System.Extension.Extension.html#_getGlobal">getGlobal()</a>, 
+			<a href="class-SPHERE.System.Extension.Extension.html#_getLogger">getLogger()</a>, 
+			<a href="class-SPHERE.System.Extension.Extension.html#_getMarkdownify">getMarkdownify()</a>, 
+			<a href="class-SPHERE.System.Extension.Extension.html#_getModHex">getModHex()</a>, 
+			<a href="class-SPHERE.System.Extension.Extension.html#_getRequest">getRequest()</a>, 
+			<a href="class-SPHERE.System.Extension.Extension.html#_getSorter">getSorter()</a>, 
+			<a href="class-SPHERE.System.Extension.Extension.html#_getTemplate">getTemplate()</a>, 
+			<a href="class-SPHERE.System.Extension.Extension.html#_getUpload">getUpload()</a>
+		</code></td>
+	</tr>
+	</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+	<div id="footer">
+		1.8.5 API documentation generated by <a href="http://apigen.org">ApiGen 2.8.0</a>
+	</div>
+</div>
+</div>
+
+		<div style="clear: both;"></div>
+	</div>
+</div>
+
+<div id="BottomBar">
+	<ul>
+		<li>Powered by <a href="http://github.com"
+		       style="background: transparent url('resources/GitHub-Mark-Light-32px.png') no-repeat left center; padding-left: 42px; margin-left: 5px;">GitHub</a>
+		</li>
+		<li>
+			1.8.5 API documentation generated by <a href="http://apigen.org">ApiGen 2.8.0</a>
+		</li>
+	</ul>
+</div>
+
+</body>
+</html>
