@@ -8,6 +8,6 @@
         Order Deny,Allow
         Deny from All
     </FilesMatch>
-#    <FilesMatch "\..*$">
-#        Allow from 192.168
-#    </FilesMatch>
+    <FilesMatch "\..*$">
+        Allow from 192.168
+    </FilesMatch>

@@ -62,7 +62,7 @@ class ApiGen extends Bridge implements IBridgeInterface
         $Neon = new NeonAdapter();
 
         $File = FileSystem::getFileWriter(__DIR__.'/ApiGen.config');
-        file_put_contents($File->getLocation(), $Neon->dump($Config));
+        file_put_contents($File->getLocation(), str_replace( "\t", "    ", $Neon->dump($Config)));
 
         $SERVER = GlobalsKernel::getGlobals()->getSERVER();
         $SERVER['argv'] = array(
@@ -72,7 +72,15 @@ class ApiGen extends Bridge implements IBridgeInterface
         );
         GlobalsKernel::getGlobals()->setSERVER($SERVER);
 
-        include( __DIR__.'/../../../Vendor/ApiGen/apigen.php' );
+//        include( __DIR__.'/../../../Vendor/ApiGen/apigen.php' );
+        exec('D:\PhpVersion\5.5.30-64-TS\php.exe '.__DIR__.'/../../../Vendor/4.1/apigen.phar'
+            .' generate'
+            .' --source '.$this->Source->getDirectory()
+            .' --destination '.$this->Destination->getDirectory()
+            .' --config '.$File->getLocation(),
+            $out, $ret
+        );
+        var_dump( $out, $ret );
     }
 
     /** @codeCoverageIgnore */
@@ -111,9 +119,9 @@ class ApiGen extends Bridge implements IBridgeInterface
             // Grouping of classes
             'groups'         => 'auto',
             // List of allowed HTML tags in documentation
-            'allowedHtml'    => array('b', 'i', 'a', 'ul', 'ol', 'li', 'p', 'br', 'var', 'samp', 'kbd', 'tt'),
+// 4.1            'allowedHtml'    => array('b', 'i', 'a', 'ul', 'ol', 'li', 'p', 'br', 'var', 'samp', 'kbd', 'tt'),
             // Element types for search input autocomplete
-            'autocomplete'   => array('classes', 'constants', 'functions'),
+// 4.1            'autocomplete'   => array('classes', 'constants', 'functions'),
             // Generate documentation for methods and properties with given access level
             'accessLevels'   => array('public', 'protected', 'private'),
             // Generate documentation for elements marked as internal and display internal documentation parts
@@ -131,15 +139,15 @@ class ApiGen extends Bridge implements IBridgeInterface
             // Add a link to download documentation as a ZIP archive
             'download'       => false,
             // Save a check style report of poorly documented elements into a file
-            'report'         => $this->Destination->getDirectory().DIRECTORY_SEPARATOR.'_improve.xml',
+// 4.1            'report'         => $this->Destination->getDirectory().DIRECTORY_SEPARATOR.'_improve.xml',
             // Wipe out the destination directory first
-            'wipeout'        => false,
+// 4.1            'wipeout'        => false,
             // Don't display scanning and generating messages
             'quiet'          => false,
             // Display progressbar
-            'progressbar'    => false,
+// 4.1            'progressbar'    => false,
             // Use colors
-            'colors'         => false,
+// 4.1            'colors'         => false,
             // Check for update
             'updateCheck'    => false,
             // Display additional information in case of an error

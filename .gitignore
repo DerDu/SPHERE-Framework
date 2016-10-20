@@ -2,4 +2,5 @@
 .idea/
 .project
 /Common/Style/Resource/*.lesscache
+/UnitTest/Documentation/
 
