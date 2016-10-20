@@ -21,16 +21,16 @@ use MOC\V\Core\AutoLoader\AutoLoader;
 AutoLoader::getNamespaceAutoLoader('\MOC\V', __DIR__.'/../../Library/MOC-V/', '\MOC\V');
 
 Documentation::getDocumentation(
-    'SPHERE-Framework',
-    '1.8.5',
+    'SPHERE',
+    'SPHERE Framework 1.8.5',
     new DirectoryParameter(__DIR__.'/../../'),
     new DirectoryParameter(__DIR__.'/../../UnitTest/Documentation/'),
     new ExcludeParameter(array(
-        '/.idea/*',
-        '/.git/*',
-        '*/Documentation/*',
-        '*/TestSuite/*',
-        '*/UnitTest/*',
-        '*/Library/*',
+        '/.idea',
+        '/.git',
+        '/Documentation',
+        '/TestSuite',
+        '/UnitTest',
+        '/Library',
     ))
 );

@@ -50,6 +50,6 @@ class ParameterTest extends AbstractTestCase
     {
 
         $Parameter = new ExcludeParameter(array('/Test1/*', '/Test2/*'));
-        $this->assertEquals('/Test1/*,/Test2/*', $Parameter->getGlobList());
+        $this->assertEquals('/Test1/*,/Test2/*', $Parameter->getGlobString());
     }
 }

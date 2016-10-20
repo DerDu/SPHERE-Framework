@@ -47,6 +47,9 @@ class DirectoryParameter extends Parameter implements IParameterInterface
         if (empty( $Directory )) {
             throw new EmptyDirectoryException();
         } else {
+            $Directory = realpath( $Directory );
+            $Directory = str_replace( '\\', DIRECTORY_SEPARATOR, $Directory );
+            $Directory = str_replace( '/', DIRECTORY_SEPARATOR, $Directory );
             if (is_dir($Directory)) {
                 $this->Directory = $Directory;
             } else {

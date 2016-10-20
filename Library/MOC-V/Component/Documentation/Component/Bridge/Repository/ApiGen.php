@@ -73,11 +73,11 @@ class ApiGen extends Bridge implements IBridgeInterface
         GlobalsKernel::getGlobals()->setSERVER($SERVER);
 
 //        include( __DIR__.'/../../../Vendor/ApiGen/apigen.php' );
-        exec('D:\PhpVersion\5.5.30-64-TS\php.exe '.__DIR__.'/../../../Vendor/4.1/apigen.phar'
+        exec(
+            'D:\PhpVersion\5.5.30-64-TS\php.exe '.__DIR__.'/../../../Vendor/4.1/apigen.phar'
             .' generate'
-            .' --source '.$this->Source->getDirectory()
-            .' --destination '.$this->Destination->getDirectory()
-            .' --config '.$File->getLocation(),
+            .' --config '.$File->getLocation()
+            .' --debug',
             $out, $ret
         );
         var_dump( $out, $ret );
@@ -87,9 +87,11 @@ class ApiGen extends Bridge implements IBridgeInterface
     private function getConfig()
     {
 
+// 4.1        "accessLevels", "annotationGroups", "baseUrl", "charset", "config", "debug", "deprecated", "destination", "download", "exclude", "extensions", "googleAnalytics", "googleCseId", "groups", "internal", "main", "noSourceCode", "php", "skipDocPath", "source", "sourceCode", "template", "templateConfig", "templateTheme", "title", "todo", "tree", "visibilityLevels"
+
         $Default = array(
             // Source file or directory to parse
-            'source'         => $this->Source->getDirectory(),
+            'source'         => array($this->Source->getDirectory()),
             // Directory where to save the generated documentation
             'destination'    => $this->Destination->getDirectory(),
             // List of allowed file extensions
@@ -101,9 +103,9 @@ class ApiGen extends Bridge implements IBridgeInterface
             // Don't generate documentation for classes with this name prefix
             //'skipDocPrefix' => '',
             // Character set of source files
-            'charset'        => 'auto',
+//            'charset'        => array( 'auto' ),
             // Main project name prefix
-            'main'           => $this->Project,
+//            'main'           => array($this->Project),
             // Title of generated documentation
             'title'          => $this->Title,
             // Documentation base URL
@@ -115,9 +117,9 @@ class ApiGen extends Bridge implements IBridgeInterface
             // Google Analytics tracking code
             //'googleAnalytics' => '',
             // Template config file
-            'templateConfig' => __DIR__.'/../../../Vendor/Template/config.neon',
+            'templateConfig' => __DIR__.'/../../../Vendor/4.1/Template/src/config.neon',
             // Grouping of classes
-            'groups'         => 'auto',
+            //'groups'         => 'auto',
             // List of allowed HTML tags in documentation
 // 4.1            'allowedHtml'    => array('b', 'i', 'a', 'ul', 'ol', 'li', 'p', 'br', 'var', 'samp', 'kbd', 'tt'),
             // Element types for search input autocomplete
@@ -143,20 +145,21 @@ class ApiGen extends Bridge implements IBridgeInterface
             // Wipe out the destination directory first
 // 4.1            'wipeout'        => false,
             // Don't display scanning and generating messages
-            'quiet'          => false,
+//            'quiet'          => false,
             // Display progressbar
 // 4.1            'progressbar'    => false,
             // Use colors
 // 4.1            'colors'         => false,
             // Check for update
-            'updateCheck'    => false,
+// 4.1            'updateCheck'    => false,
             // Display additional information in case of an error
-            'debug'          => false
+            'debug'          => true
         );
         if (null === $this->Exclude) {
             return $Default;
         } else {
             return array_merge($Default, array(
+// 4.1                'exclude' => $this->Exclude->getGlobString()
                 'exclude' => $this->Exclude->getGlobList()
             ));
         }

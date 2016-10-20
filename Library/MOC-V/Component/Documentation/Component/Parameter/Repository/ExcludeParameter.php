@@ -24,10 +24,19 @@ class ExcludeParameter
     /**
      * @return string
      */
-    public function getGlobList()
+    public function getGlobString()
     {
 
         return implode(",", $this->GlobList);
+    }
+
+    /**
+     * @return array
+     */
+    public function getGlobList()
+    {
+
+        return $this->GlobList;
     }
 
     /**
