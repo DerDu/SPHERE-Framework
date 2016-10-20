@@ -1,873 +1,1783 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="generator" content="ApiGen 2.8.0" />
+	<meta charset="utf-8">
 
-    <title>Class FineDiff | 1.8.5</title>
+	<title>Class FineDiff | SPHERE Framework 1.8.5</title>
 
-    <script type="text/javascript" src="resources/combined.js?1169926265"></script>
-    <script type="text/javascript" src="elementlist.js?361755202"></script>
-    <link rel="stylesheet" type="text/css" media="all" href="resources/style.css?3639401462" />
+	<link rel="stylesheet" href="resources/bootstrap.min.css?973e37a8502921d56bc02bb55321f45b072b6f71">
+	<link rel="stylesheet" href="resources/style.css?70c1d062672daa3f906b72e4f5d03d4bc5c4174d">
 
-
-	<link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300,300italic|Open+Sans:300' rel='stylesheet'
-	      type='text/css' />
 </head>
+
 <body>
+	<nav id="navigation" class="navbar navbar-default navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a href="index.html" class="navbar-brand">SPHERE Framework 1.8.5</a>
+			</div>
+			<div class="collapse navbar-collapse">
 
-<div id="TopBar">
-	<ul>
-		<li><a href="http://derdu.github.io/SPHERE-Framework" title="DerDu"
-		       onclick="window.open(this.href); return false;">Documentation</a></li>
-		<li><a href="https://github.com/DerDu/SPHERE-Framework" title="DerDu"
-		       onclick="window.open(this.href); return false;">GitHub</a></li>
-		<li><a href="https://github.com/DerDu" title="DerDu" onclick="window.open(this.href); return false;">DerDu</a>
-		</li>
-	</ul>
-</div>
+                <form id="search" class="navbar-form navbar-left" role="search">
+                    <input type="hidden" name="cx" value="">
+                    <input type="hidden" name="ie" value="UTF-8">
+                    <div class="form-group">
+                        <input type="text" name="q" class="search-query form-control" placeholder="Search">
+					</div>
+				</form>
 
-<div id="Header">
-	<h1>SPHERE-Framework</h1>
+				<ul class="nav navbar-nav">
+					<li>
+						<a href="namespace-None.html" title="Summary of None"><span>Namespace</span></a>
+					</li>
+					<li class="active">
+<span>Class</span>					</li>
 
-	<p>1.8.5</p>
-</div>
+					<li class="divider-vertical"></li>
 
-<div id="Navigation">
-	<ul>
-		<li>
-			<a>Documentation</a>
-		</li>
-	</ul>
-</div>
+					<li>
+						<a href="tree.html" title="Tree view of classes, interfaces, traits and exceptions"><span>Tree</span></a>
+					</li>
 
-<div class="Channel">
-	<h1>Api Documentation</h1>
+						<li>
+							<a href="annotation-group-deprecated.html" title="List of elements with deprecated annotation">
+								<span>Deprecated</span>
+							</a>
+						</li>
+						<li>
+							<a href="annotation-group-todo.html" title="List of elements with todo annotation">
+								<span>Todo</span>
+							</a>
+						</li>
 
-	<div id="ChannelRelease">
 
-<div id="left">
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<div id="left">
 	<div id="menu">
-		<a href="index.html" title="Overview"><span>Overview</span></a>
-
 
 		<div id="groups">
-			<h3>Namespaces</h3>
+				<h3>Namespaces</h3>
 			<ul>
-				<li class="active"><a href="namespace-None.html">None</a>
-						</li>
-				<li><a href="namespace-PHP.html">PHP</a>
-						</li>
-				<li><a href="namespace-SPHERE.html">SPHERE<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.html">Application<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Api.html">Api<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Api.Billing.html">Billing<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Api.Billing.Invoice.html">Invoice<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Api.Billing.Invoice.Datev.html">Datev</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Api.Billing.Invoice.Sfirm.html">Sfirm</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Api.Document.html">Document<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Api.Document.Custom.html">Custom<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Api.Document.Custom.Lebenswelt.html">Lebenswelt<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Api.Document.Custom.Lebenswelt.Repository.html">Repository</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Api.Document.Standard.html">Standard<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Api.Document.Standard.Repository.html">Repository</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Api.Education.html">Education<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Api.Education.Certificate.html">Certificate<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Api.Education.Certificate.Generator.html">Generator<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Api.Education.Certificate.Generator.Repository.html">Repository<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Api.Education.Certificate.Generator.Repository.ESZC.html">ESZC</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Api.Education.Certificate.Generator.Repository.EVSC.html">EVSC</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Api.Education.Certificate.Generator.Repository.FESH.html">FESH</a>
-						</li>
-							</ul></li></ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Api.Education.ClassRegister.html">ClassRegister</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Api.Platform.html">Platform<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Api.Platform.Database.html">Database</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Api.Platform.Gatekeeper.html">Gatekeeper</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Api.Reporting.html">Reporting<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Api.Reporting.CheckList.html">CheckList</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Api.Reporting.Custom.html">Custom<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Api.Reporting.Custom.Chemnitz.html">Chemnitz</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Api.Reporting.Custom.Coswig.html">Coswig</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Api.Reporting.Custom.Herrnhut.html">Herrnhut</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Api.Reporting.Custom.Hormersdorf.html">Hormersdorf</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Api.Reporting.Custom.Radebeul.html">Radebeul</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Api.Reporting.Custom.Schneeberg.html">Schneeberg</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Api.Reporting.SerialLetter.html">SerialLetter</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Api.Reporting.Standard.html">Standard<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Api.Reporting.Standard.Company.html">Company</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Api.Reporting.Standard.Person.html">Person</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Api.Test.html">Test</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Billing.html">Billing<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Billing.Accounting.html">Accounting<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Billing.Accounting.Account.html">Account<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Billing.Accounting.Account.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Billing.Accounting.Account.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Billing.Accounting.Banking.html">Banking<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Billing.Accounting.Banking.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Billing.Accounting.Banking.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Billing.Accounting.SchoolAccount.html">SchoolAccount<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Billing.Accounting.SchoolAccount.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Billing.Accounting.SchoolAccount.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Billing.Bookkeeping.html">Bookkeeping<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Billing.Bookkeeping.Balance.html">Balance<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Billing.Bookkeeping.Balance.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Billing.Bookkeeping.Balance.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Billing.Bookkeeping.Basket.html">Basket<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Billing.Bookkeeping.Basket.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Billing.Bookkeeping.Basket.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Billing.Bookkeeping.Invoice.html">Invoice<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Billing.Bookkeeping.Invoice.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Billing.Bookkeeping.Invoice.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Billing.Inventory.html">Inventory<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Billing.Inventory.Commodity.html">Commodity<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Billing.Inventory.Commodity.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Billing.Inventory.Commodity.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Billing.Inventory.Item.html">Item<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Billing.Inventory.Item.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Billing.Inventory.Item.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li></ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Contact.html">Contact<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Contact.Address.html">Address<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Contact.Address.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Contact.Address.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Contact.Mail.html">Mail<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Contact.Mail.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Contact.Mail.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Contact.Phone.html">Phone<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Contact.Phone.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Contact.Phone.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Corporation.html">Corporation<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Corporation.Company.html">Company<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Corporation.Company.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Corporation.Company.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Corporation.Group.html">Group<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Corporation.Group.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Corporation.Group.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Corporation.Search.html">Search<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Corporation.Search.Group.html">Group</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Document.html">Document<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Document.Custom.html">Custom<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Document.Custom.Lebenswelt.html">Lebenswelt</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Document.Explorer.html">Explorer<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Document.Explorer.Storage.html">Storage<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Document.Explorer.Storage.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Document.Explorer.Storage.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Document.Explorer.Storage.Writer.html">Writer<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Document.Explorer.Storage.Writer.Type.html">Type</a>
-						</li>
-							</ul></li></ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Document.Generator.html">Generator<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Document.Generator.Repository.html">Repository</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Document.Standard.html">Standard<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Document.Standard.EnrollmentDocument.html">EnrollmentDocument</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Document.Storage.html">Storage<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Document.Storage.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Document.Storage.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Education.html">Education<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.Certificate.html">Certificate<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.Certificate.Approve.html">Approve</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Education.Certificate.Generator.html">Generator<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.Certificate.Generator.Repository.html">Repository<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.Certificate.Generator.Repository.Element.html">Element</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Education.Certificate.Generator.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.Certificate.Generator.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Education.Certificate.GradeInformation.html">GradeInformation</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Education.Certificate.Prepare.html">Prepare<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.Certificate.Prepare.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.Certificate.Prepare.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Education.Certificate.PrintCertificate.html">PrintCertificate</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Education.Certificate.Setting.html">Setting</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Education.ClassRegister.html">ClassRegister<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.ClassRegister.Absence.html">Absence<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.ClassRegister.Absence.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.ClassRegister.Absence.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Education.ClassRegister.ReportingClassList.html">ReportingClassList</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Education.ClassRegister.Sort.html">Sort</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Education.Graduation.html">Graduation<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.Graduation.Evaluation.html">Evaluation<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.Graduation.Evaluation.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.Graduation.Evaluation.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Education.Graduation.Gradebook.html">Gradebook<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.Graduation.Gradebook.MinimumGradeCount.html">MinimumGradeCount</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Education.Graduation.Gradebook.ScoreRule.html">ScoreRule</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Education.Graduation.Gradebook.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.Graduation.Gradebook.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Education.Lesson.html">Lesson<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.Lesson.Division.html">Division<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.Lesson.Division.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.Lesson.Division.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Education.Lesson.Subject.html">Subject<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.Lesson.Subject.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.Lesson.Subject.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Education.Lesson.Term.html">Term<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.Lesson.Term.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.Lesson.Term.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Education.School.html">School<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.School.Building.html">Building</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Education.School.Course.html">Course<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.School.Course.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.School.Course.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Education.School.Type.html">Type<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.School.Type.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Education.School.Type.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li></ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Manual.html">Manual<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Manual.General.html">General</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Manual.Kreda.html">Kreda</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Manual.StyleBook.html">StyleBook</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Manual.Support.html">Support</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.People.html">People<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.People.Group.html">Group<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.People.Group.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.People.Group.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.People.Meta.html">Meta<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.People.Meta.Club.html">Club<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.People.Meta.Club.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.People.Meta.Club.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.People.Meta.Common.html">Common<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.People.Meta.Common.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.People.Meta.Common.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.People.Meta.Custody.html">Custody<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.People.Meta.Custody.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.People.Meta.Custody.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.People.Meta.Prospect.html">Prospect<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.People.Meta.Prospect.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.People.Meta.Prospect.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.People.Meta.Student.html">Student<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.People.Meta.Student.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.People.Meta.Student.Service.Data.html">Data</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.People.Meta.Student.Service.Entity.html">Entity</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.People.Meta.Student.Service.Service.html">Service</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.People.Meta.Teacher.html">Teacher<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.People.Meta.Teacher.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.People.Meta.Teacher.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.People.Person.html">Person<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.People.Person.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.People.Person.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.People.Relationship.html">Relationship<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.People.Relationship.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.People.Relationship.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.People.Search.html">Search<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.People.Search.Filter.html">Filter</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.People.Search.Group.html">Group</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Platform.html">Platform<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Platform.Assistance.html">Assistance<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Platform.Assistance.Error.html">Error</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Platform.Assistance.Support.html">Support</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.html">Gatekeeper<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authentication.html">Authentication</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.html">Authorization<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Access.html">Access<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Access.Frontend.html">Frontend</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Access.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Access.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Account.html">Account<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Account.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Account.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Consumer.html">Consumer<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Consumer.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Consumer.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Token.html">Token<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Token.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Token.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li></ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Platform.Roadmap.html">Roadmap<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Platform.Roadmap.Youtrack.html">Youtrack</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Platform.System.html">System<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Platform.System.Archive.html">Archive<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Platform.System.Archive.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Platform.System.Archive.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Platform.System.Cache.html">Cache<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Platform.System.Cache.Frontend.html">Frontend</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Platform.System.Database.html">Database</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Platform.System.Protocol.html">Protocol<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Platform.System.Protocol.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Platform.System.Protocol.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Platform.System.Session.html">Session</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Platform.System.Test.html">Test<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Platform.System.Test.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Platform.System.Test.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li></ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Reporting.html">Reporting<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Reporting.CheckList.html">CheckList<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Reporting.CheckList.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Reporting.CheckList.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Reporting.Custom.html">Custom<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Reporting.Custom.Chemnitz.html">Chemnitz<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Reporting.Custom.Chemnitz.Person.html">Person</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Reporting.Custom.Coswig.html">Coswig<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Reporting.Custom.Coswig.Person.html">Person</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Reporting.Custom.Herrnhut.html">Herrnhut<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Reporting.Custom.Herrnhut.Person.html">Person</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Reporting.Custom.Hormersdorf.html">Hormersdorf<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Reporting.Custom.Hormersdorf.Person.html">Person</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Reporting.Custom.Radebeul.html">Radebeul<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Reporting.Custom.Radebeul.Person.html">Person</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Reporting.Custom.Schneeberg.html">Schneeberg<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Reporting.Custom.Schneeberg.Person.html">Person</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Reporting.Dynamic.html">Dynamic<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Reporting.Dynamic.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Reporting.Dynamic.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Reporting.SerialLetter.html">SerialLetter<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Reporting.SerialLetter.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Reporting.SerialLetter.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Reporting.Standard.html">Standard<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Reporting.Standard.Company.html">Company</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Reporting.Standard.Person.html">Person</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Setting.html">Setting<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Setting.Authorization.html">Authorization<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Setting.Authorization.Account.html">Account</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Setting.Authorization.Token.html">Token</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Setting.Consumer.html">Consumer<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Setting.Consumer.Responsibility.html">Responsibility<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Setting.Consumer.Responsibility.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Setting.Consumer.Responsibility.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Setting.Consumer.School.html">School<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Setting.Consumer.School.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Setting.Consumer.School.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Setting.Consumer.SponsorAssociation.html">SponsorAssociation<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Setting.Consumer.SponsorAssociation.Service.html">Service<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Setting.Consumer.SponsorAssociation.Service.Entity.html">Entity</a>
-						</li>
-							</ul></li></ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Application.Setting.MyAccount.html">MyAccount</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Transfer.html">Transfer<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Transfer.Export.html">Export<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Transfer.Export.Datev.html">Datev</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Transfer.Export.Invoice.html">Invoice</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Transfer.Gateway.html">Gateway<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Transfer.Gateway.Converter.html">Converter</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Transfer.Gateway.Fragment.html">Fragment<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Transfer.Gateway.Fragment.People.html">People</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Transfer.Gateway.Item.html">Item<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Transfer.Gateway.Item.Contact.html">Contact</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Transfer.Gateway.Item.Person.html">Person</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Transfer.Gateway.Operation.html">Operation</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Transfer.Gateway.Structure.html">Structure</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Transfer.Import.html">Import<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Transfer.Import.Annaberg.html">Annaberg</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Transfer.Import.Chemnitz.html">Chemnitz<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Transfer.Import.Chemnitz.Service.html">Service</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Transfer.Import.Coswig.html">Coswig</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Transfer.Import.FuxMedia.html">FuxMedia<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Application.Transfer.Import.FuxMedia.Service.html">Service</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Application.Transfer.Import.Herrnhut.html">Herrnhut</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Transfer.Import.Hormersdorf.html">Hormersdorf</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Transfer.Import.LebensweltZwenkau.html">LebensweltZwenkau</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Transfer.Import.Muldental.html">Muldental</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Transfer.Import.Radebeul.html">Radebeul</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Transfer.Import.Schneeberg.html">Schneeberg</a>
-						</li>
-				<li><a href="namespace-SPHERE.Application.Transfer.Import.Seelitz.html">Seelitz</a>
-						</li>
-							</ul></li></ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Common.html">Common<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Common.Frontend.html">Frontend<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Common.Frontend.Form.html">Form<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Common.Frontend.Form.Repository.html">Repository<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Common.Frontend.Form.Repository.Button.html">Button</a>
-						</li>
-				<li><a href="namespace-SPHERE.Common.Frontend.Form.Repository.Field.html">Field</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Common.Frontend.Form.Structure.html">Structure</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Common.Frontend.Icon.html">Icon<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Common.Frontend.Icon.Repository.html">Repository</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Common.Frontend.Layout.html">Layout<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Common.Frontend.Layout.Repository.html">Repository<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Common.Frontend.Layout.Repository.Label.html">Label</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Common.Frontend.Layout.Structure.html">Structure</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Common.Frontend.Link.html">Link<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Common.Frontend.Link.Repository.html">Repository<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Common.Frontend.Link.Repository.Backward.html">Backward</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Common.Frontend.Link.Structure.html">Structure</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Common.Frontend.Message.html">Message<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Common.Frontend.Message.Repository.html">Repository</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Common.Frontend.Table.html">Table<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Common.Frontend.Table.Repository.html">Repository</a>
-						</li>
-				<li><a href="namespace-SPHERE.Common.Frontend.Table.Structure.html">Structure</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.Common.Frontend.Text.html">Text<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Common.Frontend.Text.Repository.html">Repository</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.Common.Window.html">Window<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Common.Window.Navigation.html">Navigation<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.Common.Window.Navigation.Link.html">Link</a>
-						</li>
-							</ul></li></ul></li></ul></li>
-				<li><a href="namespace-SPHERE.System.html">System<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.System.Authenticator.html">Authenticator<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.System.Authenticator.Type.html">Type</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.System.Cache.html">Cache<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.System.Cache.Handler.html">Handler</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.System.Config.html">Config<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.System.Config.Reader.html">Reader</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.System.Database.html">Database<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.System.Database.Binding.html">Binding</a>
-						</li>
-				<li><a href="namespace-SPHERE.System.Database.Filter.html">Filter<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.System.Database.Filter.Criteria.html">Criteria</a>
-						</li>
-				<li><a href="namespace-SPHERE.System.Database.Filter.Link.html">Link<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.System.Database.Filter.Link.Repository.html">Repository</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.System.Database.Filter.Logic.html">Logic</a>
-						</li>
-				<li><a href="namespace-SPHERE.System.Database.Filter.Preparation.html">Preparation</a>
-						</li>
-				<li><a href="namespace-SPHERE.System.Database.Filter.Repository.html">Repository</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.System.Database.Fitting.html">Fitting</a>
-						</li>
-				<li><a href="namespace-SPHERE.System.Database.Link.html">Link</a>
-						</li>
-				<li><a href="namespace-SPHERE.System.Database.Type.html">Type</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.System.Debugger.html">Debugger<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.System.Debugger.Logger.html">Logger</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.System.Extension.html">Extension<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.System.Extension.Repository.html">Repository<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.System.Extension.Repository.Sorter.html">Sorter</a>
-						</li>
-							</ul></li></ul></li>
-				<li><a href="namespace-SPHERE.System.Proxy.html">Proxy<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.System.Proxy.Type.html">Type</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.System.Support.html">Support<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.System.Support.Type.html">Type</a>
-						</li>
-							</ul></li>
-				<li><a href="namespace-SPHERE.System.Token.html">Token<span></span></a>
-						<ul>
-				<li><a href="namespace-SPHERE.System.Token.Type.html">Type</a>
-						</li>
-				<li><a href="namespace-SPHERE.System.Token.YubiKey.html">YubiKey</a>
-						</li>
-							</ul></li></ul></li></ul></li>
+					<li class="active">
+						<a href="namespace-None.html">
+							None						</a>
+							</li>
+					<li>
+						<a href="namespace-PHP.html">
+							PHP						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.html">
+							SPHERE<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.html">
+							Application<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.html">
+							Api<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Billing.html">
+							Billing<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Billing.Invoice.html">
+							Invoice<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Billing.Invoice.Datev.html">
+							Datev						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Billing.Invoice.Sfirm.html">
+							Sfirm						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Document.html">
+							Document<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Document.Custom.html">
+							Custom<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Document.Custom.Lebenswelt.html">
+							Lebenswelt<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Document.Custom.Lebenswelt.Repository.html">
+							Repository						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Document.Standard.html">
+							Standard<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Document.Standard.Repository.html">
+							Repository						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Education.html">
+							Education<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Education.Certificate.html">
+							Certificate<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Education.Certificate.Generator.html">
+							Generator<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Education.Certificate.Generator.Repository.html">
+							Repository<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Education.Certificate.Generator.Repository.ESZC.html">
+							ESZC						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Education.Certificate.Generator.Repository.EVSC.html">
+							EVSC						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Education.Certificate.Generator.Repository.FESH.html">
+							FESH						</a>
+							</li>
+								</ul></li></ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Education.ClassRegister.html">
+							ClassRegister						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Platform.html">
+							Platform<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Platform.Database.html">
+							Database						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Platform.Gatekeeper.html">
+							Gatekeeper						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Reporting.html">
+							Reporting<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Reporting.CheckList.html">
+							CheckList						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Reporting.Custom.html">
+							Custom<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Reporting.Custom.Chemnitz.html">
+							Chemnitz						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Reporting.Custom.Coswig.html">
+							Coswig						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Reporting.Custom.Herrnhut.html">
+							Herrnhut						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Reporting.Custom.Hormersdorf.html">
+							Hormersdorf						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Reporting.Custom.Radebeul.html">
+							Radebeul						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Reporting.Custom.Schneeberg.html">
+							Schneeberg						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Reporting.SerialLetter.html">
+							SerialLetter						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Reporting.Standard.html">
+							Standard<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Reporting.Standard.Company.html">
+							Company						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Reporting.Standard.Person.html">
+							Person						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Api.Test.html">
+							Test						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.html">
+							Billing<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Accounting.html">
+							Accounting<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Accounting.Account.html">
+							Account<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Accounting.Account.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Accounting.Account.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Accounting.Banking.html">
+							Banking<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Accounting.Banking.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Accounting.Banking.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Accounting.SchoolAccount.html">
+							SchoolAccount<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Accounting.SchoolAccount.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Accounting.SchoolAccount.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Bookkeeping.html">
+							Bookkeeping<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Bookkeeping.Balance.html">
+							Balance<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Bookkeeping.Balance.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Bookkeeping.Balance.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Bookkeeping.Basket.html">
+							Basket<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Bookkeeping.Basket.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Bookkeeping.Basket.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Bookkeeping.Invoice.html">
+							Invoice<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Bookkeeping.Invoice.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Bookkeeping.Invoice.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Inventory.html">
+							Inventory<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Inventory.Commodity.html">
+							Commodity<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Inventory.Commodity.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Inventory.Commodity.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Inventory.Item.html">
+							Item<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Inventory.Item.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Billing.Inventory.Item.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li></ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Contact.html">
+							Contact<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Contact.Address.html">
+							Address<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Contact.Address.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Contact.Address.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Contact.Mail.html">
+							Mail<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Contact.Mail.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Contact.Mail.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Contact.Phone.html">
+							Phone<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Contact.Phone.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Contact.Phone.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Corporation.html">
+							Corporation<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Corporation.Company.html">
+							Company<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Corporation.Company.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Corporation.Company.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Corporation.Group.html">
+							Group<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Corporation.Group.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Corporation.Group.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Corporation.Search.html">
+							Search<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Corporation.Search.Group.html">
+							Group						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Document.html">
+							Document<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Document.Custom.html">
+							Custom<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Document.Custom.Lebenswelt.html">
+							Lebenswelt						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Document.Explorer.html">
+							Explorer<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Document.Explorer.Storage.html">
+							Storage<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Document.Explorer.Storage.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Document.Explorer.Storage.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Document.Explorer.Storage.Writer.html">
+							Writer<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Document.Explorer.Storage.Writer.Type.html">
+							Type						</a>
+							</li>
+								</ul></li></ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Document.Generator.html">
+							Generator<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Document.Generator.Repository.html">
+							Repository						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Document.Standard.html">
+							Standard<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Document.Standard.EnrollmentDocument.html">
+							EnrollmentDocument						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Document.Storage.html">
+							Storage<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Document.Storage.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Document.Storage.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.html">
+							Education<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Certificate.html">
+							Certificate<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Certificate.Approve.html">
+							Approve						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Certificate.Generator.html">
+							Generator<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Certificate.Generator.Repository.html">
+							Repository<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Certificate.Generator.Repository.Element.html">
+							Element						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Certificate.Generator.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Certificate.Generator.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Certificate.GradeInformation.html">
+							GradeInformation						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Certificate.Prepare.html">
+							Prepare<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Certificate.Prepare.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Certificate.Prepare.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Certificate.PrintCertificate.html">
+							PrintCertificate						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Certificate.Setting.html">
+							Setting						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.ClassRegister.html">
+							ClassRegister<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.ClassRegister.Absence.html">
+							Absence<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.ClassRegister.Absence.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.ClassRegister.Absence.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.ClassRegister.ReportingClassList.html">
+							ReportingClassList						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.ClassRegister.Sort.html">
+							Sort						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Graduation.html">
+							Graduation<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Graduation.Evaluation.html">
+							Evaluation<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Graduation.Evaluation.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Graduation.Evaluation.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Graduation.Gradebook.html">
+							Gradebook<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Graduation.Gradebook.MinimumGradeCount.html">
+							MinimumGradeCount						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Graduation.Gradebook.ScoreRule.html">
+							ScoreRule						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Graduation.Gradebook.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Graduation.Gradebook.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Lesson.html">
+							Lesson<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Lesson.Division.html">
+							Division<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Lesson.Division.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Lesson.Division.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Lesson.Subject.html">
+							Subject<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Lesson.Subject.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Lesson.Subject.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Lesson.Term.html">
+							Term<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Lesson.Term.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.Lesson.Term.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.School.html">
+							School<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.School.Building.html">
+							Building						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.School.Course.html">
+							Course<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.School.Course.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.School.Course.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.School.Type.html">
+							Type<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.School.Type.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Education.School.Type.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li></ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Manual.html">
+							Manual<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Manual.General.html">
+							General						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Manual.Kreda.html">
+							Kreda						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Manual.StyleBook.html">
+							StyleBook						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Manual.Support.html">
+							Support						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.People.html">
+							People<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Group.html">
+							Group<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Group.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Group.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Meta.html">
+							Meta<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Meta.Club.html">
+							Club<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Meta.Club.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Meta.Club.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Meta.Common.html">
+							Common<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Meta.Common.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Meta.Common.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Meta.Custody.html">
+							Custody<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Meta.Custody.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Meta.Custody.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Meta.Prospect.html">
+							Prospect<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Meta.Prospect.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Meta.Prospect.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Meta.Student.html">
+							Student<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Meta.Student.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Meta.Student.Service.Data.html">
+							Data						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Meta.Student.Service.Entity.html">
+							Entity						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Meta.Student.Service.Service.html">
+							Service						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Meta.Teacher.html">
+							Teacher<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Meta.Teacher.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Meta.Teacher.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Person.html">
+							Person<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Person.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Person.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Relationship.html">
+							Relationship<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Relationship.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Relationship.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Search.html">
+							Search<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Search.Filter.html">
+							Filter						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.People.Search.Group.html">
+							Group						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.html">
+							Platform<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.Assistance.html">
+							Assistance<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.Assistance.Error.html">
+							Error						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.Assistance.Support.html">
+							Support						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.Gatekeeper.html">
+							Gatekeeper<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authentication.html">
+							Authentication						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.html">
+							Authorization<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Access.html">
+							Access<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Access.Frontend.html">
+							Frontend						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Access.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Access.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Account.html">
+							Account<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Account.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Account.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Consumer.html">
+							Consumer<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Consumer.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Consumer.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Token.html">
+							Token<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Token.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.Gatekeeper.Authorization.Token.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li></ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.Roadmap.html">
+							Roadmap<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.Roadmap.Youtrack.html">
+							Youtrack						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.System.html">
+							System<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.System.Archive.html">
+							Archive<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.System.Archive.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.System.Archive.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.System.Cache.html">
+							Cache<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.System.Cache.Frontend.html">
+							Frontend						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.System.Database.html">
+							Database						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.System.Protocol.html">
+							Protocol<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.System.Protocol.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.System.Protocol.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.System.Session.html">
+							Session						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.System.Test.html">
+							Test<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.System.Test.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Platform.System.Test.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li></ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.html">
+							Reporting<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.CheckList.html">
+							CheckList<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.CheckList.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.CheckList.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.Custom.html">
+							Custom<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.Custom.Chemnitz.html">
+							Chemnitz<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.Custom.Chemnitz.Person.html">
+							Person						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.Custom.Coswig.html">
+							Coswig<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.Custom.Coswig.Person.html">
+							Person						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.Custom.Herrnhut.html">
+							Herrnhut<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.Custom.Herrnhut.Person.html">
+							Person						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.Custom.Hormersdorf.html">
+							Hormersdorf<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.Custom.Hormersdorf.Person.html">
+							Person						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.Custom.Radebeul.html">
+							Radebeul<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.Custom.Radebeul.Person.html">
+							Person						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.Custom.Schneeberg.html">
+							Schneeberg<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.Custom.Schneeberg.Person.html">
+							Person						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.Dynamic.html">
+							Dynamic<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.Dynamic.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.Dynamic.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.SerialLetter.html">
+							SerialLetter<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.SerialLetter.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.SerialLetter.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.Standard.html">
+							Standard<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.Standard.Company.html">
+							Company						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Reporting.Standard.Person.html">
+							Person						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Setting.html">
+							Setting<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Setting.Authorization.html">
+							Authorization<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Setting.Authorization.Account.html">
+							Account						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Setting.Authorization.Token.html">
+							Token						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Setting.Consumer.html">
+							Consumer<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Setting.Consumer.Responsibility.html">
+							Responsibility<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Setting.Consumer.Responsibility.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Setting.Consumer.Responsibility.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Setting.Consumer.School.html">
+							School<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Setting.Consumer.School.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Setting.Consumer.School.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Setting.Consumer.SponsorAssociation.html">
+							SponsorAssociation<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Setting.Consumer.SponsorAssociation.Service.html">
+							Service<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Setting.Consumer.SponsorAssociation.Service.Entity.html">
+							Entity						</a>
+							</li>
+								</ul></li></ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Setting.MyAccount.html">
+							MyAccount						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.html">
+							Transfer<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Export.html">
+							Export<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Export.Datev.html">
+							Datev						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Export.Invoice.html">
+							Invoice						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Gateway.html">
+							Gateway<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Gateway.Converter.html">
+							Converter						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Gateway.Fragment.html">
+							Fragment<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Gateway.Fragment.People.html">
+							People						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Gateway.Item.html">
+							Item<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Gateway.Item.Contact.html">
+							Contact						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Gateway.Item.Person.html">
+							Person						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Gateway.Operation.html">
+							Operation						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Gateway.Structure.html">
+							Structure						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Import.html">
+							Import<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Import.Annaberg.html">
+							Annaberg						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Import.Chemnitz.html">
+							Chemnitz<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Import.Chemnitz.Service.html">
+							Service						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Import.Coswig.html">
+							Coswig						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Import.FuxMedia.html">
+							FuxMedia<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Import.FuxMedia.Service.html">
+							Service						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Import.Herrnhut.html">
+							Herrnhut						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Import.Hormersdorf.html">
+							Hormersdorf						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Import.LebensweltZwenkau.html">
+							LebensweltZwenkau						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Import.Muldental.html">
+							Muldental						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Import.Radebeul.html">
+							Radebeul						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Import.Schneeberg.html">
+							Schneeberg						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Application.Transfer.Import.Seelitz.html">
+							Seelitz						</a>
+							</li>
+								</ul></li></ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Common.html">
+							Common<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Common.Documentation.html">
+							Documentation<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Common.Documentation.Content.html">
+							Content						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Common.Documentation.Designer.html">
+							Designer						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Common.Frontend.html">
+							Frontend<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Common.Frontend.Form.html">
+							Form<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Common.Frontend.Form.Repository.html">
+							Repository<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Common.Frontend.Form.Repository.Button.html">
+							Button						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Common.Frontend.Form.Repository.Field.html">
+							Field						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Common.Frontend.Form.Structure.html">
+							Structure						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Common.Frontend.Icon.html">
+							Icon<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Common.Frontend.Icon.Repository.html">
+							Repository						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Common.Frontend.Layout.html">
+							Layout<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Common.Frontend.Layout.Repository.html">
+							Repository<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Common.Frontend.Layout.Repository.Label.html">
+							Label						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Common.Frontend.Layout.Structure.html">
+							Structure						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Common.Frontend.Link.html">
+							Link<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Common.Frontend.Link.Repository.html">
+							Repository<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Common.Frontend.Link.Repository.Backward.html">
+							Backward						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Common.Frontend.Link.Structure.html">
+							Structure						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Common.Frontend.Message.html">
+							Message<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Common.Frontend.Message.Repository.html">
+							Repository						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Common.Frontend.Table.html">
+							Table<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Common.Frontend.Table.Repository.html">
+							Repository						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.Common.Frontend.Table.Structure.html">
+							Structure						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.Common.Frontend.Text.html">
+							Text<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Common.Frontend.Text.Repository.html">
+							Repository						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.Common.Window.html">
+							Window<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Common.Window.Navigation.html">
+							Navigation<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.Common.Window.Navigation.Link.html">
+							Link						</a>
+							</li>
+								</ul></li></ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.System.html">
+							System<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.System.Authenticator.html">
+							Authenticator<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.System.Authenticator.Type.html">
+							Type						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.System.Cache.html">
+							Cache<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.System.Cache.Handler.html">
+							Handler						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.System.Config.html">
+							Config<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.System.Config.Reader.html">
+							Reader						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.System.Database.html">
+							Database<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.System.Database.Binding.html">
+							Binding						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.System.Database.Filter.html">
+							Filter<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.System.Database.Filter.Criteria.html">
+							Criteria						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.System.Database.Filter.Link.html">
+							Link<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.System.Database.Filter.Link.Repository.html">
+							Repository						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.System.Database.Filter.Logic.html">
+							Logic						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.System.Database.Filter.Preparation.html">
+							Preparation						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.System.Database.Filter.Repository.html">
+							Repository						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.System.Database.Fitting.html">
+							Fitting						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.System.Database.Link.html">
+							Link						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.System.Database.Type.html">
+							Type						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.System.Debugger.html">
+							Debugger<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.System.Debugger.Logger.html">
+							Logger						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.System.Extension.html">
+							Extension<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.System.Extension.Repository.html">
+							Repository<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.System.Extension.Repository.Sorter.html">
+							Sorter						</a>
+							</li>
+								</ul></li></ul></li>
+					<li>
+						<a href="namespace-SPHERE.System.Proxy.html">
+							Proxy<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.System.Proxy.Type.html">
+							Type						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.System.Support.html">
+							Support<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.System.Support.Type.html">
+							Type						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-SPHERE.System.Token.html">
+							Token<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-SPHERE.System.Token.Type.html">
+							Type						</a>
+							</li>
+					<li>
+						<a href="namespace-SPHERE.System.Token.YubiKey.html">
+							YubiKey						</a>
+							</li>
+								</ul></li></ul></li></ul></li>
 			</ul>
 		</div>
-
-		<hr />
 
 
 		<div id="elements">
@@ -898,50 +1808,15 @@
 <div id="splitter"></div>
 
 <div id="right">
-<div id="rightInner">
-	<form id="search">
-		<input type="hidden" name="cx" value="" />
-		<input type="hidden" name="ie" value="UTF-8" />
-		<input type="text" name="q" class="text" />
-		<input type="submit" value="Search" class="Button" />
-	</form>
-
-	<div id="navigation">
-		<ul>
-			<li>
-				<a href="index.html" title="Overview"><span>Overview</span></a>
-			</li>
-			<li>
-				<a href="namespace-None.html" title="Summary of None"><span>Namespace</span></a>
-			</li>
-			<li class="active">
-<span>Class</span>			</li>
-		</ul>
-		<ul>
-			<li>
-				<a href="tree.html" title="Tree view of classes, interfaces, traits and exceptions"><span>Tree</span></a>
-			</li>
-			<li>
-				<a href="deprecated.html" title="List of deprecated elements"><span>Deprecated</span></a>
-			</li>
-			<li>
-				<a href="todo.html" title="Todo list"><span>Todo</span></a>
-			</li>
-		</ul>
-		<ul>
-		</ul>
-	</div>
-
+	<div id="rightInner">
 <div id="content" class="class">
 	<h1>Class FineDiff</h1>
 
 
 	<div class="description">
-	
-<p>FineDiff class</p>
+	<p>FineDiff class</p>
 
 <p>TODO: Document</p>
-
 	</div>
 
 
@@ -952,83 +1827,52 @@
 
 
 
-	<div class="info">
+	<div class="alert alert-info">
 		
 		
 		
 		
 
 				<b>Copyright:</b>
-				Copyright 2011 (c) Raymond Hill (<a
-href="http://raymondhill.net/blog/?p=441">http://raymondhill.net/blog/?p=441</a>)<br />
+				Copyright 2011 (c) Raymond Hill (http://raymondhill.net/blog/?p=441)<br>
 				<b>License:</b>
-				<a href="MIT">License (http://www.opensource.org/licenses/mit-license.php)</a><br />
-		<b>Located at</b> <a href="source-class-FineDiff.html#263-805" title="Go to source code">Application/Platform/System/Protocol/Difference/finediff.php</a><br />
+				<a href="MIT">License (http://www.opensource.org/licenses/mit-license.php)</a><br>
+			<b>Located at</b> <a href="source-class-FineDiff.html#263-805" title="Go to source code">Application/Platform/System/Protocol/Difference/finediff.php</a>
+		<br>
 	</div>
 
 
 
-	<table class="summary" id="methods">
-	<caption>Methods summary</caption>
-	<tr data-order="__construct" id="___construct">
+		<div class="panel panel-default">
+			<div class="panel-heading"><h2>Methods summary</h2></div>
+			<table class="summary table table-bordered table-striped methods" id="methods">
+		<tr data-order="__construct" id="___construct">
 
-		<td class="attributes"><code>
-			 public 
-			
-			
-			</code>
-		</td>
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
 
-		<td class="name"><div>
-		<a class="anchor" href="#___construct">#</a>
-		<code><a href="source-class-FineDiff.html#310-325" title="Go to source code">__construct</a>( <span>mixed <var>$from_text</var> = <span class="php-quote">''</span></span>, <span>mixed <var>$to_text</var> = <span class="php-quote">''</span></span>, <span>mixed <var>$granularityStack</var> = <span class="php-keyword1">null</span></span> )</code>
+			<td class="name"><div>
+			<a class="anchor" href="#___construct">#</a>
+			<code><a href="source-class-FineDiff.html#310-325" title="Go to source code">__construct</a>( <span> <var>$from_text</var> = <span class="php-quote">''</span></span>, <span> <var>$to_text</var> = <span class="php-quote">''</span></span>, <span> <var>$granularityStack</var> = <span class="php-keyword1">null</span></span> )</code>
 
-		<div class="description short">
-			
-<p>Constructor ... The $granularityStack allows FineDiff to be configurable so
-that a particular stack tailored to the specific content of a document can be
-passed.</p>
+			<div class="description short">
+				<p>Constructor
+...
+The $granularityStack allows FineDiff to be configurable so that
+a particular stack tailored to the specific content of a document can
+be passed.</p>
+			</div>
 
-		</div>
-
-		<div class="description detailed hidden">
-			
-<p>Constructor ... The $granularityStack allows FineDiff to be configurable so
-that a particular stack tailored to the specific content of a document can be
-passed.</p>
-
-
-
-
-
-
-
-
-		</div>
-		</div></td>
-	</tr>
-	<tr data-order="doDiff" id="_doDiff">
-
-		<td class="attributes"><code>
-			 private 
-			
-			
-			</code>
-		</td>
-
-		<td class="name"><div>
-		<a class="anchor" href="#_doDiff">#</a>
-		<code><a href="source-class-FineDiff.html#327-342" title="Go to source code">doDiff</a>( <span>mixed <var>$from_text</var></span>, <span>mixed <var>$to_text</var></span> )</code>
-
-		<div class="description short">
-			
-<p>Entry point to compute the diff.</p>
-
-		</div>
-
-		<div class="description detailed hidden">
-			
-<p>Entry point to compute the diff.</p>
+			<div class="description detailed hidden">
+				<p>Constructor
+...
+The $granularityStack allows FineDiff to be configurable so that
+a particular stack tailored to the specific content of a document can
+be passed.</p>
 
 
 
@@ -1036,37 +1880,28 @@ passed.</p>
 
 
 
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="doDiff" id="_doDiff">
 
-		</div>
-		</div></td>
-	</tr>
-	<tr data-order="_processGranularity" id="__processGranularity">
+			<td class="attributes"><code>
+				 private 
+				
+				
+				</code>
+			</td>
 
-		<td class="attributes"><code>
-			 private 
-			
-			
-			</code>
-		</td>
+			<td class="name"><div>
+			<a class="anchor" href="#_doDiff">#</a>
+			<code><a href="source-class-FineDiff.html#327-342" title="Go to source code">doDiff</a>( <span> <var>$from_text</var></span>, <span> <var>$to_text</var></span> )</code>
 
-		<td class="name"><div>
-		<a class="anchor" href="#__processGranularity">#</a>
-		<code><a href="source-class-FineDiff.html#344-378" title="Go to source code">_processGranularity</a>( <span>mixed <var>$from_segment</var></span>, <span>mixed <var>$to_segment</var></span> )</code>
+			<div class="description short">
+				<p>Entry point to compute the diff.</p>
+			</div>
 
-		<div class="description short">
-			
-<p>This is the recursive function which is responsible for handling/increasing
-granularity.</p>
-
-		</div>
-
-		<div class="description detailed hidden">
-			
-<p>This is the recursive function which is responsible for handling/increasing
-granularity.</p>
-
-<p>Incrementally increasing the granularity is key to compute the overall diff
-in a very efficient way.</p>
+			<div class="description detailed hidden">
+				<p>Entry point to compute the diff.</p>
 
 
 
@@ -1074,472 +1909,174 @@ in a very efficient way.</p>
 
 
 
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="_processGranularity" id="__processGranularity">
 
-		</div>
-		</div></td>
-	</tr>
-	<tr data-order="doFragmentDiff" id="_doFragmentDiff">
+			<td class="attributes"><code>
+				 private 
+				
+				
+				</code>
+			</td>
 
-		<td class="attributes"><code>
-			 private static
-			
-			
-			</code>
-		</td>
+			<td class="name"><div>
+			<a class="anchor" href="#__processGranularity">#</a>
+			<code><a href="source-class-FineDiff.html#344-378" title="Go to source code">_processGranularity</a>( <span> <var>$from_segment</var></span>, <span> <var>$to_segment</var></span> )</code>
 
-		<td class="name"><div>
-		<a class="anchor" href="#_doFragmentDiff">#</a>
-		<code><a href="source-class-FineDiff.html#380-521" title="Go to source code">doFragmentDiff</a>( <span>mixed <var>$from_text</var></span>, <span>mixed <var>$to_text</var></span>, <span>mixed <var>$delimiters</var></span> )</code>
+			<div class="description short">
+				<p>This is the recursive function which is responsible for
+handling/increasing granularity.</p>
+			</div>
 
-		<div class="description short">
-			
-<p>This is the core algorithm which actually perform the diff itself,
+			<div class="description detailed hidden">
+				<p>This is the recursive function which is responsible for
+handling/increasing granularity.</p>
+
+<p>Incrementally increasing the granularity is key to compute the
+overall diff in a very efficient way.</p>
+
+
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="doFragmentDiff" id="_doFragmentDiff">
+
+			<td class="attributes"><code>
+				 private static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_doFragmentDiff">#</a>
+			<code><a href="source-class-FineDiff.html#380-521" title="Go to source code">doFragmentDiff</a>( <span> <var>$from_text</var></span>, <span> <var>$to_text</var></span>, <span> <var>$delimiters</var></span> )</code>
+
+			<div class="description short">
+				<p>This is the core algorithm which actually perform the diff itself,
+fragmenting the strings as per specified delimiters.</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>This is the core algorithm which actually perform the diff itself,
 fragmenting the strings as per specified delimiters.</p>
 
-		</div>
+<p>This function is naturally recursive, however for performance purpose
+a local job queue is used instead of outright recursivity.</p>
 
-		<div class="description detailed hidden">
-			
-<p>This is the core algorithm which actually perform the diff itself,
-fragmenting the strings as per specified delimiters.</p>
 
-<p>This function is naturally recursive, however for performance purpose a local
-job queue is used instead of outright recursivity.</p>
 
 
 
 
 
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="doCharDiff" id="_doCharDiff">
 
+			<td class="attributes"><code>
+				 private static
+				
+				
+				</code>
+			</td>
 
-
-		</div>
-		</div></td>
-	</tr>
-	<tr data-order="doCharDiff" id="_doCharDiff">
-
-		<td class="attributes"><code>
-			 private static
-			
-			
-			</code>
-		</td>
-
-		<td class="name"><div>
-		<a class="anchor" href="#_doCharDiff">#</a>
-		<code><a href="source-class-FineDiff.html#523-613" title="Go to source code">doCharDiff</a>( <span>mixed <var>$from_text</var></span>, <span>mixed <var>$to_text</var></span> )</code>
-
-		<div class="description short">
-			
-<p>Perform a character-level diff.</p>
-
-		</div>
-
-		<div class="description detailed hidden">
-			
-<p>Perform a character-level diff.</p>
-
-<p>The algorithm is quite similar to doFragmentDiff(), except that the code path
-is optimized for character-level diff -- strpos() is used to find out the
-longest common subequence of characters.</p>
-
-<p>We try to find a match using the longest possible subsequence, which is at
-most the length of the shortest of the two strings, then incrementally reduce
-the size until a match is found.</p>
-
-<p>I still need to study more the performance of this function. It appears that
-for long strings, the generic doFragmentDiff() is more performant. For
-word-sized strings, doCharDiff() is somewhat more performant.</p>
-
-
-
-
-
-
-
-
-		</div>
-		</div></td>
-	</tr>
-	<tr data-order="extractFragments" id="_extractFragments">
-
-		<td class="attributes"><code>
-			 private static
-			
-			
-			</code>
-		</td>
-
-		<td class="name"><div>
-		<a class="anchor" href="#_extractFragments">#</a>
-		<code><a href="source-class-FineDiff.html#615-647" title="Go to source code">extractFragments</a>( <span>mixed <var>$text</var></span>, <span>mixed <var>$delimiters</var></span> )</code>
-
-		<div class="description short">
-			
-<p>Efficiently fragment the text into an array according to specified
-delimiters. No delimiters means fragment into single character. The array
-indices are the offset of the fragments into the input string. A sentinel empty
-fragment is always added at the end. Careful: No check is performed as to the
-validity of the delimiters.</p>
-
-		</div>
-
-		<div class="description detailed hidden">
-			
-<p>Efficiently fragment the text into an array according to specified
-delimiters. No delimiters means fragment into single character. The array
-indices are the offset of the fragments into the input string. A sentinel empty
-fragment is always added at the end. Careful: No check is performed as to the
-validity of the delimiters.</p>
-
-
-
-
-
-
-
-
-		</div>
-		</div></td>
-	</tr>
-	<tr data-order="getDiffOpcodes" id="_getDiffOpcodes">
-
-		<td class="attributes"><code>
-			 public static
-			
-			
-			</code>
-		</td>
-
-		<td class="name"><div>
-		<a class="anchor" href="#_getDiffOpcodes">#</a>
-		<code><a href="source-class-FineDiff.html#653-658" title="Go to source code">getDiffOpcodes</a>( <span>mixed <var>$from</var></span>, <span>mixed <var>$to</var></span>, <span>mixed <var>$granularities</var> = <span class="php-keyword1">null</span></span> )</code>
-
-		<div class="description short">
-			
-		</div>
-
-		<div class="description detailed hidden">
-			
-
-
-
-
-
-
-
-		</div>
-		</div></td>
-	</tr>
-	<tr data-order="getOpcodes" id="_getOpcodes">
-
-		<td class="attributes"><code>
-			 public 
-			
-			
-			</code>
-		</td>
-
-		<td class="name"><div>
-		<a class="anchor" href="#_getOpcodes">#</a>
-		<code><a href="source-class-FineDiff.html#660-668" title="Go to source code">getOpcodes</a>( )</code>
-
-		<div class="description short">
-			
-		</div>
-
-		<div class="description detailed hidden">
-			
-
-
-
-
-
-
-
-		</div>
-		</div></td>
-	</tr>
-	<tr data-order="getDiffOpsFromOpcodes" id="_getDiffOpsFromOpcodes">
-
-		<td class="attributes"><code>
-			 public static
-			
-			
-			</code>
-		</td>
-
-		<td class="name"><div>
-		<a class="anchor" href="#_getDiffOpsFromOpcodes">#</a>
-		<code><a href="source-class-FineDiff.html#673-679" title="Go to source code">getDiffOpsFromOpcodes</a>( <span>mixed <var>$opcodes</var></span> )</code>
-
-		<div class="description short">
-			
-		</div>
-
-		<div class="description detailed hidden">
-			
-
-
-
-
-
-
-
-		</div>
-		</div></td>
-	</tr>
-	<tr data-order="renderFromOpcodes" id="_renderFromOpcodes">
-
-		<td class="attributes"><code>
-			 public static
-			
-			
-			</code>
-		</td>
-
-		<td class="name"><div>
-		<a class="anchor" href="#_renderFromOpcodes">#</a>
-		<code><a href="source-class-FineDiff.html#691-721" title="Go to source code">renderFromOpcodes</a>( <span>mixed <var>$from</var></span>, <span>mixed <var>$opcodes</var></span>, <span>mixed <var>$callback</var></span> )</code>
-
-		<div class="description short">
-			
-		</div>
-
-		<div class="description detailed hidden">
-			
-
-
-
-
-
-
-
-		</div>
-		</div></td>
-	</tr>
-	<tr data-order="renderToTextFromOpcodes" id="_renderToTextFromOpcodes">
-
-		<td class="attributes"><code>
-			 public static
-			
-			
-			</code>
-		</td>
-
-		<td class="name"><div>
-		<a class="anchor" href="#_renderToTextFromOpcodes">#</a>
-		<code><a href="source-class-FineDiff.html#726-732" title="Go to source code">renderToTextFromOpcodes</a>( <span>mixed <var>$from</var></span>, <span>mixed <var>$opcodes</var></span> )</code>
-
-		<div class="description short">
-			
-		</div>
-
-		<div class="description detailed hidden">
-			
-
-
-
-
-
-
-
-		</div>
-		</div></td>
-	</tr>
-	<tr data-order="renderDiffToHTMLFromOpcodes" id="_renderDiffToHTMLFromOpcodes">
-
-		<td class="attributes"><code>
-			 public static
-			
-			
-			</code>
-		</td>
-
-		<td class="name"><div>
-		<a class="anchor" href="#_renderDiffToHTMLFromOpcodes">#</a>
-		<code><a href="source-class-FineDiff.html#737-743" title="Go to source code">renderDiffToHTMLFromOpcodes</a>( <span>mixed <var>$from</var></span>, <span>mixed <var>$opcodes</var></span> )</code>
-
-		<div class="description short">
-			
-		</div>
-
-		<div class="description detailed hidden">
-			
-
-
-
-
-
-
-
-		</div>
-		</div></td>
-	</tr>
-	<tr data-order="renderToTextFromOpcode" id="_renderToTextFromOpcode">
-
-		<td class="attributes"><code>
-			 private static
-			
-			
-			</code>
-		</td>
-
-		<td class="name"><div>
-		<a class="anchor" href="#_renderToTextFromOpcode">#</a>
-		<code><a href="source-class-FineDiff.html#745-754" title="Go to source code">renderToTextFromOpcode</a>( <span>mixed <var>$opcode</var></span>, <span>mixed <var>$from</var></span>, <span>mixed <var>$from_offset</var></span>, <span>mixed <var>$from_len</var></span> )</code>
-
-		<div class="description short">
-			
-<p>Stock opcode renderers</p>
-
-		</div>
-
-		<div class="description detailed hidden">
-			
-<p>Stock opcode renderers</p>
-
-
-
-
-
-
-
-
-		</div>
-		</div></td>
-	</tr>
-	<tr data-order="getOps" id="_getOps">
-
-		<td class="attributes"><code>
-			 public 
-			
-			
-			</code>
-		</td>
-
-		<td class="name"><div>
-		<a class="anchor" href="#_getOps">#</a>
-		<code><a href="source-class-FineDiff.html#756-760" title="Go to source code">getOps</a>( )</code>
-
-		<div class="description short">
-			
-		</div>
-
-		<div class="description detailed hidden">
-			
-
-
-
-
-
-
-
-		</div>
-		</div></td>
-	</tr>
-	<tr data-order="renderDiffToHTML" id="_renderDiffToHTML">
-
-		<td class="attributes"><code>
-			 public 
-			
-			
-			</code>
-		</td>
-
-		<td class="name"><div>
-		<a class="anchor" href="#_renderDiffToHTML">#</a>
-		<code><a href="source-class-FineDiff.html#762-786" title="Go to source code">renderDiffToHTML</a>( )</code>
-
-		<div class="description short">
-			
-		</div>
-
-		<div class="description detailed hidden">
-			
-
-
-
-
-
-
-
-		</div>
-		</div></td>
-	</tr>
-	<tr data-order="renderDiffToHTMLFromOpcode" id="_renderDiffToHTMLFromOpcode">
-
-		<td class="attributes"><code>
-			 private static
-			
-			
-			</code>
-		</td>
-
-		<td class="name"><div>
-		<a class="anchor" href="#_renderDiffToHTMLFromOpcode">#</a>
-		<code><a href="source-class-FineDiff.html#788-804" title="Go to source code">renderDiffToHTMLFromOpcode</a>( <span>mixed <var>$opcode</var></span>, <span>mixed <var>$from</var></span>, <span>mixed <var>$from_offset</var></span>, <span>mixed <var>$from_len</var></span> )</code>
-
-		<div class="description short">
-			
-		</div>
-
-		<div class="description detailed hidden">
-			
-
-
-
-
-
-
-
-		</div>
-		</div></td>
-	</tr>
-	</table>
-
-
-
-
-
-
-
-
-	<table class="summary" id="constants">
-	<caption>Constants summary</caption>
-	<tr data-order="paragraphDelimiters" id="paragraphDelimiters">
-
-		<td class="attributes"><code>string</code></td>
-		<td class="name"><code>
-				<a href="source-class-FineDiff.html#279-282" title="Go to source code"><b>paragraphDelimiters</b></a>
-		</code></td>
-		<td class="value"><code><span class="php-quote">&quot;\n\r&quot;</span></code></td>
-		<td class="description"><div>
-			<a href="#paragraphDelimiters" class="anchor">#</a>
+			<td class="name"><div>
+			<a class="anchor" href="#_doCharDiff">#</a>
+			<code><a href="source-class-FineDiff.html#523-613" title="Go to source code">doCharDiff</a>( <span> <var>$from_text</var></span>, <span> <var>$to_text</var></span> )</code>
 
 			<div class="description short">
-				
-<p>Stock granularity stacks and delimiters</p>
-
+				<p>Perform a character-level diff.</p>
 			</div>
 
 			<div class="description detailed hidden">
-				
-<p>Stock granularity stacks and delimiters</p>
+				<p>Perform a character-level diff.</p>
+
+<p>The algorithm is quite similar to doFragmentDiff(), except that
+the code path is optimized for character-level diff -- strpos() is
+used to find out the longest common subequence of characters.</p>
+
+<p>We try to find a match using the longest possible subsequence, which
+is at most the length of the shortest of the two strings, then incrementally
+reduce the size until a match is found.</p>
+
+<p>I still need to study more the performance of this function. It
+appears that for long strings, the generic doFragmentDiff() is more
+performant. For word-sized strings, doCharDiff() is somewhat more
+performant.</p>
+
+
+
+
+
 
 
 			</div>
-		</div></td>
-	</tr>
-	<tr data-order="sentenceDelimiters" id="sentenceDelimiters">
+			</div></td>
+		</tr>
+		<tr data-order="extractFragments" id="_extractFragments">
 
-		<td class="attributes"><code>string</code></td>
-		<td class="name"><code>
-				<a href="source-class-FineDiff.html#283" title="Go to source code"><b>sentenceDelimiters</b></a>
-		</code></td>
-		<td class="value"><code><span class="php-quote">&quot;.\n\r&quot;</span></code></td>
-		<td class="description"><div>
-			<a href="#sentenceDelimiters" class="anchor">#</a>
+			<td class="attributes"><code>
+				 private static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_extractFragments">#</a>
+			<code><a href="source-class-FineDiff.html#615-647" title="Go to source code">extractFragments</a>( <span> <var>$text</var></span>, <span> <var>$delimiters</var></span> )</code>
+
+			<div class="description short">
+				<p>Efficiently fragment the text into an array according to
+specified delimiters.
+No delimiters means fragment into single character.
+The array indices are the offset of the fragments into
+the input string.
+A sentinel empty fragment is always added at the end.
+Careful: No check is performed as to the validity of the
+delimiters.</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Efficiently fragment the text into an array according to
+specified delimiters.
+No delimiters means fragment into single character.
+The array indices are the offset of the fragments into
+the input string.
+A sentinel empty fragment is always added at the end.
+Careful: No check is performed as to the validity of the
+delimiters.</p>
+
+
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="getDiffOpcodes" id="_getDiffOpcodes">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_getDiffOpcodes">#</a>
+			<code><a href="source-class-FineDiff.html#653-658" title="Go to source code">getDiffOpcodes</a>( <span> <var>$from</var></span>, <span> <var>$to</var></span>, <span> <var>$granularities</var> = <span class="php-keyword1">null</span></span> )</code>
 
 			<div class="description short">
 				
@@ -1548,18 +2085,27 @@ validity of the delimiters.</p>
 			<div class="description detailed hidden">
 				
 
-			</div>
-		</div></td>
-	</tr>
-	<tr data-order="wordDelimiters" id="wordDelimiters">
 
-		<td class="attributes"><code>string</code></td>
-		<td class="name"><code>
-				<a href="source-class-FineDiff.html#284" title="Go to source code"><b>wordDelimiters</b></a>
-		</code></td>
-		<td class="value"><code><span class="php-quote">&quot; \t.\n\r&quot;</span></code></td>
-		<td class="description"><div>
-			<a href="#wordDelimiters" class="anchor">#</a>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="getOpcodes" id="_getOpcodes">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_getOpcodes">#</a>
+			<code><a href="source-class-FineDiff.html#660-668" title="Go to source code">getOpcodes</a>( )</code>
 
 			<div class="description short">
 				
@@ -1568,18 +2114,27 @@ validity of the delimiters.</p>
 			<div class="description detailed hidden">
 				
 
-			</div>
-		</div></td>
-	</tr>
-	<tr data-order="characterDelimiters" id="characterDelimiters">
 
-		<td class="attributes"><code>string</code></td>
-		<td class="name"><code>
-				<a href="source-class-FineDiff.html#285" title="Go to source code"><b>characterDelimiters</b></a>
-		</code></td>
-		<td class="value"><code><span class="php-quote">&quot;&quot;</span></code></td>
-		<td class="description"><div>
-			<a href="#characterDelimiters" class="anchor">#</a>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="getDiffOpsFromOpcodes" id="_getDiffOpsFromOpcodes">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_getDiffOpsFromOpcodes">#</a>
+			<code><a href="source-class-FineDiff.html#673-679" title="Go to source code">getDiffOpsFromOpcodes</a>( <span> <var>$opcodes</var></span> )</code>
 
 			<div class="description short">
 				
@@ -1588,150 +2143,481 @@ validity of the delimiters.</p>
 			<div class="description detailed hidden">
 				
 
+
+
+
+
+
+
 			</div>
-		</div></td>
-	</tr>
-	</table>
+			</div></td>
+		</tr>
+		<tr data-order="renderFromOpcodes" id="_renderFromOpcodes">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_renderFromOpcodes">#</a>
+			<code><a href="source-class-FineDiff.html#691-721" title="Go to source code">renderFromOpcodes</a>( <span> <var>$from</var></span>, <span> <var>$opcodes</var></span>, <span> <var>$callback</var></span> )</code>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
 
 
 
 
-	<table class="summary" id="properties">
-	<caption>Properties summary</caption>
-	<tr data-order="paragraphGranularity" id="$paragraphGranularity">
-		<td class="attributes"><code>
-			public static 
-			array
-		</code></td>
 
-		<td class="name">
-				<a href="source-class-FineDiff.html#286-288" title="Go to source code"><var>$paragraphGranularity</var></a>
-		</td>
-		<td class="value"><code><span class="php-keyword1">array</span>(
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="renderToTextFromOpcodes" id="_renderToTextFromOpcodes">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_renderToTextFromOpcodes">#</a>
+			<code><a href="source-class-FineDiff.html#726-732" title="Go to source code">renderToTextFromOpcodes</a>( <span> <var>$from</var></span>, <span> <var>$opcodes</var></span> )</code>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="renderDiffToHTMLFromOpcodes" id="_renderDiffToHTMLFromOpcodes">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_renderDiffToHTMLFromOpcodes">#</a>
+			<code><a href="source-class-FineDiff.html#737-743" title="Go to source code">renderDiffToHTMLFromOpcodes</a>( <span> <var>$from</var></span>, <span> <var>$opcodes</var></span> )</code>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="renderToTextFromOpcode" id="_renderToTextFromOpcode">
+
+			<td class="attributes"><code>
+				 private static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_renderToTextFromOpcode">#</a>
+			<code><a href="source-class-FineDiff.html#745-754" title="Go to source code">renderToTextFromOpcode</a>( <span> <var>$opcode</var></span>, <span> <var>$from</var></span>, <span> <var>$from_offset</var></span>, <span> <var>$from_len</var></span> )</code>
+
+			<div class="description short">
+				<p>Stock opcode renderers</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Stock opcode renderers</p>
+
+
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="getOps" id="_getOps">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_getOps">#</a>
+			<code><a href="source-class-FineDiff.html#756-760" title="Go to source code">getOps</a>( )</code>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="renderDiffToHTML" id="_renderDiffToHTML">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_renderDiffToHTML">#</a>
+			<code><a href="source-class-FineDiff.html#762-786" title="Go to source code">renderDiffToHTML</a>( )</code>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="renderDiffToHTMLFromOpcode" id="_renderDiffToHTMLFromOpcode">
+
+			<td class="attributes"><code>
+				 private static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_renderDiffToHTMLFromOpcode">#</a>
+			<code><a href="source-class-FineDiff.html#788-804" title="Go to source code">renderDiffToHTMLFromOpcode</a>( <span> <var>$opcode</var></span>, <span> <var>$from</var></span>, <span> <var>$from_offset</var></span>, <span> <var>$from_len</var></span> )</code>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+			</table>
+		</div>
+
+
+
+
+
+
+
+
+		<div class="panel panel-default">
+            <div class="panel-heading"><h2>Constants summary</h2></div>
+			<table class="summary table table-bordered table-striped constants" id="constants">
+			<tr data-order="paragraphDelimiters" id="paragraphDelimiters">
+
+				<td class="attributes"><code>string</code></td>
+				<td class="name">
+					<code>
+						<a href="source-class-FineDiff.html#279-282" title="Go to source code"><b>paragraphDelimiters</b></a>
+					</code>
+
+					<div class="description short">
+						<p>Stock granularity stacks and delimiters</p>
+					</div>
+
+					<div class="description detailed hidden">
+						<p>Stock granularity stacks and delimiters</p>
+
+					</div>
+				</td>
+				<td class="value">
+					<div>
+						<a href="#paragraphDelimiters" class="anchor">#</a>
+						<code><span class="php-quote">&quot;\n\r&quot;</span></code>
+					</div>
+				</td>
+			</tr>
+			<tr data-order="sentenceDelimiters" id="sentenceDelimiters">
+
+				<td class="attributes"><code>string</code></td>
+				<td class="name">
+					<code>
+						<a href="source-class-FineDiff.html#283" title="Go to source code"><b>sentenceDelimiters</b></a>
+					</code>
+
+					<div class="description short">
+						
+					</div>
+
+					<div class="description detailed hidden">
+						
+
+					</div>
+				</td>
+				<td class="value">
+					<div>
+						<a href="#sentenceDelimiters" class="anchor">#</a>
+						<code><span class="php-quote">&quot;.\n\r&quot;</span></code>
+					</div>
+				</td>
+			</tr>
+			<tr data-order="wordDelimiters" id="wordDelimiters">
+
+				<td class="attributes"><code>string</code></td>
+				<td class="name">
+					<code>
+						<a href="source-class-FineDiff.html#284" title="Go to source code"><b>wordDelimiters</b></a>
+					</code>
+
+					<div class="description short">
+						
+					</div>
+
+					<div class="description detailed hidden">
+						
+
+					</div>
+				</td>
+				<td class="value">
+					<div>
+						<a href="#wordDelimiters" class="anchor">#</a>
+						<code><span class="php-quote">&quot; \t.\n\r&quot;</span></code>
+					</div>
+				</td>
+			</tr>
+			<tr data-order="characterDelimiters" id="characterDelimiters">
+
+				<td class="attributes"><code>string</code></td>
+				<td class="name">
+					<code>
+						<a href="source-class-FineDiff.html#285" title="Go to source code"><b>characterDelimiters</b></a>
+					</code>
+
+					<div class="description short">
+						
+					</div>
+
+					<div class="description detailed hidden">
+						
+
+					</div>
+				</td>
+				<td class="value">
+					<div>
+						<a href="#characterDelimiters" class="anchor">#</a>
+						<code><span class="php-quote">&quot;&quot;</span></code>
+					</div>
+				</td>
+			</tr>
+			</table>
+		</div>
+
+
+
+
+		<div class="panel panel-default">
+            <div class="panel-heading"><h2>Properties summary</h2></div>
+			<table class="summary table table-bordered table-striped properties" id="properties">
+		<tr data-order="paragraphGranularity" id="$paragraphGranularity">
+			<td class="attributes"><code>
+				public static 
+				array
+			</code></td>
+
+			<td class="name">
+					<a href="source-class-FineDiff.html#286-288" title="Go to source code"><var>$paragraphGranularity</var></a>
+
+				<div class="description short">
+					
+				</div>
+
+				<div class="description detailed hidden">
+					
+
+				</div>
+			</td>
+			<td class="value">
+				<div>
+					<a href="#$paragraphGranularity" class="anchor">#</a>
+					<code><span class="php-keyword1">array</span>(
     FineDiff::paragraphDelimiters
-)</code></td>
-		<td class="description"><div>
-			<a href="#$paragraphGranularity" class="anchor">#</a>
+)</code>
+				</div>
+			</td>
+		</tr>
+		<tr data-order="sentenceGranularity" id="$sentenceGranularity">
+			<td class="attributes"><code>
+				public static 
+				array
+			</code></td>
 
-			<div class="description short">
-				
-			</div>
+			<td class="name">
+					<a href="source-class-FineDiff.html#289-292" title="Go to source code"><var>$sentenceGranularity</var></a>
 
-			<div class="description detailed hidden">
-				
+				<div class="description short">
+					
+				</div>
 
-			</div>
-		</div></td>
-	</tr>
-	<tr data-order="sentenceGranularity" id="$sentenceGranularity">
-		<td class="attributes"><code>
-			public static 
-			array
-		</code></td>
+				<div class="description detailed hidden">
+					
 
-		<td class="name">
-				<a href="source-class-FineDiff.html#289-292" title="Go to source code"><var>$sentenceGranularity</var></a>
-		</td>
-		<td class="value"><code><span class="php-keyword1">array</span>(
+				</div>
+			</td>
+			<td class="value">
+				<div>
+					<a href="#$sentenceGranularity" class="anchor">#</a>
+					<code><span class="php-keyword1">array</span>(
     FineDiff::paragraphDelimiters,
     FineDiff::sentenceDelimiters
-)</code></td>
-		<td class="description"><div>
-			<a href="#$sentenceGranularity" class="anchor">#</a>
+)</code>
+				</div>
+			</td>
+		</tr>
+		<tr data-order="wordGranularity" id="$wordGranularity">
+			<td class="attributes"><code>
+				public static 
+				array
+			</code></td>
 
-			<div class="description short">
-				
-			</div>
+			<td class="name">
+					<a href="source-class-FineDiff.html#293-297" title="Go to source code"><var>$wordGranularity</var></a>
 
-			<div class="description detailed hidden">
-				
+				<div class="description short">
+					
+				</div>
 
-			</div>
-		</div></td>
-	</tr>
-	<tr data-order="wordGranularity" id="$wordGranularity">
-		<td class="attributes"><code>
-			public static 
-			array
-		</code></td>
+				<div class="description detailed hidden">
+					
 
-		<td class="name">
-				<a href="source-class-FineDiff.html#293-297" title="Go to source code"><var>$wordGranularity</var></a>
-		</td>
-		<td class="value"><code><span class="php-keyword1">array</span>(
+				</div>
+			</td>
+			<td class="value">
+				<div>
+					<a href="#$wordGranularity" class="anchor">#</a>
+					<code><span class="php-keyword1">array</span>(
     FineDiff::paragraphDelimiters,
     FineDiff::sentenceDelimiters,
     FineDiff::wordDelimiters
-)</code></td>
-		<td class="description"><div>
-			<a href="#$wordGranularity" class="anchor">#</a>
+)</code>
+				</div>
+			</td>
+		</tr>
+		<tr data-order="characterGranularity" id="$characterGranularity">
+			<td class="attributes"><code>
+				public static 
+				array
+			</code></td>
 
-			<div class="description short">
-				
-			</div>
+			<td class="name">
+					<a href="source-class-FineDiff.html#298-303" title="Go to source code"><var>$characterGranularity</var></a>
 
-			<div class="description detailed hidden">
-				
+				<div class="description short">
+					
+				</div>
 
-			</div>
-		</div></td>
-	</tr>
-	<tr data-order="characterGranularity" id="$characterGranularity">
-		<td class="attributes"><code>
-			public static 
-			array
-		</code></td>
+				<div class="description detailed hidden">
+					
 
-		<td class="name">
-				<a href="source-class-FineDiff.html#298-303" title="Go to source code"><var>$characterGranularity</var></a>
-		</td>
-		<td class="value"><code><span class="php-keyword1">array</span>(
+				</div>
+			</td>
+			<td class="value">
+				<div>
+					<a href="#$characterGranularity" class="anchor">#</a>
+					<code><span class="php-keyword1">array</span>(
     FineDiff::paragraphDelimiters,
     FineDiff::sentenceDelimiters,
     FineDiff::wordDelimiters,
     FineDiff::characterDelimiters
-)</code></td>
-		<td class="description"><div>
-			<a href="#$characterGranularity" class="anchor">#</a>
+)</code>
+				</div>
+			</td>
+		</tr>
+		<tr data-order="textStack" id="$textStack">
+			<td class="attributes"><code>
+				public static 
+				array
+			</code></td>
 
-			<div class="description short">
-				
-			</div>
+			<td class="name">
+					<a href="source-class-FineDiff.html#304-308" title="Go to source code"><var>$textStack</var></a>
 
-			<div class="description detailed hidden">
-				
+				<div class="description short">
+					
+				</div>
 
-			</div>
-		</div></td>
-	</tr>
-	<tr data-order="textStack" id="$textStack">
-		<td class="attributes"><code>
-			public static 
-			array
-		</code></td>
+				<div class="description detailed hidden">
+					
 
-		<td class="name">
-				<a href="source-class-FineDiff.html#304-308" title="Go to source code"><var>$textStack</var></a>
-		</td>
-		<td class="value"><code><span class="php-keyword1">array</span>(
+				</div>
+			</td>
+			<td class="value">
+				<div>
+					<a href="#$textStack" class="anchor">#</a>
+					<code><span class="php-keyword1">array</span>(
     <span class="php-quote">&quot;.&quot;</span>,
     <span class="php-quote">&quot; \t.\n\r&quot;</span>,
     <span class="php-quote">&quot;&quot;</span>
-)</code></td>
-		<td class="description"><div>
-			<a href="#$textStack" class="anchor">#</a>
-
-			<div class="description short">
-				
-			</div>
-
-			<div class="description detailed hidden">
-				
-
-			</div>
-		</div></td>
-	</tr>
-	</table>
+)</code>
+				</div>
+			</td>
+		</tr>
+			</table>
+		</div>
 
 
 
@@ -1739,27 +2625,13 @@ validity of the delimiters.</p>
 
 
 </div>
+	</div>
 
 	<div id="footer">
-		1.8.5 API documentation generated by <a href="http://apigen.org">ApiGen 2.8.0</a>
+		SPHERE Framework 1.8.5 API documentation generated by <a href="http://apigen.org">ApiGen</a>
 	</div>
 </div>
-</div>
-
-		<div style="clear: both;"></div>
-	</div>
-</div>
-
-<div id="BottomBar">
-	<ul>
-		<li>Powered by <a href="http://github.com"
-		       style="background: transparent url('resources/GitHub-Mark-Light-32px.png') no-repeat left center; padding-left: 42px; margin-left: 5px;">GitHub</a>
-		</li>
-		<li>
-			1.8.5 API documentation generated by <a href="http://apigen.org">ApiGen 2.8.0</a>
-		</li>
-	</ul>
-</div>
-
+<script src="resources/combined.js"></script>
+<script src="elementlist.js"></script>
 </body>
 </html>
