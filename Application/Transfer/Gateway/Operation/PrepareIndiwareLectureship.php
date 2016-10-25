@@ -6,7 +6,6 @@ use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
 use SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject;
 use SPHERE\Application\Education\Lesson\Subject\Subject;
 use SPHERE\Application\Education\Lesson\Term\Service\Entity\TblYear;
-use SPHERE\Application\People\Group\Group;
 use SPHERE\Application\People\Meta\Teacher\Teacher;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Transfer\Gateway\Converter\AbstractConverter;
@@ -16,10 +15,7 @@ use SPHERE\Common\Frontend\Icon\Repository\Blackboard;
 use SPHERE\Common\Frontend\Icon\Repository\Education;
 use SPHERE\Common\Frontend\Icon\Repository\Person;
 use SPHERE\Common\Frontend\Layout\Repository\Container;
-use SPHERE\Common\Frontend\Layout\Repository\Listing;
-use SPHERE\Common\Frontend\Layout\Repository\Paragraph;
 use SPHERE\Common\Frontend\Link\Repository\Link;
-use SPHERE\Common\Frontend\Link\Repository\Standard;
 use SPHERE\System\Database\Fitting\Element;
 
 /**
@@ -528,15 +524,23 @@ class PrepareIndiwareLectureship extends AbstractConverter
 
         $Level = '';
         $Group = '';
+        $hasMatch = false;
         // [0-9]+[a-z]+
         // TODO: Division: Combined Classes (Year/Group)
+        // TODO Radebeul z.B. Früh1
         if (preg_match('!^([0-9]+)([a-z]+)?$!is', $Value, $Match)) {
             if (isset( $Match[1] ) && isset( $Match[2] )) {
                 $Level = $Match[1];
                 $Group = $Match[2];
+                $hasMatch = true;
+            }
+        } elseif (preg_match('!([a-z]+)?$!is', $Value, $Match) ) {
+            if (isset($Match[1])) {
+                $Group = $Match[1];
+                $hasMatch = true;
             }
         }
-        if (empty( $Level ) && empty( $Group )) {
+        if (!$hasMatch) {
             return new Error($Value, Error::ERROR_LEVEL_DANGER_3, 'Klassenbezeichner kann nicht interpretiert werden');
         }
 
