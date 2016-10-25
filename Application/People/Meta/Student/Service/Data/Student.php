@@ -130,4 +130,23 @@ abstract class Student extends AbstractData
 
         return $this->getCachedEntityById(__METHOD__, $this->getConnection()->getEntityManager(), 'TblStudent', $Id);
     }
+
+    /**
+     * @param TblStudent $tblStudent
+     *
+     * @return bool
+     */
+    public function destroyStudent(TblStudent $tblStudent)
+    {
+
+        $Manager = $this->getConnection()->getEntityManager();
+        /** @var TblStudent $Entity */
+        $Entity = $Manager->getEntityById('TblStudent', $tblStudent->getId());
+        if (null !== $Entity) {
+            Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(), $Entity);
+            $Manager->removeEntity($Entity);
+            return true;
+        }
+        return false;
+    }
 }

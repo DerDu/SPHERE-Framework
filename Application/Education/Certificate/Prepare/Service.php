@@ -29,6 +29,7 @@ use SPHERE\Application\Education\Lesson\Division\Division;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
 use SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject;
 use SPHERE\Application\Education\Lesson\Term\Service\Entity\TblYear;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentSubject;
 use SPHERE\Application\People\Meta\Student\Student;
 use SPHERE\Application\People\Person\Person;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
@@ -610,9 +611,13 @@ class Service extends AbstractService
                 $tblCertificate,
                 true,
                 $tblPrepareStudent->isPrinted(),
-                Absence::useService()->getExcusedDaysByPerson($tblPerson, $tblDivision,
+                $tblPrepareStudent->getExcusedDays()
+                    ? $tblPrepareStudent->getExcusedDays()
+                    : Absence::useService()->getExcusedDaysByPerson($tblPerson, $tblDivision,
                     new \DateTime($tblPrepare->getDate())),
-                Absence::useService()->getUnexcusedDaysByPerson($tblPerson, $tblDivision,
+                $tblPrepareStudent->getUnexcusedDays()
+                    ? $tblPrepareStudent->getUnexcusedDays()
+                    : Absence::useService()->getUnexcusedDaysByPerson($tblPerson, $tblDivision,
                     new \DateTime($tblPrepare->getDate()))
             );
         } else {
@@ -638,10 +643,8 @@ class Service extends AbstractService
                 $tblCertificate,
                 $tblPrepareStudent->isApproved(),
                 true,
-                Absence::useService()->getExcusedDaysByPerson($tblPerson, $tblDivision,
-                    new \DateTime($tblPrepare->getDate())),
-                Absence::useService()->getUnexcusedDaysByPerson($tblPerson, $tblDivision,
-                    new \DateTime($tblPrepare->getDate()))
+                $tblPrepareStudent->getExcusedDays(),
+                $tblPrepareStudent->getUnexcusedDays()
             );
         } else {
             return false;
@@ -666,8 +669,8 @@ class Service extends AbstractService
                 $tblCertificate,
                 false,
                 $tblPrepareStudent->isPrinted(),
-                null,
-                null
+                $tblPrepareStudent->getExcusedDays(),
+                $tblPrepareStudent->getUnexcusedDays()
             );
         } else {
             return false;
@@ -851,6 +854,16 @@ class Service extends AbstractService
                     $tblTransferType);
                 if ($tblStudentTransfer) {
                     $tblCompany = $tblStudentTransfer->getServiceTblCompany();
+
+                    // Abschluss (Bildungsgang)
+                    $tblCourse = $tblStudentTransfer->getServiceTblCourse();
+                    if ($tblCourse) {
+                        if ($tblCourse->getName() == 'Hauptschule') {
+                            $Content['Student']['Course']['Degree'] = 'Hauptschulabschlusses';
+                        } elseif ($tblCourse->getName() == 'Realschule') {
+                            $Content['Student']['Course']['Degree'] = 'Realschulabschlusses';
+                        }
+                    }
                 }
             }
             if ($tblCompany) {
@@ -860,12 +873,12 @@ class Service extends AbstractService
             // Arbeitsgemeinschaften
             if ($tblStudent
                 && ($tblSubjectType = Student::useService()->getStudentSubjectTypeByIdentifier('TEAM'))
-                && ($tblSubjectList = Student::useService()->getStudentSubjectAllByStudentAndSubjectType(
+                && ($tblStudentSubjectList = Student::useService()->getStudentSubjectAllByStudentAndSubjectType(
                     $tblStudent, $tblSubjectType
                 ))
             ) {
                 $tempList = array();
-                foreach ($tblSubjectList as $tblStudentSubject) {
+                foreach ($tblStudentSubjectList as $tblStudentSubject) {
                     if ($tblStudentSubject->getServiceTblSubject()) {
                         $tempList[] = $tblStudentSubject->getServiceTblSubject()->getName();
                     }
@@ -878,12 +891,12 @@ class Service extends AbstractService
             // Fremdsprache ab Klassenstufe
             if ($tblStudent
                 && ($tblSubjectType = Student::useService()->getStudentSubjectTypeByIdentifier('FOREIGN_LANGUAGE'))
-                && ($tblSubjectList = Student::useService()->getStudentSubjectAllByStudentAndSubjectType(
+                && ($tblStudentSubjectList = Student::useService()->getStudentSubjectAllByStudentAndSubjectType(
                     $tblStudent, $tblSubjectType
                 ))
             ) {
-                if ($tblSubjectList) {
-                    foreach ($tblSubjectList as $tblStudentSubject) {
+                if ($tblStudentSubjectList) {
+                    foreach ($tblStudentSubjectList as $tblStudentSubject) {
                         if (($tblSubject = $tblStudentSubject->getServiceTblSubject())
                             && ($level = $tblStudentSubject->getServiceTblLevelFrom())
                         ) {
@@ -1001,6 +1014,62 @@ class Service extends AbstractService
                     $Content['Grade']['Data']['AverageOthers'] = str_replace('.', ',', $average);
                 }
             }
+
+            // Wahlpflichtbereich
+            if ($tblStudent) {
+
+                // Vertiefungskurs
+                if (($tblStudentSubjectType = Student::useService()->getStudentSubjectTypeByIdentifier('ADVANCED'))
+                    && ($tblStudentSubjectList = Student::useService()->getStudentSubjectAllByStudentAndSubjectType($tblStudent,
+                        $tblStudentSubjectType))
+                ) {
+                    /** @var TblStudentSubject $tblStudentSubject */
+                    $tblStudentSubject = current($tblStudentSubjectList);
+                    if (($tblSubjectAdvanced = $tblStudentSubject->getServiceTblSubject())) {
+                        $Content['Student']['Advanced'][$tblSubjectAdvanced->getAcronym()]['Name'] = $tblSubjectAdvanced->getName();
+                    }
+                }
+
+                // Neigungskurs
+                if (($tblStudentSubjectType = Student::useService()->getStudentSubjectTypeByIdentifier('ORIENTATION'))
+                    && ($tblStudentSubjectList = Student::useService()->getStudentSubjectAllByStudentAndSubjectType($tblStudent,
+                        $tblStudentSubjectType))
+                ) {
+                    /** @var TblStudentSubject $tblStudentSubject */
+                    $tblStudentSubject = current($tblStudentSubjectList);
+                    if (($tblSubjectOrientation = $tblStudentSubject->getServiceTblSubject())) {
+                        $Content['Student']['Orientation'][$tblSubjectOrientation->getAcronym()]['Name'] = $tblSubjectOrientation->getName();
+                    }
+                }
+
+                // 2. Fremdsprache
+                if (($tblStudentSubjectType = Student::useService()->getStudentSubjectTypeByIdentifier('FOREIGN_LANGUAGE'))
+                    && ($tblStudentSubjectList = Student::useService()->getStudentSubjectAllByStudentAndSubjectType($tblStudent,
+                        $tblStudentSubjectType))
+                ) {
+                    /** @var TblStudentSubject $tblStudentSubject */
+                    foreach ($tblStudentSubjectList as $tblStudentSubject) {
+                        if ($tblStudentSubject->getTblStudentSubjectRanking()
+                            && $tblStudentSubject->getTblStudentSubjectRanking()->getIdentifier() == '2'
+                            && ($tblSubjectForeignLanguage = $tblStudentSubject->getServiceTblSubject())
+                        ) {
+                            $Content['Student']['ForeignLanguage'][$tblSubjectForeignLanguage->getAcronym()]['Name'] = $tblSubjectForeignLanguage->getName();
+                        }
+                    }
+                }
+
+                // Profil
+                if (($tblStudentSubjectType = Student::useService()->getStudentSubjectTypeByIdentifier('PROFILE'))
+                    && ($tblStudentSubjectList = Student::useService()->getStudentSubjectAllByStudentAndSubjectType($tblStudent,
+                        $tblStudentSubjectType))
+                ) {
+                    /** @var TblStudentSubject $tblStudentSubject */
+                    $tblStudentSubject = current($tblStudentSubjectList);
+                    if (($tblSubjectProfile = $tblStudentSubject->getServiceTblSubject())) {
+                        $Content['Student']['Profile'][$tblSubjectProfile->getAcronym()]['Name'] = $tblSubjectProfile->getName();
+                    }
+                }
+            }
         }
 
         return $Content;
@@ -1071,6 +1140,7 @@ class Service extends AbstractService
 
             if ($tblPrepareGradeList) {
                 $gradeList = array();
+                /** @var TblPrepareGrade $tblPrepareGrade */
                 foreach ($tblPrepareGradeList as $tblPrepareGrade) {
                     if (($tblSubject = $tblPrepareGrade->getServiceTblSubject())) {
                         $tblCertificateSubject = Generator::useService()->getCertificateSubjectBySubject(
@@ -1235,5 +1305,68 @@ class Service extends AbstractService
                 }
             }
         }
+    }
+
+    /**
+     * @param IFormInterface|null $Stage
+     * @param TblPrepareCertificate $tblPrepare
+     * @param TblPerson $tblPerson
+     * @param $Data
+     *
+     * @return IFormInterface|string
+     */
+    public function setAbsenceDays(
+        IFormInterface $Stage = null,
+        TblPrepareCertificate $tblPrepare,
+        TblPerson $tblPerson,
+        $Data
+    ) {
+
+        /**
+         * Skip to Frontend
+         */
+        if (null === $Data) {
+            return $Stage;
+        }
+
+        $Error = false;
+        if (isset($Data['ExcusedDays']) && !preg_match('/^[0-9]+/', $Data['ExcusedDays'])) {
+            $Stage->setError('Data[ExcusedDays]', 'Bitte geben Sie die Anzahl der Tage ein');
+            $Error = true;
+        }
+        if (isset($Data['UnexcusedDays']) && !preg_match('/^[0-9]+/', $Data['UnexcusedDays'])) {
+            $Stage->setError('Data[UnexcusedDays]', 'Bitte geben Sie die Anzahl der Tage ein');
+            $Error = true;
+        }
+
+        if (!$Error) {
+            if (($tblPrepareStudent = $this->getPrepareStudentBy($tblPrepare, $tblPerson))) {
+                (new Data($this->getBinding()))->updatePrepareStudent(
+                    $tblPrepareStudent,
+                    $tblPrepareStudent->getServiceTblCertificate() ? $tblPrepareStudent->getServiceTblCertificate() : null,
+                    $tblPrepareStudent->isApproved(),
+                    $tblPrepareStudent->isPrinted(),
+                    $Data['ExcusedDays'],
+                    $Data['UnexcusedDays']
+                );
+            } else {
+                (new Data($this->getBinding()))->createPrepareStudent(
+                    $tblPrepare,
+                    $tblPerson,
+                    null,
+                    false,
+                    false,
+                    $Data['ExcusedDays'],
+                    $Data['UnexcusedDays']
+                );
+            }
+
+            return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success() . ' Die Fehlzeiten sind erfasst worden.')
+            . new Redirect('/Education/Certificate/Prepare/Division', Redirect::TIMEOUT_SUCCESS, array(
+                'PrepareId' => $tblPrepare->getId()
+            ));
+        }
+
+        return $Stage;
     }
 }

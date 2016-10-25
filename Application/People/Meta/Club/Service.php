@@ -42,7 +42,7 @@ class Service extends AbstractService
      * @param array $Meta
      * @param null $Group
      *
-     * @return IFormInterface|Redirect
+     * @return IFormInterface|string
      */
     public function createMeta(IFormInterface $Form = null, TblPerson $tblPerson, $Meta, $Group = null)
     {
@@ -121,5 +121,17 @@ class Service extends AbstractService
                 $Remark
             );
         }
+    }
+
+    /**
+     * @param TblClub $tblClub
+     * @param bool $IsSoftRemove
+     *
+     * @return bool
+     */
+    public function destroyClub(TblClub $tblClub, $IsSoftRemove = false)
+    {
+
+        return (new Data($this->getBinding()))->destroyClub($tblClub, $IsSoftRemove);
     }
 }

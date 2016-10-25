@@ -42,6 +42,7 @@ class Service extends Extension
                 $Item['Street'] = '';
                 $Item['ZipCode'] = '';
                 $Item['City'] = '';
+                $Item['District'] = '';
                 $Item['Parents'] = '';
                 $Item['Phone'] = '';
                 $Item['PhoneMother'] = '';
@@ -91,7 +92,8 @@ class Service extends Extension
                     $Item['Street'] = $address->getStreetName() . ' ' . $address->getStreetNumber();
                     if ($address->getTblCity()) {
                         $Item['ZipCode'] = $address->getTblCity()->getCode();
-                        $Item['City'] = $address->getTblCity()->getDisplayName();
+                        $Item['City'] = $address->getTblCity()->getName();
+                        $Item['District'] = $address->getTblCity()->getDistrict();
                     }
                 }
 
@@ -181,6 +183,7 @@ class Service extends Extension
             $export->setValue($export->getCell($column++, $row), 'Name');
             $export->setValue($export->getCell($column++, $row), 'Vorname');
             $export->setValue($export->getCell($column++, $row), 'Geburtstag');
+            $export->setValue($export->getCell($column++, $row), 'Ortsteil');
             $export->setValue($export->getCell($column++, $row), 'Straße');
             $export->setValue($export->getCell($column++, $row), 'PLZ');
             $export->setValue($export->getCell($column++, $row), 'Ort');
@@ -197,6 +200,7 @@ class Service extends Extension
                 $export->setValue($export->getCell($column++, $row), $PersonData['LastName']);
                 $export->setValue($export->getCell($column++, $row), $PersonData['FirstName']);
                 $export->setValue($export->getCell($column++, $row), $PersonData['Birthday']);
+                $export->setValue($export->getCell($column++, $row), $PersonData['District']);
                 $export->setValue($export->getCell($column++, $row), $PersonData['Street']);
                 $export->setValue($export->getCell($column++, $row), $PersonData['ZipCode']);
                 $export->setValue($export->getCell($column++, $row), $PersonData['City']);

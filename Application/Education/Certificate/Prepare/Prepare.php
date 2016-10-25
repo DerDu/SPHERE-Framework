@@ -83,6 +83,9 @@ class Prepare implements IModuleInterface
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
             __NAMESPACE__ . '\Certificate\Select', __NAMESPACE__ . '\Frontend::frontendSelectCertificate')
         );
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__ . '\Absence\Edit', __NAMESPACE__ . '\Frontend::frontendEditAbsence')
+        );
     }
 
     /**

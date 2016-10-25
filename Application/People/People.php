@@ -95,7 +95,8 @@ class People implements IClusterInterface
         $Stage = new Stage('Dashboard', 'Personen');
         $Stage->addButton( new Backward() );
 
-        $Stage->setContent(Main::getDispatcher()->fetchDashboard('Personen'));
+//        $Stage->setContent(Main::getDispatcher()->fetchDashboard('Personen'));
+        $Stage->setContent(self::widgetPersonGroupList());
 
         return $Stage;
     }

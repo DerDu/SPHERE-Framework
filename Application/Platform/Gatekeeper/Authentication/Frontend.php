@@ -4,6 +4,7 @@ namespace SPHERE\Application\Platform\Gatekeeper\Authentication;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Account;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Token\Token;
 use SPHERE\Application\Platform\System\Database\Database;
+use SPHERE\Application\Platform\System\Protocol\Protocol;
 use SPHERE\Common\Frontend\Form\Repository\Button\Primary;
 use SPHERE\Common\Frontend\Form\Repository\Field\PasswordField;
 use SPHERE\Common\Frontend\Form\Repository\Field\TextField;
@@ -48,7 +49,7 @@ class Frontend extends Extension implements IFrontendInterface
     public function frontendWelcome()
     {
 
-        $Stage = new Stage('Willkommen', 'KREDA Professional');
+        $Stage = new Stage('Willkommen','');
         $Stage->addButton(new Backward(true));
         $Stage->setMessage(date('d.m.Y - H:i:s'));
 
@@ -82,22 +83,28 @@ class Frontend extends Extension implements IFrontendInterface
     public function frontendIdentification($CredentialName = null, $CredentialLock = null, $CredentialKey = null)
     {
 
+        if( $CredentialName !== null ) {
+            Protocol::useService()->createLoginAttemptEntry($CredentialName, $CredentialLock, $CredentialKey);
+        }
+
         $View = new Stage('Anmeldung');
 
         // Prepare Environment
         switch (strtolower($this->getRequest()->getHost())) {
+            case 'www.schulsoftware.schule':
             case 'www.kreda.schule':
-                $Environment = new Standard('Zur Demo-Umgebung wechseln', 'http://demo.kreda.schule/', new Transfer(),
+                $Environment = new Standard('Zur Demo-Umgebung wechseln', 'http://demo.schulsoftware.schule/', new Transfer(),
                     array(),
                     false);
                 break;
+            case 'demo.schulsoftware.schule':
             case 'demo.kreda.schule':
-                $Environment = new Standard('Zur Live-Umgebung wechseln', 'http://www.kreda.schule/', new Transfer(),
+                $Environment = new Standard('Zur Live-Umgebung wechseln', 'http://www.schulsoftware.schule/', new Transfer(),
                     array(),
                     false);
                 break;
             default:
-                $Environment = new Standard('Zur Demo-Umgebung wechseln', 'http://demo.kreda.schule/', new Transfer(),
+                $Environment = new Standard('Zur Demo-Umgebung wechseln', 'http://demo.schulsoftware.schule/', new Transfer(),
                     array(),
                     false);
         }
@@ -165,7 +172,7 @@ class Frontend extends Extension implements IFrontendInterface
                         new FormColumn(
                             new Panel('Hardware-Schlüssel *', array(
                                 new PasswordField('CredentialKey', 'YubiKey', 'YubiKey', new YubiKey())
-                            ), Panel::PANEL_TYPE_INFO, new Small('* Optional'))
+                            ), Panel::PANEL_TYPE_INFO, new Small('* Wenn zu Ihrem Zugang ein YubiKey gehört geben Sie zuerst oben Ihren Benutzername und Passwort an, stecken Sie dann bitte den YubiKey an, klicken in das Feld YubiKey und drücken anschließend auf den metallischen Sensor am YubiKey. <br/>Das Formular wird daraufhin automatisch abgeschickt.'))
                         )
                     ))
                 )
@@ -209,7 +216,7 @@ class Frontend extends Extension implements IFrontendInterface
 
         $View = new Stage('Abmelden', 'Bitte warten...');
         $View->setContent(Account::useService()->destroySession(
-                new Redirect('/Platform/Gatekeeper/Authentication', 5)
+                new Redirect('/Platform/Gatekeeper/Authentication', Redirect::TIMEOUT_SUCCESS)
             ).$this->getCleanLocalStorage());
         return $View;
     }

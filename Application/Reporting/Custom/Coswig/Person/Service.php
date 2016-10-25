@@ -62,12 +62,12 @@ class Service
                     $Item['Code'] = $address->getTblAddress()->getTblCity()->getCode();
                     $Item['City'] = $address->getTblAddress()->getTblCity()->getName();
                     $Item['District'] = $address->getTblAddress()->getTblCity()->getDistrict();
-                    if ($Item['District'] !== '') {
-                        $Pre = substr($Item['District'], 0, 2);
-                        if ($Pre != 'OT') {
-                            $Item['District'] = 'OT '.$Item['District'];
-                        }
-                    }
+//                    if ($Item['District'] !== '') {
+//                        $Pre = substr($Item['District'], 0, 2);
+//                        if ($Pre != 'OT') {
+//                            $Item['District'] = 'OT '.$Item['District'];
+//                        }
+//                    }
 //                    $Item['Address'] = $address->getTblAddress()->getStreetName().' '.
 //                        $address->getTblAddress()->getStreetNumber().', '.
 //                        $address->getTblAddress()->getTblCity()->getCode().' '.
@@ -137,15 +137,16 @@ class Service
             $export->setValue($export->getCell(0, 0), "Nachname");
             $export->setValue($export->getCell(1, 0), "Vorname");
             $export->setValue($export->getCell(2, 0), "Geb.-Datum");
-            $export->setValue($export->getCell(3, 0), "Straße");
-            $export->setValue($export->getCell(4, 0), "PLZ");
-            $export->setValue($export->getCell(5, 0), "Ort");
-            $export->setValue($export->getCell(6, 0), "Tel. Privat");
-            $export->setValue($export->getCell(7, 0), "Tel. Geschäftlich");
-            $export->setValue($export->getCell(8, 0), "E-Mail");
+            $export->setValue($export->getCell(3, 0), "Ortsteil");
+            $export->setValue($export->getCell(4, 0), "Straße");
+            $export->setValue($export->getCell(5, 0), "PLZ");
+            $export->setValue($export->getCell(6, 0), "Ort");
+            $export->setValue($export->getCell(7, 0), "Tel. Privat");
+            $export->setValue($export->getCell(8, 0), "Tel. Geschäftlich");
+            $export->setValue($export->getCell(9, 0), "E-Mail");
 
             // Table Head
-            $export->setStyle($export->getCell(0, 0), $export->getCell(8, 0))
+            $export->setStyle($export->getCell(0, 0), $export->getCell(9, 0))
                 ->setFontBold()
                 ->setBorderAll()
                 ->setBorderBottom(2);
@@ -159,35 +160,36 @@ class Service
             foreach ($PersonList as $PersonData) {
                 $Row++;
                 // set border for each Person
-                $export->setStyle($export->getCell(0, $Row), $export->getCell(8, $Row))
+                $export->setStyle($export->getCell(0, $Row), $export->getCell(9, $Row))
                     ->setBorderTop();
                 $PhonePRow = $PhoneBRow = $MailRow = $DistrictRow = $Row;
                 $export->setValue($export->getCell(0, $Row), $PersonData['LastName']);
                 $export->setValue($export->getCell(1, $Row), $PersonData['FirstName']);
                 $export->setValue($export->getCell(2, $Row), $PersonData['Birthday']);
-                $export->setValue($export->getCell(3, $Row), $PersonData['ExcelStreet']);
-                $export->setValue($export->getCell(4, $Row), $PersonData['Code']);
-                $export->setValue($export->getCell(5, $Row), $PersonData['City']);
+                $export->setValue($export->getCell(3, $Row), $PersonData['District']);
+                $export->setValue($export->getCell(4, $Row), $PersonData['ExcelStreet']);
+                $export->setValue($export->getCell(5, $Row), $PersonData['Code']);
+                $export->setValue($export->getCell(6, $Row), $PersonData['City']);
 
                 if (is_array($PersonData['ExcelPhoneNumbersPrivate'])) {
                     foreach ($PersonData['ExcelPhoneNumbersPrivate'] as $PhonePrivate) {
-                        $export->setValue($export->getCell(6, $PhonePRow++), $PhonePrivate);
+                        $export->setValue($export->getCell(7, $PhonePRow++), $PhonePrivate);
                     }
                 }
                 if (is_array($PersonData['ExcelPhoneNumbersBusiness'])) {
                     foreach ($PersonData['ExcelPhoneNumbersBusiness'] as $PhoneBusiness) {
-                        $export->setValue($export->getCell(7, $PhoneBRow++), $PhoneBusiness);
+                        $export->setValue($export->getCell(8, $PhoneBRow++), $PhoneBusiness);
                     }
                 }
                 if (is_array($PersonData['ExcelMailAddress'])) {
                     foreach ($PersonData['ExcelMailAddress'] as $Mail) {
-                        $export->setValue($export->getCell(8, $MailRow++), $Mail);
+                        $export->setValue($export->getCell(9, $MailRow++), $Mail);
                     }
                 }
-                if (isset( $PersonData['District'] ) && $PersonData['District'] !== '') {
-                    $DistrictRow = $DistrictRow + 1;
-                    $export->setValue($export->getCell(5, $DistrictRow++), $PersonData['District']);
-                }
+//                if (isset( $PersonData['District'] ) && $PersonData['District'] !== '') {
+//                    $DistrictRow = $DistrictRow + 1;
+//                    $export->setValue($export->getCell(5, $DistrictRow++), $PersonData['District']);
+//                }
 
                 if ($Row < ( $PhonePRow - 1 )) {
                     $Row = ( $PhonePRow - 1 );
@@ -198,13 +200,13 @@ class Service
                 if ($Row < ( $MailRow - 1 )) {
                     $Row = ( $MailRow - 1 );
                 }
-                if ($Row < ( $DistrictRow - 1 )) {
-                    $Row = ( $DistrictRow - 1 );
-                }
+//                if ($Row < ( $DistrictRow - 1 )) {
+//                    $Row = ( $DistrictRow - 1 );
+//                }
             }
 
             // Table Border
-            $export->setStyle($export->getCell(0, 1), $export->getCell(8, $Row))
+            $export->setStyle($export->getCell(0, 1), $export->getCell(9, $Row))
                 ->setFontSize(9)
                 ->setBorderVertical()
                 ->setBorderLeft()
@@ -216,12 +218,13 @@ class Service
             $export->setStyle($export->getCell(0, 0), $export->getCell(0, $Row))->setColumnWidth(12);
             $export->setStyle($export->getCell(1, 0), $export->getCell(1, $Row))->setColumnWidth(12);
             $export->setStyle($export->getCell(2, 0), $export->getCell(2, $Row))->setColumnWidth(10);
-            $export->setStyle($export->getCell(3, 0), $export->getCell(3, $Row))->setColumnWidth(20);
-            $export->setStyle($export->getCell(4, 0), $export->getCell(4, $Row))->setColumnWidth(5);
-            $export->setStyle($export->getCell(5, 0), $export->getCell(5, $Row))->setColumnWidth(11);
-            $export->setStyle($export->getCell(6, 0), $export->getCell(6, $Row))->setColumnWidth(13);
+            $export->setStyle($export->getCell(3, 0), $export->getCell(3, $Row))->setColumnWidth(10);
+            $export->setStyle($export->getCell(4, 0), $export->getCell(4, $Row))->setColumnWidth(20);
+            $export->setStyle($export->getCell(5, 0), $export->getCell(5, $Row))->setColumnWidth(5);
+            $export->setStyle($export->getCell(6, 0), $export->getCell(6, $Row))->setColumnWidth(11);
             $export->setStyle($export->getCell(7, 0), $export->getCell(7, $Row))->setColumnWidth(13);
-            $export->setStyle($export->getCell(8, 0), $export->getCell(8, $Row))->setColumnWidth(26);
+            $export->setStyle($export->getCell(8, 0), $export->getCell(8, $Row))->setColumnWidth(12);
+            $export->setStyle($export->getCell(9, 0), $export->getCell(9, $Row))->setColumnWidth(17);
 
             $Row++;
             $Row++;

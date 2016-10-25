@@ -186,6 +186,12 @@ class Data extends AbstractData
         if ($EntityList) {
             array_walk($EntityList, function (TblMember &$V) {
 
+                if (!$V->getServiceTblPerson()
+                    && ($tblPerson = $V->getServiceTblPerson(true))
+                ){
+                    Person::useService()->softRemovePersonReferences($tblPerson);
+                }
+
                 $V = $V->getServiceTblPerson();
             });
             $EntityList = array_filter($EntityList);
@@ -256,6 +262,7 @@ class Data extends AbstractData
                 $V = $V->getTblGroup();
             });
         }
+        /** @var TblGroup[] $EntityList */
         return ( null === $EntityList ? false : $EntityList );
     }
 
@@ -285,12 +292,13 @@ class Data extends AbstractData
     }
 
     /**
-     * @param TblGroup  $tblGroup
+     * @param TblGroup $tblGroup
      * @param TblPerson $tblPerson
+     * @param bool $IsSoftRemove
      *
      * @return bool
      */
-    public function removeGroupPerson(TblGroup $tblGroup, TblPerson $tblPerson)
+    public function removeGroupPerson(TblGroup $tblGroup, TblPerson $tblPerson, $IsSoftRemove = false )
     {
 
         $Manager = $this->getConnection()->getEntityManager();
@@ -302,7 +310,11 @@ class Data extends AbstractData
             ));
         if (null !== $Entity) {
             Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(), $Entity);
-            $Manager->killEntity($Entity);
+            if ($IsSoftRemove) {
+                $Manager->removeEntity($Entity);
+            } else {
+                $Manager->killEntity($Entity);
+            }
             return true;
         }
         return false;
@@ -379,5 +391,4 @@ class Data extends AbstractData
             TblMember::SERVICE_TBL_PERSON => $tblPerson->getId()
         ));
     }
-
 }

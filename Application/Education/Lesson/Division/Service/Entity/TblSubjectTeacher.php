@@ -55,15 +55,17 @@ class TblSubjectTeacher extends Element
     }
 
     /**
+     * @param bool $IsForce
+     *
      * @return bool|TblPerson
      */
-    public function getServiceTblPerson()
+    public function getServiceTblPerson($IsForce = false)
     {
 
         if (null === $this->serviceTblPerson) {
             return false;
         } else {
-            return Person::useService()->getPersonById($this->serviceTblPerson);
+            return Person::useService()->getPersonById($this->serviceTblPerson, $IsForce);
         }
     }
 

@@ -399,24 +399,26 @@ class Service extends AbstractService
 
     /**
      * @param TblToPerson $tblToPerson
+     * @param bool $IsSoftRemove
      *
      * @return bool
      */
-    public function removePersonRelationshipToPerson(TblToPerson $tblToPerson)
+    public function removePersonRelationshipToPerson(TblToPerson $tblToPerson, $IsSoftRemove = false)
     {
 
-        return (new Data($this->getBinding()))->removePersonRelationshipToPerson($tblToPerson);
+        return (new Data($this->getBinding()))->removePersonRelationshipToPerson($tblToPerson, $IsSoftRemove);
     }
 
     /**
      * @param TblToCompany $tblToCompany
+     * @param bool $IsSoftRemove
      *
      * @return bool
      */
-    public function removeCompanyRelationshipToPerson(TblToCompany $tblToCompany)
+    public function removeCompanyRelationshipToPerson(TblToCompany $tblToCompany, $IsSoftRemove = false)
     {
 
-        return (new Data($this->getBinding()))->removeCompanyRelationshipToPerson($tblToCompany);
+        return (new Data($this->getBinding()))->removeCompanyRelationshipToPerson($tblToCompany, $IsSoftRemove);
     }
 
     /**
@@ -485,4 +487,22 @@ class Service extends AbstractService
         return (new Data($this->getBinding()))->getSiblingRankAll();
     }
 
+    /**
+     * @param TblPerson $tblPerson
+     * @param bool $IsSoftRemove
+     */
+    public function removeRelationshipAllByPerson(TblPerson $tblPerson, $IsSoftRemove = false)
+    {
+
+        if (($tblRelationshipToPersonList = $this->getPersonRelationshipAllByPerson($tblPerson))){
+            foreach($tblRelationshipToPersonList as $tblToPerson){
+                $this->removePersonRelationshipToPerson($tblToPerson, $IsSoftRemove);
+            }
+        }
+        if (($tblRelationshipToPersonList = $this->getCompanyRelationshipAllByPerson($tblPerson))){
+            foreach($tblRelationshipToPersonList as $tblToPerson){
+                $this->removeCompanyRelationshipToPerson($tblToPerson, $IsSoftRemove);
+            }
+        }
+    }
 }

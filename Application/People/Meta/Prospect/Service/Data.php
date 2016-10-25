@@ -161,7 +161,7 @@ class Data extends AbstractData
      * @param string                 $InterviewDate
      * @param string                 $TrialDate
      *
-     * @return TblProspectAppointment
+     * @return bool
      */
     public function updateProspectAppointment(
         TblProspectAppointment $tblProspectAppointment,
@@ -192,7 +192,7 @@ class Data extends AbstractData
      * @param null|TblType           $tblTypeOptionA
      * @param null|TblType           $tblTypeOptionB
      *
-     * @return TblProspectReservation
+     * @return bool
      */
     public function updateProspectReservation(
         TblProspectReservation $tblProspectReservation,
@@ -222,7 +222,7 @@ class Data extends AbstractData
      * @param TblProspect $tblProspect
      * @param string      $Remark
      *
-     * @return TblProspect
+     * @return bool
      */
     public function updateProspect(
         TblProspect $tblProspect,
@@ -250,5 +250,29 @@ class Data extends AbstractData
 
         return $this->getCachedEntityList(__METHOD__, $this->getConnection()->getEntityManager(),
             'TblProspectReservation');
+    }
+
+    /**
+     * @param TblProspect $tblProspect
+     * @param bool $IsSoftRemove
+     *
+     * @return bool
+     */
+    public function destroyProspect(TblProspect $tblProspect, $IsSoftRemove = false)
+    {
+
+        $Manager = $this->getConnection()->getEntityManager();
+        /** @var TblProspect $Entity */
+        $Entity = $Manager->getEntityById('TblProspect', $tblProspect->getId());
+        if (null !== $Entity) {
+            Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(), $Entity);
+            if ($IsSoftRemove) {
+                $Manager->removeEntity($Entity);
+            } else {
+                $Manager->killEntity($Entity);
+            }
+            return true;
+        }
+        return false;
     }
 }

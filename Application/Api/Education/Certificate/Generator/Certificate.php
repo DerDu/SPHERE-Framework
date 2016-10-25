@@ -337,12 +337,17 @@ abstract class Certificate extends Extension
     /**
      * @param bool|true $isSlice
      * @param array $languagesWithStartLevel
+     * @param string $TextSize
+     * @param bool $IsGradeUnderlined
      *
-     * @return \SPHERE\Application\Education\Certificate\Generator\Repository\Section[]|Slice
-     * @throws \Exception
+     * @return Section[]|Slice
      */
-    protected function getSubjectLanes($isSlice = true, $languagesWithStartLevel = array())
-    {
+    protected function getSubjectLanes(
+        $isSlice = true,
+        $languagesWithStartLevel = array(),
+        $TextSize = '14px',
+        $IsGradeUnderlined = true
+    ) {
 
         $SubjectSlice = (new Slice());
 
@@ -432,6 +437,7 @@ abstract class Certificate extends Extension
                             ->styleMarginBottom('0px')
                             ->styleBorderBottom('1px', '#000')
                             ->styleMarginTop('10px')
+                            ->styleTextSize($TextSize)
                             , '37%');
                         $SubjectSection->addElementColumn((new Element()), '2%');
                     } elseif ($isShrinkMarginTop) {
@@ -439,12 +445,14 @@ abstract class Certificate extends Extension
                             ->setContent($Subject['SubjectName'])
                             ->stylePaddingTop()
                             ->styleMarginTop('0px')
+                            ->styleTextSize($TextSize)
                             , '39%');
                     } else {
                         $SubjectSection->addElementColumn((new Element())
                             ->setContent($Subject['SubjectName'])
                             ->stylePaddingTop()
                             ->styleMarginTop('10px')
+                            ->styleTextSize($TextSize)
                             , '39%');
                     }
 
@@ -456,10 +464,11 @@ abstract class Certificate extends Extension
                                          {% endif %}')
                         ->styleAlignCenter()
                         ->styleBackgroundColor('#BBB')
-                        ->styleBorderBottom('1px', '#000')
+                        ->styleBorderBottom($IsGradeUnderlined ? '1px' : '0px', '#000')
                         ->stylePaddingTop('0px')
                         ->stylePaddingBottom()
                         ->styleMarginTop($isShrinkMarginTop ? '0px' : '10px')
+                        ->styleTextSize($TextSize)
                         , '9%');
 
                     if ($isShrinkMarginTop && $Lane == 2) {
@@ -518,11 +527,12 @@ abstract class Certificate extends Extension
     }
 
     /**
+     * @param $TextSize
+     * @param bool $IsGradeUnderlined
+     *
      * @return Slice
-     * @throws \Exception
      */
-    protected
-    function getGradeLanes()
+    protected function getGradeLanes($TextSize = '14px', $IsGradeUnderlined = true)
     {
 
         $GradeSlice = (new Slice());
@@ -573,6 +583,7 @@ abstract class Certificate extends Extension
                         ->setContent($Grade['GradeName'])
                         ->stylePaddingTop()
                         ->styleMarginTop('10px')
+                        ->styleTextSize($TextSize)
                         , '39%');
                     $GradeSection->addElementColumn((new Element())
                         ->setContent('{% if(Content.Input.' . $Grade['GradeAcronym'] . ' is not empty) %}
@@ -582,10 +593,11 @@ abstract class Certificate extends Extension
                                      {% endif %}')
                         ->styleAlignCenter()
                         ->styleBackgroundColor('#BBB')
-                        ->styleBorderBottom('1px', '#000')
+                        ->styleBorderBottom($IsGradeUnderlined ? '1px' : '0px', '#000')
                         ->stylePaddingTop()
                         ->stylePaddingBottom()
                         ->styleMarginTop('10px')
+                        ->styleTextSize($TextSize)
                         , '9%');
                 }
 

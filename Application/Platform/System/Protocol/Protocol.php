@@ -4,6 +4,7 @@ namespace SPHERE\Application\Platform\System\Protocol;
 use SPHERE\Application\IModuleInterface;
 use SPHERE\Application\Platform\System\Protocol\Service\Entity\TblProtocol;
 use SPHERE\Common\Frontend\Form\Repository\Button\Primary;
+use SPHERE\Common\Frontend\Form\Repository\Field\SelectBox;
 use SPHERE\Common\Frontend\Form\Repository\Field\TextField;
 use SPHERE\Common\Frontend\Form\Structure\Form;
 use SPHERE\Common\Frontend\Form\Structure\FormColumn;
@@ -77,10 +78,21 @@ class Protocol implements IModuleInterface
 
         $Stage = new Stage('Protokoll', 'Aktivitäten');
 
+        if( isset( $Filter['ProtocolDatabase'] ) && $Filter['ProtocolDatabase'] == 0 ) {
+            $Filter['ProtocolDatabase'] = '';
+        }
+
         $Form = new Form(new FormGroup(new FormRow(array(
             new FormColumn(
                 new Panel('Metadaten', array(
-                    new TextField('Filter[ProtocolDatabase]', 'Datenbank', 'Datenbank'),
+                    new SelectBox('Filter[ProtocolDatabase]', 'Datenbank',
+                        array_merge( array( 0 => '' ),
+                            array_combine(
+                                Protocol::useService()->getProtocolDatabaseNameList(),
+                                Protocol::useService()->getProtocolDatabaseNameList()
+                            )
+                        )
+                    ),
                     new TextField('Filter[EntityCreate]', 'Timestamp', 'Timestamp'),
                 ), Panel::PANEL_TYPE_INFO)
                 , 4),

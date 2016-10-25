@@ -695,9 +695,15 @@ class Frontend extends Extension implements IFrontendInterface
                             }
                         }
                         if (( $tblAddress = $tblToPerson->getTblAddress() )) {
+                            if (( $tblCity = $tblAddress->getTblCity() )) {
+                                if ($tblCity->getDistrict() != '') {
+                                    $Data[] = $tblCity->getDistrict();
+                                }
+                            }
+
                             $Data[] = $tblAddress->getStreetName().' '.$tblAddress->getStreetNumber();
                             if (( $tblCity = $tblAddress->getTblCity() )) {
-                                $Data[] = $tblCity->getCode().' '.$tblCity->getDisplayName();
+                                $Data[] = $tblCity->getCode().' '.$tblCity->getName();
                             }
                             if (( $tblState = $tblAddress->getTblState() )) {
                                 $Data[] = $tblState->getName();

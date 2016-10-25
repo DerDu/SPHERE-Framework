@@ -261,6 +261,7 @@ class Service extends AbstractService
             $export->setValue($export->getCell($column++, $row), "Anrede");
             $export->setValue($export->getCell($column++, $row), "Vorname");
             $export->setValue($export->getCell($column++, $row), "Nachname");
+            $export->setValue($export->getCell($column++, $row), "Ortsteil");
             $export->setValue($export->getCell($column++, $row), "Adresse 1");
             $export->setValue($export->getCell($column++, $row), "PLZ");
             $export->setValue($export->getCell($column++, $row), "Ort");
@@ -282,9 +283,11 @@ class Service extends AbstractService
                         $tblAddressPerson->getServiceTblPersonToAddress()->getLastName());
                     $tblAddress = $tblAddressPerson->getServiceTblToPerson()->getTblAddress();
                     $export->setValue($export->getCell($column++, $row),
+                        $tblAddress->getTblCity()->getDistrict());
+                    $export->setValue($export->getCell($column++, $row),
                         $tblAddress->getStreetName() . ' ' . $tblAddress->getStreetNumber());
                     $export->setValue($export->getCell($column++, $row), $tblAddress->getTblCity()->getCode());
-                    $export->setValue($export->getCell($column++, $row), $tblAddress->getTblCity()->getDisplayName());
+                    $export->setValue($export->getCell($column++, $row), $tblAddress->getTblCity()->getName());
                     $export->setValue($export->getCell($column++, $row),
                         $tblAddressPerson->getServiceTblPerson()->getFirstName());
                     $export->setValue($export->getCell($column, $row),

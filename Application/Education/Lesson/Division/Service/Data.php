@@ -127,13 +127,18 @@ class Data extends AbstractData
 
     /**
      * @param int $Id
+     * @param bool $IsForced
      *
      * @return bool|TblDivision
      */
-    public function getDivisionById($Id)
+    public function getDivisionById($Id, $IsForced = false)
     {
 
-        return $this->getCachedEntityById(__METHOD__, $this->getConnection()->getEntityManager(), 'TblDivision', $Id);
+        if ($IsForced){
+            return $this->getForceEntityById(__METHOD__, $this->getConnection()->getEntityManager(), 'TblDivision', $Id);
+        } else {
+            return $this->getCachedEntityById(__METHOD__, $this->getConnection()->getEntityManager(), 'TblDivision', $Id);
+        }
     }
 
     /**
@@ -1057,10 +1062,11 @@ class Data extends AbstractData
     /**
      * @param TblDivision $tblDivision
      * @param TblPerson $tblPerson
+     * @param bool $IsSoftRemove
      *
      * @return bool
      */
-    public function removeStudentToDivision(TblDivision $tblDivision, TblPerson $tblPerson)
+    public function removeStudentToDivision(TblDivision $tblDivision, TblPerson $tblPerson, $IsSoftRemove = false)
     {
 
         $Manager = $this->getConnection()->getEntityManager();
@@ -1071,7 +1077,11 @@ class Data extends AbstractData
             ));
         if (null !== $Entity) {
             /** @var TblDivisionStudent $Entity */
-            $Manager->killEntity($Entity);
+            if ($IsSoftRemove) {
+                $Manager->removeEntity($Entity);
+            } else {
+                $Manager->killEntity($Entity);
+            }
             Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(), $Entity);
             return true;
         }
@@ -1081,11 +1091,12 @@ class Data extends AbstractData
     /**
      * @param TblDivision $tblDivision
      * @param TblPerson $tblPerson
+     * @param bool $IsSoftRemove
      *
      * @return bool
      * @deprecated use removeDivisionTeacher()
      */
-    public function removeTeacherToDivision(TblDivision $tblDivision, TblPerson $tblPerson)
+    public function removeTeacherToDivision(TblDivision $tblDivision, TblPerson $tblPerson, $IsSoftRemove = false)
     {
 
         return $this->removeDivisionTeacher($tblDivision, $tblPerson);
@@ -1108,7 +1119,11 @@ class Data extends AbstractData
             ));
         if (null !== $Entity) {
             /** @var TblDivisionTeacher $Entity */
-            $Manager->killEntity($Entity);
+            if ($IsSoftRemove) {
+                $Manager->removeEntity($Entity);
+            } else {
+                $Manager->killEntity($Entity);
+            }
             Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(), $Entity);
             return true;
         }
@@ -1118,10 +1133,11 @@ class Data extends AbstractData
     /**
      * @param TblDivision $tblDivision
      * @param TblPerson $tblPerson
+     * @param bool $IsSoftRemove
      *
      * @return bool
      */
-    public function removePersonToDivision(TblDivision $tblDivision, TblPerson $tblPerson)
+    public function removePersonToDivision(TblDivision $tblDivision, TblPerson $tblPerson, $IsSoftRemove = false)
     {
 
         $Manager = $this->getConnection()->getEntityManager();
@@ -1132,7 +1148,11 @@ class Data extends AbstractData
             ));
         if (null !== $Entity) {
             /** @var TblDivisionCustody $Entity */
-            $Manager->killEntity($Entity);
+            if ($IsSoftRemove) {
+                $Manager->removeEntity($Entity);
+            } else {
+                $Manager->killEntity($Entity);
+            }
             Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(), $Entity);
             return true;
         }
@@ -1185,17 +1205,22 @@ class Data extends AbstractData
 
     /**
      * @param TblSubjectStudent $tblSubjectStudent
+     * @param bool $IsSoftRemove
      *
      * @return bool
      */
-    public function removeSubjectStudent(TblSubjectStudent $tblSubjectStudent)
+    public function removeSubjectStudent(TblSubjectStudent $tblSubjectStudent, $IsSoftRemove = false)
     {
 
         $Manager = $this->getConnection()->getEntityManager();
         $Entity = $Manager->getEntityById('TblSubjectStudent', $tblSubjectStudent->getId());
         if (null !== $Entity) {
             /** @var TblSubjectStudent $Entity */
-            $Manager->killEntity($Entity);
+            if ($IsSoftRemove) {
+                $Manager->removeEntity($Entity);
+            } else {
+                $Manager->killEntity($Entity);
+            }
             Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(), $Entity);
             return true;
         }
@@ -1248,17 +1273,22 @@ class Data extends AbstractData
 
     /**
      * @param TblSubjectTeacher $tblSubjectTeacher
+     * @param bool $IsSoftRemove
      *
      * @return bool
      */
-    public function removeSubjectTeacher(TblSubjectTeacher $tblSubjectTeacher)
+    public function removeSubjectTeacher(TblSubjectTeacher $tblSubjectTeacher, $IsSoftRemove = false)
     {
 
         $Manager = $this->getConnection()->getEntityManager();
         $Entity = $Manager->getEntityById('TblSubjectTeacher', $tblSubjectTeacher->getId());
         if (null !== $Entity) {
             /** @var TblSubjectTeacher $Entity */
-            $Manager->killEntity($Entity);
+            if ($IsSoftRemove) {
+                $Manager->removeEntity($Entity);
+            } else {
+                $Manager->killEntity($Entity);
+            }
             Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(), $Entity);
             return true;
         }
@@ -1918,6 +1948,62 @@ class Data extends AbstractData
             array(
                 TblDivisionStudent::ATTR_TBL_DIVISION => $tblDivision->getId(),
                 TblDivisionStudent::ATTR_SERVICE_TBL_PERSON => $tblPerson->getId()
+            )
+        );
+    }
+
+    /**
+     * @param TblPerson $tblPerson
+     * @return false|TblDivisionCustody[]
+     */
+    public function getDivisionCustodyAllByPerson(TblPerson $tblPerson)
+    {
+
+        return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblDivisionCustody',
+            array(
+                TblDivisionCustody::ATTR_SERVICE_TBL_PERSON => $tblPerson->getId()
+            )
+        );
+    }
+
+    /**
+     * @param TblPerson $tblPerson
+     * @return false|TblDivisionTeacher[]
+     */
+    public function getDivisionTeacherAllByPerson(TblPerson $tblPerson)
+    {
+
+        return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblDivisionTeacher',
+            array(
+                TblDivisionTeacher::ATTR_SERVICE_TBL_PERSON => $tblPerson->getId()
+            )
+        );
+    }
+
+    /**
+     * @param TblPerson $tblPerson
+     * @return false|TblSubjectTeacher[]
+     */
+    public function getSubjectTeacherAllByPerson(TblPerson $tblPerson)
+    {
+
+        return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblSubjectTeacher',
+            array(
+                TblSubjectTeacher::ATTR_SERVICE_TBL_PERSON => $tblPerson->getId()
+            )
+        );
+    }
+
+    /**
+     * @param TblPerson $tblPerson
+     * @return false|TblSubjectStudent[]
+     */
+    public function getSubjectStudentAllByPerson(TblPerson $tblPerson)
+    {
+
+        return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblSubjectStudent',
+            array(
+                TblSubjectStudent::ATTR_SERVICE_TBL_PERSON => $tblPerson->getId()
             )
         );
     }

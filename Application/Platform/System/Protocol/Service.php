@@ -6,6 +6,7 @@ use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\
 use SPHERE\Application\Platform\System\Archive\Archive;
 use SPHERE\Application\Platform\System\Archive\Service\Entity\TblArchive;
 use SPHERE\Application\Platform\System\Protocol\Service\Data;
+use SPHERE\Application\Platform\System\Protocol\Service\Entity\LoginAttemptHistory;
 use SPHERE\Application\Platform\System\Protocol\Service\Entity\TblProtocol;
 use SPHERE\Application\Platform\System\Protocol\Service\Setup;
 use SPHERE\System\Database\Binding\AbstractService;
@@ -36,6 +37,19 @@ class Service extends AbstractService
     }
 
     /**
+     * Get available Database-Name-List
+     *
+     * (Distinct)
+     *
+     * @return array
+     */
+    public function getProtocolDatabaseNameList()
+    {
+
+        return (new Data($this->getBinding()))->getProtocolDatabaseNameList();
+    }
+
+    /**
      * @return bool|TblProtocol[]
      */
     public function getProtocolAll()
@@ -54,7 +68,7 @@ class Service extends AbstractService
 
         return (new Data($this->getBinding()))->getProtocolLastActivity($tblAccount);
     }
-    
+
     /**
      * @return TblProtocol[]|bool
      */
@@ -62,6 +76,38 @@ class Service extends AbstractService
     {
 
         return (new Data($this->getBinding()))->getProtocolAllCreateSession();
+    }
+
+    /**
+     * @param string|null $CredentialName
+     * @param string|null $CredentialLock
+     * @param string|null $CredentialKey
+     *
+     * @return false|TblProtocol
+     */
+    public function createLoginAttemptEntry(
+        $CredentialName, $CredentialLock, $CredentialKey = null
+    ) {
+
+        $tblAccount = Account::useService()->getAccountBySession();
+        if ($tblAccount) {
+            $tblConsumer = $tblAccount->getServiceTblConsumer();
+        } else {
+            $tblConsumer = null;
+        }
+
+        $Entity = new LoginAttemptHistory();
+        $Entity->setCredentialName( $CredentialName );
+        $Entity->setCredentialLock( $CredentialLock );
+        $Entity->setCredentialKey( $CredentialKey );
+
+        return (new Data($this->getBinding()))->createProtocolEntry(
+            'LoginAttemptHistory',
+            ( $tblAccount ? $tblAccount : null ),
+            ( $tblConsumer ? $tblConsumer : null ),
+            null,
+            $Entity
+        );
     }
 
     /**

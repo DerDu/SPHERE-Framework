@@ -100,4 +100,27 @@ class Data  extends AbstractData
         return false;
     }
 
+    /**
+     * @param TblTeacher $tblTeacher
+     * @param bool $IsSoftRemove
+     *
+     * @return bool
+     */
+    public function destroyTeacher(TblTeacher $tblTeacher, $IsSoftRemove = false)
+    {
+
+        $Manager = $this->getConnection()->getEntityManager();
+        /** @var TblTeacher $Entity */
+        $Entity = $Manager->getEntityById('TblTeacher', $tblTeacher->getId());
+        if (null !== $Entity) {
+            Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(), $Entity);
+            if ($IsSoftRemove) {
+                $Manager->removeEntity($Entity);
+            } else {
+                $Manager->killEntity($Entity);
+            }
+            return true;
+        }
+        return false;
+    }
 }

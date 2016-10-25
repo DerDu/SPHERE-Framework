@@ -791,6 +791,12 @@ class Service extends Integration
         TblLevel $tblLevelTill = null
     ) {
 
-        return ( new Data($this->getBinding()) )->addStudentSubject($tblStudent, $tblStudentSubjectType, $tblStudentSubjectRanking, $tblSubject, null, null);
+        return ( new Data($this->getBinding()) )->addStudentSubject(
+            $tblStudent,
+            $tblStudentSubjectType,
+            $tblStudentSubjectRanking,
+            $tblSubject,
+            $tblLevelFrom,
+            $tblLevelTill);
     }
 }

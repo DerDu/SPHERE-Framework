@@ -401,13 +401,14 @@ class Service extends AbstractService
 
     /**
      * @param TblToPerson $tblToPerson
+     * @param bool $IsSoftRemove
      *
      * @return bool
      */
-    public function removeMailToPerson(TblToPerson $tblToPerson)
+    public function removeMailToPerson(TblToPerson $tblToPerson, $IsSoftRemove = false)
     {
 
-        return (new Data($this->getBinding()))->removeMailToPerson($tblToPerson);
+        return (new Data($this->getBinding()))->removeMailToPerson($tblToPerson, $IsSoftRemove);
     }
 
     /**
@@ -419,5 +420,19 @@ class Service extends AbstractService
     {
 
         return (new Data($this->getBinding()))->removeMailToCompany($tblToCompany);
+    }
+
+    /**
+     * @param TblPerson $tblPerson
+     * @param bool $IsSoftRemove
+     */
+    public function removeSoftMailAllByPerson(TblPerson $tblPerson, $IsSoftRemove = false)
+    {
+
+        if (($tblMailToPersonList = $this->getMailAllByPerson($tblPerson))){
+            foreach($tblMailToPersonList as $tblToPerson){
+                $this->removeMailToPerson($tblToPerson, $IsSoftRemove);
+            }
+        }
     }
 }

@@ -25,29 +25,29 @@ class CheJGsOne extends Certificate
     public function buildCertificate($IsSample = true)
     {
 
-        if( $IsSample ) {
-            $Header = ( new Slice() )
-                ->addSection(( new Section() )
-                    ->addElementColumn(( new Element() )
+        if ($IsSample) {
+            $Header = (new Slice())
+                ->addSection((new Section())
+                    ->addElementColumn((new Element())
                         ->setContent('ESZC GS Jahreszeugnis Klasse 1.pdf')
                         ->styleTextSize('12px')
                         ->styleTextColor('#CCC')
                         ->styleAlignCenter()
                         , '25%')
-                    ->addElementColumn(( new Element\Sample() )
+                    ->addElementColumn((new Element\Sample())
                         ->styleTextSize('30px')
                     )
-                    ->addElementColumn(( new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
-                            '200px') )
+                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
+                        '165px', '50px'))
                         , '25%')
                 );
         } else {
-            $Header = ( new Slice() )
-                ->addSection(( new Section() )
-                    ->addElementColumn(( new Element() ), '25%')
-                    ->addElementColumn(( new Element() ))
-                    ->addElementColumn(( new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
-                            '200px') )
+            $Header = (new Slice())
+                ->addSection((new Section())
+                    ->addElementColumn((new Element()), '25%')
+                    ->addElementColumn((new Element()))
+                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
+                        '165px', '50px'))
                         , '25%')
                 );
         }

@@ -96,10 +96,12 @@ class TblAddress extends Element
         $Cache = $this->getCache(new MemcachedHandler());
         if (null === ($Return = $Cache->getValue($this->getId(), __METHOD__))) {
 
-            $Return = $this->getStreetName()
+            $Return =
+                ( $this->getTblCity()->getDisplayDistrict() !== '' ? ( $this->getTblCity()->getDisplayDistrict() ).' ' : '' )
+                .$this->getStreetName()
                 . ' ' . $this->getStreetNumber()
                 . ', ' . $this->getTblCity()->getCode()
-                . ' ' . $this->getTblCity()->getDisplayName()
+                .' '.$this->getTblCity()->getName()
                 . ($this->getLocation() ? ' (' . $this->getLocation() . ')' : '');
 
             $Cache->setValue($this->getId(), $Return, 0, __METHOD__);

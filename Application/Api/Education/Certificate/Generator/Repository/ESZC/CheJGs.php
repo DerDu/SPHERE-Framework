@@ -26,29 +26,29 @@ class CheJGs extends Certificate
     public function buildCertificate($IsSample = true)
     {
 
-        if( $IsSample ) {
-            $Header = ( new Slice() )
-                ->addSection(( new Section() )
-                    ->addElementColumn(( new Element() )
+        if ($IsSample) {
+            $Header = (new Slice())
+                ->addSection((new Section())
+                    ->addElementColumn((new Element())
                         ->setContent('ESZC GS Jahreszeugnis Klasse 2-4.pdf')
                         ->styleTextSize('12px')
                         ->styleTextColor('#CCC')
                         ->styleAlignCenter()
                         , '25%')
-                    ->addElementColumn(( new Element\Sample() )
+                    ->addElementColumn((new Element\Sample())
                         ->styleTextSize('30px')
                     )
-                    ->addElementColumn(( new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
-                            '200px') )
+                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
+                        '165px', '50px'))
                         , '25%')
                 );
         } else {
-            $Header = ( new Slice() )
-                ->addSection(( new Section() )
-                    ->addElementColumn(( new Element() ), '25%')
-                    ->addElementColumn(( new Element() ))
-                    ->addElementColumn(( new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
-                            '200px') )
+            $Header = (new Slice())
+                ->addSection((new Section())
+                    ->addElementColumn((new Element()), '25%')
+                    ->addElementColumn((new Element()))
+                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
+                        '165px', '50px'))
                         , '25%')
                 );
         }
@@ -123,7 +123,7 @@ class CheJGs extends Certificate
                             , '79%')
                     )->styleMarginTop('5px')
                 )
-                ->addSlice( $this->getGradeLanes() )
+                ->addSlice($this->getGradeLanes('14px', false))
                 ->addSlice((new Slice())
                     ->addSection((new Section())
                         ->addElementColumn((new Element())
@@ -147,7 +147,7 @@ class CheJGs extends Certificate
                         ->styleTextBold()
                     )
                 )
-                ->addSlice( $this->getSubjectLanes() )
+                ->addSlice($this->getSubjectLanes(true, array(), '14px', false))
                 ->addSlice((new Slice())
                     ->addSection((new Section())
                         ->addElementColumn((new Element())
@@ -187,7 +187,7 @@ class CheJGs extends Certificate
                             ->styleAlignCenter()
                             , '4%')
                     )
-                    ->styleMarginTop('15px')
+                    ->styleMarginTop('25px')
                 )
                 ->addSlice((new Slice())
                     ->addSection((new Section())
@@ -322,10 +322,10 @@ class CheJGs extends Certificate
                             , '30%')
                         ->addElementColumn((new Element())
                             , '70%')
-                    )->styleMarginTop('65px')
+                    )->styleMarginTop('25px')
                     ->addSection((new Section())
                         ->addElementColumn((new Element())
-                            ->setContent('Notenerläuterung:'.new Container('
+                            ->setContent('Notenerläuterung:' . new Container('
                                           1 = sehr gut; 2 = gut; 3 = befriedigend; 4 = ausreichend; 5 = mangelhaft;
                                           6 = ungenügend (6 = ungenügend nur bei der Bewertung der Leistungen)'))
                             ->styleTextSize('9.5px')

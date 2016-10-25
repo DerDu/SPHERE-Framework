@@ -1,9 +1,22 @@
 <?php
 namespace SPHERE\Application\People\Person\Service;
 
+use SPHERE\Application\Contact\Address\Address;
+use SPHERE\Application\Contact\Mail\Mail;
+use SPHERE\Application\Contact\Phone\Phone;
+use SPHERE\Application\Education\ClassRegister\Absence\Absence;
+use SPHERE\Application\Education\Lesson\Division\Division;
+use SPHERE\Application\People\Group\Group;
+use SPHERE\Application\People\Meta\Club\Club;
+use SPHERE\Application\People\Meta\Common\Common;
+use SPHERE\Application\People\Meta\Custody\Custody;
+use SPHERE\Application\People\Meta\Prospect\Prospect;
+use SPHERE\Application\People\Meta\Student\Student;
+use SPHERE\Application\People\Meta\Teacher\Teacher;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\People\Person\Service\Entity\TblSalutation;
 use SPHERE\Application\People\Person\Service\Entity\ViewPerson;
+use SPHERE\Application\People\Relationship\Relationship;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
 use SPHERE\System\Database\Binding\AbstractData;
 use SPHERE\System\Database\Fitting\IdHydrator;
@@ -184,13 +197,18 @@ class Data extends AbstractData
 
     /**
      * @param integer $Id
+     * @param bool $IsForced
      *
      * @return bool|TblPerson
      */
-    public function getPersonById($Id)
+    public function getPersonById($Id, $IsForced = false)
     {
 
-        return $this->getCachedEntityById(__METHOD__, $this->getConnection()->getEntityManager(), 'TblPerson', $Id);
+        if ($IsForced){
+            return $this->getForceEntityById(__METHOD__, $this->getConnection()->getEntityManager(), 'TblPerson', $Id);
+        } else {
+            return $this->getCachedEntityById(__METHOD__, $this->getConnection()->getEntityManager(), 'TblPerson', $Id);
+        }
     }
 
     /**
@@ -225,10 +243,46 @@ class Data extends AbstractData
         /** @var TblPerson $Entity */
         $Entity = $Manager->getEntityById('TblPerson', $tblPerson->getId());
         if (null !== $Entity) {
+            $this->softRemovePersonReferences($tblPerson);
             Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(), $Entity);
             $Manager->removeEntity($Entity);
             return true;
         }
         return false;
+    }
+
+    /**
+     * @param TblPerson $tblPerson
+     */
+    public function softRemovePersonReferences(TblPerson $tblPerson)
+    {
+
+        $IsSoftRemove = true;
+
+        Address::useService()->removeAddressAllByPerson($tblPerson, $IsSoftRemove);
+        Mail::useService()->removeSoftMailAllByPerson($tblPerson, $IsSoftRemove);
+        Phone::useService()->removeSoftPhoneAllByPerson($tblPerson, $IsSoftRemove);
+        Division::useService()->removePerson($tblPerson, $IsSoftRemove);
+        if (($tblClub = Club::useService()->getClubByPerson($tblPerson))){
+            Club::useService()->destroyClub($tblClub, $IsSoftRemove);
+        }
+        if (($tblCommon = Common::useService()->getCommonByPerson($tblPerson))){
+            Common::useService()->destroyCommon($tblCommon, $IsSoftRemove);
+        }
+        if (($tblCustody = Custody::useService()->getCustodyByPerson($tblPerson))){
+            Custody::useService()->destroyCustody($tblCustody, $IsSoftRemove);
+        }
+        if (($tblProspect = Prospect::useService()->getProspectByPerson($tblPerson))){
+            Prospect::useService()->destroyProspect($tblProspect, $IsSoftRemove);
+        }
+        if (($tblStudent = Student::useService()->getStudentByPerson($tblPerson))){
+            Student::useService()->destroyStudent($tblStudent);
+        }
+        if (($tblTeacher = Teacher::useService()->getTeacherByPerson($tblPerson))){
+            Teacher::useService()->destroyTeacher($tblTeacher, $IsSoftRemove);
+        }
+        Relationship::useService()->removeRelationshipAllByPerson($tblPerson);
+        Absence::useService()->destroyAbsenceAllByPerson($tblPerson, $IsSoftRemove);
+        Group::useService()->removeMemberAllByPerson($tblPerson, $IsSoftRemove);
     }
 }

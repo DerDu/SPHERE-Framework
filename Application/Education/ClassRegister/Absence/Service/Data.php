@@ -137,11 +137,13 @@ class Data extends AbstractData
 
     /**
      * @param TblAbsence $tblAbsence
+     * @param bool $IsSoftRemove
      *
      * @return bool
      */
     public function destroyAbsence(
-        TblAbsence $tblAbsence
+        TblAbsence $tblAbsence,
+        $IsSoftRemove = false
     ){
 
         $Manager = $this->getConnection()->getEntityManager();
@@ -150,7 +152,11 @@ class Data extends AbstractData
         $Entity = $Manager->getEntityById('TblAbsence', $tblAbsence->getId());
         if (null !== $Entity) {
             Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(), $Entity);
-            $Manager->killEntity($Entity);
+            if ($IsSoftRemove) {
+                $Manager->removeEntity($Entity);
+            } else {
+                $Manager->killEntity($Entity);
+            }
 
             return true;
         }

@@ -49,6 +49,7 @@ use SPHERE\Common\Frontend\Icon\Repository\Save;
 use SPHERE\Common\Frontend\Icon\Repository\Select;
 use SPHERE\Common\Frontend\Icon\Repository\Setup;
 use SPHERE\Common\Frontend\Icon\Repository\Star;
+use SPHERE\Common\Frontend\Icon\Repository\Time;
 use SPHERE\Common\Frontend\IFrontendInterface;
 use SPHERE\Common\Frontend\Layout\Repository\Panel;
 use SPHERE\Common\Frontend\Layout\Repository\Title;
@@ -499,6 +500,10 @@ class Frontend extends Extension implements IFrontendInterface
                                     '', '/Education/Certificate/Prepare/Certificate', new Edit(),
                                     array('PrepareId' => $tblPrepare->getId(), 'PersonId' => $tblPerson->getId()),
                                     'Zeugnisvorlage auswählen und zusätzliche Informationen bearbeiten')) : '')
+                                . (!$isApproved ? (new Standard(
+                                    '', '/Education/Certificate/Prepare/Absence/Edit', new Time(),
+                                    array('PrepareId' => $tblPrepare->getId(), 'PersonId' => $tblPerson->getId()),
+                                    'Manuelle Eingabe der Fehlzeiten')) : '')
                                 . ($tblCertificate
                                     ? (new Standard(
                                         '', '/Education/Certificate/Prepare/Certificate/Show', new EyeOpen(),
@@ -947,7 +952,7 @@ class Frontend extends Extension implements IFrontendInterface
                 $tblStudentAllByDivision = Division::useService()->getStudentAllByDivision($tblDivision);
                 if ($tblStudentAllByDivision) {
                     foreach ($tblStudentAllByDivision as $tblPerson) {
-                        $tableData[$tblPerson->getId()]['Number'] = count($tableData) +1;
+                        $tableData[$tblPerson->getId()]['Number'] = count($tableData) + 1;
                         $tableData[$tblPerson->getId()]['Student'] = $tblPerson->getLastFirstName();
                         $tblDivisionSubjectList = Division::useService()->getDivisionSubjectAllByPersonAndYear(
                             $tblPerson, $tblYear
@@ -1453,6 +1458,7 @@ class Frontend extends Extension implements IFrontendInterface
                         $tblDivision->getServiceTblYear()
                     );
                     if ($tblDivisionSubjectList) {
+                        /** @var TblDivisionSubject $tblDivisionSubject */
                         foreach ($tblDivisionSubjectList as $tblDivisionSubject) {
                             $tblSubject = $tblDivisionSubject->getServiceTblSubject();
                             if ($tblSubject) {
@@ -2108,6 +2114,114 @@ class Frontend extends Extension implements IFrontendInterface
             );
 
             return $Stage;
+        } else {
+
+            return $Stage . new Danger('Zeugnisvorbereitung nicht gefunden.', new Ban());
+        }
+    }
+
+    /**
+     * @param null $PrepareId
+     * @param null $PersonId
+     * @param null $Data
+     *
+     * @return Stage|string
+     */
+    public function frontendEditAbsence($PrepareId = null, $PersonId = null, $Data = null)
+    {
+        $Stage = new Stage('Fehlzeiten', 'Manuell festlegen');
+        $Stage->addButton(new Standard(
+            'Zurück', '/Education/Certificate/Prepare/Division', new ChevronLeft(), array(
+                'PrepareId' => $PrepareId
+            )
+        ));
+
+        $tblPrepare = Prepare::useService()->getPrepareById($PrepareId);
+        if ($tblPrepare) {
+            $tblDivision = $tblPrepare->getServiceTblDivision();
+            $tblPerson = Person::useService()->getPersonById($PersonId);
+            if (!$tblPerson) {
+                return $Stage . new Danger('Person nicht gefunden', new Ban());
+            }
+
+            $Stage->setMessage('Hier können die Fehlzeiten manuell eingegeben werden, 
+                falls die Fehlzeiten nicht aus dem Klassenbuch verwendet werden sollen.');
+
+            if ($Data === null && ($tblPrepareStudent = Prepare::useService()->getPrepareStudentBy($tblPrepare,
+                    $tblPerson))
+            ) {
+                $Global = $this->getGlobal();
+                if ($Global) {
+                    $Global->POST['Data']['ExcusedDays'] = $tblPrepareStudent->getExcusedDays();
+                    $Global->POST['Data']['UnexcusedDays'] = $tblPrepareStudent->getUnexcusedDays();
+                }
+                $Global->savePost();
+            }
+
+            $form = new Form(
+                new FormGroup(
+                    new FormRow(array(
+                        new FormColumn(
+                            new NumberField('Data[ExcusedDays]', '', 'Entschuldigte Fehltage'), 6
+                        ),
+                        new FormColumn(
+                            new NumberField('Data[UnexcusedDays]', '', 'Unentschuldigte Fehltage'), 6
+                        )
+                    ))
+                )
+            );
+            $form->appendFormButton(new Primary('Speichern', new Save()))
+                ->setConfirm('Eventuelle Änderungen wurden noch nicht gespeichert');
+
+            $Stage->setContent(
+                new Layout(array(
+                    new LayoutGroup(array(
+                        new LayoutRow(array(
+                            new LayoutColumn(array(
+                                new Panel(
+                                    'Zeugnisvorbereitung',
+                                    $tblPrepare->getName() . ' ' . new Small(new Muted($tblPrepare->getDate())),
+                                    Panel::PANEL_TYPE_INFO
+                                ),
+                            ), 4),
+                            new LayoutColumn(array(
+                                new Panel(
+                                    'Klasse',
+                                    $tblDivision ? $tblDivision->getDisplayName() : '',
+                                    Panel::PANEL_TYPE_INFO
+                                ),
+                            ), 4),
+                            new LayoutColumn(array(
+                                new Panel(
+                                    'Schüler',
+                                    $tblPerson ? $tblPerson->getLastFirstName() : '',
+                                    Panel::PANEL_TYPE_INFO
+                                ),
+                            ), 4),
+                            new LayoutColumn(array(
+                                new Panel(
+                                    'Klassenbuch',
+                                    array(
+                                        'Entschuldigte Fehltage: ' . Absence::useService()->getExcusedDaysByPerson($tblPerson,
+                                            $tblDivision,
+                                            new \DateTime($tblPrepare->getDate())),
+                                        'Unentschuldigte Fehltage: ' . Absence::useService()->getUnexcusedDaysByPerson($tblPerson,
+                                            $tblDivision,
+                                            new \DateTime($tblPrepare->getDate()))
+                                    ),
+                                    Panel::PANEL_TYPE_INFO
+                                ),
+                            )),
+                            new LayoutColumn(array(
+                                new Well(Prepare::useService()->setAbsenceDays($form, $tblPrepare, $tblPerson, $Data))
+                            )),
+                        ))
+                    ))
+                ))
+            );
+
+            return $Stage;
+
         } else {
 
             return $Stage . new Danger('Zeugnisvorbereitung nicht gefunden.', new Ban());

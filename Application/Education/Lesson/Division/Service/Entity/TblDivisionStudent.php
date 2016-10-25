@@ -39,15 +39,17 @@ class TblDivisionStudent extends Element
     protected $SortOrder;
 
     /**
+     * @param bool $IsForce
+     *
      * @return bool|TblDivision
      */
-    public function getTblDivision()
+    public function getTblDivision($IsForce = false)
     {
 
         if (null === $this->tblDivision) {
             return false;
         } else {
-            return Division::useService()->getDivisionById($this->tblDivision);
+            return Division::useService()->getDivisionById($this->tblDivision, $IsForce);
         }
     }
 
@@ -61,15 +63,17 @@ class TblDivisionStudent extends Element
     }
 
     /**
+     * @param bool $IsForce
+     *
      * @return bool|TblPerson
      */
-    public function getServiceTblPerson()
+    public function getServiceTblPerson($IsForce = false)
     {
 
         if (null === $this->serviceTblPerson) {
             return false;
         } else {
-            return Person::useService()->getPersonById($this->serviceTblPerson);
+            return Person::useService()->getPersonById($this->serviceTblPerson, $IsForce);
         }
     }
 

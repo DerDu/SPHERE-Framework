@@ -333,20 +333,21 @@ class Service extends AbstractService
     /**
      * @param TblDivision $tblDivision
      * @param TblPerson $tblPerson
+     * @param bool $IsSoftRemove
      *
      * @return bool
      */
-    public function removeStudentToDivision(TblDivision $tblDivision, TblPerson $tblPerson)
+    public function removeStudentToDivision(TblDivision $tblDivision, TblPerson $tblPerson, $IsSoftRemove = false)
     {
 
         $tblStudentSubjectList = (new Data($this->getBinding()))->getSubjectStudentByPerson($tblPerson);
         if ($tblStudentSubjectList) {
             foreach ($tblStudentSubjectList as $tblStudentSubject) {
-                (new Data($this->getBinding()))->removeSubjectStudent($tblStudentSubject);
+                (new Data($this->getBinding()))->removeSubjectStudent($tblStudentSubject, $IsSoftRemove);
             }
         }
 
-        return (new Data($this->getBinding()))->removeStudentToDivision($tblDivision, $tblPerson);
+        return (new Data($this->getBinding()))->removeStudentToDivision($tblDivision, $tblPerson, $IsSoftRemove);
     }
 
     /**
@@ -417,6 +418,9 @@ class Service extends AbstractService
      * @param TblSubject           $tblSubject
      * @param TblPerson            $tblPerson
      * @param null|TblSubjectGroup $tblSubjectGroup
+     * @param TblDivision $tblDivision
+     * @param TblPerson $tblPerson
+     * @param bool $IsSoftRemove
      *
      * @return bool
      */
@@ -425,16 +429,33 @@ class Service extends AbstractService
         TblSubject $tblSubject,
         TblPerson $tblPerson,
         TblSubjectGroup $tblSubjectGroup = null
+        TblPerson $tblPerson,
+        $IsSoftRemove = false
     ) {
 
         return (new Data($this->getBinding()))->checkSubjectTeacherExists($tblDivision, $tblSubject, $tblPerson,
             $tblSubjectGroup);
-
+}
+/**
+ * @param TblDivision $tblDivision
+ * @param TblPerson $tblPerson
+ * @param bool $IsSoftRemove
+ *
+ * @return bool
+ */
+    public
+    function removeTeacherToDivision(
+        TblDivision $tblDivision,
+        TblPerson $tblPerson,
+        $IsSoftRemove = false
+    ) {
+        return (new Data($this->getBinding()))->removeTeacherToDivision($tblDivision, $tblPerson, $IsSoftRemove);
     }
 
     /**
      * @param TblDivision $tblDivision
      * @param TblPerson $tblPerson
+     * @param bool $IsSoftRemove
      *
      * @return bool
      * @deprecated use removeDivisionTeacher()
@@ -465,8 +486,13 @@ class Service extends AbstractService
      */
     public function removePersonToDivision(TblDivision $tblDivision, TblPerson $tblPerson)
     {
+    public function removePersonToDivision(
+        TblDivision $tblDivision,
+        TblPerson $tblPerson,
+        $IsSoftRemove = false
+    ) {
 
-        return (new Data($this->getBinding()))->removePersonToDivision($tblDivision, $tblPerson);
+        return (new Data($this->getBinding()))->removePersonToDivision($tblDivision, $tblPerson, $IsSoftRemove);
     }
 
     /**
@@ -714,13 +740,16 @@ class Service extends AbstractService
 
     /**
      * @param int $Id
+     * @param bool $IsForced
      *
      * @return bool|TblDivision
      */
-    public function getDivisionById($Id)
-    {
+    public function getDivisionById(
+        $Id,
+        $IsForced = false
+    ) {
 
-        return (new Data($this->getBinding()))->getDivisionById($Id);
+        return (new Data($this->getBinding()))->getDivisionById($Id, $IsForced);
     }
 
     /**
@@ -758,13 +787,16 @@ class Service extends AbstractService
 
     /**
      * @param TblSubjectStudent $tblSubjectStudent
+     * @param bool $IsSoftRemove
      *
      * @return string
      */
-    public function removeSubjectStudent(TblSubjectStudent $tblSubjectStudent)
-    {
+    public function removeSubjectStudent(
+        TblSubjectStudent $tblSubjectStudent,
+        $IsSoftRemove = false
+    ) {
 
-        return (new Data($this->getBinding()))->removeSubjectStudent($tblSubjectStudent);
+        return (new Data($this->getBinding()))->removeSubjectStudent($tblSubjectStudent, $IsSoftRemove);
     }
 
     /**
@@ -815,13 +847,16 @@ class Service extends AbstractService
 
     /**
      * @param TblSubjectTeacher $tblSubjectTeacher
+     * @param bool $IsSoftRemove
      *
      * @return bool
      */
-    public function removeSubjectTeacher(TblSubjectTeacher $tblSubjectTeacher)
-    {
+    public function removeSubjectTeacher(
+        TblSubjectTeacher $tblSubjectTeacher,
+        $IsSoftRemove = false
+    ) {
 
-        return (new Data($this->getBinding()))->removeSubjectTeacher($tblSubjectTeacher);
+        return (new Data($this->getBinding()))->removeSubjectTeacher($tblSubjectTeacher, $IsSoftRemove);
     }
 
     /**
@@ -1889,5 +1924,92 @@ class Service extends AbstractService
     ) {
 
         return (new Data($this->getBinding()))->getSubjectTeacherBy($tblDivisionSubject, $tblPerson);
+    }
+
+    /**
+     * @param TblPerson $tblPerson
+     * @return false|TblDivisionCustody[]
+     */
+    public function getDivisionCustodyAllByPerson(TblPerson $tblPerson)
+    {
+
+        return (new Data($this->getBinding()))->getDivisionCustodyAllByPerson($tblPerson);
+    }
+
+    /**
+     * @param TblPerson $tblPerson
+     * @return false|TblDivisionTeacher[]
+     */
+    public function getDivisionTeacherAllByPerson(TblPerson $tblPerson)
+    {
+
+        return (new Data($this->getBinding()))->getDivisionTeacherAllByPerson($tblPerson);
+    }
+
+    /**
+     * @param TblPerson $tblPerson
+     * @return false|TblSubjectStudent[]
+     */
+    public function getSubjectStudentAllByPerson(TblPerson $tblPerson)
+    {
+
+        return (new Data($this->getBinding()))->getSubjectStudentAllByPerson($tblPerson);
+    }
+
+    /**
+     * @param TblPerson $tblPerson
+     * @return false|TblSubjectTeacher[]
+     */
+    public function getSubjectTeacherAllByPerson(TblPerson $tblPerson)
+    {
+
+        return (new Data($this->getBinding()))->getSubjectTeacherAllByPerson($tblPerson);
+    }
+
+    /**
+     * @param TblPerson $tblPerson
+     * @param bool $IsSoftRemove
+     */
+    public function removePerson(TblPerson $tblPerson, $IsSoftRemove = false)
+    {
+
+        if (($tblDivisionCustodyAllByPerson = $this->getDivisionCustodyAllByPerson($tblPerson))){
+            foreach($tblDivisionCustodyAllByPerson as $tblDivisionCustody){
+                $this->removePersonToDivision(
+                    $tblDivisionCustody->getTblDivision(true),
+                    $tblDivisionCustody->getServiceTblPerson(true),
+                    $IsSoftRemove
+                );
+            }
+        }
+
+        if (($tblDivisionStudentAllByPerson = $this->getDivisionStudentAllByPerson($tblPerson))){
+            foreach($tblDivisionStudentAllByPerson as $tblDivisionStudent){
+                $this->removeStudentToDivision(
+                    $tblDivisionStudent->getTblDivision(true),
+                    $tblDivisionStudent->getServiceTblPerson(true),
+                    $IsSoftRemove
+                );
+            }
+        }
+
+        if (($tblDivisionTeacherAllByPerson = $this->getDivisionTeacherAllByPerson($tblPerson))){
+            foreach($tblDivisionTeacherAllByPerson as $tblDivisionTeacher){
+                $this->removeTeacherToDivision(
+                    $tblDivisionTeacher->getTblDivision(true),
+                    $tblDivisionTeacher->getServiceTblPerson(true),
+                    $IsSoftRemove
+                );
+            }
+        }
+
+        if (($tblSubjectTeacherAllByPerson = $this->getSubjectTeacherAllByPerson($tblPerson))){
+            foreach($tblSubjectTeacherAllByPerson as $tblSubjectTeacher){
+                $this->removeSubjectTeacher(
+                    $tblSubjectTeacher,
+                    $IsSoftRemove
+                );
+            }
+        }
     }
 }

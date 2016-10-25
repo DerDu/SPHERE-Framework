@@ -52,6 +52,26 @@ class Data extends AbstractData
     }
 
     /**
+     * Get available Database-Name-List
+     *
+     * (Distinct)
+     *
+     * @return array
+     */
+    public function getProtocolDatabaseNameList()
+    {
+        $Builder = $this->getConnection()->getEntityManager()->getQueryBuilder();
+
+        $Query = $Builder
+            ->select('P.ProtocolDatabase')
+            ->from(__NAMESPACE__ . '\Entity\TblProtocol', 'P')
+            ->distinct()
+            ->getQuery();
+
+        return $Query->getResult("COLUMN_HYDRATOR");
+    }
+
+    /**
      * @return void
      */
     public function setupDatabaseContent()

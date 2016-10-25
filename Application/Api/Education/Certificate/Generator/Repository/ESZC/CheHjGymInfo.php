@@ -9,6 +9,8 @@ use SPHERE\Application\Education\Certificate\Generator\Repository\Page;
 use SPHERE\Application\Education\Certificate\Generator\Repository\Section;
 use SPHERE\Application\Education\Certificate\Generator\Repository\Slice;
 use SPHERE\Application\Education\Lesson\Subject\Subject;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentSubject;
+use SPHERE\Application\People\Meta\Student\Student;
 use SPHERE\Common\Frontend\Layout\Repository\Container;
 
 /**
@@ -43,29 +45,29 @@ class CheHjGymInfo extends Certificate
     public function buildCertificate($IsSample = true)
     {
 
-        if( $IsSample ) {
-            $Header = ( new Slice() )
-                ->addSection(( new Section() )
-                    ->addElementColumn(( new Element() )
+        if ($IsSample) {
+            $Header = (new Slice())
+                ->addSection((new Section())
+                    ->addElementColumn((new Element())
                         ->setContent('Chemnitz Halbjahresinformation Gymnasium.pdf')
                         ->styleTextSize('12px')
                         ->styleTextColor('#CCC')
                         ->styleAlignCenter()
                         , '25%')
-                    ->addElementColumn(( new Element\Sample() )
+                    ->addElementColumn((new Element\Sample())
                         ->styleTextSize('30px')
                     )
-                    ->addElementColumn(( new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
-                            '200px') )
+                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
+                        '165px', '50px'))
                         , '25%')
                 );
         } else {
-            $Header = ( new Slice() )
-                ->addSection(( new Section() )
-                    ->addElementColumn(( new Element() ), '25%')
-                    ->addElementColumn(( new Element() ))
-                    ->addElementColumn(( new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
-                            '200px') )
+            $Header = (new Slice())
+                ->addSection((new Section())
+                    ->addElementColumn((new Element()), '25%')
+                    ->addElementColumn((new Element()))
+                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
+                        '165px', '50px'))
                         , '25%')
                 );
         }
@@ -145,7 +147,7 @@ class CheHjGymInfo extends Certificate
                             , '79%')
                     )->styleMarginTop('5px')
                 )
-                ->addSlice( $this->getGradeLanes() )
+                ->addSlice($this->getGradeLanes('14px', false))
                 ->addSlice((new Slice())
                     ->addElement((new Element())
                         ->setContent('Leistungen in den einzelnen Fächern:')
@@ -153,80 +155,8 @@ class CheHjGymInfo extends Certificate
                         ->styleTextBold()
                     )
                 )
-                ->addSlice( $this->getSubjectLanes(true, $this->getLanguagesWithStartLevel()) )
-                ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Wahlpflichtbereich:')
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            ->styleTextBold()
-                            , '20%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Input.Choose is not empty) %}
-                                    {{ Content.Input.Choose }}
-                                {% else %}
-                                    &nbsp;
-                                {% endif %}')
-                            ->styleAlignLeft()
-                            ->styleBorderBottom('1px', '#000')
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            , '77%')
-                        ->addElementColumn((new Element())
-                            , '3%'
-                        )
-                    )
-                    ->styleMarginTop('5px')
-                )
-                ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            , '30%')
-                        ->addElementColumn((new Element())
-                            ->setContent('besuchtes Profil')
-                            ->styleAlignCenter()
-                            ->styleTextSize('9.5px')
-                            , '22%')
-                        ->addElementColumn((new Element())
-                            , '48%')
-                    )
-                )
-                ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Profil')
-                            ->stylePaddingTop()
-                            , '39%')
-                        ->addElementColumn((new Element())
-                            ->setContent('&nbsp;')
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#BBB')
-                            ->styleBorderBottom('1px', '#000')
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            , '9%')
-                        ->addElementColumn((new Element())
-                            , '4%')
-                        ->addElementColumn((new Element())
-                            ->setContent('&nbsp;')
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            ->styleBorderBottom()
-                            , '48%')
-                    )->styleMarginTop('15px')
-                )
-                ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            , '52%')
-                        ->addElementColumn((new Element())
-                            ->setContent('Fremdsprache (ab Klassenstufe {{ Content.Input.LevelThree }} ) Im sprachlichen Profil')
-                            ->styleTextSize('9.5px')
-                            ->styleAlignCenter()
-                            , '48%')
-                    )
-                )
+                ->addSlice($this->getSubjectLanes(true, $this->getLanguagesWithStartLevel(), '14px', false))
+                ->addSlice($this->getObligationToVotePart('14px', false))
                 ->addSlice((new Slice())
                     ->addSection((new Section())
                         ->addElementColumn((new Element())
@@ -372,7 +302,7 @@ class CheHjGymInfo extends Certificate
                     ->addSection((new Section())
                         ->addElementColumn((new Element())
                             ->setContent('Notenerläuterung:'
-                                .new Container('1 = sehr gut; 2 = gut; 3 = befriedigend; 4 = ausreichend; 5 = mangelhaft;
+                                . new Container('1 = sehr gut; 2 = gut; 3 = befriedigend; 4 = ausreichend; 5 = mangelhaft;
                                                 6 = ungenügend (6 = ungenügend nur bei der Bewertung der Leistungen)')
                             )
                             ->styleTextSize('9.5px')
@@ -381,5 +311,120 @@ class CheHjGymInfo extends Certificate
                 )
             )
         );
+    }
+
+    /**
+     * @param string $TextSize
+     * @param bool $IsGradeUnderlined
+     *
+     * @return Slice
+     */
+    private function getObligationToVotePart($TextSize = '14px', $IsGradeUnderlined = true)
+    {
+
+        $slice = new Slice();
+        $sectionList = array();
+
+        $tblSubject = false;
+
+        // Profil
+        if ($this->getTblPerson()
+            && ($tblStudent = Student::useService()->getStudentByPerson($this->getTblPerson()))
+            && ($tblStudentSubjectType = Student::useService()->getStudentSubjectTypeByIdentifier('PROFILE'))
+            && ($tblStudentSubjectList = Student::useService()->getStudentSubjectAllByStudentAndSubjectType($tblStudent,
+                $tblStudentSubjectType))
+        ) {
+            /** @var TblStudentSubject $tblStudentSubject */
+            $tblStudentSubject = current($tblStudentSubjectList);
+            if (($tblSubjectProfile = $tblStudentSubject->getServiceTblSubject())) {
+                $tblSubject = $tblSubjectProfile;
+            }
+        }
+
+        if ($tblSubject){
+            $elementName = (new Element())
+                ->setContent('
+                   {% if(Content.Student.Profile.' . $tblSubject->getAcronym() . ' is not empty) %}
+                       {{ Content.Student.Profile.' . $tblSubject->getAcronym() . '.Name' . ' }}
+                   {% else %}
+                        &nbsp;
+                   {% endif %}
+                ')
+                ->styleAlignCenter()
+                ->styleBorderBottom()
+                ->styleMarginTop('10px')
+                ->styleTextSize($TextSize);
+
+            $elementGrade = (new Element())
+                ->setContent('
+                    {% if(Content.Grade.Data.' . $tblSubject->getAcronym() . ' is not empty) %}
+                        {{ Content.Grade.Data.' . $tblSubject->getAcronym() . ' }}
+                    {% else %}
+                        ---
+                    {% endif %}
+                ')
+                ->styleAlignCenter()
+                ->styleBackgroundColor('#BBB')
+                ->styleBorderBottom($IsGradeUnderlined ? '1px' : '0px', '#000')
+                ->stylePaddingTop('0px')
+                ->stylePaddingBottom('0px')
+                ->styleMarginTop('10px')
+                ->styleTextSize($TextSize);
+        } else {
+            $elementName = (new Element())
+                ->setContent('&nbsp;')
+                ->styleAlignCenter()
+                ->styleBorderBottom()
+                ->styleMarginTop('10px')
+                ->styleTextSize($TextSize);
+
+            $elementGrade = (new Element())
+                ->setContent('---')
+                ->styleAlignCenter()
+                ->styleBackgroundColor('#BBB')
+                ->styleBorderBottom($IsGradeUnderlined ? '1px' : '0px', '#000')
+                ->stylePaddingTop('0px')
+                ->stylePaddingBottom('0px')
+                ->styleMarginTop('10px')
+                ->styleTextSize($TextSize);
+        }
+
+        $section = new Section();
+        $section
+            ->addElementColumn((new Element())
+                ->setContent('Wahlpflichtbereich:')
+                ->styleTextBold()
+                ->styleMarginTop('10px')
+                ->styleTextSize($TextSize)
+                , '20%')
+            ->addElementColumn($elementName
+                , '50%')
+            ->addElementColumn((new Element()), '30%');
+        $sectionList[] = $section;
+        $section = new Section();
+        $section
+            ->addElementColumn((new Element())
+                , '20%')
+            ->addElementColumn((new Element())
+                ->setContent('besuchtes Profil')
+                ->styleAlignCenter()
+                ->styleTextSize('11px')
+                , '50%')
+            ->addElementColumn((new Element()), '30%');
+        $sectionList[] = $section;
+
+        $section = new Section();
+        $section
+            ->addElementColumn((new Element())
+                ->setContent('Profil')
+                ->styleTextSize($TextSize)
+                ->styleMarginTop('10px')
+                , '39%')
+            ->addElementColumn($elementGrade
+                , '9%')
+            ->addElementColumn((new Element()), '52%');
+        $sectionList[] = $section;
+
+        return $slice->addSectionList($sectionList);
     }
 }

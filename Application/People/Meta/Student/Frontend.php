@@ -541,7 +541,7 @@ class Frontend extends Extension implements IFrontendInterface
                 );
             }
         );
-        $LiberationPanel = new Panel('Unterichtsbefreihung', $LiberationPanel, Panel::PANEL_TYPE_INFO);
+        $LiberationPanel = new Panel('Unterrichtsbefreiung', $LiberationPanel, Panel::PANEL_TYPE_INFO);
 
         $tblSiblingRankAll = Relationship::useService()->getSiblingRankAll();
         $tblSiblingRankAll[] = new TblSiblingRank();

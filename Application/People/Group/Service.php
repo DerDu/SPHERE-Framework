@@ -134,7 +134,7 @@ class Service extends AbstractService
      * @param IFormInterface $Form
      * @param array          $Group
      *
-     * @return IFormInterface|Redirect
+     * @return IFormInterface|string
      */
     public function createGroup(IFormInterface $Form = null, $Group)
     {
@@ -188,12 +188,16 @@ class Service extends AbstractService
 
     /**
      * @param $Name
+     *
+     * @return bool|TblGroup
      */
     public function createGroupFromImport($Name)
     {
 
-        if (!$this->getGroupByName($Name)) {
-            (new Data($this->getBinding()))->createGroup($Name, '', '');
+        if (!($tblGroup = $this->getGroupByName($Name))) {
+            return (new Data($this->getBinding()))->createGroup($Name, '', '');
+        } else {
+            return $tblGroup;
         }
     }
 
@@ -213,7 +217,7 @@ class Service extends AbstractService
      * @param TblGroup       $tblGroup
      * @param array          $Group
      *
-     * @return IFormInterface|Redirect
+     * @return IFormInterface|string
      */
     public function updateGroup(IFormInterface $Form = null, TblGroup $tblGroup, $Group)
     {
@@ -313,13 +317,14 @@ class Service extends AbstractService
     /**
      * @param TblGroup $tblGroup
      * @param TblPerson $tblPerson
+     * @param bool $IsSoftRemove
      *
      * @return bool
      */
-    public function removeGroupPerson(TblGroup $tblGroup, TblPerson $tblPerson)
+    public function removeGroupPerson(TblGroup $tblGroup, TblPerson $tblPerson, $IsSoftRemove = false)
     {
 
-        return (new Data($this->getBinding()))->removeGroupPerson($tblGroup, $tblPerson);
+        return (new Data($this->getBinding()))->removeGroupPerson($tblGroup, $tblPerson, $IsSoftRemove);
     }
 
     /**
@@ -481,7 +486,7 @@ class Service extends AbstractService
      * @param TblGroup       $tblGroup
      * @param null           $Filter
      *
-     * @return IFormInterface|Success
+     * @return IFormInterface|string
      */
     public function getFilter(IFormInterface $Form, TblGroup $tblGroup, $Filter = null)
     {
@@ -563,4 +568,17 @@ class Service extends AbstractService
         }
     }
 
+    /**
+     * @param TblPerson $tblPerson
+     * @param $IsSoftRemove
+     */
+    public function removeMemberAllByPerson(TblPerson $tblPerson, $IsSoftRemove)
+    {
+
+        if (($tblGroupList = $this->getGroupAllByPerson($tblPerson))) {
+            foreach ($tblGroupList as $tblGroup) {
+                $this->removeGroupPerson($tblGroup, $tblPerson, $IsSoftRemove);
+            }
+        }
+    }
 }

@@ -131,4 +131,15 @@ abstract class Student extends AbstractService
 
         return false;
     }
+
+    /**
+     * @param TblStudent $tblStudent
+     *
+     * @return bool
+     */
+    public function destroyStudent(TblStudent $tblStudent)
+    {
+
+        return (new Data($this->getBinding()))->destroyStudent($tblStudent);
+    }
 }

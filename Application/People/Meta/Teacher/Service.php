@@ -42,7 +42,7 @@ class Service extends AbstractService
      * @param array $Meta
      * @param null $Group
      *
-     * @return IFormInterface|Redirect
+     * @return IFormInterface|string
      */
     public function createMeta(IFormInterface $Form = null, TblPerson $tblPerson, $Meta, $Group = null)
     {
@@ -113,5 +113,17 @@ class Service extends AbstractService
     ) {
 
         return (new Data($this->getBinding()))->createTeacher($tblPerson, $Acronym);
+    }
+
+    /**
+     * @param TblTeacher $tblTeacher
+     * @param bool $IsSoftRemove
+     *
+     * @return bool
+     */
+    public function destroyTeacher(TblTeacher $tblTeacher, $IsSoftRemove = false)
+    {
+
+        return (new Data($this->getBinding()))->destroyTeacher($tblTeacher, $IsSoftRemove);
     }
 }

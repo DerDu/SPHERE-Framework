@@ -94,6 +94,17 @@ class Service extends AbstractService
             $Stage->setError('Data[FromDate]', 'Bitte geben Sie ein Datum an');
             $Error = true;
         }
+        if (isset($Data['FromDate']) && !empty($Data['FromDate'])
+            && isset($Data['ToDate']) && !empty($Data['ToDate'])
+        ) {
+            $fromDate = new \DateTime($Data['FromDate']);
+            $toDate = new \DateTime($Data['ToDate']);
+            if ($toDate->format('Y-m-d') < $fromDate->format('Y-m-d')){
+                $Stage->setError('Data[ToDate]', 'Das "Datum bis" darf nicht kleiner sein Datum als das "Datum von"');
+                $Error = true;
+            }
+        }
+
         // ToDo setError for RadioBox
         if (!isset($Data['Status'])) {
             $Stage->setError('Data[Status]', 'Bitte geben Sie einen Status an');
@@ -143,6 +154,17 @@ class Service extends AbstractService
             $Stage->setError('Data[FromDate]', 'Bitte geben Sie ein Datum an');
             $Error = true;
         }
+        if (isset($Data['FromDate']) && !empty($Data['FromDate'])
+            && isset($Data['ToDate']) && !empty($Data['ToDate'])
+        ) {
+            $fromDate = new \DateTime($Data['FromDate']);
+            $toDate = new \DateTime($Data['ToDate']);
+            if ($toDate->format('Y-m-d') < $fromDate->format('Y-m-d')){
+                $Stage->setError('Data[ToDate]', 'Das "Datum bis" darf nicht kleiner sein Datum als das "Datum von"');
+                $Error = true;
+            }
+        }
+
         // ToDo setError for RadioBox
         if (!isset($Data['Status'])) {
             $Stage->setError('Data[Status]', 'Bitte geben Sie einen Status an');
@@ -170,13 +192,14 @@ class Service extends AbstractService
 
     /**
      * @param TblAbsence $tblAbsence
+     * @param bool $IsSoftRemove
      *
      * @return bool
      */
-    public function destroyAbsence(TblAbsence $tblAbsence)
+    public function destroyAbsence(TblAbsence $tblAbsence, $IsSoftRemove = false)
     {
 
-        return (new Data($this->getBinding()))->destroyAbsence($tblAbsence);
+        return (new Data($this->getBinding()))->destroyAbsence($tblAbsence, $IsSoftRemove);
     }
 
     /**
@@ -223,5 +246,19 @@ class Service extends AbstractService
         }
 
         return $days;
+    }
+
+    /**
+     * @param TblPerson $tblPerson
+     * @param bool $IsSoftRemove
+     */
+    public function destroyAbsenceAllByPerson(TblPerson $tblPerson, $IsSoftRemove = false)
+    {
+
+        if (($tblAbsenceList = $this->getAbsenceAllByPerson($tblPerson))){
+            foreach($tblAbsenceList as $tblAbsence){
+                $this->destroyAbsence($tblAbsence, $IsSoftRemove);
+            }
+        }
     }
 }

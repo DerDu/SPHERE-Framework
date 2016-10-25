@@ -14,13 +14,16 @@ use SPHERE\Application\People\Meta\Prospect\Service\Entity\TblProspect;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudent;
 use SPHERE\Application\People\Meta\Student\Student;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
+use SPHERE\Application\People\Relationship\Relationship;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Consumer;
 use SPHERE\Common\Frontend\Icon\Repository\Edit;
+use SPHERE\Common\Frontend\Icon\Repository\Person;
 use SPHERE\Common\Frontend\Icon\Repository\PersonGroup;
 use SPHERE\Common\Frontend\Icon\Repository\Remove;
 use SPHERE\Common\Frontend\IFrontendInterface;
 use SPHERE\Common\Frontend\Layout\Repository\Headline;
 use SPHERE\Common\Frontend\Layout\Repository\Label;
+use SPHERE\Common\Frontend\Layout\Repository\Listing;
 use SPHERE\Common\Frontend\Layout\Repository\Panel;
 use SPHERE\Common\Frontend\Layout\Structure\Layout;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutColumn;
@@ -56,7 +59,7 @@ class Frontend extends Extension implements IFrontendInterface
     {
 
         $Stage = new Stage('Suche', 'nach Gruppe');
-        $Stage->addButton( new Backward() );
+        $Stage->addButton(new Backward());
         Group::useFrontend()->addGroupSearchStageButton($Stage);
 
         $tblGroup = Group::useService()->getGroupById($Id);
@@ -67,7 +70,7 @@ class Frontend extends Extension implements IFrontendInterface
             // Consumer + Group Cache
             $Acronym = Consumer::useService()->getConsumerBySession()->getAcronym();
 
-            $Cache = new DataCacheHandler($Acronym.':'.$Id.':'.$tblGroup->getMetaTable(), array(
+            $Cache = new DataCacheHandler($Acronym . ':' . $Id . ':' . $tblGroup->getMetaTable(), array(
                 new TblPerson(),
                 new TblMember(),
                 new TblAddress(),
@@ -77,7 +80,7 @@ class Frontend extends Extension implements IFrontendInterface
                 new TblDivision(),
                 new TblDivisionStudent(),
             ));
-            if (null === ( $Result = $Cache->getData() )) {
+            if (null === ($Result = $Cache->getData())) {
 
                 if ($tblGroup->getMetaTable() == 'STUDENT') {
                     $tblYearList = Term::useService()->getYearByNow();
@@ -127,13 +130,38 @@ class Frontend extends Extension implements IFrontendInterface
                                 }
                             }
 
+                            // Custody
+                            $childrenList = array();
+                            if ($tblGroup->getMetaTable() == 'CUSTODY') {
+                                if (($tblRelationshipList = Relationship::useService()->getPersonRelationshipAllByPerson($tblPerson))) {
+                                    foreach ($tblRelationshipList as $tblToPerson) {
+                                        if ($tblToPerson->getTblType()->getName() == "Sorgeberechtigt"
+                                            && ($tblPersonFrom = $tblToPerson->getServiceTblPersonFrom())
+                                            && ($tblPersonTo = $tblToPerson->getServiceTblPersonTo())
+                                            && $tblPersonFrom->getId() == $tblPerson->getId()
+                                        ) {
+                                            $childrenList[$tblPersonTo->getId()]
+                                                = new Standard('', '/People/Person', new Person(),
+                                                    array(
+                                                        'Id' => $tblPersonTo->getId(),
+                                                        'Group' => $tblGroup->getId()
+                                                    ),
+                                                    'zur Person wechseln'
+                                                )
+                                                . ($tblPerson->getLastName() != $tblPersonTo->getLastName()
+                                                    ? $tblPersonTo->getLastFirstName() : $tblPersonTo->getFirstSecondName());
+                                        }
+                                    }
+                                }
+                            }
+
                             array_push($Result, array(
-                                'FullName'       => $tblPerson->getLastFirstName(),
-                                'Address'        => ( $tblPerson->fetchMainAddress()
+                                'FullName' => $tblPerson->getLastFirstName(),
+                                'Address' => ($tblPerson->fetchMainAddress()
                                     ? $tblPerson->fetchMainAddress()->getGuiString()
                                     : new Warning('Keine Adresse hinterlegt')
                                 ),
-                                'Option'         => (new Standard('', '/People/Person', new Edit(), array(
+                                'Option' => (new Standard('', '/People/Person', new Edit(), array(
                                         'Id' => $tblPerson->getId(),
                                         'Group' => $tblGroup->getId()
                                     ), 'Bearbeiten'))
@@ -141,29 +169,41 @@ class Frontend extends Extension implements IFrontendInterface
                                         '/People/Person/Destroy', new Remove(),
                                         array('Id' => $tblPerson->getId(), 'Group' => $tblGroup->getId()),
                                         'Person löschen')),
-                                'Remark'         => (
+                                'Remark' => (
                                 $Acronym == 'ESZC' && $tblGroup->getMetaTable() == 'CUSTODY'
                                     ? (($Common = Common::useService()->getCommonByPerson($tblPerson)) ? $Common->getRemark() : '')
                                     : ''
                                 ),
-                                'Division'       => ($displayDivisionList ? $displayDivisionList : ''),
+                                'Division' => ($displayDivisionList ? $displayDivisionList : ''),
                                 'Identification' => $identification,
-                                'Year'           => ($year ? $year : ''),
-                                'Level'          => ($level ? $level : ''),
-                                'SchoolOption'   => ($option ? $option : '')
+                                'Year' => ($year ? $year : ''),
+                                'Level' => ($level ? $level : ''),
+                                'SchoolOption' => ($option ? $option : ''),
+                                'Custody' => (empty($childrenList) ? '' : new Listing($childrenList))
                             ));
                         });
                 }
                 $Cache->setData($Result);
             }
 
-            if ($Acronym == 'ESZC' && $tblGroup->getMetaTable() == 'CUSTODY') {
-                $ColumnArray = array(
-                    'FullName' => 'Name',
-                    'Address' => 'Adresse',
-                    'Remark' => 'Bemerkung',
-                    'Option' => '',
-                );
+            if ($tblGroup->getMetaTable() == 'CUSTODY') {
+                if ($Acronym == 'ESZC') {
+                    $ColumnArray = array(
+                        'FullName' => 'Name',
+                        'Address' => 'Adresse',
+                        'Custody' => 'Sorgeberechtigt für',
+                        'Remark' => 'Bemerkung',
+                        'Option' => '',
+                    );
+                } else {
+                    $ColumnArray = array(
+                        'FullName' => 'Name',
+                        'Address' => 'Adresse',
+                        'Custody' => 'Sorgeberechtigt für',
+                        'Option' => '',
+                    );
+                }
+
             } elseif ($tblGroup->getMetaTable() == 'STUDENT') {
                 $ColumnArray = array(
                     'FullName' => 'Name',
@@ -202,7 +242,7 @@ class Frontend extends Extension implements IFrontendInterface
                     new LayoutRow(new LayoutColumn(array(
                         new Headline('Verfügbare Personen', 'in dieser Gruppe'),
                         new TableData($Result, null, $ColumnArray, array(
-                            'order'      => array(
+                            'order' => array(
                                 array(0, 'asc')
                             ),
                             'columnDefs' => array(
@@ -226,13 +266,13 @@ class Frontend extends Extension implements IFrontendInterface
     {
 
         $tblGroupAll = Group::useService()->getGroupAllSorted();
-        if (!empty( $tblGroupAll )) {
+        if (!empty($tblGroupAll)) {
             /** @noinspection PhpUnusedParameterInspection */
             array_walk($tblGroupAll, function (TblGroup &$tblGroup) use ($Stage) {
 
                 $Stage->addButton(
                     new Standard(
-                        $tblGroup->getName().'&nbsp;&nbsp;'.new Label(Group::useService()->countMemberAllByGroup($tblGroup)),
+                        $tblGroup->getName() . '&nbsp;&nbsp;' . new Label(Group::useService()->countMemberAllByGroup($tblGroup)),
                         new Route(__NAMESPACE__), new PersonGroup(),
                         array(
                             'Id' => $tblGroup->getId()

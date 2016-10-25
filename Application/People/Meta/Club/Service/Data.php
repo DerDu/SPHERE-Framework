@@ -105,4 +105,27 @@ class Data  extends AbstractData
         return false;
     }
 
+    /**
+     * @param TblClub $tblClub
+     * @param bool $IsSoftRemove
+     *
+     * @return bool
+     */
+    public function destroyClub(TblClub $tblClub, $IsSoftRemove = false)
+    {
+
+        $Manager = $this->getConnection()->getEntityManager();
+        /** @var TblClub $Entity */
+        $Entity = $Manager->getEntityById('TblClub', $tblClub->getId());
+        if (null !== $Entity) {
+            Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(), $Entity);
+            if ($IsSoftRemove) {
+                $Manager->removeEntity($Entity);
+            } else {
+                $Manager->killEntity($Entity);
+            }
+            return true;
+        }
+        return false;
+    }
 }

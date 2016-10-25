@@ -301,7 +301,7 @@ class CheBeGym extends Certificate
                                 {% else %}
                                     &nbsp;
                                 {% endif %}')
-                        ->styleHeight('200px')
+                        ->styleHeight('190px')
                         ->stylePaddingTop()
                         ->stylePaddingLeft('5px')
                         ->stylePaddingRight('5px')
@@ -428,7 +428,7 @@ class CheBeGym extends Certificate
 //                            ->styleAlignCenter()
                             , '40%')
                     )
-                    ->styleHeight('130px')
+                    ->styleHeight('110px')
                     ->stylePaddingTop()
                     ->stylePaddingLeft('5px')
                     ->stylePaddingRight('5px')

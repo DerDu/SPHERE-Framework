@@ -410,12 +410,10 @@ class Service extends AbstractService
             $tblAddress = (new Data($this->getBinding()))->createAddress(
                 $tblState, $tblCity, $Street['Name'], $Street['Number'], '', $County, $Nation
             );
-            // Remove current
-            (new Data($this->getBinding()))->removeAddressToPerson($tblToPerson);
-
             if ($tblToPerson->getServiceTblPerson()) {
-                // Add new
-                if ((new Data($this->getBinding()))->addAddressToPerson($tblToPerson->getServiceTblPerson(),
+                // Update current
+                if (( new Data($this->getBinding()) )->updateAddressToPerson(
+                    $tblToPerson,
                     $tblAddress,
                     $tblType,
                     $Type['Remark'])
@@ -727,13 +725,14 @@ class Service extends AbstractService
 
     /**
      * @param TblToPerson $tblToPerson
+     * @param bool $IsSoftRemove
      *
      * @return bool
      */
-    public function removeAddressToPerson(TblToPerson $tblToPerson)
+    public function removeAddressToPerson(TblToPerson $tblToPerson, $IsSoftRemove = false)
     {
 
-        return (new Data($this->getBinding()))->removeAddressToPerson($tblToPerson);
+        return (new Data($this->getBinding()))->removeAddressToPerson($tblToPerson, $IsSoftRemove);
     }
 
     /**
@@ -767,5 +766,19 @@ class Service extends AbstractService
     {
 
         return (new Data($this->getBinding()))->fetchAddressAllByIdList($IdArray);
+    }
+
+    /**
+     * @param TblPerson $tblPerson
+     * @param bool $IsSoftRemove
+     */
+    public function removeAddressAllByPerson(TblPerson $tblPerson, $IsSoftRemove = false)
+    {
+
+        if (($tblAddressToPersonList = $this->getAddressAllByPerson($tblPerson))){
+            foreach($tblAddressToPersonList as $tblToPerson){
+                $this->removeAddressToPerson($tblToPerson, $IsSoftRemove);
+            }
+        }
     }
 }

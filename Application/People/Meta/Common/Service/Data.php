@@ -190,7 +190,7 @@ class Data extends AbstractData
      * @param string              $Birthplace
      * @param int                 $Gender
      *
-     * @return TblCommonBirthDates
+     * @return bool
      */
     public function updateCommonBirthDates(
         TblCommonBirthDates $tblCommonBirthDates,
@@ -221,7 +221,7 @@ class Data extends AbstractData
      * @param int                  $IsAssistance
      * @param string               $AssistanceActivity
      *
-     * @return TblCommonInformation
+     * @return bool
      */
     public function updateCommonInformation(
         TblCommonInformation $tblCommonInformation,
@@ -251,7 +251,7 @@ class Data extends AbstractData
      * @param TblCommon $tblCommon
      * @param string    $Remark
      *
-     * @return TblCommon
+     * @return bool
      */
     public function updateCommon(
         TblCommon $tblCommon,
@@ -269,6 +269,30 @@ class Data extends AbstractData
             return true;
         }
 
+        return false;
+    }
+
+    /**
+     * @param TblCommon $tblCommon
+     * @param bool $IsSoftRemove
+     *
+     * @return bool
+     */
+    public function destroyCommon(TblCommon $tblCommon, $IsSoftRemove = false)
+    {
+
+        $Manager = $this->getConnection()->getEntityManager();
+        /** @var TblCommon $Entity */
+        $Entity = $Manager->getEntityById('TblCommon', $tblCommon->getId());
+        if (null !== $Entity) {
+            Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(), $Entity);
+            if ($IsSoftRemove) {
+                $Manager->removeEntity($Entity);
+            } else {
+                $Manager->killEntity($Entity);
+            }
+            return true;
+        }
         return false;
     }
 }

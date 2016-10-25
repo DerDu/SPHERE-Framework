@@ -53,7 +53,7 @@ class Data extends AbstractData
      * @param string     $Occupation
      * @param string     $Employment
      *
-     * @return TblCustody
+     * @return bool
      */
     public function updateCustody(
         TblCustody $tblCustody,
@@ -99,5 +99,29 @@ class Data extends AbstractData
     {
 
         return $this->getCachedEntityById(__METHOD__, $this->getConnection()->getEntityManager(), 'TblCustody', $Id);
+    }
+
+    /**
+     * @param TblCustody $tblCustody
+     * @param bool $IsSoftRemove
+     *
+     * @return bool
+     */
+    public function destroyCustody(TblCustody $tblCustody, $IsSoftRemove = false)
+    {
+
+        $Manager = $this->getConnection()->getEntityManager();
+        /** @var TblCustody $Entity */
+        $Entity = $Manager->getEntityById('TblCustody', $tblCustody->getId());
+        if (null !== $Entity) {
+            Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(), $Entity);
+            if ($IsSoftRemove) {
+                $Manager->removeEntity($Entity);
+            } else {
+                $Manager->killEntity($Entity);
+            }
+            return true;
+        }
+        return false;
     }
 }
