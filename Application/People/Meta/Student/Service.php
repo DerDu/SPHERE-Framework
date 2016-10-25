@@ -195,7 +195,7 @@ class Service extends Integration
      * @param array          $Meta
      * @param                $Group
      *
-     * @return IFormInterface|Redirect
+     * @return IFormInterface|string
      */
     public function createMeta(IFormInterface $Form = null, TblPerson $tblPerson, $Meta, $Group)
     {

@@ -2,7 +2,6 @@
 namespace SPHERE\Application\Education\Certificate\Generator;
 
 use SPHERE\Application\Document\Explorer\Storage\Storage;
-use SPHERE\Application\Education\Certificate\Generator\Repository\Element;
 use SPHERE\Application\Education\Certificate\Generator\Service\Entity\TblCertificate;
 use SPHERE\Application\Education\Graduation\Gradebook\Gradebook;
 use SPHERE\Application\Education\Lesson\Division\Division;
@@ -15,7 +14,6 @@ use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Consumer;
 use SPHERE\Common\Frontend\Form\Repository\AbstractField;
 use SPHERE\Common\Frontend\Form\Repository\Button\Primary;
-use SPHERE\Common\Frontend\Form\Repository\Field;
 use SPHERE\Common\Frontend\Form\Repository\Field\RadioBox;
 use SPHERE\Common\Frontend\Form\Repository\Field\TextField;
 use SPHERE\Common\Frontend\Form\Structure\Form;
@@ -48,9 +46,16 @@ use SPHERE\Common\Frontend\Text\Repository\Small;
 use SPHERE\Common\Window\Stage;
 use SPHERE\System\Extension\Extension;
 
+/**
+ * Class Frontend
+ * @package SPHERE\Application\Education\Certificate\Generator
+ */
 class Frontend extends Extension implements IFrontendInterface
 {
-
+    /**
+     * @param int $SinceYears
+     * @return Stage
+     */
     public function frontendSelectDivision($SinceYears = 1)
     {
 
@@ -108,6 +113,10 @@ class Frontend extends Extension implements IFrontendInterface
         return $Stage;
     }
 
+    /**
+     * @param null $Division
+     * @return Stage
+     */
     public function frontendSelectStudent($Division = null)
     {
 
@@ -275,6 +284,14 @@ class Frontend extends Extension implements IFrontendInterface
         return $Stage;
     }
 
+    /**
+     * @param null $Division
+     * @param null $Person
+     * @param null $Certificate
+     * @param array $Content
+     * @param null $SaveAs
+     * @return Stage
+     */
     public function frontendSelectContent(
         $Division = null,
         $Person = null,

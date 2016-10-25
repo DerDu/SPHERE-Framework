@@ -75,8 +75,11 @@ class Frontend extends Extension implements IFrontendInterface
 
         $tblPerson = Person::useService()->getPersonById($Id);
         if(!$tblPerson){
-            return $Stage . new Danger('Person nicht gefunden', new Ban())
-            . new Redirect('/People/Search/Group', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                new Danger('Person nicht gefunden', new Ban())
+                . new Redirect('/People/Search/Group', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
 
         $Stage->addButton(
@@ -204,8 +207,11 @@ class Frontend extends Extension implements IFrontendInterface
 
             return $Stage;
         } else {
-            return $Stage . new Danger(new Ban() . ' Firma nicht gefunden.')
-            . new Redirect('/Corporation/Search/Group', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                 new Danger(new Ban() . ' Firma nicht gefunden.')
+                . new Redirect('/Corporation/Search/Group', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
     }
 
@@ -225,8 +231,11 @@ class Frontend extends Extension implements IFrontendInterface
         $tblToPerson = Phone::useService()->getPhoneToPersonById($Id);
 
         if(!$tblToPerson->getServiceTblPerson()){
-            return $Stage . new Danger('Person nicht gefunden', new Ban())
-            . new Redirect('/People/Search/Group', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                 new Danger('Person nicht gefunden', new Ban())
+                . new Redirect('/People/Search/Group', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
 
         $Stage->addButton(
@@ -291,8 +300,11 @@ class Frontend extends Extension implements IFrontendInterface
         $tblToCompany = Phone::useService()->getPhoneToCompanyById($Id);
 
         if (!$tblToCompany->getServiceTblCompany()){
-            return $Stage . new Danger('Firma nicht gefunden', new Ban())
-            . new Redirect('/Corporation/Search/Group', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                 new Danger('Firma nicht gefunden', new Ban())
+                . new Redirect('/Corporation/Search/Group', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
 
         $Stage->addButton(new Standard('Zurück', '/Corporation/Company', new ChevronLeft(),
@@ -555,15 +567,20 @@ class Frontend extends Extension implements IFrontendInterface
         if ($Id) {
             $tblToPerson = Phone::useService()->getPhoneToPersonById($Id);
             if (!$tblToPerson) {
-                //
-                return $Stage.new Danger('Telefonnummer nicht gefunden', new Ban());
+                $Stage->setContent(
+                    new Danger('Telefonnummer nicht gefunden', new Ban())
 //                . new Redirect('/People/Search/Group', Redirect::TIMEOUT_ERROR);
+                );
+                return $Stage;
             }
             $tblPerson = $tblToPerson->getServiceTblPerson();
 
             if (!$tblPerson){
-                return $Stage . new Danger('Person nicht gefunden', new Ban())
-                . new Redirect('/People/Search/Group', Redirect::TIMEOUT_ERROR);
+                $Stage->setContent(
+                    new Danger('Person nicht gefunden', new Ban())
+                    . new Redirect('/People/Search/Group', Redirect::TIMEOUT_ERROR)
+                );
+                return $Stage;
             }
 
 //            $Stage->addButton(
@@ -637,8 +654,11 @@ class Frontend extends Extension implements IFrontendInterface
             $tblCompany = $tblToCompany->getServiceTblCompany();
 
             if (!$tblCompany){
-                return $Stage . new Danger('Firma nicht gefunden', new Ban())
-                . new Redirect('/Corporation/Search/Group', Redirect::TIMEOUT_ERROR);
+                $Stage->setContent(
+                    new Danger('Firma nicht gefunden', new Ban())
+                    . new Redirect('/Corporation/Search/Group', Redirect::TIMEOUT_ERROR)
+                );
+                return $Stage;
             }
 
             $Stage->addButton(new Standard('Zurück', '/Corporation/Company', new ChevronLeft(),

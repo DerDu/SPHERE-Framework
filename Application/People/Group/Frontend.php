@@ -543,9 +543,11 @@ class Frontend extends Extension implements IFrontendInterface
             )));
 
         } else {
-            return $Stage
-            . new Danger('Gruppe nicht gefunden.', new Ban())
-            . new Redirect('/People/Group', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                new Danger('Gruppe nicht gefunden.', new Ban())
+                . new Redirect('/People/Group', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
 
         return $Stage;

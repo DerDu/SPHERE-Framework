@@ -319,7 +319,7 @@ class Service extends AbstractService
      * @param $Year
      * @param $Period
      *
-     * @return Success
+     * @return Success|string
      */
     public function addYearPeriod($Year, $Period)
     {
@@ -361,7 +361,7 @@ class Service extends AbstractService
      * @param $Year
      * @param $Period
      *
-     * @return Success
+     * @return Success|string
      */
     public function removeYearPeriod($Year, $Period)
     {

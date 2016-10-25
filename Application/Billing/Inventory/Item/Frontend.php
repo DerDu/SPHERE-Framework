@@ -38,7 +38,6 @@ use SPHERE\Common\Frontend\Layout\Structure\Layout;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutColumn;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutGroup;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutRow;
-use SPHERE\Common\Frontend\Link\Repository\Backward;
 use SPHERE\Common\Frontend\Link\Repository\Standard;
 use SPHERE\Common\Frontend\Message\Repository\Danger;
 use SPHERE\Common\Frontend\Message\Repository\Success;
@@ -188,6 +187,9 @@ class Frontend extends Extension implements IFrontendInterface
         ));
     }
 
+    /**
+     * @return Form
+     */
     public function formItemChange()
     {
 
@@ -226,8 +228,11 @@ class Frontend extends Extension implements IFrontendInterface
             $tblCalculation = Item::useService()->getCalculationById($CalculationId);
             $tblItem = Item::useService()->getItemById($Id);
             if (!$tblItem) {
-                $Stage->setContent(new Warning('Bedingung nicht gefunden'));
-                return $Stage.new Redirect('/Billing/Inventory/Item', Redirect::TIMEOUT_ERROR);
+                $Stage->setContent(
+                    new Warning('Bedingung nicht gefunden')
+                    .new Redirect('/Billing/Inventory/Item', Redirect::TIMEOUT_ERROR)
+                );
+                return $Stage;
             }
             if ($tblCalculation && $tblItem) {
                 $Content = array();
@@ -305,8 +310,11 @@ class Frontend extends Extension implements IFrontendInterface
 
         $tblItem = Item::useService()->getItemById($Id);
         if (!$tblItem) {
-            $Stage->setContent(new Warning('Der Artikel konnten nicht aufgerufen werden'));
-            return $Stage.new Redirect('/Billing/Inventory/Item', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                new Warning('Der Artikel konnten nicht aufgerufen werden')
+                .new Redirect('/Billing/Inventory/Item', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
         $Global = $this->getGlobal();
         if (!isset( $Global->POST['Item'] )) {
@@ -350,8 +358,11 @@ class Frontend extends Extension implements IFrontendInterface
 //        $Stage->addButton(new Backward());
         $tblItem = Item::useService()->getItemById($Id);
         if (!$tblItem) {
-            $Stage->setContent(new Warning('Kein Artikel gefunden'));
-            return $Stage.new Redirect('/Billing/Inventory/Item', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                new Warning('Kein Artikel gefunden')
+                .new Redirect('/Billing/Inventory/Item', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
         $tblCalculationList = Item::useService()->getCalculationAllByItem($tblItem);
         $TableContent = array();

@@ -1,7 +1,6 @@
 <?php
 namespace SPHERE\Application\Billing\Accounting\Banking\Service;
 
-use Doctrine\Common\Annotations\Annotation\Target;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 use SPHERE\System\Database\Binding\AbstractSetup;

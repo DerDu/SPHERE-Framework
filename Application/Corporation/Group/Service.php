@@ -61,7 +61,7 @@ class Service extends AbstractService
      * @param IFormInterface $Form
      * @param array          $Group
      *
-     * @return IFormInterface|Redirect
+     * @return IFormInterface|string
      */
     public function createGroup(IFormInterface $Form = null, $Group)
     {
@@ -128,7 +128,7 @@ class Service extends AbstractService
      * @param TblGroup       $tblGroup
      * @param array          $Group
      *
-     * @return IFormInterface|Redirect
+     * @return IFormInterface|string
      */
     public function updateGroup(IFormInterface $Form = null, TblGroup $tblGroup, $Group)
     {

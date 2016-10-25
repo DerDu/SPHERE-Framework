@@ -236,6 +236,7 @@ class Data extends AbstractData
         } else {
             $EntityList = $ResultList;
         }
+        /** @var TblGroup[] $EntityList */
         return ( null === $EntityList ? false : $EntityList );
     }
 

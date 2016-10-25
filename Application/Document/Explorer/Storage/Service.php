@@ -165,7 +165,7 @@ class Service extends AbstractService
      * @param bool         $IsLocked
      * @param string       $Identifier
      *
-     * @return TblFile
+     * @return TblDirectory
      */
     public function insertDirectory(
         $Name,

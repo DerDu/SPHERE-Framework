@@ -16,6 +16,9 @@ class Credentials
     /** @var null|string $Password */
     private $Password = null;
 
+    /**
+     * Credentials constructor.
+     */
     public function __construct()
     {
 

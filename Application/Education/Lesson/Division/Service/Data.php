@@ -1099,16 +1099,17 @@ class Data extends AbstractData
     public function removeTeacherToDivision(TblDivision $tblDivision, TblPerson $tblPerson, $IsSoftRemove = false)
     {
 
-        return $this->removeDivisionTeacher($tblDivision, $tblPerson);
+        return $this->removeDivisionTeacher($tblDivision, $tblPerson, $IsSoftRemove);
     }
 
     /**
      * @param TblDivision $tblDivision
      * @param TblPerson $tblPerson
+     * @param bool $IsSoftRemove
      *
      * @return bool
      */
-    public function removeDivisionTeacher(TblDivision $tblDivision, TblPerson $tblPerson)
+    public function removeDivisionTeacher(TblDivision $tblDivision, TblPerson $tblPerson, $IsSoftRemove = false)
     {
 
         $Manager = $this->getConnection()->getEntityManager();

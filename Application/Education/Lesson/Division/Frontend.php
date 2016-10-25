@@ -349,8 +349,11 @@ class Frontend extends Extension implements IFrontendInterface
         if (!$tblDivision) {
             $Stage = new Stage('Schüler', 'hinzufügen');
             $Stage->addButton(new Standard('Zurück', '/Education/Lesson/Division', new ChevronLeft()));
-            $Stage->setContent(new Warning('Klasse nicht gefunden'));
-            return $Stage.new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                new Warning('Klasse nicht gefunden')
+                .new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
 
         $Title = 'der Klasse '.new Bold($tblDivision->getDisplayName());
@@ -480,7 +483,7 @@ class Frontend extends Extension implements IFrontendInterface
                             if ($tblDivisionList) {
                                 /** @var TblDivision $tblSingleDivision */
                                 foreach ($tblDivisionList as $tblSingleDivision) {
-                                    if ($tblSingleLevel = $tblSingleDivision->getTblLevel()) {
+                                    if (($tblSingleLevel = $tblSingleDivision->getTblLevel())) {
                                         $tblDivisionStudentList = Division::useService()->getStudentAllByDivision($tblSingleDivision);
                                         if (!$tblSingleLevel->getIsChecked() && $tblDivisionStudentList) {
                                             $tblStudentList = array_udiff($tblStudentList, $tblDivisionStudentList,
@@ -648,8 +651,11 @@ class Frontend extends Extension implements IFrontendInterface
         if (!$tblDivision) {
             $Stage = new Stage('Klassenlehrer', 'hinzufügen');
             $Stage->addButton(new Standard('Zurück', '/Education/Lesson/Division', new ChevronLeft()));
-            $Stage->setContent(new Warning('Klasse nicht gefunden'));
-            return $Stage.new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                new Warning('Klasse nicht gefunden')
+                .new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
 
         $Title = 'der Klasse '.new Bold($tblDivision->getDisplayName());
@@ -800,8 +806,11 @@ class Frontend extends Extension implements IFrontendInterface
         if (!$tblDivision) {
             $Stage = new Stage('Elternvertreter', 'hinzufügen');
             $Stage->addButton(new Standard('Zurück', '/Education/Lesson/Division', new ChevronLeft()));
-            $Stage->setContent(new Warning('Klasse nicht gefunden'));
-            return $Stage.new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                new Warning('Klasse nicht gefunden')
+                .new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
 
         $Title = 'der Klasse '.new Bold($tblDivision->getDisplayName());
@@ -950,8 +959,11 @@ class Frontend extends Extension implements IFrontendInterface
         if (!$tblDivision) {
             $Stage = new Stage('Fächer', 'hinzufügen');
             $Stage->addButton(new Standard('Zurück', '/Education/Lesson/Division', new ChevronLeft()));
-            $Stage->setContent(new Warning('Klasse nicht gefunden'));
-            return $Stage.new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                new Warning('Klasse nicht gefunden')
+                .new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
         $Title = 'der Klasse '.new Bold($tblDivision->getDisplayName());
         $Stage = new Stage('Fächer', $Title);
@@ -1079,16 +1091,23 @@ class Frontend extends Extension implements IFrontendInterface
         if (!$tblDivision) {
             $Stage = new Stage('Schüler', 'auswählen');
             $Stage->addButton(new Standard('Zurück', '/Education/Lesson/Division', new ChevronLeft()));
-            $Stage->setContent(new Warning('Klasse nicht gefunden'));
-            return $Stage.new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                new Warning('Klasse nicht gefunden')
+                .new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
         $tblDivisionSubject = $DivisionSubjectId === null ? false : Division::useService()->getDivisionSubjectById($DivisionSubjectId);
         if (!$tblDivisionSubject) {
             $Stage = new Stage('Schüler', 'auswählen');
             $Stage->addButton(new Standard('Zurück', '/Education/Lesson/Division', new ChevronLeft()));
-            $Stage->setContent(new Warning('Fach nicht gefunden'));
-            return $Stage.new Redirect('/Education/Lesson/Division/Show', Redirect::TIMEOUT_ERROR,
-                array('Id' => $tblDivision->getId()));
+            $Stage->setContent(
+                new Warning('Fach nicht gefunden')
+                .new Redirect('/Education/Lesson/Division/Show', Redirect::TIMEOUT_ERROR,
+                    array('Id' => $tblDivision->getId())
+                )
+            );
+            return $Stage;
         }
         $Stage = new Stage('Schüler', 'Klasse '.new Bold($tblDivision->getDisplayName()));
 //                $Stage->addButton(new Backward());
@@ -1231,16 +1250,23 @@ class Frontend extends Extension implements IFrontendInterface
         if (!$tblDivision) {
             $Stage = new Stage('Fachlehrer', 'auswählen');
             $Stage->addButton(new Standard('Zurück', '/Education/Lesson/Division', new ChevronLeft()));
-            $Stage->setContent(new Warning('Klasse nicht gefunden'));
-            return $Stage.new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                new Warning('Klasse nicht gefunden')
+                .new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
         $tblDivisionSubject = Division::useService()->getDivisionSubjectById($DivisionSubjectId);
         if (!$tblDivisionSubject) {
             $Stage = new Stage('Fachlehrer', 'auswählen');
             $Stage->addButton(new Standard('Zurück', '/Education/Lesson/Division', new ChevronLeft()));
-            $Stage->setContent(new Warning('Fach in der Klasse nicht gefunden'));
-            return $Stage.new Redirect('/Education/Lesson/Division/Show', Redirect::TIMEOUT_ERROR,
-                array('Id' => $tblDivision->getId()));
+            $Stage->setContent(
+                new Warning('Fach in der Klasse nicht gefunden')
+                .new Redirect('/Education/Lesson/Division/Show', Redirect::TIMEOUT_ERROR,
+                    array('Id' => $tblDivision->getId())
+                )
+            );
+            return $Stage;
         }
 
         if ($tblDivisionSubject->getTblSubjectGroup()) {
@@ -1417,16 +1443,23 @@ class Frontend extends Extension implements IFrontendInterface
         $tblDivision = $Id === null ? false : Division::useService()->getDivisionById($Id);
         if (!$tblDivision) {
 //            $Stage->addButton(new Standard('Zurück', '/Education/Lesson/Division', new ChevronLeft()));
-            $Stage->setContent(new Warning('Klasse nicht gefunden'));
-            return $Stage.new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                new Warning('Klasse nicht gefunden')
+                .new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
         $tblSubject = Division::useService()->getDivisionSubjectById($DivisionSubjectId)->getServiceTblSubject();
         if (!$tblSubject) {
 //            $Stage->addButton(new Standard('Zurück', '/Education/Lesson/Division/Show', new ChevronLeft(),
 //                array('Id' => $tblDivision->getId())));
-            $Stage->setContent(new Warning('Fach nicht gefunden'));
-            return $Stage.new Redirect('/Education/Lesson/Division/Show', Redirect::TIMEOUT_ERROR,
-                array('Id' => $tblDivision->getId()));
+            $Stage->setContent(
+                new Warning('Fach nicht gefunden')
+                .new Redirect('/Education/Lesson/Division/Show', Redirect::TIMEOUT_ERROR,
+                    array('Id' => $tblDivision->getId())
+                )
+            );
+            return $Stage;
         }
         $Stage->addButton(new Standard('Zurück', '/Education/Lesson/Division/Show', new ChevronLeft(),
             array('Id' => $tblDivision->getId())));
@@ -1544,8 +1577,11 @@ class Frontend extends Extension implements IFrontendInterface
 
         if ($Id === null || $SubjectId === null || $DivisionId === null || $DivisionSubjectId === null) {
             $Stage = new Stage('Gruppe', 'Bearbeiten');
-            $Stage->setContent(new Warning('Klasse nicht gefunden'));
-            return $Stage.new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                new Warning('Klasse nicht gefunden')
+                .new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
 
         $Stage = new Stage('Gruppe', 'Bearbeiten');
@@ -1620,18 +1656,27 @@ class Frontend extends Extension implements IFrontendInterface
 
         $tblDivision = $Id === null ? false : Division::useService()->getDivisionById($Id);
         if (!$tblDivision) {
-            $Stage->setContent(new Warning('Klasse nicht gefunden'));
-            return $Stage.new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                new Warning('Klasse nicht gefunden')
+                .new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
         $tblDivisionSubject = $DivisionSubjectId === null ? false : Division::useService()->getDivisionSubjectById($DivisionSubjectId);
         if (!$tblDivisionSubject) {
-            $Stage->setContent(new Warning('Fach in der Klasse nicht gefunden'));
-            return $Stage.new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                new Warning('Fach in der Klasse nicht gefunden')
+                .new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
         $tblSubjectGroup = $SubjectGroupId === null ? false : Division::useService()->getSubjectGroupById($SubjectGroupId);
         if (!$tblSubjectGroup) {
-            $Stage->setContent(new Warning('Gruppe in der Klasse nicht gefunden'));
-            return $Stage.new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                new Warning('Gruppe in der Klasse nicht gefunden')
+                .new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
 
         $Stage->addButton(new Standard('Zurück', '/Education/Lesson/Division/Show', new ChevronLeft(),
@@ -1664,8 +1709,11 @@ class Frontend extends Extension implements IFrontendInterface
 //        $Stage->addButton(new Standard('Zurück', '/Education/Lesson/Division', new ChevronLeft()));
         $tblDivision = Division::useService()->getDivisionById($Id);
         if (!$tblDivision) {
-            return $Stage.new Danger('Klasse nicht gefunden.', new Ban())
-            .new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                new Danger('Klasse nicht gefunden.', new Ban())
+                .new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
 
         $Global = $this->getGlobal();
@@ -2220,14 +2268,17 @@ class Frontend extends Extension implements IFrontendInterface
 //        $Stage->addButton(new Standard('Zurück', '/Education/Lesson/Division', new ChevronLeft()));
         $tblDivision = $Id === null ? false : Division::useService()->getDivisionById($Id);
         if (!$tblDivision) {
-            return $Stage->setContent(new \SPHERE\Common\Frontend\Message\Repository\Danger('Klasse nicht gefunden.',
-                new Ban()))
-            .new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR);
+            return $Stage->setContent(
+                new \SPHERE\Common\Frontend\Message\Repository\Danger('Klasse nicht gefunden.', new Ban())
+                .new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR)
+            );
         }
         $tblLevel = $tblDivision->getTblLevel();
         if (!$tblLevel) {
-            return $Stage->setContent(new Warning('zugehörige Schulart / Klassenstufe fehlt'))
-            .new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR);
+            return $Stage->setContent(
+                new Warning('zugehörige Schulart / Klassenstufe fehlt')
+                .new Redirect('/Education/Lesson/Division', Redirect::TIMEOUT_ERROR)
+            );
         }
 
         $Content[] = 'Typ: '.new Bold($tblLevel->getServiceTblType()
@@ -2245,7 +2296,7 @@ class Frontend extends Extension implements IFrontendInterface
 
         if (is_numeric($tblLevel->getName())) {
             $length = strlen($tblLevel->getName());
-            if ($Zahl = (int)( $tblLevel->getName() )) {
+            if (($Zahl = (int)( $tblLevel->getName() ))) {
                 $Summary = $Zahl + 1;
                 $Summary = str_pad($Summary, $length, 0, STR_PAD_LEFT);
                 $tblLevel->setName($Summary);
@@ -2266,7 +2317,7 @@ class Frontend extends Extension implements IFrontendInterface
                 $Number = implode('', $Number);
 
                 $length = strlen($Number);
-                if ($Zahl = (int)( $Number )) {
+                if (($Zahl = (int)( $Number ))) {
                     $Number = $Zahl + 1;
                     $Number = str_pad($Number, $length, 0, STR_PAD_LEFT);
                 }

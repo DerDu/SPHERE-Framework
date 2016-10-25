@@ -686,11 +686,11 @@ class Frontend extends Extension implements IFrontendInterface
 
                     if (( $tblToPerson = $tblAddressPerson->getServiceTblToPerson() )) {
                         if ($tblAddressPerson->getServiceTblSalutation()) {
-                            if ($tblPersonTo = $tblToPerson->getServiceTblPerson()) {
+                            if (($tblPersonTo = $tblToPerson->getServiceTblPerson())) {
                                 $Data[] = $tblAddressPerson->getServiceTblSalutation()->getSalutation().' '.$tblPersonTo->getLastFirstName();
                             }
                         } else {
-                            if ($tblPersonTo = $tblToPerson->getServiceTblPerson()) {
+                            if (($tblPersonTo = $tblToPerson->getServiceTblPerson())) {
                                 $Data[] = $tblPersonTo->getLastFirstName();
                             }
                         }

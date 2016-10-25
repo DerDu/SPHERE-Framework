@@ -495,8 +495,11 @@ class Frontend extends Extension implements IFrontendInterface
 
         $Stage = new Stage('Zeitraum', 'entfernen');
         if ($PeriodId === null || $Id === null) {
-            $Stage->setContent(new Warning('Zeitraum nicht gefunden'));
-            return $Stage . new Redirect('/Education/Lesson/Term/Create/Period', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                new Warning('Zeitraum nicht gefunden')
+                .new Redirect('/Education/Lesson/Term/Create/Period', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
         $Stage->setContent(Term::useService()->removeYearPeriod($Id, $PeriodId));
         return $Stage;
@@ -515,8 +518,11 @@ class Frontend extends Extension implements IFrontendInterface
         $Stage->addButton(new Standard('Zurück', '/Education/Lesson/Term/Create/Year', new ChevronLeft()));
         $tblYear = $Id === null ? false : Term::useService()->getYearById($Id);
         if (!$tblYear) {
-            $Stage->setContent(new Warning('Jahr nicht gefunden!'));
-            return $Stage . new Redirect('/Education/Lesson/Term/Create/Year', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                new Warning('Jahr nicht gefunden!')
+                . new Redirect('/Education/Lesson/Term/Create/Year', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
         $Form = $this->formYear($tblYear)
             ->appendFormButton(new Primary('Speichern', new Save()))
@@ -579,8 +585,11 @@ class Frontend extends Extension implements IFrontendInterface
         $tblPeriod = $Id === null ? false : Term::useService()->getPeriodById($Id);
 
         if (!$tblPeriod) {
-            $Stage->setContent(new Warning('Zeitraum nicht gefunden!'));
-            return $Stage . new Redirect('/Education/Lesson/Term/Create/Period', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                new Warning('Zeitraum nicht gefunden!')
+                . new Redirect('/Education/Lesson/Term/Create/Period', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
         $PeriodName = $tblPeriod->getName();
         $PeriodDescription = $tblPeriod->getDescription();

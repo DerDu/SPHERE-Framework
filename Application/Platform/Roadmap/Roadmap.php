@@ -95,7 +95,7 @@ class Roadmap extends Extension implements IApplicationInterface, IModuleInterfa
             new Label('Release: '.$Map->getVersionRelease(), Label::LABEL_TYPE_PRIMARY)
         );
 
-        $Cache = $this->getCache(new MemcachedHandler(), 'Memcached');
+        $Cache = $this->getCache(new MemcachedHandler());
         if (!( $Content = $Cache->getValue('Roadmap', __METHOD__) )) {
 
             // Is System-Account

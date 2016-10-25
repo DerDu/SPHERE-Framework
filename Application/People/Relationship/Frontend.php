@@ -81,8 +81,11 @@ class Frontend extends Extension implements IFrontendInterface
 
         $tblPerson = Person::useService()->getPersonById($Id);
         if (!$tblPerson) {
-            return $Stage . new Danger('Person nicht gefunden', new Ban())
-            . new Redirect('/People/Search/Group', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                new Danger('Person nicht gefunden', new Ban())
+                .new Redirect('/People/Search/Group', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
 
         $Stage->setContent(
@@ -250,8 +253,11 @@ class Frontend extends Extension implements IFrontendInterface
 
         $tblPerson = Person::useService()->getPersonById($Id);
         if (!$tblPerson) {
-            return $Stage . new Danger('Person nicht gefunden', new Ban())
-            . new Redirect('/People/Search/Group', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                new Danger('Person nicht gefunden', new Ban())
+                . new Redirect('/People/Search/Group', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
 
         $Stage->setContent(
@@ -425,8 +431,11 @@ class Frontend extends Extension implements IFrontendInterface
         $tblToPerson = Relationship::useService()->getRelationshipToPersonById($Id);
 
         if (!$tblToPerson->getServiceTblPersonFrom()) {
-            return $Stage . new Danger('Person nicht gefunden', new Ban())
-            . new Redirect('/People/Search/Group', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                new Danger('Person nicht gefunden', new Ban())
+                . new Redirect('/People/Search/Group', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
 
         $Stage->setContent(
@@ -479,8 +488,11 @@ class Frontend extends Extension implements IFrontendInterface
         $tblToCompany = Relationship::useService()->getRelationshipToCompanyById($Id);
 
         if (!$tblToCompany->getServiceTblPerson()) {
-            return $Stage . new Danger('Person nicht gefunden', new Ban())
-            . new Redirect('/People/Search/Group', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                new Danger('Person nicht gefunden', new Ban())
+                . new Redirect('/People/Search/Group', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
 
         $Stage->setContent(
@@ -714,8 +726,11 @@ class Frontend extends Extension implements IFrontendInterface
             $tblToPerson = Relationship::useService()->getRelationshipToPersonById($Id);
             $tblPersonFrom = $tblToPerson->getServiceTblPersonFrom();
             if (!$tblToPerson || !$tblPersonFrom) {
-                return $Stage . new Danger('Person nicht gefunden', new Ban())
-                . new Redirect('/People/Search/Group', Redirect::TIMEOUT_ERROR);
+                $Stage->setContent(
+                    new Danger('Person nicht gefunden', new Ban())
+                    . new Redirect('/People/Search/Group', Redirect::TIMEOUT_ERROR)
+                );
+                return $Stage;
             }
 
             if (!$Confirm) {
@@ -783,13 +798,19 @@ class Frontend extends Extension implements IFrontendInterface
         if ($Id) {
             $tblToCompany = Relationship::useService()->getRelationshipToCompanyById($Id);
             if (!$tblToCompany) {
-                return $Stage . new Danger('Firma nicht gefunden', new Ban())
-                . new Redirect('/People/Search/Group', Redirect::TIMEOUT_ERROR);
+                $Stage->setContent(
+                    new Danger('Firma nicht gefunden', new Ban())
+                    . new Redirect('/People/Search/Group', Redirect::TIMEOUT_ERROR)
+                );
+                return $Stage;
             }
             $tblPerson = $tblToCompany->getServiceTblPerson();
             if (!$tblPerson) {
-                return $Stage . new Danger('Person nicht gefunden', new Ban())
-                . new Redirect('/People/Search/Group', Redirect::TIMEOUT_ERROR);
+                $Stage->setContent(
+                    new Danger('Person nicht gefunden', new Ban())
+                    . new Redirect('/People/Search/Group', Redirect::TIMEOUT_ERROR)
+                );
+                return $Stage;
             }
 
             if (!$Confirm) {

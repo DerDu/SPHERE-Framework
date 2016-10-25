@@ -157,7 +157,7 @@ class Service extends AbstractService
      * @param string            $CredentialLock
      * @param TblIdentification $tblIdentification
      *
-     * @return IFormInterface|Redirect
+     * @return IFormInterface|string
      */
     public function createSessionCredential(
         IFormInterface &$Form,
@@ -280,7 +280,7 @@ class Service extends AbstractService
      * @param string            $CredentialKey
      * @param TblIdentification $tblIdentification
      *
-     * @return IFormInterface|Redirect
+     * @return IFormInterface|string
      */
     public function createSessionCredentialToken(
         IFormInterface &$Form,

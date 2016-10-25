@@ -198,6 +198,10 @@ class Frontend extends Extension implements IFrontendInterface
             foreach ($FieldList as $FieldIndex => $Field) {
                 $FieldList[$FieldIndex] = substr($Field, strpos($Field, ': ') + 1);
             }
+            /**
+             * @var string $ViewIndex
+             * @var AbstractView[] $View
+             */
             foreach ($ViewList as $ViewIndex => $View) {
                 $ViewList[$ViewIndex] = $View[1]->getViewGuiName();
             }

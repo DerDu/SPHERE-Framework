@@ -127,19 +127,21 @@ class Stage extends Extension implements ITemplateInterface
         if (!empty( $this->Menu )) {
             $HighlightButton = array_keys($this->MaskMenu, $this->getRequest()->getUrl());
             if (count($HighlightButton) == 1) {
-                switch ($this->Menu[current($HighlightButton)]->getType()) {
+                /** @var AbstractLink $HighlightObject */
+                $HighlightObject = $this->Menu[current($HighlightButton)];
+                switch ($HighlightObject->getType()) {
                     case AbstractLink::TYPE_PRIMARY:
                     case AbstractLink::TYPE_DANGER:
                     case AbstractLink::TYPE_WARNING:
                     case AbstractLink::TYPE_SUCCESS:
                     case AbstractLink::TYPE_LINK:
-                        $this->Menu[current($HighlightButton)]->setName(
-                            (new Bold($this->Menu[current($HighlightButton)]->getName()))
+                        $HighlightObject->setName(
+                            (new Bold($HighlightObject->getName()))
                         );
                         break;
                     default:
-                        $this->Menu[current($HighlightButton)]->setName(
-                            new Info(new Bold($this->Menu[current($HighlightButton)]->getName()))
+                        $HighlightObject->setName(
+                            new Info(new Bold($HighlightObject->getName()))
                         );
                 }
             }

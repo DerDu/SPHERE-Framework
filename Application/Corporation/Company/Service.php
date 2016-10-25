@@ -70,7 +70,7 @@ class Service extends AbstractService
      * @param IFormInterface $Form
      * @param array $Company
      *
-     * @return IFormInterface|Redirect
+     * @return IFormInterface|string
      */
     public function createCompany(IFormInterface $Form = null, $Company)
     {
@@ -145,7 +145,7 @@ class Service extends AbstractService
      * @param array $Company
      * @param null|int $Group
      *
-     * @return IFormInterface|Redirect
+     * @return IFormInterface|string
      */
     public function updateCompany(IFormInterface $Form = null, TblCompany $tblCompany, $Company, $Group)
     {

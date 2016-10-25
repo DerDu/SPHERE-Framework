@@ -2,7 +2,6 @@
 namespace SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer;
 
 use SPHERE\Application\IModuleInterface;
-use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Service;
 use SPHERE\Application\Platform\System\Database\Database;
 use SPHERE\Common\Main;
 use SPHERE\Common\Window\Navigation\Link;

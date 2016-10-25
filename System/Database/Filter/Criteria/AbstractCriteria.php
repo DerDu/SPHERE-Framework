@@ -30,6 +30,10 @@ abstract class AbstractCriteria
     private $FieldList = array();
     private $LinkList = array();
 
+    /**
+     * @param $PropertySearch
+     * @return array|bool
+     */
     public function findBy($PropertySearch)
     {
 
@@ -72,6 +76,11 @@ abstract class AbstractCriteria
         return (new \ReflectionClass($this))->getShortName();
     }
 
+    /**
+     * @param $PropertySearch
+     * @param string $Delimiter
+     * @return mixed
+     */
     private function sanitizeSearch($PropertySearch, $Delimiter = '!')
     {
 
@@ -114,6 +123,9 @@ abstract class AbstractCriteria
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getDesignerGui()
     {
 
@@ -150,6 +162,10 @@ abstract class AbstractCriteria
         return $Content;
     }
 
+    /**
+     * @param $Setup
+     * @return array
+     */
     public function getSearchGui($Setup)
     {
 
@@ -188,6 +204,11 @@ abstract class AbstractCriteria
         return $Content;
     }
 
+    /**
+     * @param AbstractService $Service
+     * @return $this
+     * @throws \Exception
+     */
     protected function setupService(AbstractService $Service)
     {
 
@@ -211,6 +232,11 @@ abstract class AbstractCriteria
         return $Service->isSubclassOf('\SPHERE\System\Database\Binding\AbstractService');
     }
 
+    /**
+     * @param $Method
+     * @return $this
+     * @throws \Exception
+     */
     protected function setupGetterAll($Method)
     {
 
@@ -234,6 +260,11 @@ abstract class AbstractCriteria
         return $Service->hasMethod($Method);
     }
 
+    /**
+     * @param $Method
+     * @return $this
+     * @throws \Exception
+     */
     protected function setupGetterId($Method)
     {
 
@@ -258,6 +289,10 @@ abstract class AbstractCriteria
         return $this;
     }
 
+    /**
+     * @param AbstractCriteria $Criteria
+     * @return $this
+     */
     protected function addLink(AbstractCriteria $Criteria)
     {
 

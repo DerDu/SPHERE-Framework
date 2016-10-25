@@ -3,6 +3,10 @@ namespace SPHERE\System\Database\Fitting;
 
 use Doctrine\Common\Cache\Cache;
 
+/**
+ * Class ApcCache
+ * @package SPHERE\System\Database\Fitting
+ */
 class ApcCache extends \Doctrine\Common\Cache\ApcCache
 {
 

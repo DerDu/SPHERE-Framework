@@ -222,6 +222,9 @@ class Data extends AbstractData
         return ( empty( $EntityList ) ? false : $EntityList );
     }
 
+    /**
+     * @return \DateTime
+     */
     private function getProtocolTimestamp()
     {
 

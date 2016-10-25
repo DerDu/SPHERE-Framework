@@ -100,6 +100,9 @@ class CookieHandler extends AbstractFastCacheAdapter
         return array_intersect_key($Status, array_flip(preg_grep($Pattern, array_keys($Status), $Flags)));
     }
 
+    /**
+     * @return int
+     */
     private function grepCookieSize()
     {
 

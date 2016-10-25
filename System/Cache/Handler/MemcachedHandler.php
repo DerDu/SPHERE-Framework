@@ -193,6 +193,9 @@ class MemcachedHandler extends AbstractHandler implements HandlerInterface
         return $this;
     }
 
+    /**
+     * @param $Slot
+     */
     public function clearSlot($Slot)
     {
 

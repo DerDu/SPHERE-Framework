@@ -327,7 +327,10 @@ class Frontend extends Extension implements IFrontendInterface
                 'Zurück', '/Education/Certificate/Prepare', new ChevronLeft()
             ));
 
-            return $Stage . new Danger('Zeugnisvorbereitung nicht gefunden.', new Ban());
+            $Stage->setContent(
+                new Danger('Zeugnisvorbereitung nicht gefunden.', new Ban())
+            );
+            return $Stage;
         }
     }
 

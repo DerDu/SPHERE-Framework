@@ -3,6 +3,10 @@ namespace SPHERE\Application\Platform\Roadmap\Youtrack;
 
 use SPHERE\System\Extension\Extension;
 
+/**
+ * Class Connection
+ * @package SPHERE\Application\Platform\Roadmap\Youtrack
+ */
 class Connection extends Extension
 {
 
@@ -13,6 +17,10 @@ class Connection extends Extension
     /** @var null|array $CookieList */
     private $CookieList = null;
 
+    /**
+     * Connection constructor.
+     * @param Credentials $Credentials
+     */
     protected function __construct(Credentials $Credentials)
     {
 

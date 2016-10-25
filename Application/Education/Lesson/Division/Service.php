@@ -131,7 +131,7 @@ class Service extends AbstractService
                     $tblLevel = (new Data($this->getBinding()))->createLevel($tblType, $Level['Name']);
                 }
             } else {
-                if ($tblType = Type::useService()->getTypeById($Level['Type'])) {
+                if (($tblType = Type::useService()->getTypeById($Level['Type']))) {
                     $tblLevel = (new Data($this->getBinding()))->createLevel($tblType, '', '', $Level['Check']);
                 }
             }
@@ -419,8 +419,6 @@ class Service extends AbstractService
      * @param TblPerson            $tblPerson
      * @param null|TblSubjectGroup $tblSubjectGroup
      * @param TblDivision $tblDivision
-     * @param TblPerson $tblPerson
-     * @param bool $IsSoftRemove
      *
      * @return bool
      */
@@ -429,27 +427,10 @@ class Service extends AbstractService
         TblSubject $tblSubject,
         TblPerson $tblPerson,
         TblSubjectGroup $tblSubjectGroup = null
-        TblPerson $tblPerson,
-        $IsSoftRemove = false
     ) {
 
         return (new Data($this->getBinding()))->checkSubjectTeacherExists($tblDivision, $tblSubject, $tblPerson,
             $tblSubjectGroup);
-}
-/**
- * @param TblDivision $tblDivision
- * @param TblPerson $tblPerson
- * @param bool $IsSoftRemove
- *
- * @return bool
- */
-    public
-    function removeTeacherToDivision(
-        TblDivision $tblDivision,
-        TblPerson $tblPerson,
-        $IsSoftRemove = false
-    ) {
-        return (new Data($this->getBinding()))->removeTeacherToDivision($tblDivision, $tblPerson, $IsSoftRemove);
     }
 
     /**
@@ -460,37 +441,34 @@ class Service extends AbstractService
      * @return bool
      * @deprecated use removeDivisionTeacher()
      */
-    public function removeTeacherToDivision(TblDivision $tblDivision, TblPerson $tblPerson)
+    public function removeTeacherToDivision(TblDivision $tblDivision, TblPerson $tblPerson, $IsSoftRemove = false)
     {
 
-        return $this->removeDivisionTeacher($tblDivision, $tblPerson);
+        return $this->removeDivisionTeacher($tblDivision, $tblPerson, $IsSoftRemove);
     }
 
     /**
      * @param TblDivision $tblDivision
      * @param TblPerson   $tblPerson
+     * @param bool $IsSoftRemove
      *
      * @return bool
      */
-    public function removeDivisionTeacher(TblDivision $tblDivision, TblPerson $tblPerson)
+    public function removeDivisionTeacher(TblDivision $tblDivision, TblPerson $tblPerson, $IsSoftRemove = false)
     {
 
-        return (new Data($this->getBinding()))->removeDivisionTeacher($tblDivision, $tblPerson);
+        return (new Data($this->getBinding()))->removeDivisionTeacher($tblDivision, $tblPerson, $IsSoftRemove);
     }
 
     /**
      * @param TblDivision $tblDivision
      * @param TblPerson $tblPerson
+     * @param bool $IsSoftRemove
      *
      * @return bool
      */
-    public function removePersonToDivision(TblDivision $tblDivision, TblPerson $tblPerson)
+    public function removePersonToDivision(TblDivision $tblDivision, TblPerson $tblPerson, $IsSoftRemove = false)
     {
-    public function removePersonToDivision(
-        TblDivision $tblDivision,
-        TblPerson $tblPerson,
-        $IsSoftRemove = false
-    ) {
 
         return (new Data($this->getBinding()))->removePersonToDivision($tblDivision, $tblPerson, $IsSoftRemove);
     }
@@ -1505,7 +1483,7 @@ class Service extends AbstractService
                     $tblLevel = (new Data($this->getBinding()))->createLevel($tblType, $Level['Name']);
                 }
             } else {
-                if ($tblType = Type::useService()->getTypeById($Level['Type'])) {
+                if (($tblType = Type::useService()->getTypeById($Level['Type']))) {
                     $tblLevel = (new Data($this->getBinding()))->createLevel($tblType, '', '', $Level['Check']);
                 }
             }
@@ -1548,6 +1526,7 @@ class Service extends AbstractService
 
                 $tblDivisionStudentList = $this->getDivisionStudentAllByDivision($tblDivision);
                 if ($tblDivisionStudentList) {
+                    /** @var TblDivisionStudent $tblDivisionStudent */
                     foreach ($tblDivisionStudentList as $tblDivisionStudent) {
                         (new Data($this->getBinding()))->addDivisionStudent(
                             $tblDivisionCopy,
@@ -1658,7 +1637,7 @@ class Service extends AbstractService
                             }
 
                             if ($tblSubjectTeacherList) {
-                                foreach ($tblSubjectTeacherList as $tblSubjectTeacher) {
+                                foreach ((array)$tblSubjectTeacherList as $tblSubjectTeacher) {
                                     if ($tblSubjectTeacher->getServiceTblPerson()) {
                                         (new Data($this->getBinding()))->addSubjectTeacher($tblDivisionSubjectCopy,
                                             $tblSubjectTeacher->getServiceTblPerson());
@@ -1863,8 +1842,7 @@ class Service extends AbstractService
      *
      * @return bool
      */
-    public
-    function updateDivisionStudentSortOrder(
+    public function updateDivisionStudentSortOrder(
         TblDivisionStudent $tblDivisionStudent,
         $SortOrder
     ) {
@@ -1877,8 +1855,7 @@ class Service extends AbstractService
      *
      * @return bool|TblDivisionStudent[]
      */
-    public
-    function getDivisionStudentAllByDivision(
+    public function getDivisionStudentAllByDivision(
         TblDivision $tblDivision
     ) {
 
@@ -1890,8 +1867,7 @@ class Service extends AbstractService
      *
      * @return int|null
      */
-    public
-    function getDivisionStudentSortOrderMax(
+    public function getDivisionStudentSortOrderMax(
         TblDivision $tblDivision
     ) {
 
@@ -1904,8 +1880,7 @@ class Service extends AbstractService
      *
      * @return false|TblDivisionStudent
      */
-    public
-    function getDivisionStudentByDivisionAndPerson(
+    public function getDivisionStudentByDivisionAndPerson(
         TblDivision $tblDivision,
         TblPerson $tblPerson
     ) {

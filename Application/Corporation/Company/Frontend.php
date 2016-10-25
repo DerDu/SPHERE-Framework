@@ -216,8 +216,11 @@ class Frontend extends Extension implements IFrontendInterface
                 );
 
             } else {
-                return $Stage . new Danger(new Ban() . ' Firma nicht gefunden.')
-                . new Redirect('/Corporation/Search/Group', Redirect::TIMEOUT_ERROR, array('Id' => $Group));
+                $Stage->setContent(
+                    new Danger(new Ban() . ' Firma nicht gefunden.')
+                    . new Redirect('/Corporation/Search/Group', Redirect::TIMEOUT_ERROR, array('Id' => $Group))
+                );
+                return $Stage;
             }
         }
 

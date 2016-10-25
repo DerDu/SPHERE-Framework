@@ -99,7 +99,7 @@ class Service extends AbstractService
      * @param string         $CredentialKey
      * @param TblConsumer    $tblConsumer
      *
-     * @return bool|TblToken
+     * @return bool|IFormInterface
      */
     public function createToken(IFormInterface $Form, $CredentialKey, TblConsumer $tblConsumer = null)
     {

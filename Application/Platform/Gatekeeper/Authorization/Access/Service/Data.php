@@ -593,6 +593,7 @@ class Data extends AbstractData
                 $V = $V->getTblRight();
             });
         }
+        /** @var TblRight[] $EntityList */
         return ( null === $EntityList ? false : $EntityList );
     }
 

@@ -3,10 +3,12 @@ namespace SPHERE\Application\Platform\Roadmap\Youtrack;
 
 use SPHERE\System\Cache\Handler\MemcachedHandler;
 use SPHERE\System\Debugger\DebuggerFactory;
-use SPHERE\System\Debugger\Logger\BenchmarkLogger;
-use SPHERE\System\Debugger\Logger\CacheLogger;
 use SPHERE\System\Debugger\Logger\QueryLogger;
 
+/**
+ * Class Parser
+ * @package SPHERE\Application\Platform\Roadmap\Youtrack
+ */
 class Parser extends Connection
 {
 
@@ -14,6 +16,11 @@ class Parser extends Connection
     /** @var bool $Authenticated */
     private $Authenticated = false;
 
+    /**
+     * Parser constructor.
+     * @param Credentials $Credentials
+     * @param string $Filter
+     */
     public function __construct(Credentials $Credentials, $Filter = '')
     {
 
@@ -23,6 +30,9 @@ class Parser extends Connection
         parent::__construct($Credentials);
     }
 
+    /**
+     * @return Map
+     */
     public function getMap()
     {
 
@@ -122,6 +132,9 @@ class Parser extends Connection
         return $Response;
     }
 
+    /**
+     * @return Map
+     */
     public function getPool()
     {
 

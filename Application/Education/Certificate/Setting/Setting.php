@@ -2,12 +2,15 @@
 namespace SPHERE\Application\Education\Certificate\Setting;
 
 use SPHERE\Application\Education\Certificate\Generator\Generator;
-use SPHERE\Application\Education\Certificate\Generator\Service;
 use SPHERE\Application\IModuleInterface;
 use SPHERE\Common\Main;
 use SPHERE\Common\Window\Navigation\Link;
 use SPHERE\System\Extension\Extension;
 
+/**
+ * Class Setting
+ * @package SPHERE\Application\Education\Certificate\Setting
+ */
 class Setting extends Extension implements IModuleInterface
 {
 

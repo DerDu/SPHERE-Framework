@@ -187,7 +187,7 @@ abstract class AbstractField extends Extension implements IFieldInterface
      * @param string           $RequestKey
      * @param                  $Value
      *
-     * @return AbstractField
+     * @return boolean
      */
     public function isChecked($RequestKey, $Value)
     {

@@ -316,10 +316,11 @@ class Frontend extends Extension implements IFrontendInterface
 
             return $Stage;
         } else {
-
-            return $Stage
-            . new Danger('Person nicht gefunden', new Ban())
-            . new Redirect('/Education/Certificate/PrintCertificate/History', Redirect::TIMEOUT_ERROR);
+            $Stage->setContent(
+                new Danger('Person nicht gefunden', new Ban())
+                . new Redirect('/Education/Certificate/PrintCertificate/History', Redirect::TIMEOUT_ERROR)
+            );
+            return $Stage;
         }
     }
 

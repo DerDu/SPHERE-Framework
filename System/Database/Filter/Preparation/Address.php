@@ -1,6 +1,10 @@
 <?php
 namespace SPHERE\System\Database\Filter\Preparation;
 
+/**
+ * Class Address
+ * @package SPHERE\System\Database\Filter\Preparation
+ */
 class Address extends AbstractPreparation
 {
 

@@ -292,7 +292,10 @@ class Frontend extends Extension implements IFrontendInterface
                 );
 
             } else {
-                return $Stage . new Danger('Person nicht gefunden', new Exclamation());
+                $Stage->setContent(
+                    new Danger('Person nicht gefunden', new Exclamation())
+                );
+                return $Stage;
             }
         }
 

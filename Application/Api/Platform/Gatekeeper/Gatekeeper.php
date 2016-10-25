@@ -45,6 +45,7 @@ class Gatekeeper extends Extension implements IModuleInterface
     }
 
     /**
+     * @param null $Direction
      * @param null|array $Data
      * @param null|array $Additional
      *

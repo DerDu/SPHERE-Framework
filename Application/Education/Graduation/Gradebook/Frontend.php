@@ -1390,12 +1390,14 @@ class Frontend extends FrontendScoreRule
         );
 
         $tblScoreTypeAll = Gradebook::useService()->getScoreTypeAll();
+        $ScoreTypeList = array();
         if ($tblScoreTypeAll) {
-            foreach ($tblScoreTypeAll as &$tblScoreType) {
-                $tblScoreType->Option =
-                    (new Standard('', '/Education/Graduation/Gradebook/Type/Select',
-                        new Equalizer(),
-                        array('Id' => $tblScoreType->getId()), 'Fach-Klassen zuordnen'));
+            foreach ($tblScoreTypeAll as $tblScoreType) {
+                array_push( $ScoreTypeList, array_merge( $tblScoreType->__toArray(), array( 'Option' =>
+                    new Standard('', '/Education/Graduation/Gradebook/Type/Select', new Equalizer(),
+                        array('Id' => $tblScoreType->getId()), 'Fach-Klassen zuordnen'
+                    )
+                ) ) );
             }
         }
 
@@ -1405,7 +1407,7 @@ class Frontend extends FrontendScoreRule
                     new LayoutRow(
                         new LayoutColumn(
                             new TableData(
-                                $tblScoreTypeAll, null, array(
+                                $ScoreTypeList, null, array(
                                     'Name' => 'Name',
                                     'Option' => ''
                                 )
