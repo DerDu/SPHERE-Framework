@@ -30,7 +30,7 @@ class MsAbsHs extends Certificate
             $Header = (new Slice())
                 ->addSection((new Section())
                     ->addElementColumn((new Element())
-                        ->setContent('MS Abschlusszeugnis Hauptschule 3i.pdf')
+                        ->setContent('&nbsp;')
                         ->styleTextSize('12px')
                         ->styleTextColor('#CCC')
                         ->styleAlignCenter()

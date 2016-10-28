@@ -1,14 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Kauschke
- * Date: 17.05.2016
- * Time: 08:25
- */
-
 namespace SPHERE\Application\People\Meta\Club\Service;
 
 use SPHERE\Application\People\Meta\Club\Service\Entity\TblClub;
+use SPHERE\Application\People\Meta\Club\Service\Entity\ViewPeopleMetaClub;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
 use SPHERE\System\Database\Binding\AbstractData;
@@ -19,6 +13,17 @@ use SPHERE\System\Database\Binding\AbstractData;
  */
 class Data  extends AbstractData
 {
+
+    /**
+     * @return false|ViewPeopleMetaClub[]
+     */
+    public function viewPeopleMetaClub()
+    {
+
+        return $this->getCachedEntityList(
+            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewPeopleMetaClub'
+        );
+    }
 
     public function setupDatabaseContent()
     {

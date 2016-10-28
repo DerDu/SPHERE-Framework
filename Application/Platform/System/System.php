@@ -56,14 +56,22 @@ class System implements IApplicationInterface
     public static function widgetLoad()
     {
 
-        $load = sys_getloadavg();
+        if( function_exists( 'sys_getloadavg' ) ) {
+            $load = sys_getloadavg();
 
-        return new Panel('Rechenkapazität', array(
-            (new ProgressBar(( 50 * ( 2 - $load[0] ) ), ( 50 * ( $load[0] ) ),
-                0))->setColor(ProgressBar::BAR_COLOR_SUCCESS, ProgressBar::BAR_COLOR_DANGER),
-            'Genutzt: '.number_format($load[0], 5, ',', '.'),
-            'Frei: '.number_format(2 - $load[0], 5, ',', '.')
-        ));
+            return new Panel('Rechenkapazität', array(
+                (new ProgressBar((50 * (2 - $load[0])), (50 * ($load[0])),
+                    0))->setColor(ProgressBar::BAR_COLOR_SUCCESS, ProgressBar::BAR_COLOR_DANGER),
+                'Genutzt: ' . number_format($load[0], 5, ',', '.'),
+                'Frei: ' . number_format(2 - $load[0], 5, ',', '.')
+            ));
+        } else {
+            return new Panel('Rechenkapazität', array(
+                (new ProgressBar(0, 0, 100))->setColor(ProgressBar::BAR_COLOR_SUCCESS, ProgressBar::BAR_COLOR_DANGER),
+                'Genutzt: -NA-',
+                'Frei: -NA-'
+            ));
+        }
     }
 
     /**
@@ -89,17 +97,25 @@ class System implements IApplicationInterface
         $free = shell_exec('free');
         $free = (string)trim($free);
         $free_arr = explode("\n", $free);
-        $mem = explode(" ", $free_arr[1]);
-        $mem = array_filter($mem);
-        $mem = array_merge($mem);
-        $Value = $mem[2] / $mem[1] * 100;
+        if( count($free_arr) > 1 ) {
+            $mem = explode(" ", $free_arr[1]);
+            $mem = array_filter($mem);
+            $mem = array_merge($mem);
+            $Value = $mem[2] / $mem[1] * 100;
 
-        return new Panel('Speicherkapazität', array(
-            (new ProgressBar($Value, ( 100 - $Value ), 0))->setColor(ProgressBar::BAR_COLOR_SUCCESS,
-                ProgressBar::BAR_COLOR_DANGER),
-            'Gesamt: '.number_format($mem[1], 0, ',', '.'),
-            'Frei: '.number_format($mem[2], 0, ',', '.')
-        ));
+            return new Panel('Speicherkapazität', array(
+                (new ProgressBar($Value, (100 - $Value), 0))->setColor(ProgressBar::BAR_COLOR_SUCCESS,
+                    ProgressBar::BAR_COLOR_DANGER),
+                'Gesamt: ' . number_format($mem[1], 0, ',', '.'),
+                'Frei: ' . number_format($mem[2], 0, ',', '.')
+            ));
+        } else {
+            return new Panel('Speicherkapazität', array(
+                (new ProgressBar(0, 0, 100))->setColor(ProgressBar::BAR_COLOR_SUCCESS, ProgressBar::BAR_COLOR_DANGER),
+                'Genutzt: -NA-',
+                'Frei: -NA-'
+            ));
+        }
     }
 
     /**

@@ -6,6 +6,8 @@ use SPHERE\Application\Contact\Mail\Service\Entity\TblMail;
 use SPHERE\Application\Contact\Mail\Service\Entity\TblToCompany;
 use SPHERE\Application\Contact\Mail\Service\Entity\TblToPerson;
 use SPHERE\Application\Contact\Mail\Service\Entity\TblType;
+use SPHERE\Application\Contact\Mail\Service\Entity\ViewMailToCompany;
+use SPHERE\Application\Contact\Mail\Service\Entity\ViewMailToPerson;
 use SPHERE\Application\Contact\Mail\Service\Setup;
 use SPHERE\Application\Corporation\Company\Service\Entity\TblCompany;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
@@ -38,6 +40,24 @@ class Service extends AbstractService
             (new Data($this->getBinding()))->setupDatabaseContent();
         }
         return $Protocol;
+    }
+
+    /**
+     * @return false|ViewMailToPerson[]
+     */
+    public function viewMailToPerson()
+    {
+
+        return ( new Data($this->getBinding()) )->viewMailToPerson();
+    }
+
+    /**
+     * @return false|ViewMailToCompany[]
+     */
+    public function viewMailToCompany()
+    {
+
+        return ( new Data($this->getBinding()) )->viewMailToCompany();
     }
 
     /**
@@ -115,7 +135,7 @@ class Service extends AbstractService
 
         $Error = false;
 
-        $Address = filter_var($Address, FILTER_VALIDATE_EMAIL);
+        $Address = $this->validateMailAddress($Address);
 
         if (isset( $Address ) && empty( $Address )) {
             $Form->setError('Address', 'Bitte geben Sie eine gültige E-Mail Adresse an');
@@ -218,7 +238,7 @@ class Service extends AbstractService
 
         $Error = false;
 
-        $Address = filter_var($Address, FILTER_VALIDATE_EMAIL);
+        $Address = $this->validateMailAddress($Address);
 
         if (isset( $Address ) && empty( $Address )) {
             $Form->setError('Address', 'Bitte geben Sie eine gültige E-Mail Adresse an');
@@ -272,7 +292,7 @@ class Service extends AbstractService
 
         $Error = false;
 
-        $Address = filter_var($Address, FILTER_VALIDATE_EMAIL);
+        $Address = $this->validateMailAddress($Address);
 
         if (isset( $Address ) && empty( $Address )) {
             $Form->setError('Address', 'Bitte geben Sie eine gültige E-Mail Adresse an');
@@ -336,7 +356,7 @@ class Service extends AbstractService
 
         $Error = false;
 
-        $Address = filter_var($Address, FILTER_VALIDATE_EMAIL);
+        $Address = $this->validateMailAddress($Address);
 
         if (isset( $Address ) && empty( $Address )) {
             $Form->setError('Address', 'Bitte geben Sie eine gültige E-Mail Adresse an');

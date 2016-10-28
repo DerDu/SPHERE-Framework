@@ -15,6 +15,10 @@ use SPHERE\System\Database\Fitting\Element;
 class TblIdentification extends Element
 {
 
+    const NAME_CREDENTIAL = 'Credential';
+    const NAME_TOKEN = 'Token';
+    const NAME_SYSTEM = 'System';
+
     const ATTR_NAME = 'Name';
 
     /**

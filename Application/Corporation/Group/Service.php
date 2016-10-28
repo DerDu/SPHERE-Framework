@@ -5,6 +5,7 @@ use SPHERE\Application\Corporation\Company\Service\Entity\TblCompany;
 use SPHERE\Application\Corporation\Group\Service\Data;
 use SPHERE\Application\Corporation\Group\Service\Entity\TblGroup;
 use SPHERE\Application\Corporation\Group\Service\Entity\TblMember;
+use SPHERE\Application\Corporation\Group\Service\Entity\ViewCompanyGroupMember;
 use SPHERE\Application\Corporation\Group\Service\Setup;
 use SPHERE\Common\Frontend\Form\IFormInterface;
 use SPHERE\Common\Frontend\Icon\Repository\Ban;
@@ -20,6 +21,15 @@ use SPHERE\System\Database\Binding\AbstractService;
  */
 class Service extends AbstractService
 {
+
+    /**
+     * @return false|ViewCompanyGroupMember[]
+     */
+    public function viewCompanyGroupMember()
+    {
+
+        return ( new Data($this->getBinding()) )->viewCompanyGroupMember();
+    }
 
     /**
      * @param bool $doSimulation

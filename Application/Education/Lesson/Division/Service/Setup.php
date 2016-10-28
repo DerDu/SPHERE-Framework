@@ -5,7 +5,11 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionStudent;
+use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject;
+use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionTeacher;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblLevel;
+use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectGroup;
+use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblSubjectTeacher;
 use SPHERE\System\Database\Binding\AbstractSetup;
 use SPHERE\System\Database\Fitting\View;
 
@@ -40,10 +44,31 @@ class Setup extends AbstractSetup
          */
         $this->getConnection()->addProtocol(__CLASS__);
         $this->getConnection()->setMigration($Schema, $Simulate);
-
         $this->getConnection()->createView(
             (new View($this->getConnection(), 'viewDivisionStudent'))
                 ->addLink(new TblDivisionStudent(), 'tblDivision', new TblDivision(), 'Id')
+                ->addLink(new TblDivision(), 'tblLevel', new TblLevel(), 'Id')
+        );
+        $this->getConnection()->createView(
+            ( new View($this->getConnection(), 'viewDivisionTeacher') )
+                ->addLink(new TblDivisionTeacher(), 'tblDivision', new TblDivision(), 'Id')
+                ->addLink(new TblDivision(), 'tblLevel', new TblLevel(), 'Id')
+        );
+        $this->getConnection()->createView(
+            ( new View($this->getConnection(), 'viewDivision') )
+                ->addLink(new TblDivision(), 'tblLevel', new TblLevel(), 'Id')
+        );
+        $this->getConnection()->createView(
+            ( new View($this->getConnection(), 'viewSubjectTeacher') )
+                ->addLink(new TblDivisionSubject(), 'tblDivision', new TblDivision(), 'Id')
+                ->addLink(new TblDivisionSubject(), 'tblSubjectGroup', new TblSubjectGroup(), 'Id')
+                ->addLink(new TblDivisionSubject(), 'Id', new TblSubjectTeacher(), 'tblDivisionSubject')
+                ->addLink(new TblDivision(), 'tblLevel', new TblLevel(), 'Id')
+        );
+        $this->getConnection()->createView(
+            ( new View($this->getConnection(), 'viewDivisionSubject') )
+                ->addLink(new TblDivisionSubject(), 'tblDivision', new TblDivision(), 'Id')
+                ->addLink(new TblDivisionSubject(), 'tblSubjectGroup', new TblSubjectGroup(), 'Id')
                 ->addLink(new TblDivision(), 'tblLevel', new TblLevel(), 'Id')
         );
 

@@ -30,7 +30,7 @@ class GsJa extends Certificate
             $Header = (new Slice())
                 ->addSection((new Section())
                     ->addElementColumn((new Element())
-                        ->setContent('GS Jahreszeugnis 1c.pdf')
+                        ->setContent('&nbsp;')
                         ->styleTextSize('12px')
                         ->styleTextColor('#CCC')
                         ->styleAlignCenter()

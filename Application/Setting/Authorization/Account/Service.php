@@ -5,6 +5,7 @@ use SPHERE\Application\People\Person\Person;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Access\Access as GatekeeperAccess;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Account as GatekeeperAccount;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\TblAccount;
+use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\TblIdentification;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Consumer as GatekeeperConsumer;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Token\Token as GatekeeperToken;
 use SPHERE\Common\Frontend\Form\IFormInterface;
@@ -22,6 +23,8 @@ use SPHERE\Common\Window\Redirect;
  */
 class Service extends \SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service
 {
+    const MINIMAL_PASSWORD_LENGTH = 8;
+    const MINIMAL_USERNAME_LENGTH = 3;
 
     /**
      * @param IFormInterface $Form
@@ -52,7 +55,7 @@ class Service extends \SPHERE\Application\Platform\Gatekeeper\Authorization\Acco
             $Form->setError('Account[Name]', 'Bitte geben Sie einen Benutzernamen an');
             $Error = true;
         } else {
-            if (preg_match('!^[a-z0-9öäüß]{3,}$!is', $Username)) {
+            if (preg_match('!^[a-z0-9öäüß]{'.self::MINIMAL_USERNAME_LENGTH.',}$!is', $Username)) {
                 $Username = $tblConsumer->getAcronym().'-'.$Username;
                 if (!GatekeeperAccount::useService()->getAccountByUsername($Username)) {
                     $Form->setSuccess('Account[Name]', '');
@@ -62,7 +65,7 @@ class Service extends \SPHERE\Application\Platform\Gatekeeper\Authorization\Acco
                 }
             } else {
                 $Form->setError('Account[Name]',
-                    'Der Benutzername darf nur Buchstaben und Zahlen enthalten und muss mindestens 3 Zeichen lang sein');
+                    'Der Benutzername darf nur Buchstaben und Zahlen enthalten und muss mindestens '.self::MINIMAL_USERNAME_LENGTH.' Zeichen lang sein');
                 $Error = true;
             }
         }
@@ -71,10 +74,10 @@ class Service extends \SPHERE\Application\Platform\Gatekeeper\Authorization\Acco
             $Form->setError('Account[Password]', 'Bitte geben Sie ein Passwort an');
             $Error = true;
         } else {
-            if (strlen($Password) >= 8) {
+            if (strlen($Password) >= self::MINIMAL_PASSWORD_LENGTH) {
                 $Form->setSuccess('Account[Password]', '');
             } else {
-                $Form->setError('Account[Password]', 'Das Passwort muss mindestens 8 Zeichen lang sein');
+                $Form->setError('Account[Password]', 'Das Passwort muss mindestens '.self::MINIMAL_PASSWORD_LENGTH.' Zeichen lang sein');
                 $Error = true;
             }
         }
@@ -110,7 +113,18 @@ class Service extends \SPHERE\Application\Platform\Gatekeeper\Authorization\Acco
                 if (isset( $Account['Role'] )) {
                     foreach ((array)$Account['Role'] as $Role) {
                         $tblRole = GatekeeperAccess::useService()->getRoleById($Role);
-                        if ($tblToken || !$tblRole->isSecure()) {
+                        if(
+                            $tblIdentification->getName() == TblIdentification::NAME_CREDENTIAL
+                            && !$tblRole->isSecure()
+                        ) {
+                            GatekeeperAccount::useService()->addAccountAuthorization($tblAccount, $tblRole);
+                        } else if (
+                            !$tblRole->isSecure()
+                            || (
+                                $tblIdentification->getName() != TblIdentification::NAME_CREDENTIAL
+                                && $tblToken
+                            )
+                        ) {
                             GatekeeperAccount::useService()->addAccountAuthorization($tblAccount, $tblRole);
                         }
                     }
@@ -157,10 +171,10 @@ class Service extends \SPHERE\Application\Platform\Gatekeeper\Authorization\Acco
         }
 
         if (!empty( $Password )) {
-            if (strlen($Password) >= 8) {
+            if (strlen($Password) >= self::MINIMAL_PASSWORD_LENGTH) {
                 $Form->setSuccess('Account[Password]', '');
             } else {
-                $Form->setError('Account[Password]', 'Das Passwort muss mindestens 8 Zeichen lang sein');
+                $Form->setError('Account[Password]', 'Das Passwort muss mindestens '.self::MINIMAL_PASSWORD_LENGTH.' Zeichen lang sein');
                 $Error = true;
             }
         }
@@ -215,7 +229,18 @@ class Service extends \SPHERE\Application\Platform\Gatekeeper\Authorization\Acco
                 if (isset( $Account['Role'] )) {
                     foreach ((array)$Account['Role'] as $Role) {
                         $tblRole = GatekeeperAccess::useService()->getRoleById($Role);
-                        if ($tblToken || !$tblRole->isSecure()) {
+                        if(
+                            $tblIdentification->getName() == TblIdentification::NAME_CREDENTIAL
+                            && !$tblRole->isSecure()
+                        ) {
+                            GatekeeperAccount::useService()->addAccountAuthorization($tblAccount, $tblRole);
+                        } else if (
+                            !$tblRole->isSecure()
+                            || (
+                                $tblIdentification->getName() != TblIdentification::NAME_CREDENTIAL
+                                && $tblToken
+                            )
+                        ) {
                             GatekeeperAccount::useService()->addAccountAuthorization($tblAccount, $tblRole);
                         }
                     }

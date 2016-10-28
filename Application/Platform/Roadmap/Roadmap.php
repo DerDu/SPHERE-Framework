@@ -502,7 +502,7 @@ class Roadmap extends Extension implements IApplicationInterface, IModuleInterfa
 
         $Parser = new Parser(
             new Credentials(),
-            'Typ: Feature,Bug,Optimierung Teilsystem: {1*},{2*} Status: Erfasst, Offen,{In Bearbeitung},Behoben,{Zu besprechen},Integriert Beheben in: -{Nicht definiert}'
+            'Sichtbar für: {Alle Benutzer} Typ: Feature,Bug,Optimierung Teilsystem: {1*},{2*} Status: Erfasst, Offen,{In Bearbeitung},Behoben,{Zu besprechen},Integriert Beheben in: -{Nicht definiert}'
         );
         return $Parser->getMap();
     }
@@ -512,7 +512,7 @@ class Roadmap extends Extension implements IApplicationInterface, IModuleInterfa
 
         $Parser = new Parser(
             new Credentials(),
-            'Typ: Feature,Bug,Optimierung Teilsystem: {1*},{2*} Status: Erfasst, Offen,{In Bearbeitung} ,{Zu besprechen}, {Wird nicht behoben} Beheben in: {Nicht definiert}'
+            'Sichtbar für: {Alle Benutzer} Typ: Feature,Bug,Optimierung Teilsystem: {1*},{2*} Status: Erfasst, Offen,{In Bearbeitung} ,{Zu besprechen}, {Wird nicht behoben} Beheben in: {Nicht definiert}'
         );
         return $Parser->getPool();
     }
@@ -544,6 +544,8 @@ class Roadmap extends Extension implements IApplicationInterface, IModuleInterfa
         });
         $Value = array_filter($Value);
         $Value = preg_replace('!\s+?[\-]+\>!is', ': ', $Value);
+        $Value = preg_replace('#!image.*?\..*?!#is', ' [IMAGE] ', $Value);
+        $Value = preg_replace('!{html.*?}!is', ' ', $Value);
 
         $ShortDescription = trim(implode("\n", array_slice($Value, 0, $MaxLineCount)));
         $LongDescription = trim(implode("\n", array_slice($Value, $MaxLineCount)));
@@ -574,7 +576,7 @@ class Roadmap extends Extension implements IApplicationInterface, IModuleInterfa
     private function sanitizeTitle($Value)
     {
 
-        $Value = preg_replace('!Account: [0-9]+!is', '[Support-System Report]', $Value);
+        $Value = preg_replace('!Account: [0-9]+!is', '[System Report]', $Value);
         $Value = preg_replace('!^Error!is', 'Anwendungsfehler', $Value);
         $Value = preg_replace('!^Exception!is', 'Absturz der Anwendung', $Value);
         $Value = preg_replace('!^Shutdown!is', 'Absturz der Anwendung', $Value);

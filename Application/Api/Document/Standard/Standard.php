@@ -29,6 +29,13 @@ class Standard extends Extension implements IModuleInterface
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
             __NAMESPACE__ . '/EnrollmentDocument/Create', __CLASS__ . '::createEnrollmentDocumentPdf'
         ));
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__.'/StudentCard/Create', __CLASS__.'::createStudentCardPdf'
+        ));
+
+//        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+//            __NAMESPACE__.'/StudentCard/Download', __NAMESPACE__.'\Repository\StudentCardTwig::downloadStudentCard')
+//        );
     }
 
     /**
@@ -40,6 +47,17 @@ class Standard extends Extension implements IModuleInterface
     {
 
         return Creator::createPdf($PersonId, __NAMESPACE__ . '\Repository\EnrollmentDocument');
+    }
+
+    /**
+     * @param null $PersonId
+     *
+     * @return \SPHERE\Common\Window\Stage|string
+     */
+    public static function createStudentCardPdf($PersonId = null)
+    {
+
+        return Creator::createPdf($PersonId, __NAMESPACE__.'\Repository\StudentCard');
     }
 
     /**

@@ -30,7 +30,7 @@ class GymAbgHs extends Certificate
             $Header = ( new Slice() )
                 ->addSection(( new Section() )
                     ->addElementColumn(( new Element() )
-                        ->setContent('GYM Abgangszeugnis Klasse 9 Hauptschulabschluss 4e.pdf')
+                        ->setContent('&nbsp;')
                         ->styleTextSize('12px')
                         ->styleTextColor('#CCC')
                         ->styleAlignCenter()

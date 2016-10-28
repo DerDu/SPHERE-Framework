@@ -65,7 +65,7 @@ class Extension
 
     /**
      * @param Repository $EntityRepository
-     * @param array      $Filter array( 'ColumnName' => 'Value', ... )
+     * @param array $Filter array( 'ColumnName' => 'Value', ... )
      *
      * @return DataTables
      */
@@ -95,9 +95,9 @@ class Extension
     {
         $Key = md5($Location);
         $Cache = $this->getCache(new MemoryHandler());
-        if( !($Template = $Cache->getValue( $Key, __METHOD__ )) ) {
+        if (!($Template = $Cache->getValue($Key, __METHOD__))) {
             $Template = Template::getTemplate($Location);
-            $Cache->setValue( $Key, $Template, 0, __METHOD__ );
+            $Cache->setValue($Key, $Template, 0, __METHOD__);
             return clone $Template;
         } else {
             return clone $Template;
@@ -114,9 +114,9 @@ class Extension
     }
 
     /**
-     * @param string $FileKey   Key-Name in $_FILES
-     * @param string $Location  Storage-Directory
-     * @param bool   $Overwrite File in Storage-Directory
+     * @param string $FileKey Key-Name in $_FILES
+     * @param string $Location Storage-Directory
+     * @param bool $Overwrite File in Storage-Directory
      *
      * @return Upload
      */
@@ -144,5 +144,26 @@ class Extension
     {
 
         return new Sorter($List);
+    }
+
+    /**
+     * Check if input is valid IDN Mail-Address
+     *
+     * @param string $Address Mail-Address
+     * @return false|string returns false if address is invalid or address string if valid IDN
+     */
+    public function validateMailAddress($Address)
+    {
+        $PartList = explode('@', $Address);
+        if(
+            count($PartList) == 2
+            && (filter_var(
+                $PartList[0] . '@' . idn_to_ascii($PartList[1]), FILTER_VALIDATE_EMAIL
+                ) !== false
+            )
+        ) {
+            return $Address;
+        }
+        return false;
     }
 }

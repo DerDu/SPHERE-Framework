@@ -106,7 +106,7 @@ class ViewRelationshipToPerson extends AbstractView
     public function getViewGuiName()
     {
 
-        return 'Personenbeziehungen';
+        return 'Personenbeziehungen von dieser Person';
     }
 
 
@@ -125,6 +125,14 @@ class ViewRelationshipToPerson extends AbstractView
 
         $this->setNameDefinition(self::TBL_GROUP_NAME, 'Beziehung: Kategorie');
         $this->setNameDefinition(self::TBL_GROUP_DESCRIPTION, 'Beziehung: Kategorie-Bemerkung');
+    }
+
+    public function loadDisableDefinition()
+    {
+        $this->setDisableDefinition(self::TBL_TYPE_IS_BIDIRECTIONAL);
+        $this->setDisableDefinition(self::TBL_GROUP_IDENTIFIER);
+        $this->setDisableDefinition(self::TBL_TYPE_DESCRIPTION);
+        $this->setDisableDefinition(self::TBL_GROUP_DESCRIPTION);
     }
 
     /**

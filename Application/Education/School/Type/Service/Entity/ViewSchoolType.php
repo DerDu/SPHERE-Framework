@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping\Cache;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
+use SPHERE\Application\Education\Lesson\Division\Service\Entity\ViewDivision;
 use SPHERE\Application\Education\School\Type\Type;
 use SPHERE\System\Database\Binding\AbstractService;
 use SPHERE\System\Database\Binding\AbstractView;
@@ -18,7 +19,14 @@ use SPHERE\System\Database\Binding\AbstractView;
 class ViewSchoolType extends AbstractView
 {
 
+    const TBL_TYPE_ID = 'TblType_Id';
+    const TBL_TYPE_NAME = 'TblType_Name';
+    const TBL_TYPE_DESCRIPTION = 'TblType_Description';
 
+    /**
+     * @Column(type="string")
+     */
+    protected $TblType_Id;
     /**
      * @Column(type="string")
      */
@@ -27,10 +35,17 @@ class ViewSchoolType extends AbstractView
      * @Column(type="string")
      */
     protected $TblType_Description;
+
     /**
-     * @Column(type="string")
+     * Overwrite this method to return View-ObjectName as View-DisplayName
+     *
+     * @return string Gui-Name of Class
      */
-    protected $TblType_Id;
+    public function getViewGuiName()
+    {
+
+        return 'Schulart';
+    }
 
     /**
      * Use this method to set PropertyName to DisplayName conversions with "setNameDefinition()"
@@ -39,7 +54,9 @@ class ViewSchoolType extends AbstractView
      */
     public function loadNameDefinition()
     {
-        // TODO: Implement loadNameDefinition() method.
+
+        $this->setNameDefinition(self::TBL_TYPE_NAME, 'Schulart: Schulart');
+        $this->setNameDefinition(self::TBL_TYPE_DESCRIPTION, 'Schulart: Beschreibung');
     }
 
     /**
@@ -49,7 +66,8 @@ class ViewSchoolType extends AbstractView
      */
     public function loadViewGraph()
     {
-        // TODO: Implement loadViewGraph() method.
+
+        $this->addForeignView(self::TBL_TYPE_ID, new ViewDivision(), ViewDivision::TBL_LEVEL_SERVICE_TBL_TYPE);
     }
 
     /**

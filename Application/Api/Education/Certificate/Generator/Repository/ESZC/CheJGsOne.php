@@ -29,7 +29,7 @@ class CheJGsOne extends Certificate
             $Header = (new Slice())
                 ->addSection((new Section())
                     ->addElementColumn((new Element())
-                        ->setContent('ESZC GS Jahreszeugnis Klasse 1.pdf')
+                        ->setContent('&nbsp;')
                         ->styleTextSize('12px')
                         ->styleTextColor('#CCC')
                         ->styleAlignCenter()

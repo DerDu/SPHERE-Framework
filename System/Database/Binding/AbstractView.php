@@ -10,9 +10,13 @@ use SPHERE\System\Database\Fitting\Element;
  */
 abstract class AbstractView extends Element
 {
+    const DISABLE_PATTERN = '!(_Id$|_service|_tbl|Locked|MetaTable|^Id$|^Entity)!s';
 
     /** @var array $NameDefinitionList */
     private $NameDefinitionList = array();
+
+    /** @var array $DisabledDefinitionList */
+    private $DisableDefinitionList = array();
 
     /** @var AbstractView[] $ForeignViewList */
     private $ForeignViewList = array();
@@ -31,7 +35,14 @@ abstract class AbstractView extends Element
                 if ($Object->hasProperty($Key)) {
                     $Property = $Object->getProperty($Key);
                     if ($Property->isProtected() || $Property->isPublic()) {
-                        if (!preg_match('!(_Id|_service|_tbl|Locked|MetaTable|^Id$|^Entity)!s', $Key)) {
+                        if (
+                            !preg_match(self::DISABLE_PATTERN, $Key)
+                            && !$this->getDisableDefinition( $Key )
+                        ) {
+                            // Replace Value with Getter-Logic Value
+                            if( $Object->hasMethod( 'get'.$Property->getName() ) ) {
+                                $Value = $this->{'get'.$Property->getName()}();
+                            }
                             if ($Value instanceof \DateTime) {
                                 $Result[$this->getNameDefinition($Key)] = $Value->format('d.m.Y H:i:s');
                             } else {
@@ -69,6 +80,43 @@ abstract class AbstractView extends Element
      * @return void
      */
     abstract public function loadNameDefinition();
+
+    /**
+     * TODO: Abstract
+     *
+     * Use this method to set disabled Properties with "setDisabledProperty()"
+     *
+     * @return void
+     */
+    public function loadDisableDefinition(){}
+
+    /**
+     * @param string $PropertyName
+     *
+     * @return AbstractView
+     */
+    protected function setDisableDefinition($PropertyName)
+    {
+
+        $this->DisableDefinitionList[$PropertyName] = true;
+        return $this;
+    }
+
+    /**
+     * @param string $PropertyName
+     *
+     * @return string
+     */
+    public function getDisableDefinition($PropertyName)
+    {
+
+        $this->loadDisableDefinition();
+
+        if (isset( $this->DisableDefinitionList[$PropertyName] )) {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * @return array
@@ -196,7 +244,28 @@ abstract class AbstractView extends Element
                 return $this->$PropertyName;
             }
         }
-        throw new \Exception('Property '.$PropertyName.' not found in '.get_class($this));
+        throw new \Exception('Property-Getter '.$PropertyName.' not found in '.get_class($this));
+    }
+
+    /**
+     * Magic Setter for Properties
+     *
+     * @param string $PropertyName
+     * @param $Value
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    public function __set($PropertyName, $Value)
+    {
+
+        if (!empty( $PropertyName )) {
+            if (property_exists($this, $PropertyName)) {
+                /** @noinspection PhpVariableVariableInspection */
+                return $this->$PropertyName = $Value;
+            }
+        }
+        throw new \Exception('Property-Setter '.$PropertyName.' not found in '.get_class($this));
     }
 
     /**

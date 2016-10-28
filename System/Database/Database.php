@@ -11,6 +11,7 @@ use Doctrine\DBAL\Schema\Table;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Setup;
 use MOC\V\Component\Database\Component\IBridgeInterface;
+use SPHERE\Common\Frontend\Icon\Repository\Exclamation;
 use SPHERE\Common\Frontend\Icon\Repository\Flash;
 use SPHERE\Common\Frontend\Icon\Repository\Off;
 use SPHERE\Common\Frontend\Icon\Repository\Ok;
@@ -357,6 +358,17 @@ class Database extends Extension
     }
 
     /**
+     * e.g. Dead Columns
+     * @param string $Item
+     */
+    public function deadProtocol($Item)
+    {
+        $this->Protocol[] = new \SPHERE\Common\Frontend\Message\Repository\Warning(
+            'Possible Dead: '.$Item, new Exclamation()
+        );
+    }
+
+    /**
      * @param string $Item
      */
     public function addProtocol($Item)
@@ -376,24 +388,42 @@ class Database extends Extension
      */
     public function getProtocol($Simulate = false)
     {
+        $MessageList = array();
+        foreach ( $this->Protocol as $Index => $Item ) {
+            if( $Item instanceof \SPHERE\Common\Frontend\Message\Repository\Warning ) {
+                $MessageList[] = $Item;
+                $this->Protocol[$Index] = false;
+            }
+        }
+        $this->Protocol = array_filter( $this->Protocol );
 
         if (count($this->Protocol) == 1) {
             $Protocol = new Success(
-                new Layout(new LayoutGroup(new LayoutRow(array(
-                    new LayoutColumn(new Ok().'&nbsp'.implode('', $this->Protocol), 9),
-                    new LayoutColumn(new Off().'&nbsp;Kein Update notwendig', 3)
-                ))))
+                new Layout(new LayoutGroup(array(
+                    new LayoutRow(array(
+                        new LayoutColumn(implode('', $MessageList)),
+                    )),
+                    new LayoutRow(array(
+                        new LayoutColumn( !empty($this->Protocol) ? new Ok().'&nbsp'.implode('', $this->Protocol) : '', 9),
+                        new LayoutColumn(new Off().'&nbsp;Kein Update notwendig', 3)
+                    ))
+                )))
             );
         } else {
             $Protocol = new Info(
-                new Layout(new LayoutGroup(new LayoutRow(array(
-                    new LayoutColumn(new Flash().'&nbsp;'.implode('', $this->Protocol), 9),
-                    new LayoutColumn(
-                        ( $Simulate
-                            ? new Warning().'&nbsp;Update notwendig'
-                            : new Ok().'&nbsp;Update durchgeführt'
-                        ), 3)
-                ))))
+                new Layout(new LayoutGroup(array(
+                    new LayoutRow(array(
+                        new LayoutColumn(implode('', $MessageList)),
+                    )),
+                    new LayoutRow(array(
+                      new LayoutColumn(new Flash().'&nbsp;'.implode('', $this->Protocol), 9),
+                        new LayoutColumn(
+                            ( $Simulate
+                                ? new Warning().'&nbsp;Update notwendig'
+                                : new Ok().'&nbsp;Update durchgeführt'
+                            ), 3)
+                    ))
+                )))
             );
         }
         $this->Protocol = array();

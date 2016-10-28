@@ -7,6 +7,17 @@ use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentBilling;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentLocker;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentMedicalRecord;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentTransport;
+use SPHERE\Application\People\Meta\Student\Service\Entity\ViewStudent;
+use SPHERE\Application\People\Meta\Student\Service\Entity\ViewStudentAgreement;
+use SPHERE\Application\People\Meta\Student\Service\Entity\ViewStudentBaptism;
+use SPHERE\Application\People\Meta\Student\Service\Entity\ViewStudentDisorder;
+use SPHERE\Application\People\Meta\Student\Service\Entity\ViewStudentFocus;
+use SPHERE\Application\People\Meta\Student\Service\Entity\ViewStudentIntegration;
+use SPHERE\Application\People\Meta\Student\Service\Entity\ViewStudentLiberation;
+use SPHERE\Application\People\Meta\Student\Service\Entity\ViewStudentLocker;
+use SPHERE\Application\People\Meta\Student\Service\Entity\ViewStudentMedicalRecord;
+use SPHERE\Application\People\Meta\Student\Service\Entity\ViewStudentTransfer;
+use SPHERE\Application\People\Meta\Student\Service\Entity\ViewStudentTransport;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\People\Relationship\Service\Entity\TblSiblingRank;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
@@ -18,6 +29,149 @@ use SPHERE\Application\Platform\System\Protocol\Protocol;
  */
 class Data extends Integration
 {
+
+    /**
+     * @return false|ViewStudent[]
+     */
+    public function viewStudent()
+    {
+
+        return $this->getCachedEntityList(
+            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewStudent'
+        );
+    }
+
+    /**
+     * @return false|ViewStudentAgreement[]
+     */
+    public function viewStudentAgreement()
+    {
+
+        return $this->getCachedEntityList(
+            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewStudentAgreement'
+        );
+    }
+
+    /**
+     * @return false|ViewStudentBaptism[]
+     */
+    public function viewStudentBaptism()
+    {
+
+        return $this->getCachedEntityList(
+            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewStudentBaptism'
+        );
+    }
+
+//    /**
+//     * @return false|ViewStudentBilling[]
+//     */
+//    public function viewStudentBilling()
+//    {
+//
+//        return $this->getCachedEntityList(
+//            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewStudentBilling'
+//        );
+//    }
+
+    /**
+     * @return false|ViewStudentDisorder[]
+     */
+    public function viewStudentDisorder()
+    {
+
+        return $this->getCachedEntityList(
+            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewStudentDisorder'
+        );
+    }
+
+    /**
+     * @return false|ViewStudentFocus[]
+     */
+    public function viewStudentFocus()
+    {
+
+        return $this->getCachedEntityList(
+            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewStudentFocus'
+        );
+    }
+
+    /**
+     * @return false|ViewStudentIntegration[]
+     */
+    public function viewStudentIntegration()
+    {
+
+        return $this->getCachedEntityList(
+            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewStudentIntegration'
+        );
+    }
+
+    /**
+     * @return false|ViewStudentLiberation[]
+     */
+    public function viewStudentLiberation()
+    {
+
+        return $this->getCachedEntityList(
+            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewStudentLiberation'
+        );
+    }
+
+    /**
+     * @return false|ViewStudentLocker[]
+     */
+    public function viewStudentLocker()
+    {
+
+        return $this->getCachedEntityList(
+            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewStudentLocker'
+        );
+    }
+
+    /**
+     * @return false|ViewStudentMedicalRecord[]
+     */
+    public function viewStudentMedicalRecord()
+    {
+
+        return $this->getCachedEntityList(
+            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewStudentMedicalRecord'
+        );
+    }
+
+//    /**
+//     * @return false|ViewStudentSubject[]
+//     */
+//    public function viewStudentSubject()
+//    {
+//
+//        return $this->getCachedEntityList(
+//            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewStudentSubject'
+//        );
+//    }
+
+    /**
+     * @return false|ViewStudentTransfer[]
+     */
+    public function viewStudentTransfer()
+    {
+
+        return $this->getCachedEntityList(
+            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewStudentTransfer'
+        );
+    }
+
+    /**
+     * @return false|ViewStudentTransport[]
+     */
+    public function viewStudentTransport()
+    {
+
+        return $this->getCachedEntityList(
+            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewStudentTransport'
+        );
+    }
 
     public function setupDatabaseContent()
     {
@@ -46,14 +200,73 @@ class Data extends Integration
         $this->createStudentAgreementType($tblStudentAgreementCategory, 'durch Ton/Video/Film');
         $this->createStudentAgreementType($tblStudentAgreementCategory, 'für Werbung in eigener Sache');
 
-        $this->createStudentSubjectType('ORIENTATION', 'Orientation');
-        $this->createStudentSubjectType('ADVANCED', 'Advanced');
-        $this->createStudentSubjectType('PROFILE', 'Profile');
+        $Entity = $this->getStudentSubjectTypeByIdentifier('ORIENTATION');
+        if ($Entity) {
+            if ($Entity->getName() !== 'Neigungskurs') {
+                $this->updateStudentSubjectType($Entity, 'Neigungskurs');
+            }
+        } else {
+            $this->createStudentSubjectType('ORIENTATION', 'Neigungskurs');
+        }
+        $Entity = $this->getStudentSubjectTypeByIdentifier('ADVANCED');
+        if ($Entity) {
+            if ($Entity->getName() !== 'Vertiefungskurs') {
+                $this->updateStudentSubjectType($Entity, 'Vertiefungskurs');
+            }
+        } else {
+            $this->createStudentSubjectType('ADVANCED', 'Vertiefungskurs');
+        }
+        $Entity = $this->getStudentSubjectTypeByIdentifier('PROFILE');
+        if ($Entity) {
+            if ($Entity->getName() !== 'Profil') {
+                $this->updateStudentSubjectType($Entity, 'Profil');
+            }
+        } else {
+            $this->createStudentSubjectType('PROFILE', 'Profil');
+        }
         $this->createStudentSubjectType('RELIGION', 'Religion');
 
-        $this->createStudentSubjectType('FOREIGN_LANGUAGE', 'Foreign Language');
-        $this->createStudentSubjectType('ELECTIVE', 'Elective');
-        $this->createStudentSubjectType('TEAM', 'Team');
+        $Entity = $this->getStudentSubjectTypeByIdentifier('FOREIGN_LANGUAGE');
+        if ($Entity) {
+            if ($Entity->getName() !== 'Fremdsprache') {
+                $this->updateStudentSubjectType($Entity, 'Fremdsprache');
+            }
+        } else {
+            $this->createStudentSubjectType('FOREIGN_LANGUAGE', 'Fremdsprache');
+        }
+        $Entity = $this->getStudentSubjectTypeByIdentifier('ELECTIVE');
+        if ($Entity) {
+            if ($Entity->getName() !== 'Wahlfach') {
+                $this->updateStudentSubjectType($Entity, 'Wahlfach');
+            }
+        } else {
+            $this->createStudentSubjectType('ELECTIVE', 'Wahlfach');
+        }
+        $Entity = $this->getStudentSubjectTypeByIdentifier('TEAM');
+        if ($Entity) {
+            if ($Entity->getName() !== 'Arbeitsgemeinschaft') {
+                $this->updateStudentSubjectType($Entity, 'Arbeitsgemeinschaft');
+            }
+        } else {
+            $this->createStudentSubjectType('TEAM', 'Arbeitsgemeinschaft');
+        }
+        $Entity = $this->getStudentSubjectTypeByIdentifier('TRACK_INTENSIVE');
+        if ($Entity) {
+            if ($Entity->getName() !== 'Leistungskurs') {
+                $this->updateStudentSubjectType($Entity, 'Leistungskurs');
+            }
+        } else {
+            $this->createStudentSubjectType('TRACK_INTENSIVE', 'Leistungskurs');
+        }
+        $Entity = $this->getStudentSubjectTypeByIdentifier('TRACK_BASIC');
+        if ($Entity) {
+            if ($Entity->getName() !== 'Grundkurs') {
+                $this->updateStudentSubjectType($Entity, 'Grundkurs');
+            }
+        } else {
+            $this->createStudentSubjectType('TRACK_BASIC', 'Grundkurs');
+        }
+
         $this->createStudentSubjectType('TRACK_INTENSIVE', 'Track Intensive');
         $this->createStudentSubjectType('TRACK_BASIC', 'Track Basic');
 

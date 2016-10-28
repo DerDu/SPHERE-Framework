@@ -72,10 +72,14 @@ nav, .navbar {
 
 /** DataTable FormGroup Input-Size **/
 
-table.dataTable tbody tr td div.form-group {
+table.dataTable thead tr th .form-group,
+table.dataTable tbody tr td div.form-group,
+table.dataTable tfoot tr td div.form-group {
     width: 100%
 }
 
-table.dataTable tbody tr td div.form-group .form-control {
+table.dataTable thead tr th .form-group .form-control,
+table.dataTable tbody tr td div.form-group .form-control,
+table.dataTable tfoot tr td div.form-group .form-control {
     width: inherit;
 }

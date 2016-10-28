@@ -5,6 +5,7 @@ use SPHERE\Application\Education\School\Type\Service\Entity\TblType;
 use SPHERE\Application\People\Meta\Prospect\Service\Entity\TblProspect;
 use SPHERE\Application\People\Meta\Prospect\Service\Entity\TblProspectAppointment;
 use SPHERE\Application\People\Meta\Prospect\Service\Entity\TblProspectReservation;
+use SPHERE\Application\People\Meta\Prospect\Service\Entity\ViewPeopleMetaProspect;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
 use SPHERE\System\Database\Binding\AbstractData;
@@ -16,6 +17,17 @@ use SPHERE\System\Database\Binding\AbstractData;
  */
 class Data extends AbstractData
 {
+
+    /**
+     * @return false|ViewPeopleMetaProspect[]
+     */
+    public function viewPeopleMetaProspect()
+    {
+
+        return $this->getCachedEntityList(
+            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewPeopleMetaProspect'
+        );
+    }
 
     public function setupDatabaseContent()
     {

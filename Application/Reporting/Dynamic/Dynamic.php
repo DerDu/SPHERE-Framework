@@ -26,13 +26,22 @@ class Dynamic implements IApplicationInterface, IModuleInterface
         );
 
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
-            __NAMESPACE__, __NAMESPACE__ . '\Frontend::frontendCreateFilter'
+            __NAMESPACE__, __NAMESPACE__.'\Frontend::frontendCreateFilter'
         ));
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
-            __NAMESPACE__ . '/Setup', __NAMESPACE__ . '\Frontend::frontendSetupFilter'
+            __NAMESPACE__.'/Standard', __NAMESPACE__.'\Frontend::frontendSetupStandard'
         ));
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
-            __NAMESPACE__ . '/Filter', __NAMESPACE__ . '\Frontend::frontendRunFilter'
+            __NAMESPACE__.'/Update', __NAMESPACE__.'\Frontend::frontendUpdateFilter'
+        ));
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__.'/Remove', __NAMESPACE__.'\Frontend::frontendRemoveFilter'
+        ));
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__.'/Setup', __NAMESPACE__.'\Frontend::frontendSetupFilter'
+        ));
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__.'/Filter', __NAMESPACE__.'\Frontend::frontendRunFilter'
         ));
     }
 
@@ -49,7 +58,7 @@ class Dynamic implements IApplicationInterface, IModuleInterface
 
         return new Service(
             new Identifier('Setting', 'Consumer', null, null, Consumer::useService()->getConsumerBySession()),
-            __DIR__ . '/Service/Entity', __NAMESPACE__ . '\Service\Entity'
+            __DIR__.'/Service/Entity', __NAMESPACE__.'\Service\Entity'
         );
     }
 

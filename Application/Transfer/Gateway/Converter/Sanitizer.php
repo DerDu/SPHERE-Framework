@@ -92,8 +92,7 @@ class Sanitizer extends Extension
 //        }
 
         if( !empty( $Value ) ) {
-            $Value = filter_var($Value, FILTER_SANITIZE_EMAIL);
-            $Value = filter_var($Value, FILTER_VALIDATE_EMAIL);
+            $Value = $this->validateMailAddress($Value);
 
             if (empty( $Value )) {
                 throw new \Exception('Email: Adresse muss ein gültiges Format haben');

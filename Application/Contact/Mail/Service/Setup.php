@@ -3,7 +3,12 @@ namespace SPHERE\Application\Contact\Mail\Service;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
+use SPHERE\Application\Contact\Mail\Service\Entity\TblMail;
+use SPHERE\Application\Contact\Mail\Service\Entity\TblToCompany;
+use SPHERE\Application\Contact\Mail\Service\Entity\TblToPerson;
+use SPHERE\Application\Contact\Mail\Service\Entity\TblType;
 use SPHERE\System\Database\Binding\AbstractSetup;
+use SPHERE\System\Database\Fitting\View;
 
 /**
  * Class Setup
@@ -34,6 +39,19 @@ class Setup extends AbstractSetup
          */
         $this->getConnection()->addProtocol(__CLASS__);
         $this->getConnection()->setMigration($Schema, $Simulate);
+
+        $this->getConnection()->createView(
+            ( new View($this->getConnection(), 'viewMailToPerson') )
+                ->addLink(new TblToPerson(), 'tblType', new TblType())
+                ->addLink(new TblToPerson(), 'tblMail', new TblMail())
+        );
+
+        $this->getConnection()->createView(
+            ( new View($this->getConnection(), 'viewMailToCompany') )
+                ->addLink(new TblToCompany(), 'tblType', new TblType())
+                ->addLink(new TblToCompany(), 'tblMail', new TblMail())
+        );
+
         return $this->getConnection()->getProtocol($Simulate);
     }
 

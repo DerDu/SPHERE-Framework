@@ -41,6 +41,28 @@ abstract class Subject extends Transfer
     }
 
     /**
+     * @param TblStudentSubjectType $tblStudentSubjectType
+     * @param                       $Name
+     *
+     * @return bool
+     */
+    public function updateStudentSubjectType(TblStudentSubjectType $tblStudentSubjectType, $Name)
+    {
+
+        $Manager = $this->getConnection()->getEntityManager();
+        $Entity = $Manager->getEntityById('TblStudentSubjectType', $tblStudentSubjectType->getId());
+
+        if (null !== $Entity) {
+            $Protocol = clone $Entity;
+            $Entity->setName($Name);
+            $Manager->saveEntity($Entity);
+            Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(), $Protocol, $Entity);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * @param string $Identifier
      * @param string $Name
      *

@@ -83,7 +83,6 @@ class Setup extends AbstractSetup
         $this->removeIndex($Table, array('Name', Element::ENTITY_REMOVE));
         $this->createIndex($Table, array('Name'), true);
         $this->createColumn($Table, 'Description', self::FIELD_TYPE_STRING);
-        $this->createIndex($Table, array('Description'));
         if (!$this->getConnection()->hasColumn('tblIdentification', 'IsActive')) {
             $Table->addColumn('IsActive', 'boolean', array('default' => 1));
         }

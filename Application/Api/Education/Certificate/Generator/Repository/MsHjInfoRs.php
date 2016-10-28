@@ -30,7 +30,7 @@ class MsHjInfoRs extends Certificate
             $Header = (new Slice())
                 ->addSection((new Section())
                     ->addElementColumn((new Element())
-                        ->setContent('MS Halbjahres Info Realschule 3a.pdf')
+                        ->setContent('&nbsp;')
                         ->styleTextSize('12px')
                         ->styleTextColor('#CCC')
                         ->styleAlignCenter()

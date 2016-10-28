@@ -13,11 +13,25 @@ use SPHERE\System\Debugger\Logger\BenchmarkLogger;
  */
 class Pile
 {
+    const JOIN_TYPE_INNER = 0;
+    const JOIN_TYPE_OUTER = 1;
 
     /** @var array $PileList */
     private $PileList = array();
     /** @var bool $isTimeout */
     private $isTimeout = false;
+    /** @var int $JoinType */
+    private $JoinType = self::JOIN_TYPE_INNER;
+
+    /**
+     * Pile constructor.
+     *
+     * @param int $JoinType Pile::JOIN_TYPE_INNER
+     */
+    public function __construct( $JoinType = Pile::JOIN_TYPE_INNER )
+    {
+        $this->JoinType = $JoinType;
+    }
 
     /**
      * @return boolean
@@ -61,7 +75,7 @@ class Pile
             );
         }
         /** @var AbstractNode $Node */
-        $Node = new $Node();
+        $Node = new $Node( $this->JoinType );
         foreach ($this->PileList as $Pile) {
             $Node->addProbe($Pile[0], $Pile[1]);
             $Node->addPath($Pile[2], $Pile[3]);

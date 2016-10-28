@@ -1,15 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Kauschke
- * Date: 17.05.2016
- * Time: 08:26
- */
-
 namespace SPHERE\Application\People\Meta\Club;
 
 use SPHERE\Application\People\Meta\Club\Service\Data;
 use SPHERE\Application\People\Meta\Club\Service\Entity\TblClub;
+use SPHERE\Application\People\Meta\Club\Service\Entity\ViewPeopleMetaClub;
 use SPHERE\Application\People\Meta\Club\Service\Setup;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Common\Frontend\Form\IFormInterface;
@@ -19,6 +13,15 @@ use SPHERE\System\Database\Binding\AbstractService;
 
 class Service extends AbstractService
 {
+
+    /**
+     * @return false|ViewPeopleMetaClub[]
+     */
+    public function viewPeopleMetaClub()
+    {
+
+        return ( new Data($this->getBinding()) )->viewPeopleMetaClub();
+    }
 
     /**
      * @param bool $doSimulation

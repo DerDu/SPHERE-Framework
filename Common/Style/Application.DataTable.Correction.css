@@ -71,6 +71,9 @@ table.dataTable td.reorder {
 table.dataTable th {
     background: linear-gradient(90deg, rgba(150, 150, 150, 0.2) 70%, transparent 100%)
 }
+table.dataTable tfoot td {
+    background: linear-gradient(90deg, rgba(150, 150, 150, 0.2) 70%, transparent 100%)
+}
 
 table.dataTable {
     clear: both;

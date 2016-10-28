@@ -30,7 +30,7 @@ class MsAbsRs extends Certificate
             $Header = (new Slice())
                 ->addSection((new Section())
                     ->addElementColumn((new Element())
-                        ->setContent('MS RS Abschlusszeugnis Realschule 3K.pdf')
+                        ->setContent('&nbsp;')
                         ->styleTextSize('12px')
                         ->styleTextColor('#CCC')
                         ->styleAlignCenter()

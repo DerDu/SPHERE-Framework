@@ -3,7 +3,29 @@ namespace SPHERE\Application\People\Meta\Student\Service;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudent;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentAgreement;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentAgreementCategory;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentAgreementType;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentBaptism;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentDisorder;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentDisorderType;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentFocus;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentFocusType;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentIntegration;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentLiberation;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentLiberationCategory;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentLiberationType;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentLocker;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentMedicalRecord;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentSubject;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentSubjectRanking;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentSubjectType;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentTransfer;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentTransferType;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentTransport;
 use SPHERE\System\Database\Binding\AbstractSetup;
+use SPHERE\System\Database\Fitting\View;
 
 /**
  * Class Setup
@@ -63,6 +85,70 @@ class Setup extends AbstractSetup
          */
         $this->getConnection()->addProtocol(__CLASS__);
         $this->getConnection()->setMigration($Schema, $Simulate);
+
+        $this->getConnection()->createView(
+            ( new View($this->getConnection(), 'viewStudent') )
+                ->addLink(new TblStudent(), 'Id')
+        );
+        $this->getConnection()->createView(
+            ( new View($this->getConnection(), 'viewStudentAgreement') )
+                ->addLink(new TblStudentAgreement(), 'tblStudent', new TblStudent(), 'Id')
+                ->addLink(new TblStudentAgreement(), 'tblStudentAgreementType', new TblStudentAgreementType(), 'Id')
+                ->addLink(new TblStudentAgreementType(), 'tblStudentAgreementCategory', new TblStudentAgreementCategory(), 'Id')
+        );
+        $this->getConnection()->createView(
+            ( new View($this->getConnection(), 'viewStudentBaptism') )
+                ->addLink(new TblStudent(), 'tblStudentBaptism', new TblStudentBaptism(), 'Id')
+        );
+//        $this->getConnection()->createView(
+//            (new View($this->getConnection(), 'viewStudentBilling'))
+//                ->addLink(new TblStudent(), 'tblStudentBilling', new TblStudentBilling(), 'Id')
+//                ->addLink(new TblStudentBilling(), 'serviceTblSiblingRank', new TblSiblingRank(), 'Id')
+//        );
+        $this->getConnection()->createView(
+            ( new View($this->getConnection(), 'viewStudentDisorder') )
+                ->addLink(new TblStudentDisorder(), 'tblStudent', new TblStudent(), 'Id')
+                ->addLink(new TblStudentDisorder(), 'tblStudentDisorderType', new TblStudentDisorderType(), 'Id')
+        );
+        $this->getConnection()->createView(
+            ( new View($this->getConnection(), 'viewStudentFocus') )
+                ->addLink(new TblStudentFocus(), 'tblStudent', new TblStudent(), 'Id')
+                ->addLink(new TblStudentFocus(), 'tblStudentFocusType', new TblStudentFocusType(), 'Id')
+        );
+        $this->getConnection()->createView(
+            ( new View($this->getConnection(), 'viewStudentIntegration') )
+                ->addLink(new TblStudent(), 'tblStudentIntegration', new TblStudentIntegration(), 'Id')
+        );
+        $this->getConnection()->createView(
+            ( new View($this->getConnection(), 'viewStudentLiberation') )
+                ->addLink(new TblStudentLiberation(), 'tblStudent', new TblStudent(), 'Id')
+                ->addLink(new TblStudentLiberation(), 'tblStudentLiberationType', new TblStudentLiberationType(), 'Id')
+                ->addLink(new TblStudentLiberationType(), 'tblStudentLiberationCategory', new TblStudentLiberationCategory(), 'Id')
+        );
+        $this->getConnection()->createView(
+            ( new View($this->getConnection(), 'viewStudentLocker') )
+                ->addLink(new TblStudent(), 'tblStudentLocker', new TblStudentLocker(), 'Id')
+        );
+        $this->getConnection()->createView(
+            ( new View($this->getConnection(), 'viewStudentMedicalRecord') )
+                ->addLink(new TblStudent(), 'tblStudentMedicalRecord', new TblStudentMedicalRecord(), 'Id')
+        );
+        $this->getConnection()->createView(
+            ( new View($this->getConnection(), 'viewStudentSubject') )
+                ->addLink(new TblStudentSubject(), 'tblStudent', new TblStudent(), 'Id')
+                ->addLink(new TblStudentSubject(), 'tblStudentSubjectRanking', new TblStudentSubjectRanking(), 'Id')
+                ->addLink(new TblStudentSubject(), 'tblStudentSubjectType', new TblStudentSubjectType(), 'Id')
+        );
+        $this->getConnection()->createView(
+            ( new View($this->getConnection(), 'viewStudentTransfer') )
+                ->addLink(new TblStudentTransfer(), 'tblStudent', new TblStudent(), 'Id')
+                ->addLink(new TblStudentTransfer(), 'tblStudentTransferType', new TblStudentTransferType(), 'Id')
+        );
+        $this->getConnection()->createView(
+            ( new View($this->getConnection(), 'viewStudentTransport') )
+                ->addLink(new TblStudent(), 'tblStudentTransport', new TblStudentTransport(), 'Id')
+        );
+
         return $this->getConnection()->getProtocol($Simulate);
     }
 

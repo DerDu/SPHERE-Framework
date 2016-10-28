@@ -23,32 +23,43 @@ class Exchange extends Extension implements ILinkInterface
     /**
      * Exchange constructor.
      *
-     * @param int|string $Handler EXCHANGE_TYPE_{PLUS|MINUS} or Css-Selector
-     * @param array      $Data
-     * @param string     $Title   Button-Text
+     * @param int|string $ExchangeType EXCHANGE_TYPE_{PLUS|MINUS}
+     * @param array $Data Exchange-Payload
+     * @param string $Title Button-Text
+     * @param string $HandlerClass Css-Selector
      */
-    public function __construct($Handler, $Data = array(), $Title = '')
+    public function __construct($ExchangeType = self::EXCHANGE_TYPE_PLUS, $Data = array(), $Title = '', $HandlerClass = '')
     {
 
-        if (is_integer($Handler)) {
+        if (is_integer($ExchangeType) && empty($HandlerClass)) {
 
-            switch ($Handler) {
+            switch ($ExchangeType) {
                 case Exchange::EXCHANGE_TYPE_MINUS:
-                    $Button = new Center('<span class="btn btn-default">'.new MinusSign().' '.$Title.'</span>');
+                    $Button = new Center('<span class="btn btn-default">' . new MinusSign() . ' ' . $Title . '</span>');
                     break;
                 case Exchange::EXCHANGE_TYPE_PLUS:
-                    $Button = new Center('<span class="btn btn-default">'.new PlusSign().' '.$Title.'</span>');
+                    $Button = new Center('<span class="btn btn-default">' . new PlusSign() . ' ' . $Title . '</span>');
                     break;
                 default:
-                    $Button = new Center('<span class="btn btn-default">'.new PlusSign().' '.$Title.'</span>');
+                    $Button = new Center('<span class="btn btn-default">' . new PlusSign() . ' ' . $Title . '</span>');
                     break;
             }
         } else {
-            $Button = new Center('<span class="btn btn-default '.$Handler.'">'.new PlusSign().' '.$Title.'</span>');
+            switch ($ExchangeType) {
+                case Exchange::EXCHANGE_TYPE_MINUS:
+                    $Button = new Center('<span class="btn btn-default ' . $HandlerClass . '">' . new MinusSign() . ' ' . $Title . '</span>');
+                    break;
+                case Exchange::EXCHANGE_TYPE_PLUS:
+                    $Button = new Center('<span class="btn btn-default ' . $HandlerClass . '">' . new PlusSign() . ' ' . $Title . '</span>');
+                    break;
+                default:
+                    $Button = new Center('<span class="btn btn-default ' . $HandlerClass . '">' . new PlusSign() . ' ' . $Title . '</span>');
+                    break;
+            }
         }
 
-        $this->Content = $Button.'<span class="ExchangeData" style="display: none;">'
-            .json_encode($Data, JSON_FORCE_OBJECT).'</span>';
+        $this->Content = $Button . '<span class="ExchangeData" style="display: none;">'
+            . json_encode($Data, JSON_FORCE_OBJECT) . '</span>';
     }
 
 

@@ -44,7 +44,7 @@ class Service extends Extension
             $Form->setError('Ticket[Mail]', 'Bitte geben Sie Ihre Email-Adresse an');
             $Error = true;
         } elseif (isset( $Ticket['Mail'] )) {
-            $Ticket['Mail'] = filter_var($Ticket['Mail'], FILTER_VALIDATE_EMAIL);
+            $Ticket['Mail'] = $this->validateMailAddress($Ticket['Mail']);
             if (!$Ticket['Mail']) {
                 $Form->setError('Ticket[Mail]', 'Bitte geben Sie eine gültige Email-Adresse an');
                 $Error = true;

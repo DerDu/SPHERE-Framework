@@ -10,6 +10,7 @@ namespace SPHERE\Application\Education\ClassRegister\Absence;
 
 use SPHERE\Application\Education\ClassRegister\Absence\Service\Data;
 use SPHERE\Application\Education\ClassRegister\Absence\Service\Entity\TblAbsence;
+use SPHERE\Application\Education\ClassRegister\Absence\Service\Entity\ViewAbsence;
 use SPHERE\Application\Education\ClassRegister\Absence\Service\Setup;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
@@ -25,6 +26,14 @@ use SPHERE\System\Database\Binding\AbstractService;
  */
 class Service extends AbstractService
 {
+    /**
+     * @return false|ViewAbsence[]
+     */
+    public function viewAbsence()
+    {
+
+        return ( new Data($this->getBinding()) )->viewAbsence();
+    }
 
     /**
      * @param bool $Simulate

@@ -44,6 +44,59 @@ class Doctrine2DBAL extends Bridge implements IBridgeInterface
      * @param UsernameParameter $Username
      * @param PasswordParameter $Password
      * @param DatabaseParameter $Database
+     * @param DriverParameter $Driver
+     * @param HostParameter $Host
+     * @param PortParameter $Port
+     * @param int $Timeout
+     *
+     * @return array
+     */
+    private function buildConnectionParameter(
+        UsernameParameter $Username,
+        PasswordParameter $Password,
+        DatabaseParameter $Database,
+        DriverParameter $Driver,
+        HostParameter $Host,
+        PortParameter $Port,
+        $Timeout = 5
+    ) {
+        switch( $Driver->getDriver() ) {
+            case DriverParameter::DRIVER_SQLSRV: {
+                return array(
+                    'driver'        => $Driver->getDriver(),
+                    'user'          => $Username->getUsername(),
+                    'password'      => $Password->getPassword(),
+                    'host'          => $Host->getHost(),
+                    'dbname'        => $Database->getDatabase(),
+                    'port'          => $Port->getPort(),
+                    'driverOptions'  => array(
+                        'LoginTimeout' => $Timeout
+                    )
+                );
+                break;
+            }
+            default: {
+                return array(
+                    'driver'        => $Driver->getDriver(),
+                    'user'          => $Username->getUsername(),
+                    'password'      => $Password->getPassword(),
+                    'host'          => $Host->getHost(),
+                    'dbname'        => $Database->getDatabase(),
+                    'port'          => $Port->getPort(),
+                    'driverOptions' => array(
+                        \PDO::ATTR_TIMEOUT => $Timeout,
+                        \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
+                    )
+                );
+                break;
+            }
+        }
+    }
+
+    /**
+     * @param UsernameParameter $Username
+     * @param PasswordParameter $Password
+     * @param DatabaseParameter $Database
      * @param DriverParameter   $Driver
      * @param HostParameter     $Host
      * @param PortParameter     $Port
@@ -64,18 +117,10 @@ class Doctrine2DBAL extends Bridge implements IBridgeInterface
     ) {
 
         try {
-            $Connection = DriverManager::getConnection(array(
-                'driver'        => $Driver->getDriver(),
-                'user'          => $Username->getUsername(),
-                'password'      => $Password->getPassword(),
-                'host'          => $Host->getHost(),
-                'dbname'        => $Database->getDatabase(),
-                'port'          => $Port->getPort(),
-                'driverOptions' => array(
-                    \PDO::ATTR_TIMEOUT => $Timeout,
-                    \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
-                )
-            ));
+            $Parameter = $this->buildConnectionParameter(
+                $Username, $Password, $Database, $Driver, $Host, $Port, $Timeout
+            );
+            $Connection = DriverManager::getConnection($Parameter);
         } catch (\Exception $E) {
             // @codeCoverageIgnoreStart
             throw new ComponentException($E->getMessage(), $E->getCode(), $E);

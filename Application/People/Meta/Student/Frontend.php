@@ -111,7 +111,7 @@ class Frontend extends Extension implements IFrontendInterface
                                     new DatePicker('Meta[Student][SchoolAttendanceStartDate]', '', 'Beginnt am', new Calendar())
                                 ), Panel::PANEL_TYPE_INFO)
                                 , 4),
-                        ))
+                        )), new Title(new TileSmall().' Grunddaten ', new Bold(new Success($tblPerson->getFullName())))
                     ),
                     $this->formGroupTransfer($tblPerson),
                     $this->formGroupGeneral($tblPerson),

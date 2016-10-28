@@ -6,6 +6,7 @@ use SPHERE\Application\Contact\Phone\Service\Entity\TblPhone;
 use SPHERE\Application\Contact\Phone\Service\Entity\TblToCompany;
 use SPHERE\Application\Contact\Phone\Service\Entity\TblToPerson;
 use SPHERE\Application\Contact\Phone\Service\Entity\TblType;
+use SPHERE\Application\Contact\Phone\Service\Entity\ViewPhoneToPerson;
 use SPHERE\Application\Contact\Phone\Service\Setup;
 use SPHERE\Application\Corporation\Company\Service\Entity\TblCompany;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
@@ -38,6 +39,15 @@ class Service extends AbstractService
             (new Data($this->getBinding()))->setupDatabaseContent();
         }
         return $Protocol;
+    }
+
+    /**
+     * @return false|ViewPhoneToPerson[]
+     */
+    public function viewPhoneToPerson()
+    {
+
+        return ( new Data($this->getBinding()) )->viewPhoneToPerson();
     }
 
     /**

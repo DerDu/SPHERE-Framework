@@ -5,6 +5,7 @@ use Doctrine\ORM\Mapping\Cache;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
+use SPHERE\Application\People\Meta\Common\Common;
 use SPHERE\System\Database\Fitting\Element;
 
 /**
@@ -14,10 +15,19 @@ use SPHERE\System\Database\Fitting\Element;
  */
 class TblCommonBirthDates extends Element
 {
-
+    /**
+     * @deprecated
+     */
     const VALUE_GENDER_NULL = 0;
+    /**
+     * @deprecated
+     */
     const VALUE_GENDER_MALE = 1;
+    /**
+     * @deprecated
+     */
     const VALUE_GENDER_FEMALE = 2;
+
     /**
      * @Column(type="datetime")
      */
@@ -27,9 +37,14 @@ class TblCommonBirthDates extends Element
      */
     protected $Birthplace;
     /**
+     * @deprecated
      * @Column(type="smallint")
      */
     protected $Gender;
+    /**
+     * @Column(type="bigint")
+     */
+    protected $tblCommonGender;
 
     /**
      * @return string
@@ -77,20 +92,59 @@ class TblCommonBirthDates extends Element
     }
 
     /**
+     * @deprecated
+     * @see getTblCommonGender
      * @return int
      */
     public function getGender()
     {
 
-        return $this->Gender;
+        if(($Gender = $this->getTblCommonGender())) {
+            $Gender = $Gender->getId();
+        } else {
+            $Gender = $this->Gender;
+        }
+        return $Gender;
     }
 
     /**
+     * @deprecated
+     * @see setTblCommonGender
      * @param int $Gender
      */
     public function setGender($Gender)
     {
-
         $this->Gender = $Gender;
+        switch ( $Gender ) {
+            case self::VALUE_GENDER_MALE:
+            case self::VALUE_GENDER_FEMALE:
+                $Gender = Common::useService()->getCommonGenderById($Gender);
+                break;
+            default:
+                $Gender = null;
+        }
+        $this->setTblCommonGender( $Gender );
+    }
+
+    /**
+     * @return bool|TblCommonGender
+     */
+    public function getTblCommonGender()
+    {
+
+        if (null === $this->tblCommonGender) {
+            return false;
+        } else {
+            return Common::useService()->getCommonGenderById($this->tblCommonGender);
+        }
+    }
+
+    /**
+     * @param null|TblCommonGender $tblCommonGender
+     */
+    public function setTblCommonGender(TblCommonGender $tblCommonGender = null)
+    {
+
+        $this->tblCommonGender = ( null === $tblCommonGender ? null : $tblCommonGender->getId() );
     }
 }

@@ -36,10 +36,10 @@ abstract class AbstractData extends Cacheable
     /**
      * Internal
      *
-     * @param Element       $Entity
+     * @param Element $Entity
      * @param AbstractLogic $Logic
-     *
-     * @return Element[]
+     * @return \SPHERE\System\Database\Fitting\Element[]
+     * @throws \Exception
      */
     protected function getEntityAllByLogic(Element $Entity, AbstractLogic $Logic)
     {
@@ -52,6 +52,18 @@ abstract class AbstractData extends Cacheable
         $Builder->distinct(true);
         $Query = $Builder->getQuery();
         $Query->useQueryCache(true);
+
+        if( $Entity instanceof AbstractView ) {
+            $Result = $Query->getResult();
+            $Validation = $Query->getArrayResult();
+            if (count($Result) != count($Validation)) {
+                throw new \Exception( 'View '.$Entity->getViewClassName().' Element-ID Missmatch.'
+                    ."\n".'Multiple View-Elements with same Id-Value, please restructure Setup'
+                    ."\n".'Possible Missmatch-Key: '.array_search( $Entity->getId(), $Entity->__toArray() )
+                );
+            }
+            return $Result;
+        }
 
         // TODO: Remove
 //        $this->getDebugger()->screenDump( $Query->getSQL() );

@@ -3,6 +3,7 @@ namespace SPHERE\Application\Corporation\Company;
 
 use SPHERE\Application\Corporation\Company\Service\Data;
 use SPHERE\Application\Corporation\Company\Service\Entity\TblCompany;
+use SPHERE\Application\Corporation\Company\Service\Entity\ViewCompany;
 use SPHERE\Application\Corporation\Company\Service\Setup;
 use SPHERE\Application\Corporation\Group\Group;
 use SPHERE\Application\Corporation\Group\Service\Entity\TblGroup;
@@ -20,6 +21,14 @@ use SPHERE\System\Database\Binding\AbstractService;
  */
 class Service extends AbstractService
 {
+    /**
+     * @return false|ViewCompany[]
+     */
+    public function viewCompany()
+    {
+
+        return ( new Data($this->getBinding()) )->viewCompany();
+    }
 
     /**
      * @param bool $doSimulation

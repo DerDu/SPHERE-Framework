@@ -33,11 +33,12 @@ class Data extends AbstractData
     {
 
         // Identification
-        $this->createIdentification('Credential', 'Benutzername / Passwort', true);
-        $this->createIdentification('Token', 'Benutzername / Passwort & Hardware-Schlüssel', true);
         $this->createIdentification('System', 'Benutzername / Passwort & Hardware-Schlüssel', true);
+        $this->createIdentification('Token', 'Benutzername / Passwort & Hardware-Schlüssel', true);
+        $this->createIdentification('Credential', 'Benutzername / Passwort', true);
 
 //        $tblConsumer = Consumer::useService()->getConsumerById(1);
+//        // Choose the right Identification for Authentication
 //        $tblIdentification = $this->getIdentificationByName('Credential');
 //        $tblRole = Access::useService()->getRoleByName('Administrator');
 //

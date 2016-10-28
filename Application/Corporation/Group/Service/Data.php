@@ -5,6 +5,7 @@ use SPHERE\Application\Corporation\Company\Company;
 use SPHERE\Application\Corporation\Company\Service\Entity\TblCompany;
 use SPHERE\Application\Corporation\Group\Service\Entity\TblGroup;
 use SPHERE\Application\Corporation\Group\Service\Entity\TblMember;
+use SPHERE\Application\Corporation\Group\Service\Entity\ViewCompanyGroupMember;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
 use SPHERE\System\Cache\CacheFactory;
 use SPHERE\System\Cache\Handler\MemcachedHandler;
@@ -17,6 +18,17 @@ use SPHERE\System\Database\Binding\AbstractData;
  */
 class Data extends AbstractData
 {
+
+    /**
+     * @return false|ViewCompanyGroupMember[]
+     */
+    public function viewCompanyGroupMember()
+    {
+
+        return $this->getCachedEntityList(
+            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewCompanyGroupMember'
+        );
+    }
 
     public function setupDatabaseContent()
     {

@@ -618,6 +618,7 @@ class Frontend
                                             'Handler' => array(
                                                 'From' => 'glyphicon-minus-sign',
                                                 'To'   => 'glyphicon-plus-sign',
+                                                'All'  => 'TableRemoveAll'
                                             ),
                                             'Connect' => array(
                                                 'From' => 'TableCurrent',
@@ -625,7 +626,8 @@ class Frontend
                                             )
                                         )
                                     )
-                            )
+                            ),
+                            new Exchange( Exchange::EXCHANGE_TYPE_MINUS, array(), 'Alle entfernen', 'TableRemoveAll' )
                         ), 6),
                         new LayoutColumn(array(
                             new \SPHERE\Common\Frontend\Layout\Repository\Title('Rechte', 'Verfügbar'),
@@ -641,7 +643,7 @@ class Frontend
                                             'Handler' => array(
                                                 'From' => 'glyphicon-plus-sign',
                                                 'To'   => 'glyphicon-minus-sign',
-                                                'All'  => 'TableCurrentAll'
+                                                'All'  => 'TableAddAll'
                                             ),
                                             'Connect' => array(
                                                 'From' => 'TableAvailable',
@@ -649,7 +651,8 @@ class Frontend
                                             ),
                                         )
                                     )
-                            )
+                            ),
+                            new Exchange( Exchange::EXCHANGE_TYPE_PLUS, array(), 'Alle hinzufügen', 'TableAddAll' )
                         ), 6)
                     ))
                 )

@@ -9,6 +9,7 @@
 namespace SPHERE\Application\Document\Standard;
 
 use SPHERE\Application\Document\Standard\EnrollmentDocument\EnrollmentDocument;
+use SPHERE\Application\Document\Standard\StudentCard\StudentCard;
 use SPHERE\Application\IApplicationInterface;
 use SPHERE\Common\Main;
 use SPHERE\Common\Window\Navigation\Link;
@@ -26,6 +27,7 @@ class Standard implements IApplicationInterface
     {
 
         EnrollmentDocument::registerModule();
+        StudentCard::registerModule();
 
         Main::getDisplay()->addApplicationNavigation(
             new Link(new Link\Route(__NAMESPACE__), new Link\Name('Standard'))

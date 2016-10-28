@@ -29,7 +29,7 @@ class GsHjOneInfo extends Certificate
             $Header = ( new Slice() )
                 ->addSection(( new Section() )
                     ->addElementColumn(( new Element() )
-                        ->setContent('GS Halbjahresinformation Klasse 1 1a.pdf')
+                        ->setContent('&nbsp;')
                         ->styleTextSize('12px')
                         ->styleTextColor('#CCC')
                         ->styleAlignCenter()

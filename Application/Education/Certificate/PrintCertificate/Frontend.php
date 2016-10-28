@@ -181,6 +181,9 @@ class Frontend extends Extension implements IFrontendInterface
     {
 
         $Stage = new Stage('Zeugnis', 'Person auswählen');
+        $Stage->addButton(new Standard(
+            'Zurück', '/Education/Certificate/PrintCertificate', new ChevronLeft()
+        ));
 
         $tblFileList = Storage::useService()->getCertificateRevisionFileAll();
 
@@ -247,7 +250,7 @@ class Frontend extends Extension implements IFrontendInterface
     /**
      * @param null $PersonId
      *
-     * @return Stage
+     * @return Stage|string
      */
     public function frontendPrintCertificateHistoryPerson($PersonId = null)
     {

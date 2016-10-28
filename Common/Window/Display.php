@@ -343,9 +343,13 @@ class Display extends Extension implements ITemplateInterface
         $this->Template->setVariable('CacheSlot', (new MemcachedHandler())->getSlot());
         $this->Template->setVariable('MemoryPeak', $this->formatBytes(memory_get_peak_usage()));
 
-        $CpuLoad = sys_getloadavg();
-        $this->Template->setVariable('CpuLoad',
-            number_format(100 / ( 50 * ( 2 - $CpuLoad[0] ) ) * ( 50 * ( $CpuLoad[0] ) ), 2, ',', '.').'%');
+        if( function_exists( 'sys_getloadavg' ) ) {
+            $CpuLoad = sys_getloadavg();
+            $this->Template->setVariable('CpuLoad',
+                number_format(100 / (50 * (2 - $CpuLoad[0])) * (50 * ($CpuLoad[0])), 2, ',', '.') . '%');
+        } else {
+            $this->Template->setVariable('CpuLoad', '');
+        }
         $this->Template->setVariable('PathBase', $this->getRequest()->getPathBase());
         if (!$NoConnection) {
             $this->Template->setVariable('Consumer',

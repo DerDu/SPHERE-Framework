@@ -5,6 +5,8 @@ use Doctrine\ORM\Mapping\Cache;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
+use SPHERE\Application\Contact\Address\Address;
+use SPHERE\Application\People\Relationship\Service\Entity\ViewRelationshipToCompany;
 use SPHERE\System\Database\Binding\AbstractService;
 use SPHERE\System\Database\Binding\AbstractView;
 
@@ -120,9 +122,8 @@ class ViewAddressToCompany extends AbstractView
     public function getViewGuiName()
     {
 
-        return 'Adressdaten (Firma)';
+        return 'Kontakt Adressdaten (Firma)';
     }
-
 
     /**
      * Use this method to set PropertyName to DisplayName conversions with "setNameDefinition()"
@@ -154,6 +155,7 @@ class ViewAddressToCompany extends AbstractView
     public function loadViewGraph()
     {
 
+        $this->addForeignView(self::TBL_TO_COMPANY_SERVICE_TBL_COMPANY, new ViewRelationshipToCompany(), ViewRelationshipToCompany::TBL_TO_COMPANY_SERVICE_TBL_COMPANY);
 //        $this->addForeignView(self::TBL_TO_COMPANY_SERVICE_TBL_COMPANY, new ViewCompany(), ViewCompany::TBL_COMPANY_ID);
     }
 
@@ -162,6 +164,7 @@ class ViewAddressToCompany extends AbstractView
      */
     public function getViewService()
     {
-        // TODO: Implement getViewService() method.
+
+        return Address::useService();
     }
 }

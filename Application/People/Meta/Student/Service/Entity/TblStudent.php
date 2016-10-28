@@ -25,7 +25,6 @@ class TblStudent extends Element
      * @Column(type="string")
      */
     protected $Identifier;
-
     /**
      * @Column(type="datetime")
      */

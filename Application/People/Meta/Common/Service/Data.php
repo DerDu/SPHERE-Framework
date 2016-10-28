@@ -3,6 +3,7 @@ namespace SPHERE\Application\People\Meta\Common\Service;
 
 use SPHERE\Application\People\Meta\Common\Service\Entity\TblCommon;
 use SPHERE\Application\People\Meta\Common\Service\Entity\TblCommonBirthDates;
+use SPHERE\Application\People\Meta\Common\Service\Entity\TblCommonGender;
 use SPHERE\Application\People\Meta\Common\Service\Entity\TblCommonInformation;
 use SPHERE\Application\People\Meta\Common\Service\Entity\ViewPeopleMetaCommon;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
@@ -30,7 +31,8 @@ class Data extends AbstractData
     
     public function setupDatabaseContent()
     {
-
+        $this->createCommonGender( 'Männlich' );
+        $this->createCommonGender( 'Weiblich' );
     }
 
     /**
@@ -45,6 +47,25 @@ class Data extends AbstractData
         return $this->getCachedEntityBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblCommon', array(
             TblCommon::SERVICE_TBL_PERSON => $tblPerson->getId()
         ));
+    }
+
+    /**
+     * @param string $Name
+     *
+     * @return TblCommonGender
+     */
+    public function createCommonGender($Name)
+    {
+
+        $Manager = $this->getConnection()->getEntityManager();
+        $Entity = $Manager->getEntity('TblCommonGender')->findOneBy(array(TblCommonGender::ATTR_NAME => $Name));
+        if (null === $Entity) {
+            $Entity = new TblCommonGender();
+            $Entity->setName( $Name );
+            $Manager->saveEntity($Entity);
+            Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(), $Entity);
+        }
+        return $Entity;
     }
 
     /**
@@ -137,6 +158,26 @@ class Data extends AbstractData
     {
 
         return $this->getCachedEntityById(__METHOD__, $this->getConnection()->getEntityManager(), 'TblCommon', $Id);
+    }
+
+    /**
+     * @param int $Id
+     *
+     * @return bool|TblCommonGender
+     */
+    public function getCommonGenderById($Id)
+    {
+
+        return $this->getCachedEntityById(__METHOD__, $this->getConnection()->getEntityManager(), 'TblCommonGender', $Id);
+    }
+
+    /**
+     * @return bool|TblCommonGender[]
+     */
+    public function getCommonGenderAll()
+    {
+
+        return $this->getCachedEntityList(__METHOD__, $this->getConnection()->getEntityManager(), 'TblCommonGender');
     }
 
     /**

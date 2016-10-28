@@ -1,17 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Kauschke
- * Date: 20.05.2016
- * Time: 08:15
- */
-
 namespace SPHERE\Application\People\Meta\Teacher\Service;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
+use SPHERE\Application\People\Meta\Teacher\Service\Entity\TblTeacher;
 use SPHERE\System\Database\Binding\AbstractSetup;
 use SPHERE\System\Database\Fitting\Element;
+use SPHERE\System\Database\Fitting\View;
 
 /**
  * Class Setup
@@ -35,6 +30,10 @@ class Setup extends AbstractSetup
          */
         $this->getConnection()->addProtocol(__CLASS__);
         $this->getConnection()->setMigration($Schema, $Simulate);
+        $this->getConnection()->createView(
+            ( new View($this->getConnection(), 'viewPeopleMetaTeacher') )
+                ->addLink(new TblTeacher(), 'Id')
+        );
         return $this->getConnection()->getProtocol($Simulate);
     }
 

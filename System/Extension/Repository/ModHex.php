@@ -20,10 +20,13 @@ class ModHex
      * Use ModHex::withString()
      *
      * @param string $String
+     * @throws \Exception
      */
     private function __construct($String)
     {
-
+        if( !function_exists( 'gmp_init' ) ) {
+            throw new \Exception('PHP: GMP Extension missing');
+        }
         $this->String = $String;
     }
 

@@ -2,6 +2,7 @@
 namespace SPHERE\Application\Corporation\Company\Service;
 
 use SPHERE\Application\Corporation\Company\Service\Entity\TblCompany;
+use SPHERE\Application\Corporation\Company\Service\Entity\ViewCompany;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
 use SPHERE\System\Database\Binding\AbstractData;
 
@@ -12,6 +13,17 @@ use SPHERE\System\Database\Binding\AbstractData;
  */
 class Data extends AbstractData
 {
+
+    /**
+     * @return false|ViewCompany[]
+     */
+    public function viewCompany()
+    {
+
+        return $this->getCachedEntityList(
+            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewCompany'
+        );
+    }
 
     public function setupDatabaseContent()
     {

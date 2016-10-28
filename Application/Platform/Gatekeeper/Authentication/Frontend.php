@@ -117,15 +117,20 @@ class Frontend extends Extension implements IFrontendInterface
 
         // Get Identification-Type (Credential,Token,System)
         $Identifier = $this->getModHex($CredentialKey)->getIdentifier();
-        $tblToken = Token::useService()->getTokenByIdentifier($Identifier);
-        if ($tblToken) {
-            if ($tblToken->getServiceTblConsumer()) {
-                $Identification = Account::useService()->getIdentificationByName('Token');
+        if( $Identifier ) {
+            $tblToken = Token::useService()->getTokenByIdentifier($Identifier);
+            if ($tblToken) {
+                if ($tblToken->getServiceTblConsumer()) {
+                    $Identification = Account::useService()->getIdentificationByName('Token');
+                } else {
+                    $Identification = Account::useService()->getIdentificationByName('System');
+                }
             } else {
-                $Identification = Account::useService()->getIdentificationByName('System');
+                $Identification = Account::useService()->getIdentificationByName('Credential');
             }
         } else {
             $Identification = Account::useService()->getIdentificationByName('Credential');
+            $tblToken = null;
         }
 
         if (!$Identification) {

@@ -53,7 +53,11 @@ class Table extends Extension implements ITemplateInterface
         }
         $this->TableBody = $TableBody;
         if (!is_array($TableFoot)) {
-            $TableFoot = array($TableFoot);
+            if($TableFoot === null) {
+                $TableFoot = array();
+            } else {
+                $TableFoot = array($TableFoot);
+            }
         }
         $this->TableFoot = $TableFoot;
         if ($Interactive) {

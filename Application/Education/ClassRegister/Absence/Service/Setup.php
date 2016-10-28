@@ -10,7 +10,9 @@ namespace SPHERE\Application\Education\ClassRegister\Absence\Service;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
+use SPHERE\Application\Education\ClassRegister\Absence\Service\Entity\TblAbsence;
 use SPHERE\System\Database\Binding\AbstractSetup;
+use SPHERE\System\Database\Fitting\View;
 
 /**
  * Class Setup
@@ -39,6 +41,11 @@ class Setup extends AbstractSetup
          */
         $this->getConnection()->addProtocol(__CLASS__);
         $this->getConnection()->setMigration($Schema, $Simulate);
+        $this->getConnection()->createView(
+            ( new View($this->getConnection(), 'viewAbsence') )
+                ->addLink(new TblAbsence(), 'Id')
+        );
+
         return $this->getConnection()->getProtocol($Simulate);
     }
 

@@ -194,6 +194,10 @@ class Script extends Extension
             'Highlight.js', '/Library/Highlight.js/8.8.0/highlight.pack.js',
             "'undefined' !== typeof hljs"
         );
+        $this->setSource(
+            'Bootbox.js', '/Library/Bootbox.js/4.4.0/js/bootbox.min.js',
+            "'undefined' !== typeof bootbox"
+        );
 
         /**
          * Module (jQuery plugin)
@@ -201,6 +205,7 @@ class Script extends Extension
 
         $this->setModule(
             'ModAlways', array(/*'Highlight.js',*/
+                'Bootbox.js',
                 'List.Js',
                 'Bootstrap.Notify',
                 'Bootstrap',

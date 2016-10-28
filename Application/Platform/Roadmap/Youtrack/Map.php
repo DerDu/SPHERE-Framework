@@ -79,6 +79,9 @@ class Map extends Extension
     {
 
         Utility::orderIssuesBy($this->Sprints, 'getVersion() ASC');
+        if( count( $this->Sprints ) > 4 ) {
+            return array_slice($this->Sprints, -5);
+        }
         return $this->Sprints;
     }
 

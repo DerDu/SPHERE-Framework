@@ -27,27 +27,8 @@ class CosJPri extends Certificate
     public function buildCertificate($IsSample = true)
     {
 
-//        $Header = (new Slice())
-//            ->addSection((new Section())
-//                ->addElementColumn((new Element())
-//                    ->setContent('Coswig Jahreszeugnis (Primarstufe).pdf')
-//                    ->styleTextSize('12px')
-//                    ->styleTextColor('#CCC')
-//                    ->styleAlignCenter()
-//                    , '25%')
-//                ->addElementColumn((new Element\Sample())
-//                    ->setContent('MUSTER')
-//                    ->styleTextSize('30px')
-//                    , '50%')
-//                ->addElementColumn((new Element())
-//                    , '25%')
-//            );
-
         return (new Frame())->addDocument((new Document())
             ->addPage((new Page())
-//                ->addSlice(
-//                    $IsSample ? $Header : new Slice()
-//                )
                 ->addSlice((new Slice())
                     ->addSection((new Section())
                         ->addElementColumn(

@@ -5,6 +5,8 @@ use SPHERE\Application\Contact\Mail\Service\Entity\TblMail;
 use SPHERE\Application\Contact\Mail\Service\Entity\TblToCompany;
 use SPHERE\Application\Contact\Mail\Service\Entity\TblToPerson;
 use SPHERE\Application\Contact\Mail\Service\Entity\TblType;
+use SPHERE\Application\Contact\Mail\Service\Entity\ViewMailToCompany;
+use SPHERE\Application\Contact\Mail\Service\Entity\ViewMailToPerson;
 use SPHERE\Application\Corporation\Company\Service\Entity\TblCompany;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
@@ -17,6 +19,28 @@ use SPHERE\System\Database\Binding\AbstractData;
  */
 class Data extends AbstractData
 {
+
+    /**
+     * @return false|ViewMailToPerson[]
+     */
+    public function viewMailToPerson()
+    {
+
+        return $this->getCachedEntityList(
+            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewMailToPerson'
+        );
+    }
+
+    /**
+     * @return false|ViewMailToCompany[]
+     */
+    public function viewMailToCompany()
+    {
+
+        return $this->getCachedEntityList(
+            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewMailToCompany'
+        );
+    }
 
     public function setupDatabaseContent()
     {

@@ -3,7 +3,11 @@ namespace SPHERE\Application\People\Meta\Prospect\Service;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
+use SPHERE\Application\People\Meta\Prospect\Service\Entity\TblProspect;
+use SPHERE\Application\People\Meta\Prospect\Service\Entity\TblProspectAppointment;
+use SPHERE\Application\People\Meta\Prospect\Service\Entity\TblProspectReservation;
 use SPHERE\System\Database\Binding\AbstractSetup;
+use SPHERE\System\Database\Fitting\View;
 
 /**
  * Class Setup
@@ -33,6 +37,12 @@ class Setup extends AbstractSetup
          */
         $this->getConnection()->addProtocol(__CLASS__);
         $this->getConnection()->setMigration($Schema, $Simulate);
+        $this->getConnection()->createView(
+            ( new View($this->getConnection(), 'viewPeopleMetaProspect') )
+                ->addLink(new TblProspect(), 'tblProspectAppointment', new TblProspectAppointment(), 'Id')
+                ->addLink(new TblProspect(), 'tblProspectReservation', new TblProspectReservation(), 'Id')
+        );
+
         return $this->getConnection()->getProtocol($Simulate);
     }
 

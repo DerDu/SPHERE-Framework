@@ -4,6 +4,7 @@ namespace SPHERE\Application\People\Meta\Common;
 use SPHERE\Application\People\Meta\Common\Service\Data;
 use SPHERE\Application\People\Meta\Common\Service\Entity\TblCommon;
 use SPHERE\Application\People\Meta\Common\Service\Entity\TblCommonBirthDates;
+use SPHERE\Application\People\Meta\Common\Service\Entity\TblCommonGender;
 use SPHERE\Application\People\Meta\Common\Service\Entity\TblCommonInformation;
 use SPHERE\Application\People\Meta\Common\Service\Entity\ViewPeopleMetaCommon;
 use SPHERE\Application\People\Meta\Common\Service\Setup;
@@ -44,6 +45,16 @@ class Service extends AbstractService
             (new Data($this->getBinding()))->setupDatabaseContent();
         }
         return $Protocol;
+    }
+
+    /**
+     * @param string $Name
+     *
+     * @return TblCommonGender
+     */
+    public function createCommonGender($Name)
+    {
+        return (new Data($this->getBinding()))->createCommonGender($Name);
     }
 
     /**
@@ -175,6 +186,26 @@ class Service extends AbstractService
     /**
      * @param int $Id
      *
+     * @return bool|TblCommonGender
+     */
+    public function getCommonGenderById($Id)
+    {
+
+        return (new Data($this->getBinding()))->getCommonGenderById($Id);
+    }
+
+    /**
+     * @return bool|TblCommonGender[]
+     */
+    public function getCommonGenderAll()
+    {
+
+        return (new Data($this->getBinding()))->getCommonGenderAll();
+    }
+
+    /**
+     * @param int $Id
+     *
      * @return bool|TblCommonBirthDates
      */
     public function getCommonBirthDatesById($Id)
@@ -214,16 +245,30 @@ class Service extends AbstractService
 
     /**
      * @param TblCommon $tblCommon
-     * @param $Remark
+     * @param string $Remark
      *
      * @return TblCommon
      */
     public function updateCommon(TblCommon $tblCommon, $Remark){
 
-        return (new Data($this->getBinding()))->updateCommon(
-            $tblCommon,
-            $Remark
-        );
+        return (new Data($this->getBinding()))->updateCommon( $tblCommon, $Remark );
+    }
+
+    /**
+     * @param TblCommonBirthDates $tblCommonBirthDates
+     * @param string              $Birthday
+     * @param string              $Birthplace
+     * @param int                 $Gender
+     *
+     * @return TblCommonBirthDates
+     */
+    public function updateCommonBirthDates(
+        TblCommonBirthDates $tblCommonBirthDates,
+        $Birthday,
+        $Birthplace,
+        $Gender
+    ) {
+        return (new Data($this->getBinding()))->updateCommonBirthDates( $tblCommonBirthDates, $Birthday, $Birthplace, $Gender );
     }
 
     /**

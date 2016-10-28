@@ -3,8 +3,10 @@ namespace SPHERE\Application\People\Meta\Common\Service;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
+use SPHERE\Application\People\Meta\Common\Common;
 use SPHERE\Application\People\Meta\Common\Service\Entity\TblCommon;
 use SPHERE\Application\People\Meta\Common\Service\Entity\TblCommonBirthDates;
+use SPHERE\Application\People\Meta\Common\Service\Entity\TblCommonGender;
 use SPHERE\Application\People\Meta\Common\Service\Entity\TblCommonInformation;
 use SPHERE\System\Database\Binding\AbstractSetup;
 use SPHERE\System\Database\Fitting\Element;
@@ -30,7 +32,8 @@ class Setup extends AbstractSetup
          * Table
          */
         $Schema = clone $this->getConnection()->getSchema();
-        $tblCommonBirthDates = $this->setTableCommonBirthDates($Schema);
+        $tblCommonGender = $this->setTableCommonGender($Schema);
+        $tblCommonBirthDates = $this->setTableCommonBirthDates($Schema, $tblCommonGender);
         $tblCommonInformation = $this->setTableCommonInformation($Schema);
         $this->setTableCommon($Schema, $tblCommonBirthDates, $tblCommonInformation);
         /**
@@ -42,30 +45,77 @@ class Setup extends AbstractSetup
         $this->getConnection()->createView(
             (new View($this->getConnection(), 'viewPeopleMetaCommon'))
                 ->addLink(new TblCommon(), 'tblCommonBirthDates', new TblCommonBirthDates(), 'Id')
+                ->addLink(new TblCommonBirthDates(), 'tblCommonGender', new TblCommonGender(), 'Id')
                 ->addLink(new TblCommon(), 'tblCommonInformation', new TblCommonInformation(), 'Id')
         );
-        
+
+        /**
+         * Upgrade Column Gender
+         */
+        if( !$Simulate ) {
+            if (
+                $this->hasColumn($tblCommonBirthDates, 'Gender')
+                && $this->hasColumn($tblCommonBirthDates, 'tblCommonGender')
+            ) {
+                Common::useService()->createCommonGender( 'Männlich' );
+                Common::useService()->createCommonGender( 'Weiblich' );
+                $tblCommonBirthDatesAll = Common::useService()->getCommonBirthDatesAll();
+                if ($tblCommonBirthDatesAll) {
+                    foreach ($tblCommonBirthDatesAll as $tblCommonBirthDates) {
+                        Common::useService()->updateCommonBirthDates(
+                            $tblCommonBirthDates,
+                            $tblCommonBirthDates->getBirthday(),
+                            $tblCommonBirthDates->getBirthplace(),
+                            $tblCommonBirthDates->getGender()
+                        );
+                    }
+                }
+            }
+        }
+
         return $this->getConnection()->getProtocol($Simulate);
     }
 
     /**
      * @param Schema $Schema
+     * @return Table
+     */
+    private function setTableCommonGender(Schema &$Schema)
+    {
+
+        $Table = $this->createTable($Schema, 'tblCommonGender');
+
+        $this->createColumn( $Table, 'Name', self::FIELD_TYPE_STRING );
+
+        return $Table;
+    }
+
+    /**
+     * @param Schema $Schema
+     * @param Table $tblCommonGender
      *
      * @return Table
      */
-    private function setTableCommonBirthDates(Schema &$Schema)
+    private function setTableCommonBirthDates(Schema &$Schema, Table $tblCommonGender)
     {
 
-        $Table = $this->getConnection()->createTable($Schema, 'tblCommonBirthDates');
-        if (!$this->getConnection()->hasColumn('tblCommonBirthDates', 'Birthday')) {
-            $Table->addColumn('Birthday', 'datetime', array('notnull' => false));
-        }
-        if (!$this->getConnection()->hasColumn('tblCommonBirthDates', 'Birthplace')) {
-            $Table->addColumn('Birthplace', 'string');
-        }
-        if (!$this->getConnection()->hasColumn('tblCommonBirthDates', 'Gender')) {
+        $Table = $this->createTable($Schema, 'tblCommonBirthDates');
+        $this->createColumn( $Table, 'Birthday', self::FIELD_TYPE_DATETIME, true );
+        $this->createColumn( $Table, 'Birthplace', self::FIELD_TYPE_STRING );
+
+        if (!$this->getConnection()->hasColumn('tblCommonBirthDates', 'Gender')) {  // ToDO can't remove now (View problem)
             $Table->addColumn('Gender', 'smallint');
         }
+
+        if( $this->hasColumn( $Table, 'Gender' ) && !$this->hasColumn( $Table, $tblCommonGender->getName() ) ) {
+            $this->createColumn($Table, 'Gender', self::FIELD_TYPE_INTEGER, true);
+        } else {
+            if ($this->hasColumn($Table, 'Gender') && $this->hasColumn($Table, $tblCommonGender->getName())) {
+                $this->getConnection()->deadProtocol('tblCommonBirthDates.Gender');
+            }
+        }
+        $this->createForeignKey( $Table, $tblCommonGender, true );
+
         return $Table;
     }
 

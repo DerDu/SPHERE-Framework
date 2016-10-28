@@ -9,6 +9,7 @@
 namespace SPHERE\Application\Education\ClassRegister\Absence\Service;
 
 use SPHERE\Application\Education\ClassRegister\Absence\Service\Entity\TblAbsence;
+use SPHERE\Application\Education\ClassRegister\Absence\Service\Entity\ViewAbsence;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
@@ -21,6 +22,17 @@ use SPHERE\System\Database\Binding\AbstractData;
  */
 class Data extends AbstractData
 {
+
+    /**
+     * @return false|ViewAbsence[]
+     */
+    public function viewAbsence()
+    {
+
+        return $this->getCachedEntityList(
+            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewAbsence'
+        );
+    }
 
     public function setupDatabaseContent()
     {

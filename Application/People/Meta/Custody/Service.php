@@ -3,6 +3,7 @@ namespace SPHERE\Application\People\Meta\Custody;
 
 use SPHERE\Application\People\Meta\Custody\Service\Data;
 use SPHERE\Application\People\Meta\Custody\Service\Entity\TblCustody;
+use SPHERE\Application\People\Meta\Custody\Service\Entity\ViewPeopleMetaCustody;
 use SPHERE\Application\People\Meta\Custody\Service\Setup;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Common\Frontend\Form\IFormInterface;
@@ -17,6 +18,15 @@ use SPHERE\System\Database\Binding\AbstractService;
  */
 class Service extends AbstractService
 {
+
+    /**
+     * @return false|ViewPeopleMetaCustody[]
+     */
+    public function viewPeopleMetaCustody()
+    {
+
+        return ( new Data($this->getBinding()) )->viewPeopleMetaCustody();
+    }
 
     /**
      * @param bool $doSimulation

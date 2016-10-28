@@ -9,6 +9,7 @@
 namespace SPHERE\Application\People\Meta\Teacher\Service;
 
 use SPHERE\Application\People\Meta\Teacher\Service\Entity\TblTeacher;
+use SPHERE\Application\People\Meta\Teacher\Service\Entity\ViewPeopleMetaTeacher;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
 use SPHERE\System\Database\Binding\AbstractData;
@@ -19,6 +20,17 @@ use SPHERE\System\Database\Binding\AbstractData;
  */
 class Data  extends AbstractData
 {
+
+    /**
+     * @return false|ViewPeopleMetaTeacher[]
+     */
+    public function viewPeopleMetaTeacher()
+    {
+
+        return $this->getCachedEntityList(
+            __METHOD__, $this->getConnection()->getEntityManager(), 'ViewPeopleMetaTeacher'
+        );
+    }
 
     public function setupDatabaseContent()
     {

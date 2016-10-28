@@ -7,6 +7,7 @@ use SPHERE\Application\People\Meta\Prospect\Service\Data;
 use SPHERE\Application\People\Meta\Prospect\Service\Entity\TblProspect;
 use SPHERE\Application\People\Meta\Prospect\Service\Entity\TblProspectAppointment;
 use SPHERE\Application\People\Meta\Prospect\Service\Entity\TblProspectReservation;
+use SPHERE\Application\People\Meta\Prospect\Service\Entity\ViewPeopleMetaProspect;
 use SPHERE\Application\People\Meta\Prospect\Service\Setup;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Common\Frontend\Form\IFormInterface;
@@ -21,6 +22,15 @@ use SPHERE\System\Database\Binding\AbstractService;
  */
 class Service extends AbstractService
 {
+
+    /**
+     * @return false|ViewPeopleMetaProspect[]
+     */
+    public function viewPeopleMetaProspect()
+    {
+
+        return ( new Data($this->getBinding()) )->viewPeopleMetaProspect();
+    }
 
     /**
      * @param bool $doSimulation

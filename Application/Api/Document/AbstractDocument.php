@@ -11,6 +11,7 @@ namespace SPHERE\Application\Api\Document;
 use MOC\V\Component\Template\Component\IBridgeInterface;
 use SPHERE\Application\Contact\Mail\Mail;
 use SPHERE\Application\Contact\Phone\Phone;
+use SPHERE\Application\Contact\Phone\Service\Entity\TblToPerson;
 use SPHERE\Application\Document\Generator\Repository\Element;
 use SPHERE\Application\Document\Generator\Repository\Frame;
 use SPHERE\Application\Document\Generator\Repository\Section;
@@ -87,6 +88,7 @@ abstract class AbstractDocument
                 $this->allocatePersonParents($Data);
                 $this->allocatePersonMail($Data);
                 $this->allocatePersonParentsContact($Data);
+                $this->allocatePersonContactPhonePrivate($Data);
                 $this->allocatePersonContactPhoneEmergency($Data);
                 $this->allocatePersonAuthorizedPersons($Data);
             } else {
@@ -157,6 +159,22 @@ abstract class AbstractDocument
                 $Data['Person']['Common']['BirthDates']['Birthplace'] = $tblCommonBirthDates->getBirthplace()
                     ? $tblCommonBirthDates->getBirthplace() : '&nbsp;';
             }
+            if (( $tblCommon = Common::useService()->getCommonByPerson($this->getTblPerson()) )
+                && $tblCommonInformation = $tblCommon->getTblCommonInformation()
+            ) {
+
+                $Nationality = $tblCommonInformation->getNationality();
+                if (strlen($Nationality) >= 15) {
+                    $Nationality = substr($Nationality, 0, 14);
+                }
+                $Data['Person']['Common']['Nationality'] = $Nationality;
+
+                $Denomination = $tblCommonInformation->getDenomination();
+                if (strlen($Denomination) >= 15) {
+                    $Denomination = substr($Denomination, 0, 14);
+                }
+                $Data['Person']['Common']['Denomination'] = $Denomination;
+            }
         }
 
         return $Data;
@@ -181,15 +199,47 @@ abstract class AbstractDocument
             }
 
             if (($tblStudent = Student::useService()->getStudentByPerson($this->getTblPerson()))) {
+
+                $Data['Student']['Identifier'] = $tblStudent->getIdentifier();
+
+                if (( $tblTransferType = Student::useService()->getStudentTransferTypeByIdentifier('ENROLLMENT') )) {
+                    if (( $tblTransfer = Student::useService()->getStudentTransferByType($tblStudent,
+                        $tblTransferType) )
+                    ) {
+                        if ($tblTransfer->getServiceTblType()) {
+                            $Data['Student']['School']['Attendance']['Date'] = $tblTransfer->getTransferDate();
+                            $Year = ( new \DateTime($tblTransfer->getTransferDate()) )->format('Y');
+                            $YearShort = ( new \DateTime($tblTransfer->getTransferDate()) )->format('y');
+                            $YearString = $Year.'/'.( $YearShort + 1 );
+                            $Data['Student']['School']['Attendance']['Year'] = $YearString;
+                        }
+                    }
+                }
+                if (!isset( $Data['Student']['School']['Attendance']['Date'] )
+                    && ( $AttendanceDate = $tblStudent->getSchoolAttendanceStartDate() )
+                ) {
+                    $Data['Student']['School']['Attendance']['Date'] = $AttendanceDate;
+                    $Year = ( new \DateTime($AttendanceDate) )->format('Y');
+                    $YearShort = ( new \DateTime($AttendanceDate) )->format('y');
+                    $YearString = $Year.'/'.( $YearShort + 1 );
+                    $Data['Student']['School']['Attendance']['Year'] = $YearString;
+                }
+
                 if (($tblTransferType = Student::useService()->getStudentTransferTypeByIdentifier('PROCESS'))) {
                     if (($tblTransfer = Student::useService()->getStudentTransferByType($tblStudent,
                         $tblTransferType))
                     ) {
+                        if ($tblTransfer->getServiceTblType()) {
+                            $Data['Student']['School']['Type'] = $tblTransfer->getServiceTblType()->getName();
+                        }
+
                         if (($tblCompany = $tblTransfer->getServiceTblCompany())) {
                             if (($tblAddress = $tblCompany->fetchMainAddress())) {
                                 $Data['Document']['PlaceDate'] = $tblAddress->getTblCity()->getName() . ', '
                                     . date('d.m.Y');
                             }
+                            $Data['Student']['Company'] = $tblCompany->getName();
+                            $Data['Student']['Company2'] = $tblCompany->getExtendedName();
                         }
                     }
                 }
@@ -316,6 +366,48 @@ abstract class AbstractDocument
                             }
                         }
                     }
+                }
+            }
+        }
+
+        return $Data;
+    }
+
+    /**
+     * @param $Data
+     *
+     * @return array $Data
+     */
+    private function allocatePersonContactPhonePrivate(&$Data)
+    {
+
+        $PhoneNumber = array();
+
+        if ($this->getTblPerson()) {
+            if (( $tblPhoneList = Phone::useService()->getPhoneAllByPerson($this->getTblPerson()) )) {
+                if ($tblPhoneList) {
+                    array_walk($tblPhoneList, function (TblToPerson $tblPhoneToPerson) use (&$PhoneNumber) {
+                        if ($tblPhoneToPerson->getTblType()->getName() == 'Privat') {
+                            $Description = $tblPhoneToPerson->getTblType()->getDescription();
+                            if ($Description == 'Festnetz') {
+                                $PhoneNumber[] = $tblPhoneToPerson->getTblPhone()->getNumber();
+                            }
+                        }
+                    });
+                    array_walk($tblPhoneList, function (TblToPerson $tblPhoneToPerson) use (&$PhoneNumber) {
+                        if ($tblPhoneToPerson->getTblType()->getName() == 'Privat') {
+                            $Description = $tblPhoneToPerson->getTblType()->getDescription();
+                            if ($Description == 'Mobil') {
+                                $PhoneNumber[] = $tblPhoneToPerson->getTblPhone()->getNumber();
+                            }
+                        }
+                    });
+
+                    $PhoneString = '';
+                    if (!empty( $PhoneNumber )) {
+                        $PhoneString = $PhoneNumber[0].( isset( $PhoneNumber[1] ) ? ', '.$PhoneNumber[1] : '' );
+                    }
+                    $Data['Person']['Contact']['Phone']['Number'] = $PhoneString;
                 }
             }
         }

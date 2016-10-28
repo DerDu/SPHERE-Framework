@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
 use SPHERE\Application\Contact\Address\Address;
 use SPHERE\Application\People\Person\Service\Entity\ViewPerson;
+use SPHERE\Application\People\Relationship\Service\Entity\ViewRelationshipFromPerson;
 use SPHERE\Application\People\Relationship\Service\Entity\ViewRelationshipToPerson;
 use SPHERE\System\Database\Binding\AbstractService;
 use SPHERE\System\Database\Binding\AbstractView;
@@ -123,9 +124,8 @@ class ViewAddressToPerson extends AbstractView
     public function getViewGuiName()
     {
 
-        return 'Adressdaten (Person)';
+        return 'Kontakt Adressdaten (Person)';
     }
-
 
     /**
      * Use this method to set PropertyName to DisplayName conversions with "setNameDefinition()"
@@ -137,7 +137,7 @@ class ViewAddressToPerson extends AbstractView
 
         $this->setNameDefinition(self::TBL_TO_PERSON_REMARK, 'Adresse: Bemerkungen');
         $this->setNameDefinition(self::TBL_TYPE_NAME, 'Adresse: Adresstyp');
-        $this->setNameDefinition(self::TBL_TYPE_DESCRIPTION, 'Adresse: Adresstyp-Bemerkung');
+//        $this->setNameDefinition(self::TBL_TYPE_DESCRIPTION, 'Adresse: Adresstyp-Bemerkung');
         $this->setNameDefinition(self::TBL_ADDRESS_STREET_NAME, 'Adresse: Strasse');
         $this->setNameDefinition(self::TBL_ADDRESS_STREET_NUMBER, 'Adresse: Hausnummer');
         $this->setNameDefinition(self::TBL_ADDRESS_POST_OFFICE_BOX, 'Adresse: Postfach');
@@ -147,6 +147,12 @@ class ViewAddressToPerson extends AbstractView
         $this->setNameDefinition(self::TBL_CITY_NAME, 'Adresse: Stadt');
         $this->setNameDefinition(self::TBL_CITY_DISTRICT, 'Adresse: Ortsteil');
         $this->setNameDefinition(self::TBL_STATE_NAME, 'Adresse: Bundesland');
+    }
+
+    public function loadDisableDefinition()
+    {
+
+        $this->setDisableDefinition(self::TBL_TYPE_DESCRIPTION);
     }
 
     /**
@@ -161,6 +167,9 @@ class ViewAddressToPerson extends AbstractView
         $this->addForeignView(self::TBL_TO_PERSON_SERVICE_TBL_PERSON, new ViewRelationshipToPerson(),
             ViewRelationshipToPerson::TBL_TO_PERSON_SERVICE_TBL_PERSON_FROM
         );
+        $this->addForeignView(self::TBL_TO_PERSON_SERVICE_TBL_PERSON, new ViewRelationshipFromPerson(),
+            ViewRelationshipFromPerson::TBL_TO_PERSON_SERVICE_TBL_PERSON_TO
+        );
 
     }
 
@@ -169,6 +178,7 @@ class ViewAddressToPerson extends AbstractView
      */
     public function getViewService()
     {
+
         return Address::useService();
     }
 }

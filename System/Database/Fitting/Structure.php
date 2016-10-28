@@ -45,6 +45,9 @@ class Structure
 
         if (!$this->Database->hasView($View->getName())) {
             $this->getSchemaManager()->createView($View->getView());
+        } else {
+            $this->getSchemaManager()->dropView($View->getName());
+            $this->getSchemaManager()->createView($View->getView());
         }
     }
 
@@ -240,6 +243,14 @@ class Structure
         $this->Database->addProtocol($Item);
     }
 
+    /**
+     * @param string $Item
+     */
+    public function deadProtocol($Item)
+    {
+
+        $this->Database->deadProtocol($Item);
+    }
 
     /**
      * @param bool $Simulate

@@ -51,7 +51,7 @@ class People implements IClusterInterface
     }
 
     /**
-     * @return Panel
+     * @return Layout
      */
     public static function widgetPersonGroupList()
     {
@@ -83,7 +83,7 @@ class People implements IClusterInterface
             $tblGroupAll = array_filter($tblGroupAll);
         }
 
-        return new Panel('Personen in Gruppen', $tblGroupAll);
+        return new Layout(new LayoutGroup(new LayoutRow(new LayoutColumn(new Panel('Personen in Gruppen', $tblGroupAll), 6))));
     }
 
     /**

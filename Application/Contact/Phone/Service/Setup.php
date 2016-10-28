@@ -3,7 +3,12 @@ namespace SPHERE\Application\Contact\Phone\Service;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
+use SPHERE\Application\Contact\Phone\Service\Entity\TblPhone;
+use SPHERE\Application\Contact\Phone\Service\Entity\TblToCompany;
+use SPHERE\Application\Contact\Phone\Service\Entity\TblToPerson;
+use SPHERE\Application\Contact\Phone\Service\Entity\TblType;
 use SPHERE\System\Database\Binding\AbstractSetup;
+use SPHERE\System\Database\Fitting\View;
 
 /**
  * Class Setup
@@ -34,6 +39,19 @@ class Setup extends AbstractSetup
          */
         $this->getConnection()->addProtocol(__CLASS__);
         $this->getConnection()->setMigration($Schema, $Simulate);
+
+        $this->getConnection()->createView(
+            ( new View($this->getConnection(), 'viewPhoneToPerson') )
+                ->addLink(new TblToPerson(), 'tblType', new TblType())
+                ->addLink(new TblToPerson(), 'tblPhone', new TblPhone())
+        );
+
+        $this->getConnection()->createView(
+            ( new View($this->getConnection(), 'viewPhoneToCompany') )
+                ->addLink(new TblToCompany(), 'tblType', new TblType())
+                ->addLink(new TblToCompany(), 'tblPhone', new TblPhone())
+        );
+
         return $this->getConnection()->getProtocol($Simulate);
     }
 

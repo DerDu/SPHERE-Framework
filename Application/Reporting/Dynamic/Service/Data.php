@@ -74,6 +74,21 @@ class Data extends AbstractData
     }
 
     /**
+     * @param TblAccount $tblAccount
+     *
+     * @return false|TblAccount[]
+     */
+    public function getDynamicFilterAllByAccount(TblAccount $tblAccount)
+    {
+
+        return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblDynamicFilter',
+            array(
+                TblDynamicFilter::SERVICE_TBL_ACCOUNT => $tblAccount->getId()
+            )
+        );
+    }
+
+    /**
      * @param string     $FilterName
      * @param TblAccount $tblAccount
      *
@@ -193,6 +208,56 @@ class Data extends AbstractData
         }
 
         return $Entity;
+    }
+
+    /**
+     * @param TblDynamicFilter $tblDynamicFilter
+     * @param                  $FilterName
+     * @param                  $IsPublic
+     *
+     * @return bool
+     */
+    public function updateDynamicFilter(TblDynamicFilter $tblDynamicFilter, $FilterName, $IsPublic)
+    {
+
+        $Manager = $this->getConnection()->getEntityManager();
+
+        /** @var TblDynamicFilter $Entity */
+        $Entity = $Manager->getEntityById('TblDynamicFilter', $tblDynamicFilter->getId());
+        $Protocol = clone $Entity;
+        if (null !== $Entity) {
+            $Entity->setFilterName($FilterName);
+            $Entity->setPublic($IsPublic);
+            $Manager->saveEntity($Entity);
+            Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(),
+                $Protocol,
+                $Entity);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param TblDynamicFilter $tblDynamicFilter
+     *
+     * @return bool
+     */
+    public function destroyDynamicFilter(TblDynamicFilter $tblDynamicFilter)
+    {
+
+        if ($tblDynamicFilter !== null) {
+            $Manager = $this->getConnection()->getEntityManager();
+
+            $Entity = $Manager->getEntity('TblDynamicFilter')->findOneBy(array('Id' => $tblDynamicFilter->getId()));
+            if ($Entity) {
+                Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(),
+                    $Entity);
+                $Manager->killEntity($Entity);
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

@@ -32,6 +32,7 @@ use SPHERE\Common\Frontend\Icon\Repository\Pencil;
 use SPHERE\Common\Frontend\Icon\Repository\Person;
 use SPHERE\Common\Frontend\Icon\Repository\PersonKey;
 use SPHERE\Common\Frontend\Icon\Repository\PlusSign;
+use SPHERE\Common\Frontend\Icon\Repository\Publicly;
 use SPHERE\Common\Frontend\Icon\Repository\Question;
 use SPHERE\Common\Frontend\Icon\Repository\Remove;
 use SPHERE\Common\Frontend\Icon\Repository\Repeat;
@@ -56,6 +57,7 @@ use SPHERE\Common\Frontend\Text\Repository\Warning;
 use SPHERE\Common\Window\Redirect;
 use SPHERE\Common\Window\Stage;
 use SPHERE\System\Extension\Extension;
+use SPHERE\System\Extension\Repository\Sorter\StringGermanOrderSorter;
 
 /**
  * Class Frontend
@@ -246,6 +248,7 @@ class Frontend extends Extension implements IFrontendInterface
 
         // Role
         $tblRoleAll = Access::useService()->getRoleAll();
+        $tblRoleAll = $this->getSorter($tblRoleAll)->sortObjectBy( TblRole::ATTR_NAME, new StringGermanOrderSorter() );
         if ($tblRoleAll) {
             array_walk($tblRoleAll, function (TblRole &$tblRole) {
 
@@ -253,7 +256,7 @@ class Frontend extends Extension implements IFrontendInterface
                     $tblRole = false;
                 } else {
                     $tblRole = new CheckBox('Account[Role]['.$tblRole->getId().']',
-                        ( $tblRole->isSecure() ? new YubiKey().' ' : '' ).$tblRole->getName(),
+                        ( $tblRole->isSecure() ? new YubiKey() : new Publicly() ).' '.$tblRole->getName(),
                         $tblRole->getId()
                     );
                 }

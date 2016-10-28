@@ -3,8 +3,10 @@ namespace SPHERE\Application\Education\Lesson\Subject\Service;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
+use SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject;
 use SPHERE\System\Database\Binding\AbstractSetup;
 use SPHERE\System\Database\Fitting\Element;
+use SPHERE\System\Database\Fitting\View;
 
 /**
  * Class Setup
@@ -33,6 +35,11 @@ class Setup extends AbstractSetup
          */
         $this->getConnection()->addProtocol(__CLASS__);
         $this->getConnection()->setMigration($Schema, $Simulate);
+        $this->getConnection()->createView(
+            ( new View($this->getConnection(), 'viewSubject') )
+                ->addLink(new TblSubject(), 'Id')
+        );
+
         return $this->getConnection()->getProtocol($Simulate);
     }
 
