@@ -3,6 +3,7 @@ namespace SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service;
 
 use SPHERE\Application\People\Person\Person;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
+use SPHERE\Application\Platform\Gatekeeper\Authorization\Access\Access;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Access\Service\Entity\TblRole;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\TblAccount;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\TblAuthentication;
@@ -11,6 +12,7 @@ use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\TblSession;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\TblSetting;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\TblUser;
+use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Consumer;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Service\Entity\TblConsumer;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Token\Service\Entity\TblToken;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
@@ -36,6 +38,7 @@ class Data extends AbstractData
         $this->createIdentification('System', 'Benutzername / Passwort & Hardware-Schlüssel', true);
         $this->createIdentification('Token', 'Benutzername / Passwort & Hardware-Schlüssel', true);
         $this->createIdentification('Credential', 'Benutzername / Passwort', true);
+        $this->createIdentification('Saml', 'SAML Authentifizierung', false);
 
 //        $tblConsumer = Consumer::useService()->getConsumerById(1);
 //        // Choose the right Identification for Authentication

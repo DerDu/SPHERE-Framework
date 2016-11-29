@@ -108,7 +108,7 @@ class Service extends AbstractService
      * @return IFormInterface|Redirect
      */
     public function createConsumer(
-        IFormInterface &$Form,
+        IFormInterface $Form,
         $ConsumerAcronym,
         $ConsumerName
     ) {
