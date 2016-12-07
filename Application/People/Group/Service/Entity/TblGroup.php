@@ -19,7 +19,14 @@ class TblGroup extends Element
     const ATTR_IS_LOCKED = 'IsLocked';
     const ATTR_META_TABLE = 'MetaTable';
 
+    const META_TABLE_COMMON = 'COMMON';
+    const META_TABLE_PROSPECT = 'PROSPECT';
+    const META_TABLE_STUDENT = 'STUDENT';
+    const META_TABLE_CUSTODY = 'CUSTODY';
+    const META_TABLE_STAFF = 'STAFF';
+    const META_TABLE_TEACHER = 'TEACHER';
     const META_TABLE_CLUB = 'CLUB';
+    const META_TABLE_COMPANY_CONTACT = 'COMPANY_CONTACT';
     /**
      * @Column(type="string")
      */

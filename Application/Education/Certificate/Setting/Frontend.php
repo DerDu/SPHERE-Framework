@@ -171,7 +171,7 @@ class Frontend extends Extension implements IFrontendInterface
             ),
             new CheckBox($FieldName.'['.$LaneIndex.']['.$LaneRanking.'][IsEssential]',
                 'Muss immer ausgewiesen werden', 1),
-            new SelectBox($FieldName.'['.$LaneIndex.']['.$LaneRanking.'][Liberation]', 'Befreihung',
+            new SelectBox($FieldName.'['.$LaneIndex.']['.$LaneRanking.'][Liberation]', 'Befreiung',
                 array('{{ Name }}' => $tblStudentLiberationCategoryAll)
             ),
         ));

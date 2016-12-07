@@ -179,48 +179,48 @@ class Frontend extends Extension implements IFrontendInterface
             }
 
             // Klassenlehrer
-            $tblDivisionTeacherAllByTeacher = Division::useService()->getDivisionTeacherAllByTeacher($tblPerson);
-            if ($tblDivisionTeacherAllByTeacher) {
-                foreach ($tblDivisionTeacherAllByTeacher as $tblDivisionTeacher) {
-                    if ($tblDivisionTeacher->getTblDivision()) {
-                        $tblDivisionSubjectAllByDivision
-                            = Division::useService()->getDivisionSubjectByDivision($tblDivisionTeacher->getTblDivision());
-                        if ($tblDivisionSubjectAllByDivision) {
-                            foreach ($tblDivisionSubjectAllByDivision as $tblDivisionSubject) {
-                                if ($tblDivisionSubject->getTblSubjectGroup()) {
-                                    if ($tblDivisionSubject->getServiceTblSubject()) {
-                                        $divisionSubjectList[$tblDivisionSubject->getTblDivision()->getId()]
-                                        [$tblDivisionSubject->getServiceTblSubject()->getId()]
-                                        [$tblDivisionSubject->getTblSubjectGroup()->getId()]
-                                            = $tblDivisionSubject->getId();
-                                    }
-                                } else {
-                                    if ($tblDivisionSubject->getServiceTblSubject()) {
-                                        $tblDivisionSubjectAllWhereSubjectGroupByDivisionAndSubject
-                                            = Division::useService()->getDivisionSubjectAllWhereSubjectGroupByDivisionAndSubject(
-                                            $tblDivisionSubject->getTblDivision(),
-                                            $tblDivisionSubject->getServiceTblSubject()
-                                        );
-                                        if ($tblDivisionSubjectAllWhereSubjectGroupByDivisionAndSubject) {
-                                            foreach ($tblDivisionSubjectAllWhereSubjectGroupByDivisionAndSubject as $item) {
-                                                $divisionSubjectList[$tblDivisionSubject->getTblDivision()->getId()]
-                                                [$tblDivisionSubject->getServiceTblSubject()->getId()]
-                                                [$item->getTblSubjectGroup()->getId()]
-                                                    = $item->getId();
-                                            }
-                                        } else {
-                                            $divisionSubjectList[$tblDivisionSubject->getTblDivision()->getId()]
-                                            [$tblDivisionSubject->getServiceTblSubject()->getId()]
-                                                = $tblDivisionSubject->getId();
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                    }
-                }
-            }
+//            $tblDivisionTeacherAllByTeacher = Division::useService()->getDivisionTeacherAllByTeacher($tblPerson);
+//            if ($tblDivisionTeacherAllByTeacher) {
+//                foreach ($tblDivisionTeacherAllByTeacher as $tblDivisionTeacher) {
+//                    if ($tblDivisionTeacher->getTblDivision()) {
+//                        $tblDivisionSubjectAllByDivision
+//                            = Division::useService()->getDivisionSubjectByDivision($tblDivisionTeacher->getTblDivision());
+//                        if ($tblDivisionSubjectAllByDivision) {
+//                            foreach ($tblDivisionSubjectAllByDivision as $tblDivisionSubject) {
+//                                if ($tblDivisionSubject->getTblSubjectGroup()) {
+//                                    if ($tblDivisionSubject->getServiceTblSubject()) {
+//                                        $divisionSubjectList[$tblDivisionSubject->getTblDivision()->getId()]
+//                                        [$tblDivisionSubject->getServiceTblSubject()->getId()]
+//                                        [$tblDivisionSubject->getTblSubjectGroup()->getId()]
+//                                            = $tblDivisionSubject->getId();
+//                                    }
+//                                } else {
+//                                    if ($tblDivisionSubject->getServiceTblSubject()) {
+//                                        $tblDivisionSubjectAllWhereSubjectGroupByDivisionAndSubject
+//                                            = Division::useService()->getDivisionSubjectAllWhereSubjectGroupByDivisionAndSubject(
+//                                            $tblDivisionSubject->getTblDivision(),
+//                                            $tblDivisionSubject->getServiceTblSubject()
+//                                        );
+//                                        if ($tblDivisionSubjectAllWhereSubjectGroupByDivisionAndSubject) {
+//                                            foreach ($tblDivisionSubjectAllWhereSubjectGroupByDivisionAndSubject as $item) {
+//                                                $divisionSubjectList[$tblDivisionSubject->getTblDivision()->getId()]
+//                                                [$tblDivisionSubject->getServiceTblSubject()->getId()]
+//                                                [$item->getTblSubjectGroup()->getId()]
+//                                                    = $item->getId();
+//                                            }
+//                                        } else {
+//                                            $divisionSubjectList[$tblDivisionSubject->getTblDivision()->getId()]
+//                                            [$tblDivisionSubject->getServiceTblSubject()->getId()]
+//                                                = $tblDivisionSubject->getId();
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
+//
+//                    }
+//                }
+//            }
         }
 
         if (!empty($divisionSubjectList)) {
@@ -531,7 +531,7 @@ class Frontend extends Extension implements IFrontendInterface
                             '/Education/Graduation/Evaluation/Task/Teacher/Grades',
                             new Equalizer(),
                             array('Id' => $tblTask->getId()),
-                            'Zensuren ansehen')
+                            'Zensurenübersicht')
                         )
                 );
             }
@@ -629,13 +629,13 @@ class Frontend extends Extension implements IFrontendInterface
                             '/Education/Graduation/Evaluation/Task/Headmaster/Division',
                             new Listing(),
                             array('Id' => $tblTask->getId()),
-                            'Klassen auswählen')
+                            'Klassen zuordnen')
                         )
                         . (new Standard('',
                             '/Education/Graduation/Evaluation/Task/Headmaster/Grades',
                             new Equalizer(),
                             array('Id' => $tblTask->getId()),
-                            'Zensuren ansehen')
+                            'Zensurenübersicht')
                         ),
                 );
             }
@@ -929,6 +929,7 @@ class Frontend extends Extension implements IFrontendInterface
             )
                 ->appendFormButton(new Primary('Speichern', new Save()))
                 ->setConfirm('Eventuelle Änderungen wurden noch nicht gespeichert');
+            $Stage->addButton( new Standard( 'Leistungsüberprüfung anlegen', '', new PlusSign(), array(), 'zum Formular springen', $Form->getHash() ) );
         } else {
             $Form = false;
         }
@@ -1061,7 +1062,7 @@ class Frontend extends Extension implements IFrontendInterface
                                 : new Danger('Schuljahr nicht gefunden', new Ban())
                         ))
                     ))
-                ), new Title(new PlusSign() . ' Hinzufügen')),
+                ), new Title(new PlusSign() . ' Leistungsüberprüfung anlegen')),
                 new LayoutGroup(
                     $preview
                     , new Title(new Clock() . ' Planung'))

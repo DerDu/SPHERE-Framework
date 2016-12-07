@@ -5,6 +5,7 @@ use MOC\V\Component\Document\Component\Bridge\Repository\PhpExcel;
 use MOC\V\Component\Document\Component\Parameter\Repository\FileParameter;
 use MOC\V\Component\Document\Document;
 use SPHERE\Application\Contact\Address\Address;
+use SPHERE\Application\Contact\Address\Service\Entity\TblToCompany;
 use SPHERE\Application\Contact\Address\Service\Entity\TblToPerson;
 use SPHERE\Application\Corporation\Company\Service\Entity\ViewCompany;
 use SPHERE\Application\Corporation\Group\Service\Entity\ViewCompanyGroupMember;
@@ -28,10 +29,6 @@ use SPHERE\Application\Reporting\SerialLetter\Service\Entity\TblSerialLetter;
 use SPHERE\Application\Reporting\SerialLetter\Service\Entity\TblSerialPerson;
 use SPHERE\Application\Reporting\SerialLetter\Service\Setup;
 use SPHERE\Common\Frontend\Form\IFormInterface;
-use SPHERE\Common\Frontend\Form\Structure\FormColumn;
-use SPHERE\Common\Frontend\Form\Structure\FormGroup;
-use SPHERE\Common\Frontend\Form\Structure\FormRow;
-use SPHERE\Common\Frontend\Message\Repository\Danger;
 use SPHERE\Common\Frontend\Message\Repository\Success;
 use SPHERE\Common\Frontend\Message\Repository\Warning;
 use SPHERE\Common\Window\Redirect;
@@ -160,29 +157,43 @@ class Service extends AbstractService
 
     /**
      * @param TblSerialLetter $tblSerialLetter
+     * @param bool            $isCompany
      *
      * @return int
      */
-    public function getSerialLetterCount(TblSerialLetter $tblSerialLetter)
+    public function getSerialLetterCount(TblSerialLetter $tblSerialLetter, $isCompany = false)
     {
 
         $result = 0;
         $tblSerialLetterPersonList = SerialLetter::useService()->getPersonAllBySerialLetter($tblSerialLetter);
 
-        if ($tblSerialLetterPersonList) {
-            foreach ($tblSerialLetterPersonList as $tblPerson) {
-                $tblAddressPersonList = SerialLetter::useService()->getAddressPersonAllByPerson($tblSerialLetter, $tblPerson);
-                if ($tblAddressPersonList) {
-                    $Address = array();
-                    foreach ($tblAddressPersonList as $tblAddressPerson) {
-                        $tblToPerson = $tblAddressPerson->getServiceTblToPerson();
-                        if ($tblToPerson) {
-                            $tblAddress = $tblToPerson->getTblAddress();
-                            if ($tblAddress) {
-                                if (!in_array($tblAddress->getId(), $Address)) {
-                                    $result++;
+        if ($isCompany) {
+//            return ( new Data($this->getBinding()) )->getSerialLetterCount($tblSerialLetter);
+
+            if ($tblSerialLetterPersonList) {
+                foreach ($tblSerialLetterPersonList as $tblPerson) {
+                    $tblAddressPersonList = SerialLetter::useService()->getAddressPersonAllByPerson($tblSerialLetter, $tblPerson);
+                    if ($tblAddressPersonList) {
+                        $result = $result + count($tblAddressPersonList);
+                    }
+                }
+            }
+        } else {
+            if ($tblSerialLetterPersonList) {
+                foreach ($tblSerialLetterPersonList as $tblPerson) {
+                    $tblAddressPersonList = SerialLetter::useService()->getAddressPersonAllByPerson($tblSerialLetter, $tblPerson);
+                    if ($tblAddressPersonList) {
+                        $Address = array();
+                        foreach ($tblAddressPersonList as $tblAddressPerson) {
+                            $tblToPerson = $tblAddressPerson->getServiceTblToPerson();
+                            if ($tblToPerson) {
+                                $tblAddress = $tblToPerson->getTblAddress();
+                                if ($tblAddress) {
+                                    if (!in_array($tblAddress->getId(), $Address)) {
+                                        $result++;
+                                    }
+                                    $Address[] = $tblAddress->getId();
                                 }
-                                $Address[] = $tblAddress->getId();
                             }
                         }
                     }
@@ -191,7 +202,6 @@ class Service extends AbstractService
         }
 
         return $result;
-//        return ( new Data($this->getBinding()) )->getSerialLetterCount($tblSerialLetter);
     }
 
     /**
@@ -239,6 +249,7 @@ class Service extends AbstractService
         TblPerson $tblPerson,
         $FirstGender = null
     ) {
+//        $FirstGender = 'F';
 
         $tblAddressPersonList = ( new Data($this->getBinding()) )->getAddressPersonAllBySerialLetterAndPerson($tblSerialLetter, $tblPerson);
 
@@ -280,7 +291,7 @@ class Service extends AbstractService
         } else {
             $AddressPersonList = $tblAddressPersonList;
         }
-        return ( !empty( $AddressPersonList ) ? $AddressPersonList : false );
+        return ( !empty($AddressPersonList) ? $AddressPersonList : false );
     }
 
     /**
@@ -329,7 +340,7 @@ class Service extends AbstractService
         }
 
         $Error = false;
-        if (isset( $SerialLetter['Name'] ) && empty( $SerialLetter['Name'] )) {
+        if (isset($SerialLetter['Name']) && empty($SerialLetter['Name'])) {
             $Stage->setError('SerialLetter[Name]', 'Bitte geben Sie einen Namen an');
             $Error = true;
         } else {
@@ -338,6 +349,22 @@ class Service extends AbstractService
                 $Error = true;
             }
         }
+        if ($FilterCategory != null) {
+            $tblFilterCategory = SerialLetter::useService()->getFilterCategoryById($FilterCategory);
+            if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_PERSON_GROUP) {
+                if (isset($FilterGroup['TblGroup_Id']) && $FilterGroup['TblGroup_Id'] == 0) {
+                    $Stage->setError('FilterGroup[TblGroup_Id]', 'Bitte geben Sie eine Gruppe an.');
+                    $Error = true;
+                }
+            }
+            if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_COMPANY_GROUP) {
+                if (isset($FilterGroup['TblGroup_Id']) && $FilterGroup['TblGroup_Id'] == 0) {
+                    $Stage->setError('FilterGroup[TblGroup_Id]', 'Bitte geben Sie eine Gruppe an.');
+                    $Error = true;
+                }
+            }
+        }
+
 
         if (!$Error) {
             $TabActive = 'STATIC';
@@ -356,68 +383,68 @@ class Service extends AbstractService
 
                 if ($tblFilterCategory) {
                     // save Group Field
-                    if (isset( $FilterGroup ) && !empty( $FilterGroup )) {
+                    if (isset($FilterGroup) && !empty($FilterGroup)) {
                         foreach ($FilterGroup as $FieldName => $Value) {
                             ( new Data($this->getBinding()) )->createFilterField($tblSerialLetter, $tblFilterCategory, $FieldName, $Value);
                         }
                     }
                     // save Person Field
-                    if (isset( $FilterPerson ) && !empty( $FilterPerson )) {
+                    if (isset($FilterPerson) && !empty($FilterPerson)) {
                         foreach ($FilterPerson as $FieldName => $Value) {
                             ( new Data($this->getBinding()) )->createFilterField($tblSerialLetter, $tblFilterCategory, $FieldName, $Value);
                         }
                     }
                     // save Student Field
-                    if (isset( $FilterStudent ) && !empty( $FilterStudent )) {
+                    if (isset($FilterStudent) && !empty($FilterStudent)) {
                         foreach ($FilterStudent as $FieldName => $Value) {
                             ( new Data($this->getBinding()) )->createFilterField($tblSerialLetter, $tblFilterCategory, $FieldName, $Value);
                         }
                     }
                     // save Year Field
-                    if (isset( $FilterYear ) && !empty( $FilterYear )) {
+                    if (isset($FilterYear) && !empty($FilterYear)) {
                         foreach ($FilterYear as $FieldName => $Value) {
                             ( new Data($this->getBinding()) )->createFilterField($tblSerialLetter, $tblFilterCategory, $FieldName, $Value);
                         }
                     }
                     // save Prospect Field
-                    if (isset( $FilterProspect ) && !empty( $FilterProspect )) {
+                    if (isset($FilterProspect) && !empty($FilterProspect)) {
                         foreach ($FilterProspect as $FieldName => $Value) {
                             ( new Data($this->getBinding()) )->createFilterField($tblSerialLetter, $tblFilterCategory, $FieldName, $Value);
                         }
                     }
                     // save Prospect Field
-                    if (isset( $FilterCompany ) && !empty( $FilterCompany )) {
+                    if (isset($FilterCompany) && !empty($FilterCompany)) {
                         foreach ($FilterCompany as $FieldName => $Value) {
                             ( new Data($this->getBinding()) )->createFilterField($tblSerialLetter, $tblFilterCategory, $FieldName, $Value);
                         }
                     }
                     // save Prospect Field
-                    if (isset( $FilterRelationship ) && !empty( $FilterRelationship )) {
+                    if (isset($FilterRelationship) && !empty($FilterRelationship)) {
                         foreach ($FilterRelationship as $FieldName => $Value) {
                             ( new Data($this->getBinding()) )->createFilterField($tblSerialLetter, $tblFilterCategory, $FieldName, $Value);
                         }
                     }
 
                     if ($tblFilterCategory) {
-                        if ($tblFilterCategory->getName() === 'Personengruppe') {
+                        if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_PERSON_GROUP) {
                             $Result = SerialLetter::useService()->getGroupFilterResultListBySerialLetter($tblSerialLetter);
                             $tblPersonSearchList = SerialLetter::useService()->getPersonListByResult($tblSerialLetter, $Result);
                             SerialLetter::useService()->updateDynamicSerialPerson($tblSerialLetter, $tblPersonSearchList);
                             $TabActive = 'PERSONGROUP';
                         }
-                        if ($tblFilterCategory->getName() === 'Schüler') {
+                        if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_PERSON_GROUP_STUDENT) {
                             $Result = SerialLetter::useService()->getStudentFilterResultListBySerialLetter($tblSerialLetter);
                             $tblPersonSearchList = SerialLetter::useService()->getPersonListByResult($tblSerialLetter, $Result);
                             SerialLetter::useService()->updateDynamicSerialPerson($tblSerialLetter, $tblPersonSearchList);
                             $TabActive = 'STUDENT';
                         }
-                        if ($tblFilterCategory->getName() === 'Interessenten') {
+                        if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_PERSON_GROUP_PROSPECT) {
                             $Result = SerialLetter::useService()->getProspectFilterResultListBySerialLetter($tblSerialLetter);
                             $tblPersonSearchList = SerialLetter::useService()->getPersonListByResult($tblSerialLetter, $Result);
                             SerialLetter::useService()->updateDynamicSerialPerson($tblSerialLetter, $tblPersonSearchList);
                             $TabActive = 'PROSPECT';
                         }
-                        if ($tblFilterCategory->getName() === 'Firmengruppe') {
+                        if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_COMPANY_GROUP) {
                             $Result = SerialLetter::useService()->getCompanyFilterResultListBySerialLetter($tblSerialLetter);
                             $tblPersonSearchList = SerialLetter::useService()->getPersonListByResult($tblSerialLetter, $Result);
                             SerialLetter::useService()->updateDynamicSerialPerson($tblSerialLetter, $tblPersonSearchList);
@@ -428,7 +455,7 @@ class Service extends AbstractService
             }
 
             return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success().' Die Adressliste für Serienbriefe ist erfasst worden')
-            .new Redirect('/Reporting/SerialLetter', Redirect::TIMEOUT_SUCCESS, array('TabActive' => $TabActive));
+                .new Redirect('/Reporting/SerialLetter', Redirect::TIMEOUT_SUCCESS, array('TabActive' => $TabActive));
         }
 
         return $Stage;
@@ -458,70 +485,69 @@ class Service extends AbstractService
         /**
          * Skip to Frontend
          */
-        if (null === $Check && !isset( $Global->POST['Button'] )) {
+        if (null === $Check && !isset($Global->POST['Button'])) {
             return $Form;
         }
-//        $Company = false;
-//        $FilterCategory = SerialLetter::useService()->getFilterCategoryByName(TblFilterCategory::IDENTIFIER_COMPANY_GROUP);
-//        if(($tblFilterCategory = $tblSerialLetter->getFilterCategory())){
-//            if($FilterCategory->getId() == $tblFilterCategory->getId()){
-//                $Company = true;
-//            }
-//        }
+        $isCompany = false;
+        $FilterCategory = SerialLetter::useService()->getFilterCategoryByName(TblFilterCategory::IDENTIFIER_COMPANY_GROUP);
+        if (( $tblFilterCategory = $tblSerialLetter->getFilterCategory() )) {
+            if ($FilterCategory->getId() == $tblFilterCategory->getId()) {
+                $isCompany = true;
+            }
+        }
 
-        if (!empty( $Check )) {
+        if (!empty($Check)) {
             foreach ($Check as $personId => $list) {
-//                if($Company){
-//                    // alle Einträge zum Serienbrief dieser Person löschen
-//                    ( new Data($this->getBinding()) )->destroyAddressPersonAllBySerialLetterAndPerson($tblSerialLetter, $tblPerson);
-//                    if (is_array($list) && !empty( $list )) {
-//                        foreach ($list as $key => $item) {
-//                            if (isset( $item['Address'] )) {
-//                                $tblToCompany = Address::useService()->getAddressToCompanyById($key);
-//                                if ($tblToCompany) {
-//                                        $tblSalutation = $tblPerson->getTblSalutation();
-//                                        $this->createAddressPerson($tblSerialLetter, $tblPerson,
-//                                            $tblPerson, $tblToCompany,
-//                                            ( $tblSalutation ? $tblSalutation : null ));
-//                                }
-//                            }
-//                        }
-//                    }
-//                } else {
-                // alle Einträge zum Serienbrief dieser Person löschen
-                ( new Data($this->getBinding()) )->destroyAddressPersonAllBySerialLetterAndPerson($tblSerialLetter, $tblPerson);
-                if (is_array($list) && !empty( $list )) {
-                    foreach ($list as $key => $item) {
-                        if (isset( $item['Address'] )) {
-                            $tblToPerson = Address::useService()->getAddressToPersonById($key);
-                            if ($tblToPerson && $tblToPerson->getServiceTblPerson()) {
-                                if ($tblPersonToPerson = $tblToPerson->getServiceTblPerson()) {
-                                    $tblSalutation = $tblPersonToPerson->getTblSalutation();
-
+                if ($isCompany) {
+                    // alle Einträge zum Serienbrief dieser Person löschen
+                    ( new Data($this->getBinding()) )->destroyAddressPersonAllBySerialLetterAndPerson($tblSerialLetter, $tblPerson);
+                    if (is_array($list) && !empty($list)) {
+                        foreach ($list as $key => $item) {
+                            if (isset($item['Address'])) {
+                                $tblToCompany = Address::useService()->getAddressToCompanyById($key);
+                                if ($tblToCompany) {
+                                    $tblSalutation = $tblPerson->getTblSalutation();
                                     $this->createAddressPerson($tblSerialLetter, $tblPerson,
-                                        $tblToPerson->getServiceTblPerson(), $tblToPerson,
+                                        $tblPerson, null, $tblToCompany,
                                         ( $tblSalutation ? $tblSalutation : null ));
-                                } else {
-                                    $this->createAddressPerson($tblSerialLetter, $tblPerson,
-                                        $tblToPerson->getServiceTblPerson(), $tblToPerson,
-                                        null);
-                                }
                                 }
                             }
                         }
                     }
-//                }
+                } else {
+                    // alle Einträge zum Serienbrief dieser Person löschen
+                    ( new Data($this->getBinding()) )->destroyAddressPersonAllBySerialLetterAndPerson($tblSerialLetter, $tblPerson);
+                    if (is_array($list) && !empty($list)) {
+                        foreach ($list as $key => $item) {
+                            if (isset($item['Address'])) {
+                                $tblToPerson = Address::useService()->getAddressToPersonById($key);
+                                if ($tblToPerson && $tblToPerson->getServiceTblPerson()) {
+                                    if ($tblPersonToPerson = $tblToPerson->getServiceTblPerson()) {
+                                        $tblSalutation = $tblPersonToPerson->getTblSalutation();
+
+                                        $this->createAddressPerson($tblSerialLetter, $tblPerson,
+                                            $tblToPerson->getServiceTblPerson(), $tblToPerson, null,
+                                            ( $tblSalutation ? $tblSalutation : null ));
+                                    } else {
+                                        $this->createAddressPerson($tblSerialLetter, $tblPerson,
+                                            $tblToPerson->getServiceTblPerson(), $tblToPerson);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 return new Success('Erfolgreich gespeichert.', new \SPHERE\Common\Frontend\Icon\Repository\Success())
-                .new Redirect($Route, Redirect::TIMEOUT_SUCCESS,
-                    array('Id' => $tblSerialLetter->getId(), 'PersonId' => $tblPerson->getId()));
+                    .new Redirect($Route, Redirect::TIMEOUT_SUCCESS,
+                        array('Id' => $tblSerialLetter->getId(), 'PersonId' => $tblPerson->getId()));
             }
         } else {
             ( new Data($this->getBinding()) )->destroyAddressPersonAllBySerialLetterAndPerson($tblSerialLetter, $tblPerson);
         }
 
         return new Success('Erfolgreich gespeichert.', new \SPHERE\Common\Frontend\Icon\Repository\Success())
-        .new Redirect($Route, Redirect::TIMEOUT_SUCCESS,
-            array('Id' => $tblSerialLetter->getId()));
+            .new Redirect($Route, Redirect::TIMEOUT_SUCCESS,
+                array('Id' => $tblSerialLetter->getId()));
     }
 
     /**
@@ -559,7 +585,7 @@ class Service extends AbstractService
                             if (!$tblSalutation) {
                                 $tblSalutation = null;
                             }
-                            SerialLetter::useService()->createAddressPerson($tblSerialLetter, $tblPerson, $tblPerson, $tblToPersonChoose, $tblSalutation);
+                            SerialLetter::useService()->createAddressPerson($tblSerialLetter, $tblPerson, $tblPerson, $tblToPersonChoose, null, $tblSalutation);
                         }
                     }
                 }
@@ -568,7 +594,7 @@ class Service extends AbstractService
             return new Warning('Es sind keine Personen im Serienbrief hinterlegt');
         }
         return new Success('Mögliche Adressenzuweisungen wurde vorgenommen')
-        .new Redirect('/Reporting/SerialLetter/Address', Redirect::TIMEOUT_SUCCESS, array('Id' => $tblSerialLetter->getId()));
+            .new Redirect('/Reporting/SerialLetter/Address', Redirect::TIMEOUT_SUCCESS, array('Id' => $tblSerialLetter->getId()));
     }
 
     /**
@@ -602,7 +628,7 @@ class Service extends AbstractService
                             $ToPersonChooseList = array();
                             $SalutationList = array();
                             /** @var TblPerson[] $GuardianList */
-                            if (!empty( $GuardianList )) {
+                            if (!empty($GuardianList)) {
                                 // Alle Sorgeberechtigten
                                 foreach ($GuardianList as $Parent) {
                                     $tblToPersonList = Address::useService()->getAddressAllByPerson($Parent);
@@ -623,24 +649,24 @@ class Service extends AbstractService
                                 }
 
                                 /** @var TblToPerson[] $ToPersonChooseList */
-                                if (!empty( $ToPersonChooseList )) {
+                                if (!empty($ToPersonChooseList)) {
 
                                     $count = 0;
                                     foreach ($ToPersonChooseList as $ToPersonChoose) {
 
                                         $tblToPersonChoose = $ToPersonChoose;
-                                        if (isset( $SalutationList[$count] )) {
+                                        if (isset($SalutationList[$count])) {
                                             $tblSalutation = $SalutationList[$count];
                                         } else {
                                             $tblSalutation = false;
                                         }
-                                        if (isset( $SalutationList[$count] )) {
+                                        if (isset($SalutationList[$count])) {
                                             $PersonTo = $Person[$count];
                                         } else {
                                             $PersonTo = false;
                                         }
                                         SerialLetter::useService()->createAddressPerson(
-                                            $tblSerialLetter, $tblPerson, $PersonTo, $tblToPersonChoose, ( $tblSalutation ? $tblSalutation : null ));
+                                            $tblSerialLetter, $tblPerson, $PersonTo, $tblToPersonChoose, null, ( $tblSalutation ? $tblSalutation : null ));
                                         $count++;
                                     }
                                 }
@@ -653,14 +679,15 @@ class Service extends AbstractService
             return new Warning('Es sind keine Personen im Serienbrief hinterlegt');
         }
         return new Success('Mögliche Adressenzuweisungen wurde vorgenommen')
-        .new Redirect('/Reporting/SerialLetter/Address', Redirect::TIMEOUT_SUCCESS, array('Id' => $tblSerialLetter->getId()));
+            .new Redirect('/Reporting/SerialLetter/Address', Redirect::TIMEOUT_SUCCESS, array('Id' => $tblSerialLetter->getId()));
     }
 
     /**
      * @param TblSerialLetter    $tblSerialLetter
      * @param TblPerson          $tblPerson
      * @param TblPerson          $tblPersonToAddress
-     * @param TblToPerson        $tblToPerson
+     * @param null|TblToPerson   $tblToPerson
+     * @param null|TblToCompany  $tblToCompany
      * @param TblSalutation|null $tblSalutation
      *
      * @return TblAddressPerson
@@ -669,12 +696,13 @@ class Service extends AbstractService
         TblSerialLetter $tblSerialLetter,
         TblPerson $tblPerson,
         TblPerson $tblPersonToAddress,
-        TblToPerson $tblToPerson,
+        TblToPerson $tblToPerson = null,
+        TblToCompany $tblToCompany = null,
         TblSalutation $tblSalutation = null
     ) {
 
         return ( new Data($this->getBinding()) )->createAddressPerson($tblSerialLetter, $tblPerson, $tblPersonToAddress,
-            $tblToPerson, $tblSalutation);
+            $tblToPerson, $tblToCompany, $tblSalutation);
     }
 
     /**
@@ -688,6 +716,7 @@ class Service extends AbstractService
         $tblPersonList = $this->getPersonAllBySerialLetter($tblSerialLetter);
         $ExportData = array();
         $AddressPersonCount = 1;
+        $tblFilterCategory = $tblSerialLetter->getFilterCategory();
         if ($tblPersonList) {
             $tblPersonList = $this->getSorter($tblPersonList)->sortObjectBy('LastFirstName', new StringGermanOrderSorter());
             /** @var TblPerson $tblPerson */
@@ -697,56 +726,95 @@ class Service extends AbstractService
                 if ($tblAddressPersonAllByPerson) {
                     /** @var TblAddressPerson $tblAddressPerson */
                     $AddressList = array();
-                    array_walk($tblAddressPersonAllByPerson, function (TblAddressPerson $tblAddressPerson) use (&$AddressList, $tblPerson, &$AddressPersonCount) {
-                        if (( $serviceTblPersonToAddress = $tblAddressPerson->getServiceTblToPerson() )) {
-                            if (( $tblToPerson = $tblAddressPerson->getServiceTblToPerson() )) {
-                                if (( $PersonToAddress = $tblToPerson->getServiceTblPerson() )) {
-                                    if (( $tblAddress = $serviceTblPersonToAddress->getTblAddress() )) {
-                                        //Person SerialLetter
-                                        $AddressList[$tblPerson->getId().$tblAddress->getId()]['Salutation'] =
-                                            $tblPerson->getSalutation();
-                                        $AddressList[$tblPerson->getId().$tblAddress->getId()]['FirstName'] =
-                                            $tblPerson->getFirstName();
-                                        $AddressList[$tblPerson->getId().$tblAddress->getId()]['LastName'] =
-                                            $tblPerson->getLastName();
+                    array_walk($tblAddressPersonAllByPerson, function (TblAddressPerson $tblAddressPerson)
+                    use (&$AddressList, $tblPerson, &$AddressPersonCount, $tblFilterCategory) {
 
-                                        //Person Address
-                                        $AddressList[$tblPerson->getId().$tblAddress->getId()]['PersonSalutation'][] =
-                                            $PersonToAddress->getSalutation();
-                                        $AddressList[$tblPerson->getId().$tblAddress->getId()]['PersonFirstName'][] =
-                                            $PersonToAddress->getFirstName();
-                                        $AddressList[$tblPerson->getId().$tblAddress->getId()]['PersonLastName'][] =
-                                            $PersonToAddress->getLastName();
+                        if ($tblFilterCategory
+                            && TblFilterCategory::IDENTIFIER_COMPANY_GROUP == $tblFilterCategory->getName()
+                        ) {
+                            $tblToCompany = $tblAddressPerson->getServiceTblToPerson($tblFilterCategory);
+                            $tblAddress = $tblToCompany->getTblAddress();
+                            if ($tblAddress) {
+                                $AddressList[$tblPerson->getId().$tblAddress->getId()]['Salutation'] =
+                                    $tblPerson->getSalutation();
+                                $AddressList[$tblPerson->getId().$tblAddress->getId()]['FirstName'] =
+                                    $tblPerson->getFirstName();
+                                $AddressList[$tblPerson->getId().$tblAddress->getId()]['LastName'] =
+                                    $tblPerson->getLastName();
 
-                                        if (isset( $AddressList[$tblPerson->getId().$tblAddress->getId()]['PersonFirstName'] )) {
-                                            if ($AddressPersonCount < count($AddressList[$tblPerson->getId().$tblAddress->getId()]['PersonFirstName'])) {
-                                                $AddressPersonCount = count($AddressList[$tblPerson->getId().$tblAddress->getId()]['PersonFirstName']);
+                                // choose Person
+                                $AddressList[$tblPerson->getId().$tblAddress->getId()]['PersonSalutation'][] =
+                                    $tblPerson->getSalutation();
+                                $AddressList[$tblPerson->getId().$tblAddress->getId()]['PersonFirstName'][] =
+                                    $tblPerson->getFirstName();
+                                $AddressList[$tblPerson->getId().$tblAddress->getId()]['PersonLastName'][] =
+                                    $tblPerson->getLastName();
+                                // Address
+                                $AddressList[$tblPerson->getId().$tblAddress->getId()]['StreetName'] =
+                                    $tblAddress->getStreetName();
+                                $AddressList[$tblPerson->getId().$tblAddress->getId()]['StreetNumber'] =
+                                    $tblAddress->getStreetNumber();;
+                                if (( $tblCity = $tblAddress->getTblCity() )) {
+                                    $AddressList[$tblPerson->getId().$tblAddress->getId()]['District'] =
+                                        $tblCity->getDistrict();
+                                    $AddressList[$tblPerson->getId().$tblAddress->getId()]['Code'] =
+                                        $tblCity->getCode();
+                                    $AddressList[$tblPerson->getId().$tblAddress->getId()]['City'] =
+                                        $tblCity->getName();
+                                }
+                            }
+
+                        } else {
+                            if (( $serviceTblPersonToAddress = $tblAddressPerson->getServiceTblToPerson() )) {
+                                if (( $tblToPerson = $tblAddressPerson->getServiceTblToPerson() )) {
+                                    if (( $PersonToAddress = $tblToPerson->getServiceTblPerson() )) {
+                                        if (( $tblAddress = $serviceTblPersonToAddress->getTblAddress() )) {
+                                            //Person SerialLetter
+                                            $AddressList[$tblPerson->getId().$tblAddress->getId()]['Salutation'] =
+                                                $tblPerson->getSalutation();
+                                            $AddressList[$tblPerson->getId().$tblAddress->getId()]['FirstName'] =
+                                                $tblPerson->getFirstName();
+                                            $AddressList[$tblPerson->getId().$tblAddress->getId()]['LastName'] =
+                                                $tblPerson->getLastName();
+
+                                            //Person Address
+                                            $AddressList[$tblPerson->getId().$tblAddress->getId()]['PersonSalutation'][] =
+                                                $PersonToAddress->getSalutation();
+                                            $AddressList[$tblPerson->getId().$tblAddress->getId()]['PersonFirstName'][] =
+                                                $PersonToAddress->getFirstName();
+                                            $AddressList[$tblPerson->getId().$tblAddress->getId()]['PersonLastName'][] =
+                                                $PersonToAddress->getLastName();
+
+                                            if (isset($AddressList[$tblPerson->getId().$tblAddress->getId()]['PersonFirstName'])) {
+                                                if ($AddressPersonCount < count($AddressList[$tblPerson->getId().$tblAddress->getId()]['PersonFirstName'])) {
+                                                    $AddressPersonCount = count($AddressList[$tblPerson->getId().$tblAddress->getId()]['PersonFirstName']);
+                                                }
                                             }
-                                        }
 
-                                        if (( $tblAddress = $tblAddressPerson->getServiceTblToPerson()->getTblAddress() )) {
-                                            $AddressList[$tblPerson->getId().$tblAddress->getId()]['StreetName'] =
-                                                $tblAddress->getStreetName();
-                                            $AddressList[$tblPerson->getId().$tblAddress->getId()]['StreetNumber'] =
-                                                $tblAddress->getStreetNumber();;
-                                            if (( $tblCity = $tblAddress->getTblCity() )) {
-                                                $AddressList[$tblPerson->getId().$tblAddress->getId()]['District'] =
-                                                    $tblCity->getDistrict();
-                                                $AddressList[$tblPerson->getId().$tblAddress->getId()]['Code'] =
-                                                    $tblCity->getCode();
-                                                $AddressList[$tblPerson->getId().$tblAddress->getId()]['City'] =
-                                                    $tblCity->getName();
+                                            if (( $tblAddress = $tblAddressPerson->getServiceTblToPerson()->getTblAddress() )) {
+                                                $AddressList[$tblPerson->getId().$tblAddress->getId()]['StreetName'] =
+                                                    $tblAddress->getStreetName();
+                                                $AddressList[$tblPerson->getId().$tblAddress->getId()]['StreetNumber'] =
+                                                    $tblAddress->getStreetNumber();;
+                                                if (( $tblCity = $tblAddress->getTblCity() )) {
+                                                    $AddressList[$tblPerson->getId().$tblAddress->getId()]['District'] =
+                                                        $tblCity->getDistrict();
+                                                    $AddressList[$tblPerson->getId().$tblAddress->getId()]['Code'] =
+                                                        $tblCity->getCode();
+                                                    $AddressList[$tblPerson->getId().$tblAddress->getId()]['City'] =
+                                                        $tblCity->getName();
+                                                }
                                             }
-                                        }
-                                        $AddressList[$tblPerson->getId().$tblAddress->getId()]['Division'] =
-                                            Student::useService()->getDisplayCurrentDivisionListByPerson($tblPerson, '');
-                                        $tblStudent = Student::useService()->getStudentByPerson($tblPerson);
-                                        if ($tblStudent) {
-                                            $AddressList[$tblPerson->getId().$tblAddress->getId()]['StudentNumber'] = $tblStudent->getIdentifier();
-                                        } else {
-                                            $AddressList[$tblPerson->getId().$tblAddress->getId()]['StudentNumber'] = '';
-                                        }
+                                            $AddressList[$tblPerson->getId().$tblAddress->getId()]['Division'] =
+                                                Student::useService()->getDisplayCurrentDivisionListByPerson($tblPerson, '');
+                                            $tblStudent = Student::useService()->getStudentByPerson($tblPerson);
+                                            if ($tblStudent) {
+                                                $AddressList[$tblPerson->getId().$tblAddress->getId()]['StudentNumber'] = $tblStudent->getIdentifier();
+                                            } else {
+                                                $AddressList[$tblPerson->getId().$tblAddress->getId()]['StudentNumber'] = '';
+                                            }
 
+                                        }
                                     }
                                 }
                             }
@@ -759,11 +827,15 @@ class Service extends AbstractService
                             // fill AddressLine
                             $firstAddressLine = '';
                             $secondAddressLine = '';
-                            $thirdAddressLine = '';
-                            $LetterHead = '';
+                            $AddressName = '';
+                            $firstLetter = '';
+                            $secondLetter = '';
+                            $thirdLetter = '';
+                            $fourLetter = '';
                             $isReady = true;
-                            // only 2 Person with Salutation "Herr" or "Frau"
-                            if (isset( $Address['PersonSalutation'] ) && !empty( $Address['PersonSalutation'] )) {
+
+                            // only 1 or 2 Person with Salutation "Herr" or "Frau"
+                            if (isset($Address['PersonSalutation']) && !empty($Address['PersonSalutation'])) {
                                 foreach ($Address['PersonSalutation'] as $Key => $Salutation) {
                                     if ($Key > 2) {
                                         break;
@@ -781,97 +853,142 @@ class Service extends AbstractService
                             }
 
                             if ($isReady) {
-                                if (isset( $Address['PersonLastName'] ) && !empty( $Address['PersonLastName'] )) {
-                                    if (isset( $Address['PersonSalutation'] )
+                                if (isset($Address['PersonLastName']) && !empty($Address['PersonLastName'])) {
+                                    if (isset($Address['PersonSalutation'])
                                         && count($Address['PersonLastName']) > 1
                                     ) {
+                                        // Personen mit gleichem Nachnamen
                                         if (count(array_unique($Address['PersonLastName'])) === 1) {
                                             foreach ($Address['PersonLastName'] as $Key => $LastName) {
                                                 if ($Key > 1) {
                                                     break;
                                                 }
-                                                if ($secondAddressLine === '') {
-                                                    $secondAddressLine = 'Familie '.$Address['PersonFirstName'][$Key];
+                                                if ($AddressName === '') {
+                                                    $AddressName = $Address['PersonFirstName'][$Key];
+                                                    if ($Address['PersonSalutation'][$Key] == 'Herr') {
+                                                        $firstLetter = 'Sehr geehrter '.$Address['PersonSalutation'][$Key].' '.$LastName;
+                                                        $secondLetter = 'Lieber '.$Address['PersonSalutation'][$Key].' '.$LastName;
+                                                    } elseif ($Address['PersonSalutation'][$Key] == 'Frau') {
+                                                        $firstLetter = 'Sehr geehrte '.$Address['PersonSalutation'][$Key].' '.$LastName;
+                                                        $secondLetter = 'Liebe '.$Address['PersonSalutation'][$Key].' '.$LastName;
+                                                    }
+                                                    $thirdLetter = 'Sehr geehrte Familie '.$LastName;
+                                                    $fourLetter = 'Liebe Familie '.$LastName;
                                                 } else {
-                                                    $secondAddressLine .= ' und '.$Address['PersonFirstName'][$Key].' ';
-                                                }
-                                                if ($LetterHead === '') {
-                                                    $LetterHead = 'Sehr geehrte(r) '.$Address['PersonSalutation'][$Key].' ';
-                                                } else {
-                                                    $LetterHead .= 'und '.$Address['PersonSalutation'][$Key].' ';
+                                                    $AddressName .= ' u. '.$Address['PersonFirstName'][$Key].' '.$LastName;
+                                                    if ($Address['PersonSalutation'][$Key] == 'Herr') {
+                                                        $firstLetter .= ', sehr geehrter '.$Address['PersonSalutation'][$Key].' '.$LastName;
+                                                        $secondLetter .= ', lieber '.$Address['PersonSalutation'][$Key].' '.$LastName;
+                                                    } elseif ($Address['PersonSalutation'][$Key] == 'Frau') {
+                                                        $firstLetter .= ', sehr geehrte '.$Address['PersonSalutation'][$Key].' '.$LastName;
+                                                        $secondLetter .= ', liebe '.$Address['PersonSalutation'][$Key].' '.$LastName;
+                                                    }
                                                 }
                                             }
-                                            $firstAddressLine = 'Familie '.$Address['PersonLastName'][0];
-                                            $secondAddressLine .= $Address['PersonLastName'][0];
-                                            $thirdAddressLine = $secondAddressLine;
-                                            $LetterHead .= $Address['PersonLastName'][0];
-                                        } else {
-
-                                            $LetterHead = 'Sehr geehrte(r) ';
+                                        } else { // Personen mit unterschiedlichem Nachnamen
                                             foreach ($Address['PersonLastName'] as $Key => $LastName) {
                                                 if ($Key > 1) {
                                                     break;
                                                 }
-                                                if ($firstAddressLine === '') {
-                                                    $firstAddressLine = $Address['PersonSalutation'][$Key].' '.$LastName;
-                                                } else {
-                                                    $firstAddressLine .= ', '.$Address['PersonSalutation'][$Key].' '.$LastName;
-                                                }
-                                                if ($thirdAddressLine === '') {
-                                                    if ($Address['PersonSalutation'] === 'Herr') {
-                                                        $thirdAddressLine = $Address['PersonSalutation'][$Key].'n '.$LastName;
-                                                    } else {
-                                                        $thirdAddressLine = $Address['PersonSalutation'][$Key].' '.$LastName;
+
+                                                if ($AddressName === '') {
+                                                    $AddressName = $Address['PersonFirstName'][$Key].' '.$LastName;
+                                                    if ($Address['PersonSalutation'][$Key] == 'Herr') {
+                                                        $firstLetter = 'Sehr geehrter '.$Address['PersonSalutation'][$Key].' '.$LastName;
+                                                        $secondLetter = 'Lieber '.$Address['PersonSalutation'][$Key].' '.$LastName;
+                                                    } elseif ($Address['PersonSalutation'][$Key] == 'Frau') {
+                                                        $firstLetter = 'Sehr geehrte '.$Address['PersonSalutation'][$Key].' '.$LastName;
+                                                        $secondLetter = 'Liebe '.$Address['PersonSalutation'][$Key].' '.$LastName;
                                                     }
+                                                    $thirdLetter = 'Sehr geehrte Familie '.$LastName;
+                                                    $fourLetter = 'Liebe Familie '.$LastName;
                                                 } else {
-                                                    if ($Address['PersonSalutation'] === 'Herr') {
-                                                        $thirdAddressLine .= ', '.$Address['PersonSalutation'][$Key].'n '.$LastName;
-                                                    } else {
-                                                        $thirdAddressLine .= ', '.$Address['PersonSalutation'][$Key].' '.$LastName;
+                                                    $AddressName .= ' u. '.$Address['PersonFirstName'][$Key].' '.$LastName;
+                                                    if ($Address['PersonSalutation'][$Key] == 'Herr') {
+                                                        $firstLetter .= ', sehr geehrter '.$Address['PersonSalutation'][$Key].' '.$LastName;
+                                                        $secondLetter .= ', lieber '.$Address['PersonSalutation'][$Key].' '.$LastName;
+                                                    } elseif ($Address['PersonSalutation'][$Key] == 'Frau') {
+                                                        $firstLetter .= ', sehr geehrte '.$Address['PersonSalutation'][$Key].' '.$LastName;
+                                                        $secondLetter .= ', liebe '.$Address['PersonSalutation'][$Key].' '.$LastName;
                                                     }
+                                                    $thirdLetter .= ' / '.$LastName;
+                                                    $fourLetter .= ' / '.$LastName;
                                                 }
                                             }
-                                            $secondAddressLine = $firstAddressLine;
-                                            $LetterHead .= $firstAddressLine;
                                         }
-                                    }
-                                    if (count($Address['PersonLastName']) === 1) {
+
+                                        // Personenunabhängig
                                         foreach ($Address['PersonLastName'] as $Key => $LastName) {
-                                            if ($Key > 1) {
-                                                break;
-                                            }
-                                            $firstAddressLine = $Address['PersonSalutation'][$Key].' '.$LastName;
-                                            $secondAddressLine = $Address['PersonSalutation'][$Key].' '.$LastName;
-                                            $thirdAddressLine = $secondAddressLine;
-                                            $LetterHead = 'Sehr geehrte(r) '.$Address['PersonSalutation'][$Key].' '.$LastName;
-                                            if ($Address['PersonSalutation'][$Key] === 'Herr') {
-
+                                            if ($firstAddressLine === '') {
+                                                if ($Address['PersonSalutation'][$Key] == 'Herr') {
+                                                    $firstAddressLine = $Address['PersonSalutation'][$Key].'n';
+                                                }
+                                                if ($Address['PersonSalutation'][$Key] == 'Frau') {
+                                                    $firstAddressLine = $Address['PersonSalutation'][$Key];
+                                                }
                                             } else {
-
+                                                if ($Address['PersonSalutation'][$Key] == 'Herr') {
+                                                    $firstAddressLine .= ' und '.$Address['PersonSalutation'][$Key].'n';
+                                                }
+                                                if ($Address['PersonSalutation'][$Key] == 'Frau') {
+                                                    $firstAddressLine .= ' und '.$Address['PersonSalutation'][$Key];
+                                                }
+                                            }
+                                            if ($secondAddressLine === '') {
+                                                if ($Address['PersonSalutation'][$Key] == 'Herr') {
+                                                    $secondAddressLine = $Address['PersonSalutation'][$Key].'n';
+                                                }
+                                                if ($Address['PersonSalutation'][$Key] == 'Frau') {
+                                                    $secondAddressLine = $Address['PersonSalutation'][$Key];
+                                                }
+                                            } else {
+                                                $secondAddressLine = 'Familie';
+                                            }
+                                        }
+                                    } elseif (count($Address['PersonLastName']) === 1) {     // Einzelpersonen
+                                        foreach ($Address['PersonLastName'] as $Key => $LastName) {
+                                            if ($firstAddressLine === '') {
+                                                if ($Address['PersonSalutation'][$Key] == 'Herr') {
+                                                    $firstAddressLine = $Address['PersonSalutation'][$Key].'n';
+                                                    $secondAddressLine = $Address['PersonSalutation'][$Key].'n';
+                                                    $firstLetter = 'Sehr geehrter '.$Address['PersonSalutation'][$Key].' '.$LastName;
+                                                    $secondLetter = 'Lieber '.$Address['PersonSalutation'][$Key].' '.$LastName;
+                                                }
+                                                if ($Address['PersonSalutation'][$Key] == 'Frau') {
+                                                    $firstAddressLine = $Address['PersonSalutation'][$Key];
+                                                    $secondAddressLine = $Address['PersonSalutation'][$Key];
+                                                    $firstLetter = 'Sehr geehrte '.$Address['PersonSalutation'][$Key].' '.$LastName;
+                                                    $secondLetter = 'Liebe '.$Address['PersonSalutation'][$Key].' '.$LastName;
+                                                }
+                                                $thirdLetter = 'Sehr geehrte Familie '.$LastName;
+                                                $fourLetter = 'Liebe Familie '.$LastName;
+                                                $AddressName = $Address['PersonFirstName'][$Key].' '.$LastName;
                                             }
                                         }
                                     }
                                 }
                             }
-
                             $ExportData[] = array(
                                 'firstAddressLine'  => $firstAddressLine,
                                 'secondAddressLine' => $secondAddressLine,
-                                'thirdAddressLine'  => $thirdAddressLine,
-                                'LetterHead'        => $LetterHead,
-                                'SalutationList'    => ( isset( $Address['PersonSalutation'] ) ? $Address['PersonSalutation'] : array() ),
-                                'FirstNameList'     => ( isset( $Address['PersonFirstName'] ) ? $Address['PersonFirstName'] : array() ),
-                                'LastNameList'      => ( isset( $Address['PersonLastName'] ) ? $Address['PersonLastName'] : array() ),
-                                'District'          => ( isset( $Address['District'] ) ? $Address['District'] : '' ),
-                                'StreetName'        => ( isset( $Address['StreetName'] ) ? $Address['StreetName'] : '' ),
-                                'StreetNumber'      => ( isset( $Address['StreetNumber'] ) ? $Address['StreetNumber'] : '' ),
-                                'Code'              => ( isset( $Address['Code'] ) ? $Address['Code'] : '' ),
-                                'City'              => ( isset( $Address['City'] ) ? $Address['City'] : '' ),
-                                'Salutation'        => ( isset( $Address['Salutation'] ) ? $Address['Salutation'] : '' ),
-                                'FirstName'         => ( isset( $Address['FirstName'] ) ? $Address['FirstName'] : '' ),
-                                'LastName'          => ( isset( $Address['LastName'] ) ? $Address['LastName'] : '' ),
-                                'StudentNumber'     => ( isset( $Address['StudentNumber'] ) ? $Address['StudentNumber'] : '' ),
-                                'Division'          => ( isset( $Address['Division'] ) ? $Address['Division'] : '' ),
+                                'AddressName'       => $AddressName,
+                                'firstLetter'       => $firstLetter,
+                                'secondLetter'      => $secondLetter,
+                                'thirdLetter'       => $thirdLetter,
+                                'fourLetter'        => $fourLetter,
+                                'SalutationList'    => ( isset($Address['PersonSalutation']) ? $Address['PersonSalutation'] : array() ),
+                                'FirstNameList'     => ( isset($Address['PersonFirstName']) ? $Address['PersonFirstName'] : array() ),
+                                'LastNameList'      => ( isset($Address['PersonLastName']) ? $Address['PersonLastName'] : array() ),
+                                'District'          => ( isset($Address['District']) ? $Address['District'] : '' ),
+                                'StreetName'        => ( isset($Address['StreetName']) ? $Address['StreetName'] : '' ),
+                                'StreetNumber'      => ( isset($Address['StreetNumber']) ? $Address['StreetNumber'] : '' ),
+                                'Code'              => ( isset($Address['Code']) ? $Address['Code'] : '' ),
+                                'City'              => ( isset($Address['City']) ? $Address['City'] : '' ),
+                                'Salutation'        => ( isset($Address['Salutation']) ? $Address['Salutation'] : '' ),
+                                'FirstName'         => ( isset($Address['FirstName']) ? $Address['FirstName'] : '' ),
+                                'LastName'          => ( isset($Address['LastName']) ? $Address['LastName'] : '' ),
+                                'StudentNumber'     => ( isset($Address['StudentNumber']) ? $Address['StudentNumber'] : '' ),
+                                'Division'          => ( isset($Address['Division']) ? $Address['Division'] : '' ),
                             );
                         }
                     }
@@ -879,7 +996,7 @@ class Service extends AbstractService
             }
         }
 
-        if (!empty( $ExportData )) {
+        if (!empty($ExportData)) {
 
             $row = 0;
             $column = 0;
@@ -888,9 +1005,12 @@ class Service extends AbstractService
             $export = Document::getDocument($fileLocation->getFileLocation());
 
             $export->setValue($export->getCell($column++, $row), "Adressanrede 1");
-            $export->setValue($export->getCell($column++, $row), "Adressanrede 2");
-            $export->setValue($export->getCell($column++, $row), "Adressanrede 3");
-            $export->setValue($export->getCell($column++, $row), "Briefanrede 1");
+            $export->setValue($export->getCell($column++, $row), "Adressanrede 2 (Familie)");
+            $export->setValue($export->getCell($column++, $row), "Adressname 1");
+            $export->setValue($export->getCell($column++, $row), "Briefanrede 1 (Sehr geehrter)");
+            $export->setValue($export->getCell($column++, $row), "Briefanrede 2 (Lieber)");
+            $export->setValue($export->getCell($column++, $row), "Briefanrede 3 (Sehr geehrte Familie)");
+            $export->setValue($export->getCell($column++, $row), "Briefanrede 4 (Liebe Familie)");
             for ($i = 0; $i < $AddressPersonCount; $i++) {
                 $export->setValue($export->getCell($column++, $row), "Anrede ".( $i + 1 ));
                 $export->setValue($export->getCell($column++, $row), "Vorname ".( $i + 1 ));
@@ -900,6 +1020,7 @@ class Service extends AbstractService
             $export->setValue($export->getCell($column++, $row), "Straße");
             $export->setValue($export->getCell($column++, $row), "PLZ");
             $export->setValue($export->getCell($column++, $row), "Ort");
+            $export->setValue($export->getCell($column++, $row), "PLZ/Ort");
             $export->setValue($export->getCell($column++, $row), "");
             $export->setValue($export->getCell($column++, $row), "Person_Vorname");
             $export->setValue($export->getCell($column++, $row), "Person_Nachname");
@@ -915,16 +1036,19 @@ class Service extends AbstractService
 
                 $export->setValue($export->getCell($column++, $row), $Export['firstAddressLine']);
                 $export->setValue($export->getCell($column++, $row), $Export['secondAddressLine']);
-                $export->setValue($export->getCell($column++, $row), $Export['thirdAddressLine']);
-                $export->setValue($export->getCell($column++, $row), $Export['LetterHead']);
+                $export->setValue($export->getCell($column++, $row), $Export['AddressName']);
+                $export->setValue($export->getCell($column++, $row), $Export['firstLetter']);
+                $export->setValue($export->getCell($column++, $row), $Export['secondLetter']);
+                $export->setValue($export->getCell($column++, $row), $Export['thirdLetter']);
+                $export->setValue($export->getCell($column++, $row), $Export['fourLetter']);
 
                 for ($j = 0; $j < $AddressPersonCount; $j++) {
                     $export->setValue($export->getCell($column++, $row),
-                        ( isset( $Export['SalutationList'][$PersonLoop] ) ? $Export['SalutationList'][$PersonLoop] : '' ));
+                        ( isset($Export['SalutationList'][$PersonLoop]) ? $Export['SalutationList'][$PersonLoop] : '' ));
                     $export->setValue($export->getCell($column++, $row),
-                        ( isset( $Export['FirstNameList'][$PersonLoop] ) ? $Export['FirstNameList'][$PersonLoop] : '' ));
+                        ( isset($Export['FirstNameList'][$PersonLoop]) ? $Export['FirstNameList'][$PersonLoop] : '' ));
                     $export->setValue($export->getCell($column++, $row),
-                        ( isset( $Export['LastNameList'][$PersonLoop] ) ? $Export['LastNameList'][$PersonLoop] : '' ));
+                        ( isset($Export['LastNameList'][$PersonLoop]) ? $Export['LastNameList'][$PersonLoop] : '' ));
                     $PersonLoop++;
                 }
 
@@ -934,11 +1058,10 @@ class Service extends AbstractService
                     $Export['StreetName'].' '.$Export['StreetNumber']);
                 $export->setValue($export->getCell($column++, $row), $Export['Code']);
                 $export->setValue($export->getCell($column++, $row), $Export['City']);
+                $export->setValue($export->getCell($column++, $row), $Export['Code'].' '.$Export['City']);
                 $export->setValue($export->getCell($column++, $row), '');
-                $export->setValue($export->getCell($column++, $row),
-                    $Export['FirstName']);
-                $export->setValue($export->getCell($column++, $row),
-                    $Export['LastName']);
+                $export->setValue($export->getCell($column++, $row), $Export['FirstName']);
+                $export->setValue($export->getCell($column++, $row), $Export['LastName']);
                 $export->setValue($export->getCell($column++, $row), $Export['StudentNumber']);
                 $export->setValue($export->getCell($column, $row), $Export['Division']);
 
@@ -1005,8 +1128,8 @@ class Service extends AbstractService
      * @param null                $FilterStudent
      * @param null                $FilterYear
      * @param null                $FilterProspect
-     * @param null                $FilterCategory
-     * @param bool                $IsFilter
+     * @param null                $FilterCompany
+     * @param null                $FilterRelationship
      *
      * @return IFormInterface|string
      */
@@ -1018,8 +1141,8 @@ class Service extends AbstractService
         $FilterStudent = null,
         $FilterYear = null,
         $FilterProspect = null,
-        $FilterCategory = null,
-        $IsFilter = true
+        $FilterCompany = null,
+        $FilterRelationship = null
     ) {
 
         /**
@@ -1030,7 +1153,7 @@ class Service extends AbstractService
         }
 
         $Error = false;
-        if (isset( $SerialLetter['Name'] ) && empty( $SerialLetter['Name'] )) {
+        if (isset($SerialLetter['Name']) && empty($SerialLetter['Name'])) {
             $Stage->setError('SerialLetter[Name]', 'Bitte geben Sie einen Namen an');
             $Error = true;
         } else {
@@ -1041,32 +1164,37 @@ class Service extends AbstractService
                 }
             }
         }
-        if (!$IsFilter) {
-            $Stage->appendGridGroup(new FormGroup(new FormRow(new FormColumn(
-                new Danger('Änderungen konnten nicht gespeichert werden. Bitte führen Sie den Filter aus.')
-            ))));
-            $Error = true;
-        }
-
-        if ($FilterCategory != null) {
-            $tblFilterCategory = SerialLetter::useService()->getFilterCategoryById($FilterCategory);
-        } else {
-            $tblFilterCategory = false;
+        $tblFilterCategory = $tblSerialLetter->getFilterCategory();
+        if ($tblFilterCategory) {
+            if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_PERSON_GROUP) {
+                if (isset($FilterGroup['TblGroup_Id']) && $FilterGroup['TblGroup_Id'] == 0) {
+                    $Stage->setError('FilterGroup[TblGroup_Id]', 'Bitte geben Sie eine Gruppe an.');
+                    $Error = true;
+                }
+            }
+            if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_COMPANY_GROUP) {
+                if (isset($FilterGroup['TblGroup_Id']) && $FilterGroup['TblGroup_Id'] == 0) {
+                    $Stage->setError('FilterGroup[TblGroup_Id]', 'Bitte geben Sie eine Gruppe an.');
+                    $Error = true;
+                }
+            }
         }
 
         if (!$Error) {
             $tblSerialLetter = ( new Data($this->getBinding()) )->updateSerialLetter(
                 $tblSerialLetter,
                 $SerialLetter['Name'],
-                $SerialLetter['Description'],
-                ( $tblFilterCategory ? $tblFilterCategory : null )
+                $SerialLetter['Description']
             );
 
             if ($tblSerialLetter) {
 
                 if ($tblFilterCategory) {
-                    if ($tblFilterCategory->getName() === 'Personengruppe') {
-                        if (!empty( $FilterGroup )) {
+//                    // remove all exist FilterField
+//                    ( new Data($this->getBinding()) )->destroyFilterFiledAllBySerialLetter($tblSerialLetter);
+
+                    if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_PERSON_GROUP) {
+                        if (!empty($FilterGroup)) {
                             foreach ($FilterGroup as $FieldName => $FieldValue) {
                                 ( new Data($this->getBinding()) )->createFilterField($tblSerialLetter, $tblFilterCategory, $FieldName, $FieldValue);
                             }
@@ -1076,18 +1204,18 @@ class Service extends AbstractService
                         $tblPersonSearchList = SerialLetter::useService()->getPersonListByResult($tblSerialLetter, $Result);
                         SerialLetter::useService()->updateDynamicSerialPerson($tblSerialLetter, $tblPersonSearchList);
                     }
-                    if ($tblFilterCategory->getName() === 'Schüler') {
-                        if (!empty( $FilterGroup )) {
+                    if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_PERSON_GROUP_STUDENT) {
+                        if (!empty($FilterGroup)) {
                             foreach ($FilterGroup as $FieldName => $FieldValue) {
                                 ( new Data($this->getBinding()) )->createFilterField($tblSerialLetter, $tblFilterCategory, $FieldName, $FieldValue);
                             }
                         }
-                        if (!empty( $FilterStudent )) {
+                        if (!empty($FilterStudent)) {
                             foreach ($FilterStudent as $FieldName => $FieldValue) {
                                 ( new Data($this->getBinding()) )->createFilterField($tblSerialLetter, $tblFilterCategory, $FieldName, $FieldValue);
                             }
                         }
-                        if (!empty( $FilterYear )) {
+                        if (!empty($FilterYear)) {
                             foreach ($FilterYear as $FieldName => $FieldValue) {
                                 ( new Data($this->getBinding()) )->createFilterField($tblSerialLetter, $tblFilterCategory, $FieldName, $FieldValue);
                             }
@@ -1097,13 +1225,13 @@ class Service extends AbstractService
                         $tblPersonSearchList = SerialLetter::useService()->getPersonListByResult($tblSerialLetter, $Result);
                         SerialLetter::useService()->updateDynamicSerialPerson($tblSerialLetter, $tblPersonSearchList);
                     }
-                    if ($tblFilterCategory->getName() === 'Interessenten') {
-                        if (!empty( $FilterGroup )) {
+                    if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_PERSON_GROUP_PROSPECT) {
+                        if (!empty($FilterGroup)) {
                             foreach ($FilterGroup as $FieldName => $FieldValue) {
                                 ( new Data($this->getBinding()) )->createFilterField($tblSerialLetter, $tblFilterCategory, $FieldName, $FieldValue);
                             }
                         }
-                        if (!empty( $FilterProspect )) {
+                        if (!empty($FilterProspect)) {
                             foreach ($FilterProspect as $FieldName => $FieldValue) {
                                 ( new Data($this->getBinding()) )->createFilterField($tblSerialLetter, $tblFilterCategory, $FieldName, $FieldValue);
                             }
@@ -1114,18 +1242,18 @@ class Service extends AbstractService
                         SerialLetter::useService()->updateDynamicSerialPerson($tblSerialLetter, $tblPersonSearchList);
                     }
 
-                    if ($tblFilterCategory->getName() === 'Firmengruppe') {
-                        if (!empty( $FilterGroup )) {
+                    if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_COMPANY_GROUP) {
+                        if (!empty($FilterGroup)) {
                             foreach ($FilterGroup as $FieldName => $FieldValue) {
                                 ( new Data($this->getBinding()) )->createFilterField($tblSerialLetter, $tblFilterCategory, $FieldName, $FieldValue);
                             }
                         }
-                        if (!empty( $FilterCompany )) {
+                        if (!empty($FilterCompany)) {
                             foreach ($FilterCompany as $FieldName => $FieldValue) {
                                 ( new Data($this->getBinding()) )->createFilterField($tblSerialLetter, $tblFilterCategory, $FieldName, $FieldValue);
                             }
                         }
-                        if (!empty( $FilterRelationship )) {
+                        if (!empty($FilterRelationship)) {
                             foreach ($FilterRelationship as $FieldName => $FieldValue) {
                                 ( new Data($this->getBinding()) )->createFilterField($tblSerialLetter, $tblFilterCategory, $FieldName, $FieldValue);
                             }
@@ -1138,11 +1266,39 @@ class Service extends AbstractService
                 }
             }
 
-            return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success().' Die Adressliste für Serienbriefe ist geändert worden')
-            .new Redirect('/Reporting/SerialLetter', Redirect::TIMEOUT_SUCCESS);
+            return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success().' Die Adressliste für Serienbriefe wurde gespeichert')
+                .new Redirect('/Reporting/SerialLetter/Edit', Redirect::TIMEOUT_SUCCESS, array('Id' => $tblSerialLetter->getId()));
         }
 
         return $Stage;
+    }
+
+    /**
+     * @param TblSerialLetter   $tblSerialLetter
+     * @param TblFilterCategory $tblFilterCategory
+     */
+    public function updateSerialPerson(TblSerialLetter $tblSerialLetter, TblFilterCategory $tblFilterCategory)
+    {
+        if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_PERSON_GROUP) {
+            $Result = SerialLetter::useService()->getGroupFilterResultListBySerialLetter($tblSerialLetter);
+            $tblPersonSearchList = SerialLetter::useService()->getPersonListByResult($tblSerialLetter, $Result);
+            SerialLetter::useService()->updateDynamicSerialPerson($tblSerialLetter, $tblPersonSearchList);
+        }
+        if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_PERSON_GROUP_STUDENT) {
+            $Result = SerialLetter::useService()->getStudentFilterResultListBySerialLetter($tblSerialLetter);
+            $tblPersonSearchList = SerialLetter::useService()->getPersonListByResult($tblSerialLetter, $Result);
+            SerialLetter::useService()->updateDynamicSerialPerson($tblSerialLetter, $tblPersonSearchList);
+        }
+        if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_PERSON_GROUP_PROSPECT) {
+            $Result = SerialLetter::useService()->getProspectFilterResultListBySerialLetter($tblSerialLetter);
+            $tblPersonSearchList = SerialLetter::useService()->getPersonListByResult($tblSerialLetter, $Result);
+            SerialLetter::useService()->updateDynamicSerialPerson($tblSerialLetter, $tblPersonSearchList);
+        }
+        if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_COMPANY_GROUP) {
+            $Result = SerialLetter::useService()->getCompanyFilterResultListBySerialLetter($tblSerialLetter);
+            $tblPersonSearchList = SerialLetter::useService()->getPersonListByResult($tblSerialLetter, $Result);
+            SerialLetter::useService()->updateDynamicSerialPerson($tblSerialLetter, $tblPersonSearchList);
+        }
     }
 
     /**
@@ -1229,7 +1385,7 @@ class Service extends AbstractService
                 }
             }
             $PersonAddList = array_diff($tblPersonSearchList, $tblPersonList);
-            if (!empty( $PersonAddList )) {
+            if (!empty($PersonAddList)) {
                 foreach ($PersonAddList as $PersonAdd) {
                     if ($PersonAdd) {
                         $this->addSerialPerson($tblSerialLetter, $PersonAdd);
@@ -1264,11 +1420,11 @@ class Service extends AbstractService
 
         $PersonList = array();
         $PersonIdList = array();
-        if ($Result && !empty( $Result )) {
+        if ($Result && !empty($Result)) {
             if (!$tblCategory
-                || $tblCategory->getName() == 'Personengruppe'
-                || $tblCategory->getName() == 'Schüler'
-                || $tblCategory->getName() == 'Interessenten'
+                || $tblCategory->getName() == TblFilterCategory::IDENTIFIER_PERSON_GROUP
+                || $tblCategory->getName() == TblFilterCategory::IDENTIFIER_PERSON_GROUP_STUDENT
+                || $tblCategory->getName() == TblFilterCategory::IDENTIFIER_PERSON_GROUP_PROSPECT
             ) {
                 /** @var AbstractView[]|ViewPerson[] $Row */
                 foreach ($Result as $Index => $Row) {
@@ -1277,7 +1433,7 @@ class Service extends AbstractService
                         $PersonIdList[$DataPerson['TblPerson_Id']] = $DataPerson['TblPerson_Id'];
                     }
                 }
-            } elseif ($tblCategory->getName() == 'Firmengruppe') {
+            } elseif ($tblCategory->getName() == TblFilterCategory::IDENTIFIER_COMPANY_GROUP) {
                 /** @var AbstractView[]|ViewPerson[] $Row */
                 foreach ($Result as $Index => $Row) {
                     $DataPerson = $Row[3]->__toArray();
@@ -1287,13 +1443,13 @@ class Service extends AbstractService
                 }
             }
 
-            if (!empty( $PersonIdList )) {
+            if (!empty($PersonIdList)) {
                 foreach ($PersonIdList as $PersonId) {
                     $PersonList[] = Person::useService()->getPersonById($PersonId);
                 }
             }
         }
-        return ( !empty( $PersonList ) ? $PersonList : false );
+        return ( !empty($PersonList) ? $PersonList : false );
     }
 
     /**
@@ -1322,7 +1478,7 @@ class Service extends AbstractService
         $Result = array();
 
         //Filter Group
-        if (isset( $FilterGroup['TblGroup_Id'] ) && !empty( $FilterGroup['TblGroup_Id'] )
+        if (isset($FilterGroup['TblGroup_Id']) && !empty($FilterGroup['TblGroup_Id'])
         ) {
             // Database Join with foreign Key
             $Pile = new Pile(Pile::JOIN_TYPE_OUTER);
@@ -1338,7 +1494,7 @@ class Service extends AbstractService
                 array_walk($FilterGroup, function (&$Input) {
 
                     if (!is_array($Input)) {
-                        if (!empty( $Input )) {
+                        if (!empty($Input)) {
                             $Input = explode(' ', $Input);
                             $Input = array_filter($Input);
                         } else {
@@ -1361,7 +1517,7 @@ class Service extends AbstractService
             $IsTimeout = $Pile->isTimeout();
         }
 
-        return ( !empty( $Result ) ? $Result : false );
+        return ( !empty($Result) ? $Result : false );
     }
 
     /**
@@ -1403,7 +1559,7 @@ class Service extends AbstractService
         $Result = array();
 
         //Filter Group
-        if (isset( $FilterGroup['TblGroup_Id'] ) && !empty( $FilterGroup['TblGroup_Id'] )
+        if (isset($FilterGroup['TblGroup_Id']) && !empty($FilterGroup['TblGroup_Id'])
         ) {
 
             // Database Join with foreign Key
@@ -1426,7 +1582,7 @@ class Service extends AbstractService
                 array_walk($FilterGroup, function (&$Input) {
 
                     if (!is_array($Input)) {
-                        if (!empty( $Input )) {
+                        if (!empty($Input)) {
                             $Input = explode(' ', $Input);
                             $Input = array_filter($Input);
                         } else {
@@ -1445,7 +1601,7 @@ class Service extends AbstractService
             if ($FilterStudent) {
                 array_walk($FilterStudent, function (&$Input) {
                     if (!is_array($Input)) {
-                        if (!empty( $Input )) {
+                        if (!empty($Input)) {
                             $Input = explode(' ', $Input);
                             $Input = array_filter($Input);
                         } else {
@@ -1461,7 +1617,7 @@ class Service extends AbstractService
             if ($FilterYear) {
                 array_walk($FilterYear, function (&$Input) {
                     if (!is_array($Input)) {
-                        if (!empty( $Input )) {
+                        if (!empty($Input)) {
                             $Input = explode(' ', $Input);
                             $Input = array_filter($Input);
                         } else {
@@ -1485,7 +1641,7 @@ class Service extends AbstractService
 
         }
 
-        return ( !empty( $Result ) ? $Result : false );
+        return ( !empty($Result) ? $Result : false );
     }
 
     /**
@@ -1501,7 +1657,8 @@ class Service extends AbstractService
         $FilterGroup = array(),
         $FilterProspect = array(),
         &$IsTimeout = false
-    ) {
+    )
+    {
         $tblFilterFieldList = ( $tblSerialLetter != null
             ? SerialLetter::useService()->getFilterFieldActiveAllBySerialLetter($tblSerialLetter)
             : false );
@@ -1515,10 +1672,11 @@ class Service extends AbstractService
                 }
             }
         }
+
         $Result = array();
 
         //Filter Group
-        if (isset( $FilterGroup['TblGroup_Id'] ) && !empty( $FilterGroup['TblGroup_Id'] )
+        if (isset($FilterGroup['TblGroup_Id']) && !empty($FilterGroup['TblGroup_Id'])
         ) {
             // Database Join with foreign Key
             $Pile = new Pile(Pile::JOIN_TYPE_OUTER);
@@ -1537,7 +1695,7 @@ class Service extends AbstractService
                 array_walk($FilterGroup, function (&$Input) {
 
                     if (!is_array($Input)) {
-                        if (!empty( $Input )) {
+                        if (!empty($Input)) {
                             $Input = explode(' ', $Input);
                             $Input = array_filter($Input);
                         } else {
@@ -1556,7 +1714,7 @@ class Service extends AbstractService
             if ($FilterProspect) {
                 array_walk($FilterProspect, function (&$Input) {
                     if (!is_array($Input)) {
-                        if (!empty( $Input )) {
+                        if (!empty($Input)) {
                             $Input = explode(' ', $Input);
                             $Input = array_filter($Input);
                         } else {
@@ -1568,7 +1726,7 @@ class Service extends AbstractService
             } else {
                 $FilterProspect = array();
             }
-
+            // Filter first time
             $Result = $Pile->searchPile(array(
                 0 => $FilterGroup,
                 1 => $FilterPerson,
@@ -1576,9 +1734,53 @@ class Service extends AbstractService
             ));
             // get Timeout status
             $IsTimeout = $Pile->isTimeout();
+
+            // change OptionA to Option B
+            if (isset($FilterProspect['TblProspectReservation_serviceTblTypeOptionA'])) {
+                $FilterProspect['TblProspectReservation_serviceTblTypeOptionB'] = $FilterProspect['TblProspectReservation_serviceTblTypeOptionA'];
+                unset($FilterProspect['TblProspectReservation_serviceTblTypeOptionA']);
+                $Result2 = array();
+                //Filter Group first Time
+                if (isset($FilterGroup['TblGroup_Id']) && !empty($FilterGroup['TblGroup_Id'])
+                ) {
+                    // Preparation FilterProspect
+                    if ($FilterProspect) {
+                        array_walk($FilterProspect, function (&$Input) {
+                            if (!is_array($Input)) {
+                                if (!empty($Input)) {
+                                    $Input = explode(' ', $Input);
+                                    $Input = array_filter($Input);
+                                } else {
+                                    $Input = false;
+                                }
+                            }
+                        });
+                        $FilterProspect = array_filter($FilterProspect);
+                    } else {
+                        $FilterProspect = array();
+                    }
+                    // Filter second time
+                    $Result2 = $Pile->searchPile(array(
+                        0 => $FilterGroup,
+                        1 => $FilterPerson,
+                        2 => $FilterProspect
+                    ));
+                    if ($IsTimeout == false) {
+                        // get Timeout status
+                        $IsTimeout = $Pile->isTimeout();
+                    }
+                }
+            }
+        }
+        if (!empty($Result) && isset($Result2) && !empty($Result2)) {
+            foreach ($Result2 as $Row) {
+                $Result[] = $Row;
+            }
+        } elseif (empty($Result) && isset($Result2) && !empty($Result2)) {
+            $Result = $Result2;
         }
 
-        return ( !empty( $Result ) ? $Result : false );
+        return ( !empty($Result) ? $Result : false );
     }
 
     /**
@@ -1617,7 +1819,7 @@ class Service extends AbstractService
         $Result = array();
 
         //Filter Group
-        if (isset( $FilterGroup['TblGroup_Id'] ) && !empty( $FilterGroup['TblGroup_Id'] )
+        if (isset($FilterGroup['TblGroup_Id']) && !empty($FilterGroup['TblGroup_Id'])
         ) {
             // Database Join with foreign Key
             $Pile = new Pile(Pile::JOIN_TYPE_OUTER);
@@ -1639,7 +1841,7 @@ class Service extends AbstractService
                 array_walk($FilterGroup, function (&$Input) {
 
                     if (!is_array($Input)) {
-                        if (!empty( $Input )) {
+                        if (!empty($Input)) {
                             $Input = explode(' ', $Input);
                             $Input = array_filter($Input);
                         } else {
@@ -1655,7 +1857,7 @@ class Service extends AbstractService
             if ($FilterCompany) {
                 array_walk($FilterCompany, function (&$Input) {
                     if (!is_array($Input)) {
-                        if (!empty( $Input )) {
+                        if (!empty($Input)) {
                             $Input = explode(' ', $Input);
                             $Input = array_filter($Input);
                         } else {
@@ -1671,7 +1873,7 @@ class Service extends AbstractService
             if ($FilterRelationship) {
                 array_walk($FilterRelationship, function (&$Input) {
                     if (!is_array($Input)) {
-                        if (!empty( $Input )) {
+                        if (!empty($Input)) {
                             $Input = explode(' ', $Input);
                             $Input = array_filter($Input);
                         } else {
@@ -1696,6 +1898,6 @@ class Service extends AbstractService
             $IsTimeout = $Pile->isTimeout();
         }
 
-        return ( !empty( $Result ) ? $Result : false );
+        return ( !empty($Result) ? $Result : false );
     }
 }

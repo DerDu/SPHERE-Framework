@@ -1,6 +1,7 @@
 <?php
 namespace SPHERE\Application\Reporting\SerialLetter\Service;
 
+use SPHERE\Application\Contact\Address\Service\Entity\TblToCompany;
 use SPHERE\Application\Contact\Address\Service\Entity\TblToPerson;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\People\Person\Service\Entity\TblSalutation;
@@ -221,8 +222,7 @@ class Data extends AbstractData
         }
         $tblPersonList = array_filter($tblPersonList);
 
-        return ( empty( $tblPersonList ) ? false : $tblPersonList );
-
+        return ( empty($tblPersonList) ? false : $tblPersonList );
     }
 
     /**
@@ -359,18 +359,16 @@ class Data extends AbstractData
     }
 
     /**
-     * @param TblSerialLetter        $tblSerialLetter
-     * @param string                 $Name
-     * @param string                 $Description
-     * @param TblFilterCategory|null $tblFilterCategory
+     * @param TblSerialLetter $tblSerialLetter
+     * @param string          $Name
+     * @param string          $Description
      *
      * @return TblSerialLetter|bool
      */
     public function updateSerialLetter(
         TblSerialLetter $tblSerialLetter,
         $Name,
-        $Description,
-        TblFilterCategory $tblFilterCategory = null
+        $Description
     ) {
 
         $Manager = $this->getConnection()->getEntityManager();
@@ -381,11 +379,6 @@ class Data extends AbstractData
         if (null !== $Entity) {
             $Entity->setName($Name);
             $Entity->setDescription($Description);
-            if ($tblFilterCategory !== null) {
-                $Entity->setFilterCategory($tblFilterCategory);
-            } else {
-                $Entity->setFilterCategory();
-            }
             $Manager->saveEntity($Entity);
             Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(), $Protocol, $Entity);
 
@@ -400,6 +393,7 @@ class Data extends AbstractData
      * @param TblPerson          $tblPerson
      * @param TblPerson          $tblPersonToAddress
      * @param TblToPerson        $tblToPerson
+     * @param TblToCompany       $tblToCompany
      * @param TblSalutation|null $tblSalutation
      *
      * @return TblAddressPerson
@@ -408,7 +402,8 @@ class Data extends AbstractData
         TblSerialLetter $tblSerialLetter,
         TblPerson $tblPerson,
         TblPerson $tblPersonToAddress,
-        TblToPerson $tblToPerson,
+        TblToPerson $tblToPerson = null,
+        TblToCompany $tblToCompany = null,
         TblSalutation $tblSalutation = null
     ) {
 
@@ -427,7 +422,7 @@ class Data extends AbstractData
             $Entity->setTblSerialLetter($tblSerialLetter);
             $Entity->setServiceTblPerson($tblPerson);
             $Entity->setServiceTblPersonToAddress($tblPersonToAddress);
-            $Entity->setServiceTblToPerson($tblToPerson);
+            $Entity->setServiceTblToPerson($tblToPerson, $tblToCompany);
             $Entity->setServiceTblSalutation($tblSalutation);
 
             $Manager->saveEntity($Entity);

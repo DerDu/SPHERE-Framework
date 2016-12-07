@@ -7,8 +7,6 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\TransactionRequiredException;
-use SPHERE\Application\Platform\System\Archive\Service\Entity\TblArchive;
-use SPHERE\Application\Platform\System\Protocol\Service\Entity\TblProtocol;
 use SPHERE\System\Cache\Handler\DataCacheHandler;
 use SPHERE\System\Cache\Handler\MemcachedHandler;
 use SPHERE\System\Cache\Handler\MemoryHandler;
@@ -221,13 +219,8 @@ class Manager extends Extension
     {
 
         $this->EntityManager->persist($Entity);
-        if(
-            !$Entity instanceof TblProtocol
-            && !$Entity instanceof TblArchive
-        ) {
-            $this->flushCache(get_class($Entity));
-            (new DataCacheHandler(__METHOD__))->addDependency($Entity)->clearData();
-        }
+        $this->flushCache(get_class($Entity));
+        (new DataCacheHandler(__METHOD__))->addDependency($Entity)->clearData();
         return $this;
     }
 

@@ -39,6 +39,12 @@ class Test extends Extension implements IApplicationInterface, IModuleInterface
                 __NAMESPACE__.'\Frontend::showThumbnail'
             )
         );
+
+        Main::getDispatcher()->registerRoute(
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'/AjaxTest',
+                __NAMESPACE__.'\Frontend::frontendAjaxTest'
+            )
+        );
     }
 
     /**

@@ -183,11 +183,13 @@ class Data extends AbstractData
             )
             ->setParameter(1, 'PlatformGatekeeperAuthorizationAccount')
             ->setParameter(2, '%TblSession%')
-            ->setParameter(3, $OneMonthAgo)
+            ->setParameter(3, $this->getProtocolTimestamp())
             ->orderBy('P.EntityCreate', 'DESC')
             ->setMaxResults(10000)
             ->getQuery();
 
+        $Query->useQueryCache(false);
+        $Query->useResultCache(false);
         $EntityList = $Query->getResult();
         return ( empty( $EntityList ) ? false : $EntityList );
     }
@@ -222,6 +224,9 @@ class Data extends AbstractData
         return ( empty( $EntityList ) ? false : $EntityList );
     }
 
+    /**
+     * @return \DateTime
+     */
     private function getProtocolTimestamp()
     {
 

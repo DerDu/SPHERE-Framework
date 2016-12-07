@@ -464,6 +464,25 @@ class Service extends AbstractService
     }
 
     /**
+     * @param TblCompany $tblCompany
+     * @param TblPerson  $tblPerson
+     * @param TblType    $tblType
+     * @param string     $Remark
+     *
+     * @return TblToCompany
+     */
+    public function addCompanyRelationshipToPerson(
+        TblCompany $tblCompany,
+        TblPerson $tblPerson,
+        TblType $tblType,
+        $Remark = ''
+    ) {
+        return (new Data($this->getBinding()))->addCompanyRelationshipToPerson(
+            $tblCompany, $tblPerson, $tblType, $Remark
+        );
+    }
+
+    /**
      * @param TblPerson $tblPersonFrom
      * @param TblPerson $tblPersonTo
      * @param TblType $tblType

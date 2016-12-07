@@ -4,9 +4,15 @@ namespace SPHERE\Application\Api\Test;
 use MOC\V\Component\Template\Template;
 use SPHERE\Application\Platform\System\Test\Test as App;
 use SPHERE\Application\Platform\System\Test\Test;
+use SPHERE\Common\Frontend\Icon\Repository\Check;
+use SPHERE\Common\Frontend\Icon\Repository\Enable;
 use SPHERE\Common\Frontend\Icon\Repository\Remove;
+use SPHERE\Common\Frontend\Icon\Repository\Transfer;
 use SPHERE\Common\Frontend\IFrontendInterface;
+use SPHERE\Common\Frontend\Layout\Repository\Listing;
 use SPHERE\Common\Frontend\Link\Repository\Standard;
+use SPHERE\Common\Frontend\Message\Repository\Success;
+use SPHERE\Common\Frontend\Text\Repository\Bold;
 use SPHERE\System\Authenticator\Authenticator;
 use SPHERE\System\Authenticator\Type\Get;
 
@@ -123,5 +129,41 @@ class Frontend implements IFrontendInterface
             '/Api/Test/ShowContent'));
 
         return '<iframe id="File-'.$Id.'" style="display: block" src="/Api/Test/ShowContent?'.$Query.'"></iframe>';
+    }
+
+    public function frontendAjaxTest( $ABC = null, $B = null, $C = null, $D = null )
+    {
+
+        if( !$ABC && ( $B||$C||$D ) ) {
+            return json_encode( 88888888 );
+        }
+
+        switch( $ABC ) {
+            case 0: $Return = 'A :)'; break;
+            case 1: $Return = 'B :)'; break;
+            case 2: $Return = 'C :)'; break;
+            default:
+//               return '<error>123</error>';
+//                $Return = (string)new Bold(':(');
+                $Return = ':(';
+        }
+
+        return json_encode( $Return );
+
+//        if( isset( $_REQUEST['TextArea'] ) ) {
+//            return json_encode( $_REQUEST['TextArea'] );
+//        }
+//
+//        if( isset( $_REQUEST['NoJson'] ) ) {
+//            return '<strong>Fail</strong>';
+//        }
+//
+////        return '<1234';
+//        return json_encode(
+//            (string)new Listing(array(
+//                new Success( 'Ajax Frontend verfügbar '.new Enable(), new Transfer() ),
+//                '<pre>'.print_r($_REQUEST,true).'</pre>'
+//            ))
+//        );
     }
 }

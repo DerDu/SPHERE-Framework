@@ -490,8 +490,8 @@ abstract class Certificate extends Extension
                     }
 
                     $SubjectSection->addElementColumn((new Element())
-                        ->setContent('{% if(Content.Grade.Data.' . $Subject['SubjectAcronym'] . ' is not empty) %}
-                                             {{ Content.Grade.Data.' . $Subject['SubjectAcronym'] . ' }}
+                        ->setContent('{% if(Content.Grade.Data["'.$Subject['SubjectAcronym'].'"] is not empty) %}
+                                             {{ Content.Grade.Data["'.$Subject['SubjectAcronym'].'"] }}
                                          {% else %}
                                              ---
                                          {% endif %}')
@@ -525,8 +525,8 @@ abstract class Certificate extends Extension
                     }
                     $SubjectSection->addElementColumn((new Element())
                         ->setContent($hasAdditionalLine['Ranking'] . '. Fremdsprache (ab Klassenstufe ' .
-                            '{% if(Content.Subject.Level.' . $hasAdditionalLine['SubjectAcronym'] . ' is not empty) %}
-                                     {{ Content.Subject.Level.' . $hasAdditionalLine['SubjectAcronym'] . ' }}
+                            '{% if(Content.Subject.Level["'.$hasAdditionalLine['SubjectAcronym'].'"] is not empty) %}
+                                     {{ Content.Subject.Level["'.$hasAdditionalLine['SubjectAcronym'].'"] }}
                                  {% else %}
                                     -
                                  {% endif %}'
@@ -619,8 +619,8 @@ abstract class Certificate extends Extension
                         ->styleTextSize($TextSize)
                         , '39%');
                     $GradeSection->addElementColumn((new Element())
-                        ->setContent('{% if(Content.Input.' . $Grade['GradeAcronym'] . ' is not empty) %}
-                                         {{ Content.Input.' . $Grade['GradeAcronym'] . ' }}
+                        ->setContent('{% if(Content.Input["'.$Grade['GradeAcronym'].'"] is not empty) %}
+                                         {{ Content.Input["'.$Grade['GradeAcronym'].'"] }}
                                      {% else %}
                                          ---
                                      {% endif %}')

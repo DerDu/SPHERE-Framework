@@ -237,8 +237,8 @@ class GradeInformation extends Certificate
                         , $leftWidth . '%')
                     ->addElementColumn((new Element())
                         ->setContent('
-                            {% if(Content.Input.' . $gradeType->getCode() . ' is not empty) %}
-                                 {{ Content.Input.' . $gradeType->getCode() . ' }}
+                            {% if(Content.Input["'.$gradeType->getCode().'"] is not empty) %}
+                                 {{ Content.Input["'.$gradeType->getCode().'"] }}
                             {% else %}
                                  &nbsp;
                             {% endif %}
@@ -251,8 +251,8 @@ class GradeInformation extends Certificate
                 $index = 0;
                 foreach ($subjectList as $tblSubject) {
                     $index++;
-                    $content = '{% if(Content.Input.BehaviorTeacher.' . $tblSubject->getAcronym() . '.' . $gradeType->getCode() . ' is not empty) %}
-                                    {{ Content.Input.BehaviorTeacher.' . $tblSubject->getAcronym() . '.' . $gradeType->getCode() . ' }}
+                    $content = '{% if(Content.Input.BehaviorTeacher["'.$tblSubject->getAcronym().'"]["'.$gradeType->getCode().'"] is not empty) %}
+                                    {{ Content.Input.BehaviorTeacher["'.$tblSubject->getAcronym().'"]["'.$gradeType->getCode().'"] }}
                                 {% else %}
                                     &nbsp;
                                 {% endif %}';
@@ -361,8 +361,8 @@ class GradeInformation extends Certificate
                     , '50%')
                 ->addElementColumn((new Element())
                     ->setContent('
-                        {% if(Content.Grade.Data.' . $subject->getAcronym() . ' is not empty) %}
-                            {{ Content.Grade.Data.' . $subject->getAcronym() . ' }}
+                        {% if(Content.Grade.Data["'.$subject->getAcronym().'"] is not empty) %}
+                            {{ Content.Grade.Data["'.$subject->getAcronym().'"] }}
                         {% else %}
                             &nbsp;
                         {% endif %}

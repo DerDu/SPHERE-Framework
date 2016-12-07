@@ -9,6 +9,7 @@
 namespace SPHERE\Application\Reporting\SerialLetter\Service\Entity;
 
 use SPHERE\Application\Contact\Address\Address;
+use SPHERE\Application\Contact\Address\Service\Entity\TblToCompany;
 use SPHERE\Application\Contact\Address\Service\Entity\TblToPerson;
 use SPHERE\Application\People\Person\Person;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
@@ -19,7 +20,6 @@ use Doctrine\ORM\Mapping\Cache;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
-use SPHERE\System\Extension\Repository\Debugger;
 
 /**
  * @Entity()
@@ -128,25 +128,36 @@ class TblAddressPerson extends Element
     }
 
     /**
-     * @return bool|TblToPerson
+     * @param TblFilterCategory|null $tblFilterCategory
+     *
+     * @return bool|TblToPerson|TblToCompany
      */
-    public function getServiceTblToPerson()
+    public function getServiceTblToPerson(TblFilterCategory $tblFilterCategory = null)
     {
 
         if (null === $this->serviceTblToPerson) {
             return false;
         } else {
-            return Address::useService()->getAddressToPersonById($this->serviceTblToPerson);
+            if ($tblFilterCategory != null && $tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_COMPANY_GROUP) {
+                return Address::useService()->getAddressToCompanyById($this->serviceTblToPerson);
+            } else {
+                return Address::useService()->getAddressToPersonById($this->serviceTblToPerson);
+            }
         }
     }
 
     /**
      * @param TblToPerson|null $tblToPerson
+     * @param TblToCompany     $tblToCompany
      */
-    public function setServiceTblToPerson(TblToPerson $tblToPerson = null)
+    public function setServiceTblToPerson(TblToPerson $tblToPerson = null, TblToCompany $tblToCompany = null)
     {
 
-        $this->serviceTblToPerson = ( null === $tblToPerson ? null : $tblToPerson->getId() );
+        if ($tblToCompany === null) {
+            $this->serviceTblToPerson = ( null === $tblToPerson ? null : $tblToPerson->getId() );
+        } else {
+            $this->serviceTblToPerson = $tblToCompany->getId();
+        }
     }
 
     /**

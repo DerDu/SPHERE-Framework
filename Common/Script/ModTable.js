@@ -286,7 +286,27 @@
         /**
          * Activate: DataTable
          */
+        // Activate AJAX JS on Init
+        // settings.initComplete = function(settings, json) {
+        //     var api = new $.fn.dataTable.Api( settings );
+        //     api.cells().every( function () {
+        //         jQuery(this.node()).find('script').each(function(key,value){
+        //             eval(jQuery(value).html());
+        //         });
+        //     } );
+        // }
+
         Table = this.DataTable(settings);
+
+        // Activate AJAX JS on Change
+        // Table.on( 'draw', function () {
+        //     var api = new $.fn.dataTable.Api( settings );
+        //     api.cells().every( function () {
+        //         jQuery(this.node()).find('script').each(function(key,value){
+        //             eval(jQuery(value).html());
+        //         });
+        //     } );
+        // } );
 
         /**
          * Register: RowReorder-Extension
