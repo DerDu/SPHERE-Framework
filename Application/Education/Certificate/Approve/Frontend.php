@@ -25,6 +25,7 @@ use SPHERE\Common\Frontend\Icon\Repository\Enable;
 use SPHERE\Common\Frontend\Icon\Repository\Exclamation;
 use SPHERE\Common\Frontend\Icon\Repository\Select;
 use SPHERE\Common\Frontend\IFrontendInterface;
+use SPHERE\Common\Frontend\Layout\Repository\Container;
 use SPHERE\Common\Frontend\Layout\Repository\Panel;
 use SPHERE\Common\Frontend\Layout\Repository\Title;
 use SPHERE\Common\Frontend\Layout\Structure\Layout;
@@ -121,7 +122,11 @@ class Frontend extends Extension implements IFrontendInterface
                                 ),
                                 'Zeugnisvorbereitung auswählen und Zeugnisse freigeben'
                             )
-                                : ''
+                                :
+                                (
+                                    (!$tblPrepare->getServiceTblAppointedDateTask() ? new Container(new Warning( new Ban().' Kein Stichtagsnotenauftrag vorbereitet' )) : '')
+                                    . (!$tblPrepare->getServiceTblBehaviorTask() ? new Container(new Warning(  new Ban().' Kein Kopfnotenauftrag vorbereitet' )) : '')
+                                )
                     );
                 }
 

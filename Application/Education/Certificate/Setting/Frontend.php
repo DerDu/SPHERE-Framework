@@ -62,13 +62,16 @@ class Frontend extends Extension implements IFrontendInterface
             // Fach-Noten-Definition
             $tblSubjectAll = Subject::useService()->getSubjectAll();
 
-//            if ($tblSubjectAll) {
-//                $LaneLength = ceil(count($tblSubjectAll) / 2);
-//            } else {
-//                $LaneLength = 2;
-//            }
-            // bei Noteninformationen stehen alle Fächer auf der linken Seite
-            $LaneLength = 15;
+            if ($tblCertificate->isGradeInformation()){
+                // bei Noteninformationen stehen alle Fächer auf der linken Seite
+                $LaneLength = 25;
+            } else {
+                if ($tblSubjectAll) {
+                    $LaneLength = ceil(count($tblSubjectAll) / 2);
+                } else {
+                    $LaneLength = 2;
+                }
+            }
 
             $SubjectLaneLeft = array();
             $SubjectLaneRight = array();
@@ -168,7 +171,7 @@ class Frontend extends Extension implements IFrontendInterface
             ),
             new CheckBox($FieldName.'['.$LaneIndex.']['.$LaneRanking.'][IsEssential]',
                 'Muss immer ausgewiesen werden', 1),
-            new SelectBox($FieldName.'['.$LaneIndex.']['.$LaneRanking.'][Liberation]', 'Befreihung',
+            new SelectBox($FieldName.'['.$LaneIndex.']['.$LaneRanking.'][Liberation]', 'Befreiung',
                 array('{{ Name }}' => $tblStudentLiberationCategoryAll)
             ),
         ));

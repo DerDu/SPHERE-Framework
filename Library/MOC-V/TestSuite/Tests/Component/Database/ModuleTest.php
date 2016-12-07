@@ -55,4 +55,17 @@ class ModuleTest extends AbstractTestCase
             $this->assertInstanceOf('MOC\V\Component\Database\Exception\DatabaseException', $E);
         }
     }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function setUp()
+    {
+
+        if (!extension_loaded('pdo_sqlite')) {
+            $this->markTestSkipped(
+                'PDO SqLite Library required'
+            );
+        }
+    }
 }

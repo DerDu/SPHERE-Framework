@@ -229,7 +229,11 @@ class YubiKey implements ITypeInterface
         $ErrorNumber = null;
         $ErrorMessage = null;
 
-        $Handler = fsockopen($Host, 80, $ErrorNumber, $ErrorMessage, 10);
+        try {
+            $Handler = fsockopen($Host, 80, $ErrorNumber, $ErrorMessage, 10);
+        } catch (\Exception $Exception) {
+            $Handler = false;
+        }
         if (!$Handler) {
             (new DebuggerFactory())->createLogger(new ErrorLogger())->addLog('YubiKey-Api Offline! '.$ErrorMessage);
             return false;

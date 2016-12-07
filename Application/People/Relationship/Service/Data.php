@@ -375,7 +375,7 @@ class Data extends AbstractData
     /**
      * @param TblPerson $tblPerson
      *
-     * @return bool|TblToPerson[]
+     * @return bool|TblToCompany[]
      */
     public function getCompanyRelationshipAllByPerson(TblPerson $tblPerson)
     {
@@ -490,13 +490,22 @@ class Data extends AbstractData
     ) {
 
         $Manager = $this->getConnection()->getEntityManager();
-        $Entity = new TblToCompany();
-        $Entity->setServiceTblCompany($tblCompany);
-        $Entity->setServiceTblPerson($tblPerson);
-        $Entity->setTblType($tblType);
-        $Entity->setRemark($Remark);
-        $Manager->saveEntity($Entity);
-        Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(), $Entity);
+
+        $Entity = $this->getCachedEntityBy( __METHOD__, $Manager, 'TblToCompany', array(
+            TblToCompany::SERVICE_TBL_COMPANY => $tblCompany->getId(),
+            TblToCompany::SERVICE_TBL_PERSON => $tblPerson->getId(),
+            TblToCompany::ATT_TBL_TYPE => $tblType->getId()
+        ));
+
+        if( !$Entity ) {
+            $Entity = new TblToCompany();
+            $Entity->setServiceTblCompany($tblCompany);
+            $Entity->setServiceTblPerson($tblPerson);
+            $Entity->setTblType($tblType);
+            $Entity->setRemark($Remark);
+            $Manager->saveEntity($Entity);
+            Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(), $Entity);
+        }
         return $Entity;
     }
 

@@ -641,6 +641,68 @@ class Data extends AbstractData
                     );
                 }
             }
+
+            if ($tblConsumer->getAcronym() == 'EVSR' || $tblConsumer->getAcronym() == 'DEMO') {
+                $tblConsumerCertificate = Consumer::useService()->getConsumerByAcronym('EVSR');
+                if ($tblConsumerCertificate) {
+
+                    $tblCertificate = $this->createCertificate(
+                        'Jahreszeugnis', '', 'EVSR\RadebeulJahreszeugnis', $tblConsumerCertificate
+                    );
+                    if ($tblCertificate && !$this->getCertificateGradeAll($tblCertificate)) {
+                        $this->setCertificateGradeAllStandard($tblCertificate);
+                    }
+                    if ($tblCertificate && !$this->getCertificateSubjectAll($tblCertificate)) {
+                        $this->setCertificateSubject($tblCertificate, 'DE', 1, 1);
+                        $this->setCertificateSubject($tblCertificate, 'SU', 1, 2);
+                        $this->setCertificateSubject($tblCertificate, 'KU', 1, 3);
+                        $this->setCertificateSubject($tblCertificate, 'MU', 1, 4);
+                        $this->setCertificateSubject($tblCertificate, 'EN', 1, 5);
+
+                        $this->setCertificateSubject($tblCertificate, 'MA', 2, 1);
+                        $this->setCertificateSubject($tblCertificate, 'WE', 2, 2);
+                        $this->setCertificateSubject($tblCertificate, 'RELI', 2, 3);
+                        $this->setCertificateSubject($tblCertificate, 'SPO', 2, 4);
+                    }
+
+                    $tblCertificate = $this->createCertificate(
+                        'Halbjahresinformation', '', 'EVSR\RadebeulHalbjahresinformation', $tblConsumerCertificate
+                    );
+                    if ($tblCertificate && !$this->getCertificateGradeAll($tblCertificate)) {
+                        $this->setCertificateGradeAllStandard($tblCertificate);
+                    }
+                    if ($tblCertificate && !$this->getCertificateSubjectAll($tblCertificate)) {
+                        $this->setCertificateSubject($tblCertificate, 'DE', 1, 1);
+                        $this->setCertificateSubject($tblCertificate, 'SU', 1, 2);
+                        $this->setCertificateSubject($tblCertificate, 'KU', 1, 3);
+                        $this->setCertificateSubject($tblCertificate, 'MU', 1, 4);
+                        $this->setCertificateSubject($tblCertificate, 'EN', 1, 5);
+
+                        $this->setCertificateSubject($tblCertificate, 'MA', 2, 1);
+                        $this->setCertificateSubject($tblCertificate, 'WE', 2, 2);
+                        $this->setCertificateSubject($tblCertificate, 'RELI', 2, 3);
+                        $this->setCertificateSubject($tblCertificate, 'SPO', 2, 4);
+                    }
+
+                    $tblCertificate = $this->createCertificate(
+                        'Bildungsempfehlung', 'Klassenstufe 4', 'EVSR\RadebeulBildungsempfehlung', $tblConsumerCertificate
+                    );
+                    if ($tblCertificate && !$this->getCertificateSubjectAll($tblCertificate)) {
+
+                        $this->setCertificateSubject($tblCertificate, 'DE', 1, 1);
+                        $this->setCertificateSubject($tblCertificate, 'EN', 1, 2);
+
+                        $this->setCertificateSubject($tblCertificate, 'MA', 2, 1);
+                    }
+
+                    $this->createCertificate(
+                        'Kinderbrief', '', 'EVSR\RadebeulKinderbrief', $tblConsumerCertificate
+                    );
+                    $this->createCertificate(
+                        'Lernentwicklungsbericht', '', 'EVSR\RadebeulLernentwicklungsbericht', $tblConsumerCertificate
+                    );
+                }
+            }
         }
     }
 

@@ -63,7 +63,9 @@ class Table extends Extension implements ITemplateInterface
         if ($Interactive) {
             $this->Template = $this->getTemplate(__DIR__.'/TableData.twig');
             if (is_array($Interactive)) {
-                $this->Template->setVariable('InteractiveOption', json_encode($Interactive));
+                $Options = json_encode($Interactive);
+                $Options = preg_replace( '!"(function\s*\(.*?\)\s*\{.*?\})"!is', '${1}', $Options );
+                $this->Template->setVariable('InteractiveOption', $Options);
             }
         } elseif ($Interactive === null) {
             $this->Template = $this->getTemplate(__DIR__.'/TableData.twig');
@@ -73,7 +75,9 @@ class Table extends Extension implements ITemplateInterface
                 "iDisplayLength" => -1,
                 "info"           => false
             );
-            $this->Template->setVariable('InteractiveOption', json_encode($Interactive));
+            $Options = json_encode($Interactive);
+            $Options = preg_replace( '!"(function\s*\(.*?\)\s*\{.*?\})"!is', '${1}', $Options );
+            $this->Template->setVariable('InteractiveOption', $Options);
         } else {
             $this->Template = $this->getTemplate(__DIR__.'/Table.twig');
         }

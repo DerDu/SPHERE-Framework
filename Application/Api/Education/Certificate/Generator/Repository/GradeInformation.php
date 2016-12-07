@@ -16,7 +16,9 @@ use SPHERE\Application\Education\Certificate\Generator\Repository\Frame;
 use SPHERE\Application\Education\Certificate\Generator\Repository\Page;
 use SPHERE\Application\Education\Certificate\Generator\Repository\Section;
 use SPHERE\Application\Education\Certificate\Generator\Repository\Slice;
+use SPHERE\Application\Education\Certificate\Generator\Service\Entity\TblCertificateSubject;
 use SPHERE\Application\Education\Graduation\Gradebook\Service\Entity\TblGradeType;
+use SPHERE\Application\Education\Lesson\Division\Division;
 use SPHERE\Application\Education\Lesson\Subject\Service\Entity\TblSubject;
 
 /**
@@ -37,6 +39,9 @@ class GradeInformation extends Certificate
 
         return (new Frame())->addDocument((new Document())
             ->addPage((new Page())
+                ->addSlice((new Slice())
+                    ->styleHeight('70px')
+                )
                 ->addSlice((new Slice())
                     ->addSection((new Section())
                         ->addElementColumn((new Element())
@@ -83,7 +88,7 @@ class GradeInformation extends Certificate
                                 {% else %}
                                     &nbsp;
                                 {% endif %}')
-                            ->styleHeight('250px')
+                            ->styleHeight('100px')
                         )
                     )
                     ->styleMarginTop('5px')
@@ -91,15 +96,28 @@ class GradeInformation extends Certificate
                 ->addSlice((new Slice())
                     ->addSection((new Section())
                         ->addElementColumn((new Element())
-                            ->setContent('Unterschrift der Eltern:')
-                            , '25%')
+                            ->setContent('Unterschrift des Klassenlehrers:')
+                            , '30%')
                         ->addElementColumn((new Element())
                             ->setContent('&nbsp;')
                             ->styleBorderBottom()
-                            , '55%')
+                            , '50%')
                         ->addElementColumn((new Element())
                             , '20%')
-                    )->styleMarginTop('75px')
+                    )->styleMarginTop('40px')
+                )
+                ->addSlice((new Slice())
+                    ->addSection((new Section())
+                        ->addElementColumn((new Element())
+                            ->setContent('Unterschrift der Eltern:')
+                            , '30%')
+                        ->addElementColumn((new Element())
+                            ->setContent('&nbsp;')
+                            ->styleBorderBottom()
+                            , '50%')
+                        ->addElementColumn((new Element())
+                            , '20%')
+                    )->styleMarginTop('40px')
                 )
             )
         );
@@ -115,15 +133,7 @@ class GradeInformation extends Certificate
 
         $slice = (new Slice());
 
-        $subjectList = array();
-        $tblCertificateSubjectAll = Generator::useService()->getCertificateSubjectAll($this->getCertificateEntity());
-        if ($tblCertificateSubjectAll) {
-            foreach ($tblCertificateSubjectAll as $tblCertificateSubject) {
-                if (($tblSubject = $tblCertificateSubject->getServiceTblSubject())) {
-                    $subjectList[$tblCertificateSubject->getRanking()] = $tblSubject->getAcronym();
-                }
-            }
-        }
+        $subjectList = $this->getSubjectList();
 
         if (!empty($subjectList)) {
             ksort($subjectList);
@@ -132,7 +142,7 @@ class GradeInformation extends Certificate
             $count = 1;
         }
 
-        $paddingLeft = '5px';
+        $paddingLeft = '0px';
         $columnWidth = floor(90 / ($count + 1));
         $leftWidth = 100 - (($count + 1) * $columnWidth);
 
@@ -150,6 +160,7 @@ class GradeInformation extends Certificate
             ->addElementColumn((new Element())
                 ->setContent('KL')
                 ->styleMarginTop($top)
+                ->styleAlignCenter()
                 ->stylePaddingLeft($paddingLeft)
                 ->styleBorderLeft()
                 ->styleBorderTop()
@@ -158,7 +169,7 @@ class GradeInformation extends Certificate
             ->addElementColumn((new Element())
                 ->setContent('Fachlehrer')
                 ->styleMarginTop($top)
-                ->stylePaddingLeft($paddingLeft)
+                ->stylePaddingLeft('5px')
                 ->styleBorderAll()
                 , ($count * $columnWidth) . '%');
         $slice->addSection($section);
@@ -178,12 +189,13 @@ class GradeInformation extends Certificate
                 ->styleBorderBottom()
                 , $columnWidth . '%');
         $index = 0;
-        foreach ($subjectList as $subjectAcronym) {
+        /** @var TblSubject $tblSubject */
+        foreach ($subjectList as $tblSubject) {
             $index++;
             if ($index == $count) {
                 $section
                     ->addElementColumn((new Element())
-                        ->setContent($subjectAcronym)
+                        ->setContent($tblSubject->getAcronym())
                         ->stylePaddingLeft($paddingLeft)
                         ->styleBorderLeft()
                         ->styleBorderBottom()
@@ -193,7 +205,7 @@ class GradeInformation extends Certificate
             } else {
                 $section
                     ->addElementColumn((new Element())
-                        ->setContent($subjectAcronym)
+                        ->setContent($tblSubject->getAcronym())
                         ->stylePaddingLeft($paddingLeft)
                         ->styleBorderLeft()
                         ->styleBorderBottom()
@@ -225,8 +237,8 @@ class GradeInformation extends Certificate
                         , $leftWidth . '%')
                     ->addElementColumn((new Element())
                         ->setContent('
-                            {% if(Content.Input.' . $gradeType->getCode() . ' is not empty) %}
-                                 {{ Content.Input.' . $gradeType->getCode() . ' }}
+                            {% if(Content.Input["'.$gradeType->getCode().'"] is not empty) %}
+                                 {{ Content.Input["'.$gradeType->getCode().'"] }}
                             {% else %}
                                  &nbsp;
                             {% endif %}
@@ -237,10 +249,10 @@ class GradeInformation extends Certificate
                         ->styleAlignCenter()
                         , $columnWidth . '%');
                 $index = 0;
-                foreach ($subjectList as $subjectAcronym) {
+                foreach ($subjectList as $tblSubject) {
                     $index++;
-                    $content = '{% if(Content.Input.BehaviorTeacher.' . $subjectAcronym . '.' . $gradeType->getCode() . ' is not empty) %}
-                                    {{ Content.Input.BehaviorTeacher.' . $subjectAcronym . '.' . $gradeType->getCode() . ' }}
+                    $content = '{% if(Content.Input.BehaviorTeacher["'.$tblSubject->getAcronym().'"]["'.$gradeType->getCode().'"] is not empty) %}
+                                    {{ Content.Input.BehaviorTeacher["'.$tblSubject->getAcronym().'"]["'.$gradeType->getCode().'"] }}
                                 {% else %}
                                     &nbsp;
                                 {% endif %}';
@@ -281,127 +293,143 @@ class GradeInformation extends Certificate
 
         $slice = (new Slice());
 
-        $subjectList = array();
-        $tblCertificateSubjectAll = Generator::useService()->getCertificateSubjectAll($this->getCertificateEntity());
-        if ($tblCertificateSubjectAll) {
-            foreach ($tblCertificateSubjectAll as $tblCertificateSubject) {
-                if (($tblSubject = $tblCertificateSubject->getServiceTblSubject())) {
-                    $subjectList[$tblCertificateSubject->getRanking()] = $tblSubject;
-                }
-            }
-        }
+        $subjectList = $this->getSubjectList();
         if (!empty($subjectList)) {
             ksort($subjectList);
         }
 
         $paddingLeft = '5px';
+        $paddingTop = '2px';
 
         $section = new Section();
         $top = '30px';
-        $height = '50px';
+//        $height = '50px';
+        $height = '30px';
         $fontSize = '17px';
         $section
             ->addElementColumn((new Element())
                 ->setContent('Fächer')
                 ->styleMarginTop($top)
                 ->stylePaddingLeft($paddingLeft)
+                ->stylePaddingTop('5px')
                 ->styleBorderLeft()
                 ->styleBorderTop()
                 ->styleBorderBottom()
                 ->styleBackgroundColor('#BBB')
                 ->styleHeight($height)
                 ->styleTextSize($fontSize)
-                , '30%')
+                , '50%')
             ->addElementColumn((new Element())
-                ->setContent('derzeitige Note' . '<br>' . '(mit Signum)')
+                ->setContent('derzeitige Note')
                 ->styleMarginTop($top)
                 ->stylePaddingLeft($paddingLeft)
+                ->stylePaddingTop('5px')
                 ->styleBorderLeft()
                 ->styleBorderTop()
                 ->styleBorderBottom()
+                ->styleBorderRight()
                 ->styleBackgroundColor('#BBB')
                 ->styleHeight($height)
                 ->styleAlignCenter()
                 ->styleTextSize($fontSize)
-                , '40%')
-            ->addElementColumn((new Element())
-                ->setContent('Bemerkungen, vergessene' . '<br>' . 'Arbeitsmittel')
-                ->styleMarginTop($top)
-                ->stylePaddingLeft($paddingLeft)
-                ->styleBorderAll()
-                ->styleBackgroundColor('#BBB')
-                ->styleHeight($height)
-                ->styleAlignCenter()
-                ->styleTextSize($fontSize)
-                , '40%');
+                , '50%');
+//            ->addElementColumn((new Element())
+//                ->setContent('Bemerkungen, vergessene' . '<br>' . 'Arbeitsmittel')
+//                ->styleMarginTop($top)
+//                ->stylePaddingLeft($paddingLeft)
+//                ->styleBorderAll()
+//                ->styleBackgroundColor('#BBB')
+//                ->styleHeight($height)
+//                ->styleAlignCenter()
+//                ->styleTextSize($fontSize)
+//                , '40%');
         $slice->addSection($section);
 
-        $heightRow = '25px';
-        $index = 0;
+        $heightRow = '20px';
         /** @var TblSubject $subject */
         foreach ($subjectList as $subject) {
             $section = new Section();
-            $index++;
-            if ($index == 4) {
-                $section
-                    ->addElementColumn((new Element())
-                        ->setContent('&nbsp;')
-                        ->stylePaddingLeft($paddingLeft)
-                        ->styleBorderLeft()
-                        ->styleBorderBottom()
-                        ->styleHeight($heightRow)
-                        , '30%')
-                    ->addElementColumn((new Element())
-                        ->setContent('&nbsp;')
-                        ->stylePaddingLeft('10px')
-                        ->styleBorderLeft()
-                        ->styleBorderBottom()
-                        ->styleHeight($heightRow)
-                        , '40%')
-                    ->addElementColumn((new Element())
-                        ->setContent('&nbsp;')
-                        ->stylePaddingLeft($paddingLeft)
-                        ->styleBorderLeft()
-                        ->styleBorderBottom()
-                        ->styleBorderRight()
-                        ->styleHeight($heightRow)
-                        , '40%');
 
-                $slice->addSection($section);
-                $section = new Section();
-            }
             $section
                 ->addElementColumn((new Element())
                     ->setContent($subject->getName())
                     ->stylePaddingLeft($paddingLeft)
+                    ->stylePaddingTop($paddingTop)
                     ->styleBorderLeft()
                     ->styleBorderBottom()
                     ->styleHeight($heightRow)
-                    , '30%')
+                    , '50%')
                 ->addElementColumn((new Element())
                     ->setContent('
-                        {% if(Content.Grade.Data.' . $subject->getAcronym() . ' is not empty) %}
-                            {{ Content.Grade.Data.' . $subject->getAcronym() . ' }}
+                        {% if(Content.Grade.Data["'.$subject->getAcronym().'"] is not empty) %}
+                            {{ Content.Grade.Data["'.$subject->getAcronym().'"] }}
                         {% else %}
                             &nbsp;
                         {% endif %}
                     ')
                     ->stylePaddingLeft('10px')
-                    ->styleBorderLeft()
-                    ->styleBorderBottom()
-                    ->styleHeight($heightRow)
-                    , '40%')
-                ->addElementColumn((new Element())
-                    ->setContent('&nbsp;')
-                    ->stylePaddingLeft($paddingLeft)
+                    ->stylePaddingTop($paddingTop)
                     ->styleBorderLeft()
                     ->styleBorderBottom()
                     ->styleBorderRight()
                     ->styleHeight($heightRow)
-                    , '40%');
+                    , '50%');
+//                ->addElementColumn((new Element())
+//                    ->setContent('&nbsp;')
+//                    ->stylePaddingLeft($paddingLeft)
+//                    ->styleBorderLeft()
+//                    ->styleBorderBottom()
+//                    ->styleBorderRight()
+//                    ->styleHeight($heightRow)
+//                    , '40%');
             $slice->addSection($section);
         }
 
         return $slice;
+    }
+
+    /**
+     * @return array
+     */
+    private function getSubjectList()
+    {
+        $subjectList = array();
+        $tblCertificateSubjectAll = Generator::useService()->getCertificateSubjectAll($this->getCertificateEntity());
+        if ($tblCertificateSubjectAll) {
+            /** @var TblCertificateSubject $tblCertificateSubject */
+            foreach ($tblCertificateSubjectAll as $tblCertificateSubject) {
+                if (($tblSubject = $tblCertificateSubject->getServiceTblSubject())) {
+                    if ($tblCertificateSubject->isEssential()) {
+                        $subjectList[$tblCertificateSubject->getRanking()] = $tblSubject;
+
+                        // Überprüfen ob der Schüler dieses Fach im Unterricht hat --> dann anzeigen
+                    } elseif (($tblPerson = $this->getTblPerson()) && ($tblDivision = $this->getTblDivision())) {
+                        // in Gruppe
+                        if (($tblDivisionSubjectList = Division::useService()->getDivisionSubjectAllWhereSubjectGroupByDivisionAndSubject(
+                            $tblDivision, $tblSubject
+                        ))
+                        ) {
+                            foreach ($tblDivisionSubjectList as $tblDivisionSubjectItem) {
+                                if (Division::useService()->getSubjectStudentByDivisionSubjectAndPerson(
+                                    $tblDivisionSubjectItem, $tblPerson
+                                )
+                                ) {
+                                    $subjectList[$tblCertificateSubject->getRanking()] = $tblSubject;
+                                    break;
+                                }
+                            }
+                        // keine Gruppe und in der Klasse
+                        } elseif ($tblDivisionSubject = Division::useService()->getDivisionSubjectByDivisionAndSubjectAndSubjectGroup(
+                            $tblDivision, $tblSubject
+                        )
+                        ) {
+                            $subjectList[$tblCertificateSubject->getRanking()] = $tblSubject;
+                        }
+                    }
+                }
+            }
+            return $subjectList;
+        }
+        return $subjectList;
     }
 }

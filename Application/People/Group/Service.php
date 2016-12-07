@@ -63,13 +63,14 @@ class Service extends AbstractService
 
     /**
      * @param TblGroup $tblGroup
+     * @param bool     $IsForced
      *
      * @return false|TblMember[]
      */
-    public function getMemberAllByGroup(TblGroup $tblGroup)
+    public function getMemberAllByGroup(TblGroup $tblGroup, $IsForced = false)
     {
 
-        return (new Data($this->getBinding()))->getMemberAllByGroup($tblGroup);
+        return ( new Data($this->getBinding()) )->getMemberAllByGroup($tblGroup, ( $IsForced ? $IsForced : null ));
     }
 
     /**
@@ -358,7 +359,7 @@ class Service extends AbstractService
     public function destroyGroup(TblGroup $tblGroup)
     {
 
-        $tblMemberList = Group::useService()->getMemberAllByGroup($tblGroup);
+        $tblMemberList = Group::useService()->getMemberAllByGroup($tblGroup, true);
         if ($tblMemberList) {
             foreach ($tblMemberList as $tblMember) {
                 Group::useService()->removeMember($tblMember);

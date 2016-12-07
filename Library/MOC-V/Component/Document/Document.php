@@ -4,6 +4,7 @@ namespace MOC\V\Component\Document;
 use MOC\V\Component\Document\Component\Bridge\Repository\DomPdf;
 use MOC\V\Component\Document\Component\Bridge\Repository\MPdf;
 use MOC\V\Component\Document\Component\Bridge\Repository\PhpExcel;
+use MOC\V\Component\Document\Component\Bridge\Repository\PhpWord;
 use MOC\V\Component\Document\Component\Bridge\Repository\UniversalXml;
 use MOC\V\Component\Document\Component\IBridgeInterface;
 use MOC\V\Component\Document\Component\IVendorInterface;
@@ -49,6 +50,10 @@ class Document implements IVendorInterface
             case 'xls':
             case 'xlsx': {
                 return self::getExcelDocument($Location);
+            }
+            case 'doc':
+            case 'docx': {
+                return self::getWordDocument($Location);
             }
             case 'xml': {
                 return self::getXmlDocument($Location);
@@ -102,6 +107,30 @@ class Document implements IVendorInterface
             )
         );
         /** @var PhpExcel $Bridge */
+        $Bridge = $Document->getBridgeInterface();
+        if (file_exists(new FileParameter($Location))) {
+            $Bridge->loadFile(new FileParameter($Location));
+        } else {
+            $Bridge->newFile(new FileParameter($Location));
+        }
+
+        return $Bridge;
+    }
+
+    /**
+     * @param string $Location
+     *
+     * @return IBridgeInterface
+     */
+    public static function getWordDocument($Location)
+    {
+
+        $Document = new Document(
+            new Vendor(
+                new PhpWord()
+            )
+        );
+        /** @var PhpWord $Bridge */
         $Bridge = $Document->getBridgeInterface();
         if (file_exists(new FileParameter($Location))) {
             $Bridge->loadFile(new FileParameter($Location));

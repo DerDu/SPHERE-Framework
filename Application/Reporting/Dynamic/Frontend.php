@@ -23,8 +23,10 @@ use SPHERE\Common\Frontend\Icon\Repository\ChevronLeft;
 use SPHERE\Common\Frontend\Icon\Repository\ChevronRight;
 use SPHERE\Common\Frontend\Icon\Repository\Database;
 use SPHERE\Common\Frontend\Icon\Repository\Disable;
+use SPHERE\Common\Frontend\Icon\Repository\Download;
 use SPHERE\Common\Frontend\Icon\Repository\Edit;
 use SPHERE\Common\Frontend\Icon\Repository\Enable;
+use SPHERE\Common\Frontend\Icon\Repository\EyeOpen;
 use SPHERE\Common\Frontend\Icon\Repository\More;
 use SPHERE\Common\Frontend\Icon\Repository\Nameplate;
 use SPHERE\Common\Frontend\Icon\Repository\Ok;
@@ -898,7 +900,13 @@ class Frontend extends Extension implements IFrontendInterface
 
         $TableData = new TableData($Table, null, array(),
             array(
-                'responsive' => false
+                'responsive' => false,
+                'ExtensionColVisibility' => array(
+                    'Enabled' => true
+                ),
+                'ExtensionDownloadExcel' => array(
+                    'Enabled' => true
+                )
             )
         );
 

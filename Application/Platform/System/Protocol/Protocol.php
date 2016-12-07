@@ -73,7 +73,7 @@ class Protocol implements IModuleInterface
     public function frontendProtocol($Filter = null)
     {
 
-        ini_set('memory_limit', '512M');
+        ini_set('memory_limit', '2G');
         require_once( __DIR__.'/Difference/finediff.php' );
 
         $Stage = new Stage('Protokoll', 'Aktivitäten');

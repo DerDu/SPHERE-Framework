@@ -2,6 +2,7 @@
 namespace SPHERE\Common\Frontend\Form\Structure;
 
 use MOC\V\Component\Template\Component\IBridgeInterface;
+use SPHERE\Common\Frontend\Ajax\Pipeline;
 use SPHERE\Common\Frontend\Form\IButtonInterface;
 use SPHERE\Common\Frontend\Form\IFieldInterface;
 use SPHERE\Common\Frontend\Form\IFormInterface;
@@ -285,4 +286,14 @@ class Form extends Extension implements IFormInterface
     }
 
 
+    /**
+     * @param Pipeline $Pipeline
+     * @return $this
+     */
+    public function ajaxPipelineOnSubmit( Pipeline $Pipeline )
+    {
+
+        $this->Template->setVariable('AjaxEventSubmit', $Pipeline->parseScript( $this ));
+        return $this;
+    }
 }

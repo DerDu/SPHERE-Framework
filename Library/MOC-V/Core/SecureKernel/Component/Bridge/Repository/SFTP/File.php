@@ -1,53 +1,13 @@
 <?php
 namespace MOC\V\Core\SecureKernel\Component\Bridge\Repository\SFTP;
 
-use MOC\V\Core\SecureKernel\Component\Bridge\Repository\SFTP;
-
 /**
  * Class File
  *
  * @package MOC\V\Core\SecureKernel\Component\Bridge\Repository\SFTP
  */
-class File
+class File extends Attributes
 {
-
-    /** @var string $Name */
-    private $Name = '';
-    /** @var string $Permission */
-    private $Permission = '';
-    /** @var string $Mode */
-    private $Mode = '';
-    /** @var int $LastAccess */
-    private $LastAccess = 0;
-    /** @var int $LastChange */
-    private $LastChange = 0;
-
-    /** @var null|SFTP $Connection */
-    private $Connection = null;
-
-    /**
-     * @param SFTP  $Connection
-     * @param array $Attributes
-     */
-    public function __construct(SFTP $Connection, $Attributes)
-    {
-
-        $this->Name = $Attributes['filename'];
-        $this->Permission = substr(decoct($Attributes['permissions']), -4);
-        $this->Mode = substr(decoct($Attributes['mode']), -4);
-        $this->LastAccess = $Attributes['atime'];
-        $this->LastChange = $Attributes['mtime'];
-        $this->Connection = $Connection;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-
-        return $this->Name;
-    }
 
     /**
      * @return string
@@ -55,7 +15,7 @@ class File
     public function getPermission()
     {
 
-        return $this->Permission;
+        return $this->getPermission();
     }
 
     /**
@@ -64,7 +24,7 @@ class File
     public function getMode()
     {
 
-        return $this->Mode;
+        return $this->getMode();
     }
 
     /**
@@ -73,7 +33,7 @@ class File
     public function getLastAccess()
     {
 
-        return $this->LastAccess;
+        return $this->getLastAccess();
     }
 
     /**
@@ -82,6 +42,24 @@ class File
     public function getLastChange()
     {
 
-        return $this->LastChange;
+        return $this->getLastChange();
+    }
+
+    /**
+     * @return bool
+     */
+    public function existsFile()
+    {
+
+        return $this->getConnection()->existsFile($this->getName());
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+
+        return $this->getName();
     }
 }

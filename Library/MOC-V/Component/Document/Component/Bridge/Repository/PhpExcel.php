@@ -14,7 +14,7 @@ class PhpExcel extends File
 {
 
     /**
-     *
+     * PhpExcel constructor.
      */
     public function __construct()
     {

@@ -32,6 +32,18 @@ class Layout extends Extension implements ILayoutInterface
     }
 
     /**
+     * @param LayoutGroup $LayoutGroup
+     *
+     * @return Layout
+     */
+    public function addGroup(LayoutGroup $LayoutGroup)
+    {
+
+        array_push($this->LayoutGroup, $LayoutGroup);
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function __toString()

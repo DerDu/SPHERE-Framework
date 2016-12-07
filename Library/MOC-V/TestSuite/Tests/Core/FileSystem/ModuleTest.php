@@ -36,6 +36,11 @@ class ModuleTest extends AbstractTestCase
     public function testStaticUniversalDownload()
     {
 
+        if (getenv('CI')) {
+            $this->markTestSkipped(
+                'Finder is not available on CircleCI'
+            );
+        }
         try {
             $this->invokeClassMethod('MOC\V\Core\FileSystem\FileSystem', 'getUniversalDownload', array(__DIR__));
         } catch (\Exception $E) {
@@ -115,6 +120,12 @@ class ModuleTest extends AbstractTestCase
 
     public function testStaticSymfonyFinder()
     {
+
+        if (getenv('CI')) {
+            $this->markTestSkipped(
+                'Finder is not available on CircleCI'
+            );
+        }
 
         try {
             $this->invokeClassMethod('MOC\V\Core\FileSystem\FileSystem', 'getSymfonyFinder', array(__DIR__));

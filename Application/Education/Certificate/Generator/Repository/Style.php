@@ -254,5 +254,14 @@ abstract class Style extends Extension
         $this->Style[] = 'height: '.$Height.' !important;';
         return $this;
     }
-    
+
+    /**
+     * @return $this
+     */
+    public function styleTextUnderline()
+    {
+
+        $this->Style[] = 'text-decoration: underline;';
+        return $this;
+    }
 }

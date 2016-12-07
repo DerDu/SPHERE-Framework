@@ -9,9 +9,6 @@ namespace MOC\V\Component\Document\Vendor\UniversalXml\Source;
 abstract class TokenPattern extends TokenType
 {
 
-    private $PatternTagOpen = '!^[^\!/].*?[^/]$!is';
-    private $PatternTagClose = '!^/.*?!is';
-    private $PatternTagShort = '!^[^\!].*?/$!is';
     private $PatternTagCDATA = '!^\!\[CDATA.*?\]\]$!is';
     private $PatternTagComment = '!^\![^\[].*?--$!is';
 

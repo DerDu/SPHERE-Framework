@@ -8,7 +8,7 @@
             {{ ElementIcon }}
         </span>
         {% endif %}
-        <input type="text" class="form-control" name="{{ ElementName }}"
+        <input type="text" class="form-control{% if( ElementClass is not empty ) %} {{ ElementClass }}{% endif %}" name="{{ ElementName }}"
                placeholder="{{ ElementPlaceholder }}"
                data-date-format="DD.MM.YYYY" data-date-language="de" data-date-pickTime="false"
                data-bv-date-format="DD.MM.YYYY"

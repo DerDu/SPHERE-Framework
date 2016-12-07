@@ -1,5 +1,7 @@
 <?php
 namespace SPHERE\Application\Platform\Roadmap\Youtrack;
+use SPHERE\System\Support\Support;
+use SPHERE\System\Support\Type\Roadmap;
 
 /**
  * Class Credentials
@@ -22,9 +24,11 @@ class Credentials
     public function __construct()
     {
 
-        $this->Host = 'https://ticket.swe.haus-der-edv.de';
-        $this->Username = 'KREDA-Support';
-        $this->Password = 'Professional';
+        $Config = (new Support(new Roadmap()))->getSupport();
+
+        $this->Host = $Config->getHost();
+        $this->Username = $Config->getUsername();
+        $this->Password = $Config->getPassword();
     }
 
     /**

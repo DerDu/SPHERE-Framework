@@ -159,6 +159,7 @@ class Setup extends AbstractSetup
             $Table->addColumn('SortOrder', 'integer', array('notnull' => false));
         }
         $this->getConnection()->addForeignKey($Table, $tblDivision);
+        $this->createIndex( $Table, array( 'serviceTblPerson', 'tblDivision' ), false );
         return $Table;
     }
 

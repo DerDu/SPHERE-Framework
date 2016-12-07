@@ -296,4 +296,31 @@ abstract class AbstractField extends Extension implements IFieldInterface
         $this->Template->setVariable('TabIndex', (int)$Index);
         return $this;
     }
+
+    /**
+     * @return AbstractField
+     */
+    public function setInputAlignLeft()
+    {
+        $this->Template->setVariable( 'ElementClass', 'text-left' );
+        return $this;
+    }
+
+    /**
+     * @return AbstractField
+     */
+    public function setInputAlignCenter()
+    {
+        $this->Template->setVariable( 'ElementClass', 'text-center' );
+        return $this;
+    }
+
+    /**
+     * @return AbstractField
+     */
+    public function setInputAlignRight()
+    {
+        $this->Template->setVariable( 'ElementClass', 'text-right' );
+        return $this;
+    }
 }

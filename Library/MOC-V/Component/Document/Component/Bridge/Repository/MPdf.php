@@ -4,8 +4,6 @@ namespace MOC\V\Component\Document\Component\Bridge\Repository;
 use MOC\V\Component\Document\Component\Bridge\Bridge;
 use MOC\V\Component\Document\Component\IBridgeInterface;
 use MOC\V\Component\Document\Component\Parameter\Repository\FileParameter;
-use MOC\V\Component\Document\Component\Parameter\Repository\PaperOrientationParameter;
-use MOC\V\Component\Document\Component\Parameter\Repository\PaperSizeParameter;
 use MOC\V\Component\Template\Component\IBridgeInterface as IBridgeInterface_Template;
 
 /**
@@ -20,37 +18,12 @@ class MPdf extends Bridge implements IBridgeInterface
     private $Source = '';
 
     /**
-     *
+     * MPdf constructor.
      */
     public function __construct()
     {
 
         require_once( __DIR__.'/../../../Vendor/mPdf/6.0.0/mpdf.php' );
-
-        $this->setPaperSizeParameter(new PaperSizeParameter());
-        $this->setPaperOrientationParameter(new PaperOrientationParameter());
-    }
-
-    /**
-     * @param PaperSizeParameter $PaperSize
-     *
-     * @return IBridgeInterface
-     */
-    public function setPaperSizeParameter(PaperSizeParameter $PaperSize)
-    {
-
-        return parent::setPaperSizeParameter($PaperSize);
-    }
-
-    /**
-     * @param PaperOrientationParameter $PaperOrientation
-     *
-     * @return IBridgeInterface
-     */
-    public function setPaperOrientationParameter(PaperOrientationParameter $PaperOrientation)
-    {
-
-        return parent::setPaperOrientationParameter($PaperOrientation);
     }
 
     /**

@@ -387,25 +387,20 @@ class Data extends AbstractData
         if ($tblPrepareGradeList) {
             $isApprovedArray = array();
             foreach ($tblPrepareGradeList as $tblPrepareGrade) {
-                /** @var TblPrepareGrade $Entity */
-                $Entity = $Manager->getEntity('TblPrepareGrade')->findOneBy(array('Id' => $tblPrepareGrade->getId()));
-                if (null !== $Entity) {
-                    if (($tblPerson = $Entity->getServiceTblPerson())) {
-                        if (!isset($isApprovedArray[$tblPerson->getId()])) {
-                            if (($tblPersonStudent = $this->getPrepareStudentBy($tblPrepare, $tblPerson))) {
-                                $isApprovedArray[$tblPerson->getId()] = $tblPersonStudent->isApproved();
-                            } else {
-                                $isApprovedArray[$tblPerson->getId()] = false;
-                            }
+                if (($tblPerson = $tblPrepareGrade->getServiceTblPerson())) {
+                    if (!isset($isApprovedArray[$tblPerson->getId()])) {
+                        if (($tblPersonStudent = $this->getPrepareStudentBy($tblPrepare, $tblPerson))) {
+                            $isApprovedArray[$tblPerson->getId()] = $tblPersonStudent->isApproved();
+                        } else {
+                            $isApprovedArray[$tblPerson->getId()] = false;
                         }
                     }
+                }
 
-                    // Freigebene nicht löschen
-                    if (!$tblPerson || !$isApprovedArray[$tblPerson->getId()]) {
-                        // ToDo GCK Protokoll bulkSave sonst witzlos
-                        Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(), $Entity);
-                        $Manager->bulkKillEntity($Entity);
-                    }
+                // Freigegebene nicht löschen
+                if (!$isApprovedArray[$tblPerson->getId()]) {
+                    Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(), $tblPrepareGrade);
+                    $Manager->bulkKillEntity($tblPrepareGrade);
                 }
             }
 

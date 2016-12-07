@@ -62,6 +62,9 @@ class Setup extends AbstractSetup
                 $tblCommonBirthDatesAll = Common::useService()->getCommonBirthDatesAll();
                 if ($tblCommonBirthDatesAll) {
                     foreach ($tblCommonBirthDatesAll as $tblCommonBirthDates) {
+                        if( $tblCommonBirthDates->isGenderInSync() ) {
+                            continue;
+                        }
                         Common::useService()->updateCommonBirthDates(
                             $tblCommonBirthDates,
                             $tblCommonBirthDates->getBirthday(),

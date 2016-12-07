@@ -2,6 +2,7 @@
 namespace SPHERE\Application\Api;
 
 use SPHERE\Application\Api\Billing\Billing;
+use SPHERE\Application\Api\Corporation\Corporation;
 use SPHERE\Application\Api\Document\Document;
 use SPHERE\Application\Api\Education\Education;
 use SPHERE\Application\Api\Platform\Platform;
@@ -26,5 +27,6 @@ class Api implements IClusterInterface
         Platform::registerApplication();
         Education::registerApplication();
         Document::registerApplication();
+        Corporation::registerApplication();
     }
 }

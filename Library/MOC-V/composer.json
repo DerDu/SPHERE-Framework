@@ -29,7 +29,8 @@
         "http",
         "request",
         "secure",
-        "sftp"
+      "sftp",
+      "zip"
     ],
     "license": "BSD-3-Clause",
     "minimum-stability": "stable",

@@ -82,6 +82,20 @@ class ModuleTest extends AbstractTestCase
         $this->assertInstanceOf('MOC\V\Component\Document\Component\IBridgeInterface', $Document);
     }
 
+    public function testStaticDocDocument()
+    {
+
+        $Document = Document::getWordDocument(__DIR__.'/Content/test.docx');
+        $this->assertInstanceOf('MOC\V\Component\Document\Component\IBridgeInterface', $Document);
+        $this->assertInstanceOf('MOC\V\Component\Document\Component\IBridgeInterface',
+            $Document->saveFile()
+        );
+        $Document = Document::getWordDocument(__DIR__.'/Content/test.doc');
+        $this->assertInstanceOf('MOC\V\Component\Document\Component\IBridgeInterface', $Document);
+        $Document = Document::getWordDocument(__DIR__.'/Content/test.docx');
+        $this->assertInstanceOf('MOC\V\Component\Document\Component\IBridgeInterface', $Document);
+    }
+
     public function testStaticPdfDocument()
     {
 
@@ -119,6 +133,16 @@ class ModuleTest extends AbstractTestCase
         }
         try {
             Document::getDocument('Missing.xlsx');
+        } catch (\Exception $E) {
+
+        }
+        try {
+            Document::getDocument('Missing.doc');
+        } catch (\Exception $E) {
+
+        }
+        try {
+            Document::getDocument('Missing.docx');
         } catch (\Exception $E) {
 
         }

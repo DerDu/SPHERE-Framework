@@ -40,7 +40,7 @@
             "lengthChange": true,
             "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, 'Alle']],
             "pageLength": 10,
-            "dom": "<'row'<'col-sm-5 hidden-xs'li><'col-sm-7 hidden-xs'fp>>" +
+            "dom": "<'row'<'col-sm-5 hidden-xs'liB><'col-sm-7 hidden-xs'fp>>" +
             "<'row'<'col-sm-12'tr>>" +
             "<'row'<'col-sm-5'i><'col-sm-7'p>>",
             stateSave: true,
@@ -163,7 +163,14 @@
                 Data: {
                     // User-Data (additional)
                 }
-            }
+            },
+            ExtensionColVisibility: {
+                Enabled: false
+            },
+            ExtensionDownloadExcel: {
+                Enabled: false
+            },
+            buttons: []
         }, options);
 
         /**
@@ -253,10 +260,53 @@
             }
         }
 
+        if( settings.ExtensionColVisibility.Enabled ) {
+            settings.buttons.push(
+                {
+                    'extend': 'colvis',
+                    'text': 'Spalten',
+                }
+            );
+        }
+        if( settings.ExtensionDownloadExcel.Enabled ) {
+            settings.buttons.push(
+                {
+                    'extend': 'excel',
+                    'text': 'Download',
+                    'exportOptions': {
+                        'columns': ':visible',
+                        'rows': function (idx, data, node) {
+                            if ($(node).find('td:not(:empty)').length > 0) return true;
+                        }
+                    }
+                }
+            );
+        }
+
         /**
          * Activate: DataTable
          */
+        // Activate AJAX JS on Init
+        // settings.initComplete = function(settings, json) {
+        //     var api = new $.fn.dataTable.Api( settings );
+        //     api.cells().every( function () {
+        //         jQuery(this.node()).find('script').each(function(key,value){
+        //             eval(jQuery(value).html());
+        //         });
+        //     } );
+        // }
+
         Table = this.DataTable(settings);
+
+        // Activate AJAX JS on Change
+        // Table.on( 'draw', function () {
+        //     var api = new $.fn.dataTable.Api( settings );
+        //     api.cells().every( function () {
+        //         jQuery(this.node()).find('script').each(function(key,value){
+        //             eval(jQuery(value).html());
+        //         });
+        //     } );
+        // } );
 
         /**
          * Register: RowReorder-Extension

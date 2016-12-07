@@ -107,6 +107,16 @@ class Gradebook implements IModuleInterface
             Main::getDispatcher()->createRoute(__NAMESPACE__.'\Gradebook\Headmaster\Selected',
                 __NAMESPACE__.'\Frontend::frontendHeadmasterSelectedGradebook')
         );
+        // studentoverview for Headmaster
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__.'\Gradebook\Headmaster\Division', __NAMESPACE__.'\Frontend::frontendHeadmasterDivisionList')
+        );
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__.'\Gradebook\Headmaster\Division\Student', __NAMESPACE__.'\Frontend::frontendHeadmasterSelectStudent')
+        );
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__.'\Gradebook\Headmaster\Division\Student\Overview', __NAMESPACE__.'\Frontend::frontendHeadmasterStudentOverview')
+        );
 
         /*
          * ScoreRule

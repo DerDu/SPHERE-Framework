@@ -9,6 +9,8 @@ use SPHERE\Application\Education\Certificate\Generator\Repository\Frame;
 use SPHERE\Application\Education\Certificate\Generator\Repository\Section;
 use SPHERE\Application\Education\Certificate\Generator\Repository\Slice;
 use SPHERE\Application\Education\Certificate\Generator\Service\Entity\TblCertificate;
+use SPHERE\Application\Education\Lesson\Division\Division;
+use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
 use SPHERE\Application\People\Meta\Common\Common;
 use SPHERE\Application\People\Meta\Student\Student;
 use SPHERE\Application\People\Person\Person;
@@ -37,6 +39,11 @@ abstract class Certificate extends Extension
      * @var TblPerson|null
      */
     private $tblPerson = null;
+
+    /**
+     * @var TblDivision|null
+     */
+    private $tblDivision = null;
 
     /**
      * @param bool|true $IsSample
@@ -78,6 +85,11 @@ abstract class Certificate extends Extension
         ) {
             $this->allocateCompanyData($Data);
             $this->allocateCompanyAddress($Data);
+        }
+        if (isset($Data['Division']['Id'])
+            && ($tblDivision = Division::useService()->getDivisionById($Data['Division']['Id']))
+        ){
+            $this->setTblDivision($tblDivision);
         }
 
         $this->Certificate = $this->buildCertificate($this->IsSample);
@@ -137,6 +149,27 @@ abstract class Certificate extends Extension
     {
 
         $this->tblPerson = $tblPerson;
+    }
+
+    /**
+     * @return false|TblDivision
+     */
+    public function getTblDivision()
+    {
+        if (null === $this->tblDivision) {
+            return false;
+        } else {
+            return $this->tblDivision;
+        }
+    }
+
+    /**
+     * @param false|TblDivision $tblDivision
+     */
+    public function setTblDivision(TblDivision $tblDivision = null)
+    {
+
+        $this->tblDivision = $tblDivision;
     }
 
     /**
@@ -457,8 +490,8 @@ abstract class Certificate extends Extension
                     }
 
                     $SubjectSection->addElementColumn((new Element())
-                        ->setContent('{% if(Content.Grade.Data.' . $Subject['SubjectAcronym'] . ' is not empty) %}
-                                             {{ Content.Grade.Data.' . $Subject['SubjectAcronym'] . ' }}
+                        ->setContent('{% if(Content.Grade.Data["'.$Subject['SubjectAcronym'].'"] is not empty) %}
+                                             {{ Content.Grade.Data["'.$Subject['SubjectAcronym'].'"] }}
                                          {% else %}
                                              ---
                                          {% endif %}')
@@ -492,8 +525,8 @@ abstract class Certificate extends Extension
                     }
                     $SubjectSection->addElementColumn((new Element())
                         ->setContent($hasAdditionalLine['Ranking'] . '. Fremdsprache (ab Klassenstufe ' .
-                            '{% if(Content.Subject.Level.' . $hasAdditionalLine['SubjectAcronym'] . ' is not empty) %}
-                                     {{ Content.Subject.Level.' . $hasAdditionalLine['SubjectAcronym'] . ' }}
+                            '{% if(Content.Subject.Level["'.$hasAdditionalLine['SubjectAcronym'].'"] is not empty) %}
+                                     {{ Content.Subject.Level["'.$hasAdditionalLine['SubjectAcronym'].'"] }}
                                  {% else %}
                                     -
                                  {% endif %}'
@@ -586,8 +619,8 @@ abstract class Certificate extends Extension
                         ->styleTextSize($TextSize)
                         , '39%');
                     $GradeSection->addElementColumn((new Element())
-                        ->setContent('{% if(Content.Input.' . $Grade['GradeAcronym'] . ' is not empty) %}
-                                         {{ Content.Input.' . $Grade['GradeAcronym'] . ' }}
+                        ->setContent('{% if(Content.Input["'.$Grade['GradeAcronym'].'"] is not empty) %}
+                                         {{ Content.Input["'.$Grade['GradeAcronym'].'"] }}
                                      {% else %}
                                          ---
                                      {% endif %}')

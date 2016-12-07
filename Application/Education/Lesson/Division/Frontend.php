@@ -1935,7 +1935,7 @@ class Frontend extends Extension implements IFrontendInterface
                             array(
                                 'Id'                => $tblDivision->getId(),
                                 'DivisionSubjectId' => $tblDivisionSubject->getId()
-                            ), 'Fachleher festlegen'));
+                            ), 'Fachlehrer festlegen'));
 
                     if ($tblDivisionSubject->getServiceTblSubject() && $tblDivisionSubject->getTblDivision()) {
                         $tblDivisionSubjectTestList = Division::useService()->getDivisionSubjectBySubjectAndDivision($tblDivisionSubject->getServiceTblSubject(),

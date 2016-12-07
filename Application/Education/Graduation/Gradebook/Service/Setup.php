@@ -128,6 +128,9 @@ class Setup extends AbstractSetup
 
         $this->getConnection()->addForeignKey($Table, $tblGradeType, true);
 
+        $this->createIndex( $Table, array( 'serviceTblPerson', 'serviceTblTest' ), false );
+        $this->createIndex( $Table, array( 'serviceTblDivision', 'serviceTblSubject' ), false );
+
         return $Table;
     }
 
@@ -316,6 +319,8 @@ class Setup extends AbstractSetup
         $this->getConnection()->addForeignKey($Table, $tblScoreRule, true);
         $this->getConnection()->addForeignKey($Table, $tblScoreType, true);
 
+        $this->createIndex( $Table, array('serviceTblDivision','serviceTblSubject'), false );
+
         return $Table;
     }
 
@@ -341,6 +346,8 @@ class Setup extends AbstractSetup
         }
 
         $this->getConnection()->addForeignKey($Table, $tblScoreRule, true);
+
+        $this->createIndex( $Table, array('serviceTblDivision','serviceTblSubject', 'serviceTblSubjectGroup'), false );
 
         return $Table;
     }

@@ -90,7 +90,7 @@ class Service extends AbstractService
     /**
      * @param TblPerson $tblPerson
      *
-     * @return bool|TblToPerson[]
+     * @return bool|TblToCompany[]
      */
     public function getCompanyRelationshipAllByPerson(TblPerson $tblPerson)
     {
@@ -461,6 +461,25 @@ class Service extends AbstractService
     {
 
         return (new Data($this->getBinding()))->getRelationshipToCompanyById($Id);
+    }
+
+    /**
+     * @param TblCompany $tblCompany
+     * @param TblPerson  $tblPerson
+     * @param TblType    $tblType
+     * @param string     $Remark
+     *
+     * @return TblToCompany
+     */
+    public function addCompanyRelationshipToPerson(
+        TblCompany $tblCompany,
+        TblPerson $tblPerson,
+        TblType $tblType,
+        $Remark = ''
+    ) {
+        return (new Data($this->getBinding()))->addCompanyRelationshipToPerson(
+            $tblCompany, $tblPerson, $tblType, $Remark
+        );
     }
 
     /**

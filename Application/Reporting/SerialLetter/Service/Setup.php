@@ -27,7 +27,9 @@ class Setup extends AbstractSetup
          * Table
          */
         $Schema = clone $this->getConnection()->getSchema();
-        $tblSerialLetter = $this->setTableSerialLetter($Schema);
+        $tblFilterCategory = $this->setTableFilterCategory($Schema);
+        $tblSerialLetter = $this->setTableSerialLetter($Schema, $tblFilterCategory);
+        $this->setTableFilterField($Schema, $tblFilterCategory, $tblSerialLetter);
         $this->setTableSerialPerson($Schema, $tblSerialLetter);
         $this->setTableAddressPerson($Schema, $tblSerialLetter);
 
@@ -44,7 +46,24 @@ class Setup extends AbstractSetup
      *
      * @return Table
      */
-    private function setTableSerialLetter(Schema &$Schema)
+    private function setTableFilterCategory($Schema)
+    {
+
+        $Table = $this->getConnection()->createTable($Schema, 'tblFilterCategory');
+        if (!$this->getConnection()->hasColumn('tblFilterCategory', 'Name')) {
+            $Table->addColumn('Name', 'string');
+        }
+
+        return $Table;
+    }
+
+    /**
+     * @param Schema $Schema
+     * @param Table  $tblFilterCategory
+     *
+     * @return Table
+     */
+    private function setTableSerialLetter(Schema &$Schema, $tblFilterCategory)
     {
 
         $Table = $this->getConnection()->createTable($Schema, 'tblSerialLetter');
@@ -54,6 +73,30 @@ class Setup extends AbstractSetup
         if (!$this->getConnection()->hasColumn('tblSerialLetter', 'Description')) {
             $Table->addColumn('Description', 'string');
         }
+        $this->getConnection()->addForeignKey($Table, $tblFilterCategory, true);
+
+        return $Table;
+    }
+
+    /**
+     * @param Schema $Schema
+     * @param Table  $tblFilterCategory
+     * @param Table  $tblSerialLetter
+     *
+     * @return Table
+     */
+    private function setTableFilterField($Schema, $tblFilterCategory, $tblSerialLetter)
+    {
+
+        $Table = $this->getConnection()->createTable($Schema, 'tblFilterField');
+        if (!$this->getConnection()->hasColumn('tblFilterField', 'Field')) {
+            $Table->addColumn('Field', 'string');
+        }
+        if (!$this->getConnection()->hasColumn('tblFilterField', 'Value')) {
+            $Table->addColumn('Value', 'string');
+        }
+        $this->getConnection()->addForeignKey($Table, $tblFilterCategory, false);
+        $this->getConnection()->addForeignKey($Table, $tblSerialLetter, false);
 
         return $Table;
     }

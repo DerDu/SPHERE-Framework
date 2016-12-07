@@ -25,7 +25,7 @@
             </span>
                 {% endif %}
                 {% endif %}
-                <input type="text" class="form-control" name="{{ ElementName }}" placeholder="{{ ElementPlaceholder }}"
+                <input type="text" class="form-control{% if( ElementClass is not empty ) %} {{ ElementClass }}{% endif %}" name="{{ ElementName }}" placeholder="{{ ElementPlaceholder }}"
                        value="{{ ElementValue }}"
                        {% if( TabIndex is not empty ) %}tabindex="{{ TabIndex }}"{% endif %}/>
                 {{ ElementFeedbackIcon }}

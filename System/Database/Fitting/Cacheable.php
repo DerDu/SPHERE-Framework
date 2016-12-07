@@ -44,7 +44,7 @@ abstract class Cacheable extends Extension
 
         $Key = $this->getKeyHash($EntityName, $Parameter);
 
-        $Memory = (new CacheFactory())->createHandler(new MemoryHandler());
+        $Memory = $this->getMemoryCacheHandler();
         if (!$this->Enabled || null === ( $Entity = $Memory->getValue($Key, $__METHOD__) )) {
 
             $Cache = self::getCacheSystem();
@@ -157,7 +157,7 @@ abstract class Cacheable extends Extension
         $Parameter['EntityRemove'] = null;
         $Key = $this->getKeyHash($EntityName, $Parameter);
 
-        $Memory = (new CacheFactory())->createHandler(new MemoryHandler());
+        $Memory = $this->getMemoryCacheHandler();
         if (!$this->Enabled || null === ( $Entity = $Memory->getValue($Key, $__METHOD__) )) {
 
             $Cache = self::getCacheSystem();
@@ -194,7 +194,7 @@ abstract class Cacheable extends Extension
         $Parameter['EntityRemove'] = null;
         $Key = $this->getKeyHash($EntityName, $Parameter).$this->getKeyHash($EntityName, $OrderBy);
 
-        $Memory = (new CacheFactory())->createHandler(new MemoryHandler());
+        $Memory = $this->getMemoryCacheHandler();
         if (!$this->Enabled || null === ( $EntityList = $Memory->getValue($Key, $__METHOD__) )) {
 
             $Cache = self::getCacheSystem();
@@ -225,7 +225,7 @@ abstract class Cacheable extends Extension
 
         $Key = $this->getKeyHash($EntityName, 'All').$this->getKeyHash($EntityName, $OrderBy);
 
-        $Memory = (new CacheFactory())->createHandler(new MemoryHandler());
+        $Memory = $this->getMemoryCacheHandler();
         if (!$this->Enabled || null === ( $EntityList = $Memory->getValue($Key, $__METHOD__) )) {
 
             $Cache = self::getCacheSystem();
@@ -261,7 +261,7 @@ abstract class Cacheable extends Extension
         $Parameter['EntityRemove'] = null;
         $Key = $this->getKeyHash($EntityName, $Parameter);
 
-        $Memory = (new CacheFactory())->createHandler(new MemoryHandler());
+        $Memory = $this->getMemoryCacheHandler();
         if (!$this->Enabled || null === ( $Entity = $Memory->getValue($Key, $__METHOD__) )) {
 
             $Cache = self::getCacheSystem();
@@ -280,5 +280,19 @@ abstract class Cacheable extends Extension
             return ( null === $Entity || false === $Entity ? false : $Entity );
         }
         return ( null === $Entity || false === $Entity ? false : $Entity );
+    }
+
+    /** @var null|MemoryHandler $MemoryCacheHandler */
+    private static $MemoryCacheHandler = null;
+
+    /**
+     * @return MemoryHandler
+     */
+    private function getMemoryCacheHandler()
+    {
+        if( self::$MemoryCacheHandler === null ) {
+            self::$MemoryCacheHandler = (new CacheFactory())->createHandler(new MemoryHandler());
+        }
+        return self::$MemoryCacheHandler;
     }
 }

@@ -735,7 +735,7 @@ class Frontend extends Extension implements IFrontendInterface
                             ? $tblTask->getServiceTblPeriod()->getDisplayName()
                             : 'Gesamtes Schuljahr',
                         'Option' => $isChosen
-                            ? ''
+                            ? new Success( new Enable().' Ausgewählt')
                             : new Standard(
                                 '',
                                 '/Education/Certificate/Prepare/AppointedDateTask/Select',

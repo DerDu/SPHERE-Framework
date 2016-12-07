@@ -41,18 +41,30 @@ class MemcachedHandler extends AbstractHandler implements HandlerInterface
                 $this->Host = $Value->getContainer('Host');
                 $this->Port = $Value->getContainer('Port');
                 if ($this->Host && $this->Port) {
-                    $this->Connection = new \Memcached();
-                    if ($this->Connection->addServer((string)$this->Host, (string)$this->Port)) {
-                        $this->Connection->setOption(\Memcached::OPT_TCP_NODELAY, true);
-                        $this->Connection->setOption(\Memcached::OPT_NO_BLOCK, true);
-                        $this->Connection->setOption(\Memcached::OPT_CONNECT_TIMEOUT, 1);
+                    $this->Connection = new \Memcached('pMC');
+                    $this->Connection->setOption(\Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
+                    $this->Connection->setOption(\Memcached::OPT_TCP_NODELAY, true);
+                    $this->Connection->setOption(\Memcached::OPT_NO_BLOCK, true);
+                    $this->Connection->setOption(\Memcached::OPT_CONNECT_TIMEOUT, 1);
+                    if( !count($this->Connection->getServerList()) ) {
+                        if ($this->Connection->addServer((string)$this->Host, (string)$this->Port)) {
+                            $this->setValue('CheckRunningStatus', true);
+                            if (true === $this->getValue('CheckRunningStatus')) {
+                                $this->Connection->delete('CheckRunningStatus');
+                                return $this;
+                            } else {
+                                (new DebuggerFactory())->createLogger(new ErrorLogger())
+                                    ->addLog(__METHOD__ . ' Error: Server not available -> Fallback');
+                            }
+                        }
+                    } else {
                         $this->setValue('CheckRunningStatus', true);
                         if (true === $this->getValue('CheckRunningStatus')) {
                             $this->Connection->delete('CheckRunningStatus');
                             return $this;
                         } else {
                             (new DebuggerFactory())->createLogger(new ErrorLogger())
-                                ->addLog(__METHOD__.' Error: Server not available -> Fallback');
+                                ->addLog(__METHOD__ . ' Error: Server not available -> Fallback');
                         }
                     }
                 } else {

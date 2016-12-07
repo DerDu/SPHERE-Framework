@@ -38,7 +38,7 @@ class StudentCard extends AbstractDocument
         $HeightThreeLineBlock = '75px';
         $HeightTwoLineBlock = '20px';
 
-        $SpaceBetween = '60px';
+        $SpaceBetween = '70px';
 
         $HeightForHeader = '100px';
         $InputFieldTop = '4px';
@@ -558,7 +558,7 @@ class StudentCard extends AbstractDocument
                 ->addSlice(( new Slice() )
                     ->addSection(( new Section() )
                         ->addElementColumn(( new Element() )
-                            ->setContent('Bildungsempfehlung für Mittelschule / Gymnasium¹: Aufnahmeürüfung Ja/Nein¹')//ToDO auslesen aus der Schülerakte (später)
+                            ->setContent('Bildungsempfehlung für Mittelschule / Gymnasium¹: Aufnahmeprüfung Ja/Nein¹')//ToDO auslesen aus der Schülerakte (später)
                             ->styleTextSize('13.5px')
                             ->stylePaddingTop('6px')
                             ->stylePaddingLeft()

@@ -17,6 +17,7 @@
             <directory suffix=".php">./Tests/Component/Mail</directory>
             <directory suffix=".php">./Tests/Component/Router</directory>
             <directory suffix=".php">./Tests/Component/Template</directory>
+            <directory suffix=".php">./Tests/Component/Packer</directory>
             <file phpVersion="5.3.0" phpVersionOperator="&lt;=">./Tests/Component/Documentation/BridgeTest.php</file>
             <file>./Tests/Component/Documentation/ExceptionTest.php</file>
             <file phpVersion="5.3.0" phpVersionOperator="&lt;=">./Tests/Component/Documentation/ModuleTest.php</file>
@@ -44,6 +45,7 @@
                 <directory>./../Component/Database/Vendor/Doctrine2Lexer</directory>
                 <directory>./../Component/Database/Vendor/Doctrine2ORM</directory>
                 <directory>./../Component/Document/Vendor/PhpExcel</directory>
+                <directory>./../Component/Document/Vendor/PhpWord</directory>
                 <directory>./../Component/Document/Vendor/DomPdf</directory>
                 <directory>./../Component/Document/Vendor/mPdf</directory>
                 <directory>./../Component/Documentation/Vendor/ApiGen</directory>
@@ -53,6 +55,7 @@
                 <directory>./../Component/Template/Vendor/Twig</directory>
                 <directory>./../Component/Template/Vendor/TwigExtension</directory>
                 <directory>./../Component/Template/Vendor/Smarty</directory>
+                <directory>./../Component/Packer/Vendor/PclZip</directory>
             </exclude>
         </whitelist>
     </filter>

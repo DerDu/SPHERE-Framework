@@ -132,4 +132,17 @@ class BridgeTest extends AbstractTestCase
         }
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function setUp()
+    {
+
+        if (!extension_loaded('pdo_sqlite')) {
+            $this->markTestSkipped(
+                'PDO SqLite Library required'
+            );
+        }
+    }
+
 }

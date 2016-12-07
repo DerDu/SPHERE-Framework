@@ -67,6 +67,7 @@ div.Page:last-child {
 div.Slice {
 
     position: relative !important;
+    page-break-before: avoid !important;
 }
 
 div.Slice:after {

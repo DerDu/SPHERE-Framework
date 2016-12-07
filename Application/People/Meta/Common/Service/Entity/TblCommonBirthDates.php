@@ -147,4 +147,16 @@ class TblCommonBirthDates extends Element
 
         $this->tblCommonGender = ( null === $tblCommonGender ? null : $tblCommonGender->getId() );
     }
+
+    /**
+     * Used internal to migrade $Gender to $tblCommonGender FK
+     *
+     * DO NOT USE THIS!
+     *
+     * @internal
+     */
+    final public function isGenderInSync()
+    {
+        return $this->Gender == $this->tblCommonGender;
+    }
 }

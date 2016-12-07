@@ -2,6 +2,7 @@
 namespace SPHERE\System\Extension;
 
 use Markdownify\Converter;
+use MOC\V\Component\Packer\Packer;
 use MOC\V\Component\Template\Template;
 use MOC\V\Core\HttpKernel\HttpKernel;
 use SPHERE\System\Cache\CacheFactory;
@@ -45,6 +46,16 @@ class Extension
     }
 
     /**
+     * @param string $Location Zip File
+     *
+     * @return \MOC\V\Component\Packer\Component\IBridgeInterface
+     */
+    public function getPacker($Location)
+    {
+        return Packer::getPacker($Location);
+    }
+    
+    /**
      * @param LoggerInterface $Logger
      * @return LoggerInterface
      */
@@ -87,7 +98,7 @@ class Extension
     }
 
     /**
-     * @param $Location
+     * @param string $Location
      *
      * @return \MOC\V\Component\Template\Component\IBridgeInterface
      */

@@ -46,6 +46,11 @@ class BridgeTest extends AbstractTestCase
         } catch (\Exception $Exception) {
             $this->assertInstanceOf('\MOC\V\Core\SecureKernel\Component\Exception\ComponentException', $Exception);
         }
+        try {
+            $Bridge->existsDirectory('.');
+        } catch (\Exception $Exception) {
+            $this->assertInstanceOf('\MOC\V\Core\SecureKernel\Component\Exception\ComponentException', $Exception);
+        }
         $Bridge->closeConnection();
 
         $Bridge->openConnection('localhost', 21);

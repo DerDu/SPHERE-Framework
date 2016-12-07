@@ -13,7 +13,7 @@
             </span>
         {% endif %}
         {% endif %}
-        <input type="text" class="form-control" name="{{ ElementName }}" placeholder="{{ ElementPlaceholder }}"
+        <input type="text" class="form-control{% if( ElementClass is not empty ) %} {{ ElementClass }}{% endif %}" name="{{ ElementName }}" placeholder="{{ ElementPlaceholder }}"
                {% if( ElementMask is not empty and ElementValue is empty ) %}data-mask="{{ ElementMask }}" {% endif %}
                value="{{ ElementValue }}" {% if( Disabled is not empty ) %}disabled{% endif %} {% if( Required is not empty ) %}required{% endif %} {% if( TabIndex is not empty ) %}tabindex="{{ TabIndex }}"{% endif %}/>
         {{ ElementFeedbackIcon }}
