@@ -115,6 +115,10 @@ class Company extends Extension implements IApplicationInterface, IModuleInterfa
             ->setParameterDefault('Id', null)
             ->setParameterDefault('Confirm', false)
         );
+
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__.'/Contact/Create', __NAMESPACE__.'\Frontend::frontendContact'
+        ));
     }
 
     /**

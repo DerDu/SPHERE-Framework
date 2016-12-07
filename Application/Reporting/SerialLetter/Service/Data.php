@@ -222,8 +222,7 @@ class Data extends AbstractData
         }
         $tblPersonList = array_filter($tblPersonList);
 
-        return ( empty( $tblPersonList ) ? false : $tblPersonList );
-
+        return ( empty($tblPersonList) ? false : $tblPersonList );
     }
 
     /**
@@ -360,18 +359,16 @@ class Data extends AbstractData
     }
 
     /**
-     * @param TblSerialLetter        $tblSerialLetter
-     * @param string                 $Name
-     * @param string                 $Description
-     * @param TblFilterCategory|null $tblFilterCategory
+     * @param TblSerialLetter $tblSerialLetter
+     * @param string          $Name
+     * @param string          $Description
      *
      * @return TblSerialLetter|bool
      */
     public function updateSerialLetter(
         TblSerialLetter $tblSerialLetter,
         $Name,
-        $Description,
-        TblFilterCategory $tblFilterCategory = null
+        $Description
     ) {
 
         $Manager = $this->getConnection()->getEntityManager();
@@ -382,11 +379,6 @@ class Data extends AbstractData
         if (null !== $Entity) {
             $Entity->setName($Name);
             $Entity->setDescription($Description);
-            if ($tblFilterCategory !== null) {
-                $Entity->setFilterCategory($tblFilterCategory);
-            } else {
-                $Entity->setFilterCategory();
-            }
             $Manager->saveEntity($Entity);
             Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(), $Protocol, $Entity);
 

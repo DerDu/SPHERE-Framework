@@ -32,13 +32,14 @@ class Data extends AbstractData
     public function setupDatabaseContent()
     {
 
-        $this->createGroup('Alle', 'Personendaten', '', true, 'COMMON');
-        $this->createGroup('Interessent', 'Schüler die zur Aufnahme vorgemerkt sind', '', true, 'PROSPECT');
-        $this->createGroup('Schüler', 'Alle aktiv verfügbaren Schüler', '', true, 'STUDENT');
-        $this->createGroup('Sorgeberechtigt', '', '', true, 'CUSTODY');
-        $this->createGroup('Mitarbeiter', 'Alle Mitarbeiter', '', true, 'STAFF');
-        $this->createGroup('Lehrer', 'Alle Mitarbeiter, welche einer Lehrtätigkeit nachgehen', '', true, 'TEACHER');
+        $this->createGroup('Alle', 'Personendaten', '', true, TblGroup::META_TABLE_COMMON);
+        $this->createGroup('Interessent', 'Schüler die zur Aufnahme vorgemerkt sind', '', true, TblGroup::META_TABLE_PROSPECT);
+        $this->createGroup('Schüler', 'Alle aktiv verfügbaren Schüler', '', true, TblGroup::META_TABLE_STUDENT);
+        $this->createGroup('Sorgeberechtigt', '', '', true, TblGroup::META_TABLE_CUSTODY);
+        $this->createGroup('Mitarbeiter', 'Alle Mitarbeiter', '', true, TblGroup::META_TABLE_STAFF);
+        $this->createGroup('Lehrer', 'Alle Mitarbeiter, welche einer Lehrtätigkeit nachgehen', '', true, TblGroup::META_TABLE_TEACHER);
         $this->createGroup('Vereinsmitglieder', '', '', true, TblGroup::META_TABLE_CLUB);
+        $this->createGroup('Firmen-Ansprechpartner', 'Firmen Ansprechpartner', '', true, TblGroup::META_TABLE_COMPANY_CONTACT);
     }
 
     /**

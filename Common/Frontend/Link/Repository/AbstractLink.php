@@ -3,6 +3,7 @@ namespace SPHERE\Common\Frontend\Link\Repository;
 
 use MOC\V\Component\Template\Component\IBridgeInterface;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Access\Access;
+use SPHERE\Common\Frontend\Ajax\Pipeline;
 use SPHERE\Common\Frontend\Icon\IIconInterface;
 use SPHERE\Common\Frontend\Icon\Repository\Edit;
 use SPHERE\Common\Frontend\Icon\Repository\Link;
@@ -40,6 +41,16 @@ abstract class AbstractLink extends Extension implements ILinkInterface
     /** @var IBridgeInterface $Template */
     protected $Template = null;
 
+    private static $LinkCounter = 0;
+
+    /**
+     * @return string
+     */
+    public function getHash()
+    {
+        return 'Link-Hash-'.self::$LinkCounter;
+    }
+
     /**
      * AbstractLink constructor.
      *
@@ -52,6 +63,8 @@ abstract class AbstractLink extends Extension implements ILinkInterface
      */
     public function __construct($Name, $Path, IIconInterface $Icon = null, $Data = array(), $ToolTip = false, $Anchor = null)
     {
+        // Generate Hash
+        self::$LinkCounter++;
 
         if( !empty( $Anchor ) ) {
             $this->setName($Name.' '.new Link() );
@@ -104,6 +117,8 @@ abstract class AbstractLink extends Extension implements ILinkInterface
                 $this->Template->setVariable('ElementToolTip', $Name);
             }
         }
+
+        $this->Template->setVariable('ElementHash', $this->getHash());
     }
 
     /**
@@ -196,6 +211,16 @@ abstract class AbstractLink extends Extension implements ILinkInterface
     {
 
         $this->Type = $Type;
+        return $this;
+    }
+
+    /**
+     * @param Pipeline $Pipeline
+     * @return $this
+     */
+    public function ajaxPipelineOnClick( Pipeline $Pipeline )
+    {
+        $this->Template->setVariable('AjaxEventClick', $Pipeline->parseScript());
         return $this;
     }
 }

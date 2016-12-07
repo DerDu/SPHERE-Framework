@@ -49,7 +49,7 @@ class Pile
      *
      * @return $this
      */
-    public function addPile(AbstractService $Service, Element $Entity, $ParentProperty, $ChildProperty)
+    public function addPile(AbstractService $Service, Element $Entity, $ParentProperty = null, $ChildProperty = null)
     {
 
         $this->PileList[] = array($Service, $Entity, $ParentProperty, $ChildProperty);

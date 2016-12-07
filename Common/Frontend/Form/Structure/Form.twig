@@ -4,6 +4,7 @@
       enctype="multipart/form-data"
       data-toggle="validator"
       role="form"
+      {% if( AjaxEventSubmit is not empty ) %} class="AjaxSubmit"{% endif %}
     >
     {% for FormGroup in GridGroupList %}
         {% if( FormGroup.getFormTitle is not empty ) %}
@@ -61,7 +62,12 @@
                 {% if FormConfirm is not empty %}notifyChangedMessage: "{{ FormConfirm }}"{% else %}notifyChangedField: false{% endif %}
                 {% if EnableSaveDraft is not empty %},saveDraftData: {{ EnableSaveDraft }}{% endif %}
             });
-
+            {% if( AjaxEventSubmit is not empty ) %}
+            jQuery("form#{{ Hash }}").on('submit',function(Event){
+                Event.preventDefault();
+                {{ AjaxEventSubmit }}
+            })
+            {% endif %}
         });
     });
 </script>

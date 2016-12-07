@@ -13,15 +13,17 @@ class TableData extends Table
 
     /**
      * @param string|Object[] $DataList
-     * @param Title           $TableTitle
-     * @param array           $ColumnDefinition
-     * @param bool|array      $Interactive
+     * @param Title $TableTitle
+     * @param array $ColumnDefinition
+     * @param bool|array $Interactive
+     * @param bool $useHtmlRenderer false JS, true DOM
      */
     public function __construct(
         $DataList,
         Title $TableTitle = null,
         $ColumnDefinition = array(),
-        $Interactive = true
+        $Interactive = true,
+        $useHtmlRenderer = false
     ) {
 
         /**
@@ -89,7 +91,7 @@ class TableData extends Table
             $ColumnDefinition = array_combine(array_values($GridHead), array_values($GridHead));
         }
 
-        if (count($DataList) > 1 && $Interactive) {
+        if (!$useHtmlRenderer && (count($DataList) > 0 && $Interactive)) {
             // JS Table Data
             $ObjectList = array();
             array_walk($DataList, function (&$Row) use (&$ObjectList, $ColumnDefinition) {

@@ -5,7 +5,7 @@
     {
         $(document).ready(function ()
         {
-            var worldForm = $('form');
+            var worldForm = $('form:not(.AjaxSubmit)');
             /**
              * Autocomplete Attribute OFF
              */

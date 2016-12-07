@@ -1,6 +1,21 @@
 {% if( Disabled is empty ) %}
-    <a href="{{ UrlBase }}{{ ElementPath }}" class="{{ ElementType }}" data-toggle="tooltip" data-container="body"
+    <a id="{{ ElementHash }}" href="{{ UrlBase }}{{ ElementPath }}" class="{{ ElementType }}" data-toggle="tooltip" data-container="body"
        title="{{ ElementToolTip }}">{{ ElementIcon }} {{ ElementName }}</a>
+    {% if( AjaxEventClick is not empty ) %}
+    <script language=javascript>
+        //noinspection JSUnresolvedFunction
+        executeScript(function()
+        {
+            Client.Use("ModAlways", function()
+            {
+                jQuery("a#{{ ElementHash }}").on("click", function(Event) {
+                    Event.preventDefault();
+                    {{ AjaxEventClick }}
+                });
+            });
+        });
+    </script>
+    {% endif %}
 {% else %}
     <a href="#" class="{{ ElementType }}" data-toggle="tooltip" data-container="body"
        title="{{ ElementToolTip }}" disabled>{{ ElementIcon }} {{ ElementName }}</a>

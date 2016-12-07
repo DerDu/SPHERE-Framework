@@ -29,10 +29,6 @@ use SPHERE\Application\Reporting\SerialLetter\Service\Entity\TblSerialLetter;
 use SPHERE\Application\Reporting\SerialLetter\Service\Entity\TblSerialPerson;
 use SPHERE\Application\Reporting\SerialLetter\Service\Setup;
 use SPHERE\Common\Frontend\Form\IFormInterface;
-use SPHERE\Common\Frontend\Form\Structure\FormColumn;
-use SPHERE\Common\Frontend\Form\Structure\FormGroup;
-use SPHERE\Common\Frontend\Form\Structure\FormRow;
-use SPHERE\Common\Frontend\Message\Repository\Danger;
 use SPHERE\Common\Frontend\Message\Repository\Success;
 use SPHERE\Common\Frontend\Message\Repository\Warning;
 use SPHERE\Common\Window\Redirect;
@@ -355,13 +351,13 @@ class Service extends AbstractService
         }
         if ($FilterCategory != null) {
             $tblFilterCategory = SerialLetter::useService()->getFilterCategoryById($FilterCategory);
-            if ($tblFilterCategory->getName() === 'Personengruppe') {
+            if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_PERSON_GROUP) {
                 if (isset($FilterGroup['TblGroup_Id']) && $FilterGroup['TblGroup_Id'] == 0) {
                     $Stage->setError('FilterGroup[TblGroup_Id]', 'Bitte geben Sie eine Gruppe an.');
                     $Error = true;
                 }
             }
-            if ($tblFilterCategory->getName() === 'Firmengruppe') {
+            if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_COMPANY_GROUP) {
                 if (isset($FilterGroup['TblGroup_Id']) && $FilterGroup['TblGroup_Id'] == 0) {
                     $Stage->setError('FilterGroup[TblGroup_Id]', 'Bitte geben Sie eine Gruppe an.');
                     $Error = true;
@@ -430,25 +426,25 @@ class Service extends AbstractService
                     }
 
                     if ($tblFilterCategory) {
-                        if ($tblFilterCategory->getName() === 'Personengruppe') {
+                        if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_PERSON_GROUP) {
                             $Result = SerialLetter::useService()->getGroupFilterResultListBySerialLetter($tblSerialLetter);
                             $tblPersonSearchList = SerialLetter::useService()->getPersonListByResult($tblSerialLetter, $Result);
                             SerialLetter::useService()->updateDynamicSerialPerson($tblSerialLetter, $tblPersonSearchList);
                             $TabActive = 'PERSONGROUP';
                         }
-                        if ($tblFilterCategory->getName() === 'Schüler') {
+                        if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_PERSON_GROUP_STUDENT) {
                             $Result = SerialLetter::useService()->getStudentFilterResultListBySerialLetter($tblSerialLetter);
                             $tblPersonSearchList = SerialLetter::useService()->getPersonListByResult($tblSerialLetter, $Result);
                             SerialLetter::useService()->updateDynamicSerialPerson($tblSerialLetter, $tblPersonSearchList);
                             $TabActive = 'STUDENT';
                         }
-                        if ($tblFilterCategory->getName() === 'Interessenten') {
+                        if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_PERSON_GROUP_PROSPECT) {
                             $Result = SerialLetter::useService()->getProspectFilterResultListBySerialLetter($tblSerialLetter);
                             $tblPersonSearchList = SerialLetter::useService()->getPersonListByResult($tblSerialLetter, $Result);
                             SerialLetter::useService()->updateDynamicSerialPerson($tblSerialLetter, $tblPersonSearchList);
                             $TabActive = 'PROSPECT';
                         }
-                        if ($tblFilterCategory->getName() === 'Firmengruppe') {
+                        if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_COMPANY_GROUP) {
                             $Result = SerialLetter::useService()->getCompanyFilterResultListBySerialLetter($tblSerialLetter);
                             $tblPersonSearchList = SerialLetter::useService()->getPersonListByResult($tblSerialLetter, $Result);
                             SerialLetter::useService()->updateDynamicSerialPerson($tblSerialLetter, $tblPersonSearchList);
@@ -1132,8 +1128,8 @@ class Service extends AbstractService
      * @param null                $FilterStudent
      * @param null                $FilterYear
      * @param null                $FilterProspect
-     * @param null                $FilterCategory
-     * @param bool                $IsFilter
+     * @param null                $FilterCompany
+     * @param null                $FilterRelationship
      *
      * @return IFormInterface|string
      */
@@ -1145,8 +1141,8 @@ class Service extends AbstractService
         $FilterStudent = null,
         $FilterYear = null,
         $FilterProspect = null,
-        $FilterCategory = null,
-        $IsFilter = true
+        $FilterCompany = null,
+        $FilterRelationship = null
     ) {
 
         /**
@@ -1168,31 +1164,36 @@ class Service extends AbstractService
                 }
             }
         }
-        if (!$IsFilter) {
-            $Stage->appendGridGroup(new FormGroup(new FormRow(new FormColumn(
-                new Danger('Änderungen konnten nicht gespeichert werden. Bitte führen Sie den Filter aus.')
-            ))));
-            $Error = true;
-        }
-
-        if ($FilterCategory != null) {
-            $tblFilterCategory = SerialLetter::useService()->getFilterCategoryById($FilterCategory);
-        } else {
-            $tblFilterCategory = false;
+        $tblFilterCategory = $tblSerialLetter->getFilterCategory();
+        if ($tblFilterCategory) {
+            if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_PERSON_GROUP) {
+                if (isset($FilterGroup['TblGroup_Id']) && $FilterGroup['TblGroup_Id'] == 0) {
+                    $Stage->setError('FilterGroup[TblGroup_Id]', 'Bitte geben Sie eine Gruppe an.');
+                    $Error = true;
+                }
+            }
+            if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_COMPANY_GROUP) {
+                if (isset($FilterGroup['TblGroup_Id']) && $FilterGroup['TblGroup_Id'] == 0) {
+                    $Stage->setError('FilterGroup[TblGroup_Id]', 'Bitte geben Sie eine Gruppe an.');
+                    $Error = true;
+                }
+            }
         }
 
         if (!$Error) {
             $tblSerialLetter = ( new Data($this->getBinding()) )->updateSerialLetter(
                 $tblSerialLetter,
                 $SerialLetter['Name'],
-                $SerialLetter['Description'],
-                ( $tblFilterCategory ? $tblFilterCategory : null )
+                $SerialLetter['Description']
             );
 
             if ($tblSerialLetter) {
 
                 if ($tblFilterCategory) {
-                    if ($tblFilterCategory->getName() === 'Personengruppe') {
+//                    // remove all exist FilterField
+//                    ( new Data($this->getBinding()) )->destroyFilterFiledAllBySerialLetter($tblSerialLetter);
+
+                    if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_PERSON_GROUP) {
                         if (!empty($FilterGroup)) {
                             foreach ($FilterGroup as $FieldName => $FieldValue) {
                                 ( new Data($this->getBinding()) )->createFilterField($tblSerialLetter, $tblFilterCategory, $FieldName, $FieldValue);
@@ -1203,7 +1204,7 @@ class Service extends AbstractService
                         $tblPersonSearchList = SerialLetter::useService()->getPersonListByResult($tblSerialLetter, $Result);
                         SerialLetter::useService()->updateDynamicSerialPerson($tblSerialLetter, $tblPersonSearchList);
                     }
-                    if ($tblFilterCategory->getName() === 'Schüler') {
+                    if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_PERSON_GROUP_STUDENT) {
                         if (!empty($FilterGroup)) {
                             foreach ($FilterGroup as $FieldName => $FieldValue) {
                                 ( new Data($this->getBinding()) )->createFilterField($tblSerialLetter, $tblFilterCategory, $FieldName, $FieldValue);
@@ -1224,7 +1225,7 @@ class Service extends AbstractService
                         $tblPersonSearchList = SerialLetter::useService()->getPersonListByResult($tblSerialLetter, $Result);
                         SerialLetter::useService()->updateDynamicSerialPerson($tblSerialLetter, $tblPersonSearchList);
                     }
-                    if ($tblFilterCategory->getName() === 'Interessenten') {
+                    if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_PERSON_GROUP_PROSPECT) {
                         if (!empty($FilterGroup)) {
                             foreach ($FilterGroup as $FieldName => $FieldValue) {
                                 ( new Data($this->getBinding()) )->createFilterField($tblSerialLetter, $tblFilterCategory, $FieldName, $FieldValue);
@@ -1241,7 +1242,7 @@ class Service extends AbstractService
                         SerialLetter::useService()->updateDynamicSerialPerson($tblSerialLetter, $tblPersonSearchList);
                     }
 
-                    if ($tblFilterCategory->getName() === 'Firmengruppe') {
+                    if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_COMPANY_GROUP) {
                         if (!empty($FilterGroup)) {
                             foreach ($FilterGroup as $FieldName => $FieldValue) {
                                 ( new Data($this->getBinding()) )->createFilterField($tblSerialLetter, $tblFilterCategory, $FieldName, $FieldValue);
@@ -1265,11 +1266,39 @@ class Service extends AbstractService
                 }
             }
 
-            return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success().' Die Adressliste für Serienbriefe ist geändert worden')
-                .new Redirect('/Reporting/SerialLetter', Redirect::TIMEOUT_SUCCESS);
+            return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success().' Die Adressliste für Serienbriefe wurde gespeichert')
+                .new Redirect('/Reporting/SerialLetter/Edit', Redirect::TIMEOUT_SUCCESS, array('Id' => $tblSerialLetter->getId()));
         }
 
         return $Stage;
+    }
+
+    /**
+     * @param TblSerialLetter   $tblSerialLetter
+     * @param TblFilterCategory $tblFilterCategory
+     */
+    public function updateSerialPerson(TblSerialLetter $tblSerialLetter, TblFilterCategory $tblFilterCategory)
+    {
+        if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_PERSON_GROUP) {
+            $Result = SerialLetter::useService()->getGroupFilterResultListBySerialLetter($tblSerialLetter);
+            $tblPersonSearchList = SerialLetter::useService()->getPersonListByResult($tblSerialLetter, $Result);
+            SerialLetter::useService()->updateDynamicSerialPerson($tblSerialLetter, $tblPersonSearchList);
+        }
+        if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_PERSON_GROUP_STUDENT) {
+            $Result = SerialLetter::useService()->getStudentFilterResultListBySerialLetter($tblSerialLetter);
+            $tblPersonSearchList = SerialLetter::useService()->getPersonListByResult($tblSerialLetter, $Result);
+            SerialLetter::useService()->updateDynamicSerialPerson($tblSerialLetter, $tblPersonSearchList);
+        }
+        if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_PERSON_GROUP_PROSPECT) {
+            $Result = SerialLetter::useService()->getProspectFilterResultListBySerialLetter($tblSerialLetter);
+            $tblPersonSearchList = SerialLetter::useService()->getPersonListByResult($tblSerialLetter, $Result);
+            SerialLetter::useService()->updateDynamicSerialPerson($tblSerialLetter, $tblPersonSearchList);
+        }
+        if ($tblFilterCategory->getName() === TblFilterCategory::IDENTIFIER_COMPANY_GROUP) {
+            $Result = SerialLetter::useService()->getCompanyFilterResultListBySerialLetter($tblSerialLetter);
+            $tblPersonSearchList = SerialLetter::useService()->getPersonListByResult($tblSerialLetter, $Result);
+            SerialLetter::useService()->updateDynamicSerialPerson($tblSerialLetter, $tblPersonSearchList);
+        }
     }
 
     /**
@@ -1393,9 +1422,9 @@ class Service extends AbstractService
         $PersonIdList = array();
         if ($Result && !empty($Result)) {
             if (!$tblCategory
-                || $tblCategory->getName() == 'Personengruppe'
-                || $tblCategory->getName() == 'Schüler'
-                || $tblCategory->getName() == 'Interessenten'
+                || $tblCategory->getName() == TblFilterCategory::IDENTIFIER_PERSON_GROUP
+                || $tblCategory->getName() == TblFilterCategory::IDENTIFIER_PERSON_GROUP_STUDENT
+                || $tblCategory->getName() == TblFilterCategory::IDENTIFIER_PERSON_GROUP_PROSPECT
             ) {
                 /** @var AbstractView[]|ViewPerson[] $Row */
                 foreach ($Result as $Index => $Row) {
@@ -1404,7 +1433,7 @@ class Service extends AbstractService
                         $PersonIdList[$DataPerson['TblPerson_Id']] = $DataPerson['TblPerson_Id'];
                     }
                 }
-            } elseif ($tblCategory->getName() == 'Firmengruppe') {
+            } elseif ($tblCategory->getName() == TblFilterCategory::IDENTIFIER_COMPANY_GROUP) {
                 /** @var AbstractView[]|ViewPerson[] $Row */
                 foreach ($Result as $Index => $Row) {
                     $DataPerson = $Row[3]->__toArray();
@@ -1620,7 +1649,6 @@ class Service extends AbstractService
      * @param array                $FilterGroup
      * @param array                $FilterProspect
      * @param bool                 $IsTimeout (if search reach timeout)
-     * //     * @param bool $isSecond (change OptionA to Option B)
      *
      * @return array|bool
      */
@@ -1629,7 +1657,6 @@ class Service extends AbstractService
         $FilterGroup = array(),
         $FilterProspect = array(),
         &$IsTimeout = false
-//        $isSecond = false
     )
     {
         $tblFilterFieldList = ( $tblSerialLetter != null
@@ -1645,14 +1672,6 @@ class Service extends AbstractService
                 }
             }
         }
-
-//        // change OptionA to Option B
-//        if ($isSecond) {
-//            if (isset( $FilterProspect['TblProspectReservation_serviceTblTypeOptionA'] )) {
-//                $FilterProspect['TblProspectReservation_serviceTblTypeOptionB'] = $FilterProspect['TblProspectReservation_serviceTblTypeOptionA'];
-//                unset( $FilterProspect['TblProspectReservation_serviceTblTypeOptionA'] );
-//            }
-//        }
 
         $Result = array();
 
@@ -1707,7 +1726,7 @@ class Service extends AbstractService
             } else {
                 $FilterProspect = array();
             }
-
+            // Filter first time
             $Result = $Pile->searchPile(array(
                 0 => $FilterGroup,
                 1 => $FilterPerson,
@@ -1715,6 +1734,50 @@ class Service extends AbstractService
             ));
             // get Timeout status
             $IsTimeout = $Pile->isTimeout();
+
+            // change OptionA to Option B
+            if (isset($FilterProspect['TblProspectReservation_serviceTblTypeOptionA'])) {
+                $FilterProspect['TblProspectReservation_serviceTblTypeOptionB'] = $FilterProspect['TblProspectReservation_serviceTblTypeOptionA'];
+                unset($FilterProspect['TblProspectReservation_serviceTblTypeOptionA']);
+                $Result2 = array();
+                //Filter Group first Time
+                if (isset($FilterGroup['TblGroup_Id']) && !empty($FilterGroup['TblGroup_Id'])
+                ) {
+                    // Preparation FilterProspect
+                    if ($FilterProspect) {
+                        array_walk($FilterProspect, function (&$Input) {
+                            if (!is_array($Input)) {
+                                if (!empty($Input)) {
+                                    $Input = explode(' ', $Input);
+                                    $Input = array_filter($Input);
+                                } else {
+                                    $Input = false;
+                                }
+                            }
+                        });
+                        $FilterProspect = array_filter($FilterProspect);
+                    } else {
+                        $FilterProspect = array();
+                    }
+                    // Filter second time
+                    $Result2 = $Pile->searchPile(array(
+                        0 => $FilterGroup,
+                        1 => $FilterPerson,
+                        2 => $FilterProspect
+                    ));
+                    if ($IsTimeout == false) {
+                        // get Timeout status
+                        $IsTimeout = $Pile->isTimeout();
+                    }
+                }
+            }
+        }
+        if (!empty($Result) && isset($Result2) && !empty($Result2)) {
+            foreach ($Result2 as $Row) {
+                $Result[] = $Row;
+            }
+        } elseif (empty($Result) && isset($Result2) && !empty($Result2)) {
+            $Result = $Result2;
         }
 
         return ( !empty($Result) ? $Result : false );

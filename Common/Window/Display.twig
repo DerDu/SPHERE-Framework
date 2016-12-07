@@ -41,14 +41,14 @@
           content="{{ PathBase }}/Common/Style/Resource/Logo/Favicon/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
     <script type="text/javascript">
-        function executeScript(Callback)
+        var executeScript = function (Callback)
         {
+
             var Event = window.onload;
             if (typeof window.onload != 'function') {
                 window.onload = Callback;
             } else {
-                window.onload = function()
-                {
+                window.onload = function () {
                     if (Event) {
                         Event();
                     }

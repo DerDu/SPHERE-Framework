@@ -49,7 +49,7 @@ class Frontend extends Extension implements IFrontendInterface
     public function frontendWelcome()
     {
 
-        $Stage = new Stage('Willkommen','');
+        $Stage = new Stage('Willkommen', '');
         $Stage->addButton(new Backward(true));
         $Stage->setMessage(date('d.m.Y - H:i:s'));
 
@@ -86,7 +86,7 @@ class Frontend extends Extension implements IFrontendInterface
     public function frontendIdentification($CredentialName = null, $CredentialLock = null, $CredentialKey = null)
     {
 
-        if( $CredentialName !== null ) {
+        if ($CredentialName !== null) {
             Protocol::useService()->createLoginAttemptEntry($CredentialName, $CredentialLock, $CredentialKey);
         }
 
@@ -120,7 +120,7 @@ class Frontend extends Extension implements IFrontendInterface
 
         // Get Identification-Type (Credential,Token,System)
         $Identifier = $this->getModHex($CredentialKey)->getIdentifier();
-        if( $Identifier ) {
+        if ($Identifier) {
             $tblToken = Token::useService()->getTokenByIdentifier($Identifier);
             if ($tblToken) {
                 if ($tblToken->getServiceTblConsumer()) {
@@ -139,7 +139,7 @@ class Frontend extends Extension implements IFrontendInterface
         if (!$Identification) {
             $Protocol = (new Database())->frontendSetup(false, true);
 
-            $Stage = new Stage(new Danger(new Hospital()).' Installation', 'Erster Aufruf der Anwendung');
+            $Stage = new Stage(new Danger(new Hospital()) . ' Installation', 'Erster Aufruf der Anwendung');
             $Stage->setMessage('Dieser Schritt wird automatisch ausgeführt wenn die Datenbank nicht die notwendigen Einträge aufweist. Üblicherweise beim ersten Aufruf.');
             $Stage->setContent(
                 new Layout(
@@ -147,7 +147,7 @@ class Frontend extends Extension implements IFrontendInterface
                         new LayoutRow(
                             new LayoutColumn(array(
                                 new Panel('Was ist das?', array(
-                                    (new Info(new Shield().' Es wird eine automatische Installation der Datenbank und eine Überprüfung der Daten durchgeführt')),
+                                    (new Info(new Shield() . ' Es wird eine automatische Installation der Datenbank und eine Überprüfung der Daten durchgeführt')),
                                 ), Panel::PANEL_TYPE_PRIMARY,
                                     new PullRight(strip_tags((new Redirect(self::getRequest()->getPathInfo(), 110)),
                                         '<div><a><script><span>'))
@@ -171,8 +171,8 @@ class Frontend extends Extension implements IFrontendInterface
                             new Panel('Benutzername & Passwort', array(
                                 (new TextField('CredentialName', 'Benutzername', 'Benutzername', new Person()))
                                     ->setRequired(),
-                                    (new PasswordField('CredentialLock', 'Passwort', 'Passwort', new Lock()))
-                                        ->setRequired()->setDefaultValue($CredentialLock,true)
+                                (new PasswordField('CredentialLock', 'Passwort', 'Passwort', new Lock()))
+                                    ->setRequired()->setDefaultValue($CredentialLock, true)
                             ), Panel::PANEL_TYPE_INFO)
                         )
                     ),
@@ -199,19 +199,19 @@ class Frontend extends Extension implements IFrontendInterface
         }
 
         $View->setContent(
-                new Layout(new LayoutGroup(array(
-                    new LayoutRow(array(
-                        new LayoutColumn(
-                            ''
-                            , 3),
-                        new LayoutColumn(
-                            new Well($FormService)
-                            , 6),
-                        new LayoutColumn(
-                            ''
-                            , 3),
-                    )),
-                )))
+            new Layout(new LayoutGroup(array(
+                new LayoutRow(array(
+                    new LayoutColumn(
+                        ''
+                        , 3),
+                    new LayoutColumn(
+                        new Well($FormService)
+                        , 6),
+                    new LayoutColumn(
+                        ''
+                        , 3),
+                )),
+            )))
         );
         return $View;
     }
@@ -225,7 +225,7 @@ class Frontend extends Extension implements IFrontendInterface
         $View = new Stage('Abmelden', 'Bitte warten...');
         $View->setContent(Account::useService()->destroySession(
                 new Redirect('/Platform/Gatekeeper/Authentication', Redirect::TIMEOUT_SUCCESS)
-            ).$this->getCleanLocalStorage());
+            ) . $this->getCleanLocalStorage());
         return $View;
     }
 }
