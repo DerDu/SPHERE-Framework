@@ -4,6 +4,9 @@ namespace SPHERE\Common;
 use MOC\V\Core\HttpKernel\Vendor\Universal\Request;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Account;
 use SPHERE\Application\Setting\MyAccount\MyAccount;
+use SPHERE\Library\Script as ScriptLibrary;
+use SPHERE\Library\Style as StyleLibrary;
+use SPHERE\Library\Style\Library;
 use SPHERE\System\Debugger\Logger\ErrorLogger;
 use SPHERE\System\Extension\Extension;
 
@@ -53,17 +56,22 @@ class Style extends Extension
                 $this->setSource('/Common/Style/Bootstrap.css');
         }
 
-        $this->setSource('/Library/Bootstrap.Glyphicons/1.9.2/glyphicons/web/html_css/css/glyphicons.css');
-        $this->setSource('/Library/Bootstrap.Glyphicons/1.9.2/glyphicons-halflings/web/html_css/css/glyphicons-halflings.css');
-        $this->setSource('/Library/Bootstrap.Glyphicons/1.9.2/glyphicons-filetypes/web/html_css/css/glyphicons-filetypes.css');
-        $this->setSource('/Library/Bootstrap.Glyphicons/1.9.2/glyphicons-social/web/html_css/css/glyphicons-social.css');
-        $this->setSource('/Library/Foundation.Icons/3.0/foundation-icons.css');
+        try {
+            $this->setLibrary((new StyleLibrary('Bootstrap.Glyphicons.Glyphicons', '1.9.2'))->getLibrary());
+            $this->setLibrary((new StyleLibrary('Bootstrap.Glyphicons.Halflings', '1.9.2'))->getLibrary());
+            $this->setLibrary((new StyleLibrary('Bootstrap.Glyphicons.Filetypes', '1.9.2'))->getLibrary());
+            $this->setLibrary((new StyleLibrary('Bootstrap.Glyphicons.Social', '1.9.2'))->getLibrary());
 
-        $this->setSource('/Library/jQuery.Selecter/3.2.4/jquery.fs.selecter.min.css', false, true);
-        $this->setSource('/Library/jQuery.Stepper/3.0.8/jquery.fs.stepper.css', false, true);
-        $this->setSource('/Library/jQuery.iCheck/1.0.2/skins/all.css', false, true);
-        $this->setSource('/Library/jQuery.Gridster/0.6.10/dist/jquery.gridster.min.css', false, true);
-        $this->setSource('/Library/Bootstrap.Checkbox/0.3.3/awesome-bootstrap-checkbox.css', false, true);
+            $this->setLibrary((new StyleLibrary('Foundation.Icons', '3.0'))->getLibrary());
+
+            $this->setLibrary((new StyleLibrary('jQuery.Formstone.Selecter', '3.2.4'))->getLibrary(), false, true);
+            $this->setLibrary((new StyleLibrary('jQuery.Formstone.Stepper', '3.0.8'))->getLibrary(), false, true);
+
+        $this->setSource((new ScriptLibrary('jQuery.Gridster', '0.6.10'))->getLibrary()->getLocation().'/dist/jquery.gridster.min.css', false, true);
+        $this->setSource((new StyleLibrary('Bootstrap.Checkbox', '0.3.3'))->getLibrary()->getLocation().'/awesome-bootstrap-checkbox.css', false, true);
+        } catch ( \Exception $Exception ) {
+            Main::getDisplay()->setException( $Exception, 'Style Library' );
+        }
 
         //        <link rel="stylesheet" type="text/css" href="Bootstrap-3.3.6/css/bootstrap.css"/>
         //        <link rel="stylesheet" type="text/css" href="DataTables-1.10.12/css/dataTables.bootstrap.css"/>
@@ -119,6 +127,15 @@ class Style extends Extension
         $this->setSource('/Common/Style/PhpInfo.css', false, true);
         $this->setSource('/Common/Style/Addition.css');
         $this->setSource('/Common/Style/Animate.css');
+    }
+
+    /**
+     * @param Library $Library
+     * @param bool $Combined
+     * @param bool $Additional
+     */
+    public function setLibrary( Library $Library, $Combined = false, $Additional = false ) {
+        $this->setSource( $Library->getSource(), $Combined, $Additional );
     }
 
     /**

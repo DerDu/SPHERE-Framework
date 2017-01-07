@@ -2,6 +2,8 @@
 namespace SPHERE\Common;
 
 use MOC\V\Core\FileSystem\FileSystem;
+use SPHERE\Library\Script\Library;
+use SPHERE\Library\Script as ScriptLibrary;
 use SPHERE\System\Extension\Extension;
 
 /**
@@ -27,106 +29,52 @@ class Script extends Extension
          * Source (Library)
          */
 
-        $this->setSource(
-            'jQuery', '/Library/jQuery/1.11.3/jquery-1.11.3.min.js',
-            "'undefined' !== typeof jQuery"
-        );
-        $this->setSource(
-            'jQuery.Ui', '/Library/jQuery.Ui/1.11.4/jquery-ui.min.js',
-            "'undefined' !== typeof jQuery.ui"
-        );
-        $this->setSource(
-            'Moment.Js', '/Library/Moment.Js/2.8.4/min/moment-with-locales.min.js',
-            "'undefined' !== typeof moment"
-        );
-        $this->setSource(
-            'List.Js', '/Library/List.Js/1.1.1/dist/list.js',
-            "'undefined' !== typeof List"
-        );
-        $this->setSource(
-            'Bootstrap', '/Library/Bootstrap/3.3.5/dist/js/bootstrap.min.js',
-            "'function' === typeof jQuery().emulateTransitionEnd"
-        );
-        $this->setSource(
-            'jQuery.Selecter', '/Library/jQuery.Selecter/3.2.4/jquery.fs.selecter.min.js',
-            "'undefined' !== typeof jQuery.fn.selecter"
-        );
-        $this->setSource(
-            'jQuery.Stepper', '/Library/jQuery.Stepper/3.0.8/jquery.fs.stepper.min.js',
-            "'undefined' !== typeof jQuery.fn.stepper"
-        );
-        $this->setSource(
-            'jQuery.CountDown', '/Library/jQuery.CountDown/2.0.5/dist/jquery.countdown.min.js',
-            "'undefined' !== typeof jQuery.fn.countdown"
-        );
-        $this->setSource(
-            'jQuery.Sisyphus', '/Library/jQuery.Sisyphus/1.1.2/sisyphus.min.js',
-            "'undefined' !== typeof jQuery.fn.sisyphus"
-        );
-        $this->setSource(
-            'jQuery.CheckBox', '/Library/jQuery.iCheck/1.0.2/icheck.min.js',
-            "'undefined' !== typeof jQuery.fn.iCheck"
-        );
-        $this->setSource(
-            'jQuery.StorageApi', '/Library/jQuery.StorageApi/1.7.4/jquery.storageapi.min.js',
-            "'undefined' !== typeof jQuery.localStorage"
-        );
-        $this->setSource(
-            'jQuery.Gridster', '/Library/jQuery.Gridster/0.6.10/dist/jquery.gridster.with-extras.min.js',
-            "'undefined' !== typeof jQuery.fn.gridster"
-        );
-        $this->setSource(
-            'jQuery.Mask', '/Library/jQuery.InputMask/3.1.63/dist/jquery.inputmask.bundle.min.js',
-            "'undefined' !== typeof jQuery.fn.inputmask"
-        );
+        try {
+            $this->setLibrary((new ScriptLibrary('jQuery', '1.11.3'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('jQuery-Ui', '1.11.4'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('jQuery.Selecter', '3.2.4'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('jQuery.Stepper', '3.0.8'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('jQuery.CountDown', '2.0.5'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('jQuery.Sisyphus', '1.1.2'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('jQuery.CheckBox', '1.0.2'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('jQuery.StorageApi', '1.7.4'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('jQuery.Gridster', '0.6.10'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('jQuery.Mask', '3.1.63'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('jQuery.DataTable', '1.10.12'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('jQuery.DataTable.Bootstrap', '1.10.12'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('jQuery.DataTable.Responsive', '2.1.0'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('jQuery.DataTable.RowReorder', '1.1.2'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('jQuery.DataTable.Buttons', '1.2.2'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('jQuery.DataTable.Buttons.Bootstrap', '1.2.2'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('jQuery.DataTable.Buttons.ColVis', '1.2.2'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('jQuery.DataTable.Buttons.HtmlExport', '1.2.2'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('jQuery.DataTable.Buttons.FlashExport', '1.2.2'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('jQuery.DataTable.Plugin.Sorting.DateTime', '1.10.7'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('jQuery.DataTable.Plugin.Sorting.GermanString', '1.10.7'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('jQuery.DataTable.Plugin.Sorting.Natural', '1.10.7'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('jQuery.Carousel', '0.3.3'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('jQuery.FlowPlayer', '6.0.3'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('jQuery.iCheck', '1.0.2'))->getLibrary());
 
+            $this->setLibrary((new ScriptLibrary('Bootstrap', '3.3.5'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('Bootstrap.DatetimePicker', '4.14.30'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('Bootstrap.FileInput', '4.1.6'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('Bootstrap.Select', '1.6.4'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('Bootstrap.Notify', '3.1.3'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('Bootstrap.Validator', '0.11.x'))->getLibrary());
 
-        $this->setSource(
-            'jQuery.DataTable',
-            '/Library/DataTables/DataTables-1.10.12/js/jquery.dataTables.min.js',
-            "'undefined' !== typeof jQuery.fn.DataTable"
-        );
-        $this->setSource(
-            'jQuery.DataTable.Bootstrap',
-            '/Library/DataTables/DataTables-1.10.12/js/dataTables.bootstrap.min.js',
-            "'undefined' !== typeof jQuery.fn.DataTable.ext.renderer.pageButton.bootstrap"
-        );
-        $this->setSource(
-            'jQuery.DataTable.Responsive',
-            '/Library/DataTables/Responsive-2.1.0/js/dataTables.responsive.min.js',
-            "'undefined' !== typeof jQuery.fn.DataTable.Responsive"
-        );
-        $this->setSource(
-            'jQuery.DataTable.RowReorder',
-            '/Library/DataTables/RowReorder-1.1.2/js/dataTables.rowReorder.min.js',
-            "'undefined' !== typeof jQuery.fn.DataTable.RowReorder"
-        );
-        $this->setSource(
-            'jQuery.DataTable.Buttons',
-            '/Library/DataTables/Buttons-1.2.2/js/dataTables.buttons.min.js',
-            "'undefined' !== typeof jQuery.fn.DataTable.Buttons"
-        );
-        $this->setSource(
-            'jQuery.DataTable.Buttons.Bootstrap',
-            '/Library/DataTables/Buttons-1.2.2/js/buttons.bootstrap.min.js',
-            "'dt-buttons btn-group' == jQuery.fn.dataTable.Buttons.defaults.dom.container.className"
-        );
-        $this->setSource(
-            'jQuery.DataTable.Buttons.ColVis',
-            '/Library/DataTables/Buttons-1.2.2/js/buttons.colVis.min.js',
-            "'undefined' !== typeof jQuery.fn.dataTableExt.buttons.colvis"
-        );
-        $this->setSource(
-            'jQuery.DataTable.Buttons.HtmlExport',
-            '/Library/DataTables/Buttons-1.2.2/js/buttons.html5.min.js',
-            "'undefined' !== typeof jQuery.fn.dataTable.ext.buttons.excelHtml5"
-        );
-        $this->setSource(
-            'jQuery.DataTable.Buttons.FlashExport',
-            '/Library/DataTables/Buttons-1.2.2/js/buttons.flash.min.js',
-            "'undefined' !== typeof jQuery.fn.dataTable.ext.buttons.excelFlash"
-        );
+            $this->setLibrary((new ScriptLibrary('Twitter.Typeahead', '0.11.1'))->getLibrary());
 
+            $this->setLibrary((new ScriptLibrary('Moment.Js', '2.8.4'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('List.Js', '1.1.1'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('MathJax', '2.5.0'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('Highlight.js', '8.8.0'))->getLibrary());
+            $this->setLibrary((new ScriptLibrary('Bootbox.js', '4.4.0'))->getLibrary());
+        } catch ( \Exception $Exception ) {
+            Main::getDisplay()->setException( $Exception, 'JavaScript Library' );
+        }
+
+///*
 //        <script type="text/javascript" src="Bootstrap-3.3.6/js/bootstrap.js"></script>
 //        <script type="text/javascript" src="JSZip-2.5.0/jszip.js"></script>
 //        <script type="text/javascript" src="pdfmake-0.1.18/build/pdfmake.js"></script>
@@ -149,85 +97,22 @@ class Script extends Extension
 //        <script type="text/javascript" src="RowReorder-1.1.2/js/dataTables.rowReorder.js"></script>
 //        <script type="text/javascript" src="Scroller-1.4.2/js/dataTables.scroller.js"></script>
 //        <script type="text/javascript" src="Select-1.2.0/js/dataTables.select.js"></script>
+//*/
 
-/*
-        $this->setSource(
-            'jQuery.DataTable.Responsive',
-            '/Library/jQuery.DataTables/1.10.7/extensions/Responsive/js/dataTables.responsive.min.js',
-            "'undefined' !== typeof jQuery.fn.DataTable.Responsive"
-        );
-*/
-        $this->setSource(
-            'jQuery.DataTable.Plugin.Sorting.DateTime',
-            '/Library/jQuery.DataTables.Plugins/1.10.7/sorting/date-de.js',
-            "'undefined' !== typeof jQuery.fn.dataTable.ext.type.order['de_datetime-asc']"
-        );
-        $this->setSource(
-            'jQuery.DataTable.Plugin.Sorting.GermanString',
-            '/Library/jQuery.DataTables.Plugins/1.10.7/sorting/german-string.js',
-            "'undefined' !== typeof jQuery.fn.dataTable.ext.type.order['german-string-asc']"
-        );
-        $this->setSource(
-            'jQuery.DataTable.Plugin.Sorting.Natural',
-            '/Library/jQuery.DataTables.Plugins/1.10.7/sorting/natural.js',
-            "'undefined' !== typeof jQuery.fn.dataTable.ext.type.order['natural-asc']"
-        );
-        /*
+///*
+//        $this->setSource(
+//            'jQuery.DataTable.Responsive',
+//            '/Library/jQuery.DataTables/1.10.7/extensions/Responsive/js/dataTables.responsive.min.js',
+//            "'undefined' !== typeof jQuery.fn.DataTable.Responsive"
+//        );
+//*/
+///*
 //        $this->setSource(
 //            'jQuery.DataTable.Plugin.Sorting.Weekday',
 //            '/Library/jQuery.DataTables.Plugins/1.0.1/sorting/weekday.js',
 //            "'undefined' !== typeof jQuery.fn.dataTable.ext.type.order['weekday-pre']"
 //        );
-*/
-
-        $this->setSource(
-            'Bootstrap.DatetimePicker',
-            '/Library/Bootstrap.DateTimePicker/4.14.30/build/js/bootstrap-datetimepicker.min.js',
-            "'undefined' !== typeof jQuery.fn.datetimepicker"
-        );
-        $this->setSource(
-            'Bootstrap.FileInput', '/Library/Bootstrap.FileInput/4.1.6/js/fileinput.min.js',
-            "'undefined' !== typeof jQuery.fn.fileinput"
-        );
-        $this->setSource(
-            'Bootstrap.Select',
-            '/Library/Bootstrap.Select/1.6.4/dist/js/bootstrap-select.min.js',
-            "'undefined' !== typeof jQuery.fn.selectpicker"
-        );
-        $this->setSource(
-            'Bootstrap.Notify',
-            '/Library/Bootstrap.Notify/3.1.3/dist/bootstrap-notify.min.js',
-            "'undefined' !== typeof jQuery.notify"
-        );
-        $this->setSource(
-            'Bootstrap.Validator',
-            '/Library/Bootstrap.Validator/master-0.11.x/dist/validator.min.js',
-            "'undefined' !== typeof jQuery.fn.validator"
-        );
-        $this->setSource(
-            'Twitter.Typeahead', '/Library/Twitter.Typeahead/0.11.1/dist/typeahead.bundle.min.js',
-            "'undefined' !== typeof jQuery.fn.typeahead"
-        );
-        $this->setSource(
-            'MathJax', '/Library/MathJax/2.5.0/MathJax.js?config=TeX-MML-AM_HTMLorMML-full',
-            "'undefined' !== typeof MathJax"
-        );
-        $this->setSource(
-            'jQuery.Carousel', '/Library/jQuery.jCarousel/0.3.3/dist/jquery.jcarousel.min.js',
-            "'undefined' !== typeof jQuery.fn.jcarousel"
-        );
-        $this->setSource(
-            'jQuery.FlowPlayer', '/Library/jQuery.FlowPlayer/6.0.3/flowplayer.min.js',
-            "'undefined' !== typeof jQuery.fn.flowplayer"
-        );
-        $this->setSource(
-            'Highlight.js', '/Library/Highlight.js/8.8.0/highlight.pack.js',
-            "'undefined' !== typeof hljs"
-        );
-        $this->setSource(
-            'Bootbox.js', '/Library/Bootbox.js/4.4.0/js/bootbox.min.js',
-            "'undefined' !== typeof bootbox"
-        );
+//*/
 
         /**
          * Module (jQuery plugin)
@@ -239,7 +124,7 @@ class Script extends Extension
                 'List.Js',
                 'Bootstrap.Notify',
                 'Bootstrap',
-                'jQuery.Ui',
+                'jQuery-Ui',
                 'jQuery'
             )
         );
@@ -310,7 +195,7 @@ class Script extends Extension
             'ModGrid', array('jQuery.Gridster', 'jQuery.StorageApi', 'jQuery')
         );
         $this->setModule(
-            'ModSortable', array('jQuery.Ui', 'jQuery')
+            'ModSortable', array('jQuery-Ui', 'jQuery')
         );
         $this->setModule(
             'ModForm', array( 'Bootstrap.Validator', 'jQuery.Sisyphus', 'jQuery.Mask', 'jQuery')
@@ -318,6 +203,13 @@ class Script extends Extension
         $this->setModule(
             'ModCleanStorage', array('jQuery')
         );
+    }
+
+    /**
+     * @param Library $Library
+     */
+    public function setLibrary( Library $Library ) {
+        $this->setSource( $Library->getName(), $Library->getSource(), $Library->getTest() );
     }
 
     /**

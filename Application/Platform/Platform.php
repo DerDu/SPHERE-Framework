@@ -13,6 +13,8 @@ use SPHERE\Common\Frontend\Text\Repository\Bold;
 use SPHERE\Common\Main;
 use SPHERE\Common\Window\Navigation\Link;
 use SPHERE\Common\Window\Stage;
+use SPHERE\Library\Script;
+use SPHERE\Library\Style;
 
 /**
  * Class System
@@ -78,7 +80,11 @@ class Platform implements IClusterInterface
         $PhpInfo = ob_get_clean();
 
         $Stage->setContent(
-            '<div id="phpinfo">'.
+
+
+        '<div id="phpinfo">'.
+        (new Style(null))->getShow().
+        (new Script(null))->getShow().
             preg_replace('!,!', ', ',
                 preg_replace('!<th>(enabled)\s*</th>!i',
                     '<th><span class="badge badge-success">$1</span></th>',
