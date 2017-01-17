@@ -23,6 +23,19 @@ class UniversalGlobals extends Bridge implements IBridgeInterface
     {
 
         if (null === self::$Instance) {
+            if (!isset($_GET)) {
+                $_GET = array();
+            }
+            if (!isset($_POST)) {
+                $_POST = array();
+            }
+            if (!isset($_SESSION)) {
+                $_SESSION = array();
+            }
+            if (!isset($_SERVER)) {
+                $_SERVER = array();
+            }
+
             self::$Instance = new Globals($_GET, $_POST, $_SESSION, $_SERVER);
         }
     }

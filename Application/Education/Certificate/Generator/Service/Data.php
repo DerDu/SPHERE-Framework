@@ -1277,6 +1277,29 @@ class Data extends AbstractData
                     }
 
                     $tblCertificate = $this->createCertificate(
+                        'Halbjahreszeugnis', 'Sekundarstufe', 'EVSC\CosHjZSek', $tblConsumerCertificate
+                    );
+                    if ($tblCertificate && !$this->getCertificateGradeAll($tblCertificate)) {
+                        $this->setCertificateGradeAllStandard($tblCertificate);
+                    }
+                    if ($tblCertificate && !$this->getCertificateSubjectAll($tblCertificate)) {
+                        $this->setCertificateSubject($tblCertificate, 'DE', 1, 1);
+                        $this->setCertificateSubject($tblCertificate, 'EN', 1, 2);
+                        $this->setCertificateSubject($tblCertificate, 'KU', 1, 3);
+                        $this->setCertificateSubject($tblCertificate, 'MU', 1, 4);
+                        $this->setCertificateSubject($tblCertificate, 'GE', 1, 5);
+                        $this->setCertificateSubject($tblCertificate, 'GEO', 1, 7);
+
+                        $this->setCertificateSubject($tblCertificate, 'MA', 2, 1);
+                        $this->setCertificateSubject($tblCertificate, 'BIO', 2, 2);
+                        $this->setCertificateSubject($tblCertificate, 'CH', 2, 3);
+                        $this->setCertificateSubject($tblCertificate, 'PH', 2, 4);
+                        $this->setCertificateSubject($tblCertificate, 'SPO', 2, 5);
+                        $this->setCertificateSubject($tblCertificate, 'REL', 2, 6);
+                        $this->setCertificateSubject($tblCertificate, 'INF', 2, 8);
+                    }
+
+                    $tblCertificate = $this->createCertificate(
                         'Jahreszeugnis', 'Primarstufe', 'EVSC\CosJPri', $tblConsumerCertificate
                     );
                     if ($tblCertificate && !$this->getCertificateGradeAll($tblCertificate)) {
@@ -1396,7 +1419,7 @@ class Data extends AbstractData
                         // Begrenzung des Bemerkungsfelds
                         $FieldName = 'Remark';
                         if (!$this->getCertificateFieldByCertificateAndField($tblCertificate, $FieldName)){
-                            $this->createCertificateField($tblCertificate, $FieldName, 800);
+                            $this->createCertificateField($tblCertificate, $FieldName, 600);
                         }
                     }
                     if ($tblCertificate && !$this->getCertificateGradeAll($tblCertificate)) {
@@ -1436,7 +1459,7 @@ class Data extends AbstractData
                         // Begrenzung des Bemerkungsfelds
                         $FieldName = 'Remark';
                         if (!$this->getCertificateFieldByCertificateAndField($tblCertificate, $FieldName)){
-                            $this->createCertificateField($tblCertificate, $FieldName, 800);
+                            $this->createCertificateField($tblCertificate, $FieldName, 600);
                         }
                     }
                     if ($tblCertificate && !$this->getCertificateGradeAll($tblCertificate)) {
@@ -2242,8 +2265,12 @@ class Data extends AbstractData
 
         if ($tblCertificateField) {
             // 1 Zeile (100 Zeichen) für Arbeitsgemeinschaften abziehen
-            $count = $tblCertificateField->getCharCount();
-            return  $count > 100 ? $count - 100 : $count;
+            if ($FieldName == 'Remark'){
+                $count = $tblCertificateField->getCharCount();
+                return  $count > 100 ? $count - 100 : $count;
+            } else {
+                return $tblCertificateField->getCharCount();
+            }
         }
 
         return false;

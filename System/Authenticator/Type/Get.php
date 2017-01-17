@@ -89,7 +89,9 @@ class Get extends Extension implements ITypeInterface
         }
         $Nonce = date('Ymd');
         array_push($Data, $Location);
-        $Data = array_filter($Data);
+        $Data = array_filter($Data, function($Value) {
+            return ( $Value !== null && $Value !== false && $Value !== '' );
+        });
         $Ordered = $this->sortData((array)$Data);
         $Signature = serialize($Ordered);
         $Signature = hash_hmac('sha256', $Signature, $Nonce.$this->Secret);

@@ -281,7 +281,7 @@ class Data extends AbstractData
         if (($tblTeacher = Teacher::useService()->getTeacherByPerson($tblPerson))){
             Teacher::useService()->destroyTeacher($tblTeacher, $IsSoftRemove);
         }
-        Relationship::useService()->removeRelationshipAllByPerson($tblPerson);
+        Relationship::useService()->removeRelationshipAllByPerson($tblPerson, $IsSoftRemove);
         Absence::useService()->destroyAbsenceAllByPerson($tblPerson, $IsSoftRemove);
         Group::useService()->removeMemberAllByPerson($tblPerson, $IsSoftRemove);
     }

@@ -1,0 +1,40 @@
+@font-face {
+    font-family: 'MetaPro';
+    font-style: normal;
+    font-weight: normal;
+    src: url("{{ UriPath }}/Common/Style/Font/MetaPro-Normal.ttf") format('truetype');
+}
+@font-face {
+    font-family: 'MetaPro';
+    font-style: normal;
+    font-weight: bold;
+    src: url("{{ UriPath }}/Common/Style/Font/MetaPro-Bold.ttf") format('truetype');
+}
+
+@font-face {
+    font-family: 'Trebuchet MS';
+    font-style: normal;
+    font-weight: normal;
+    src: url("{{ UriPath }}/Common/Style/Font/trebuc.ttf") format('truetype');
+}
+
+@font-face {
+    font-family: 'Trebuchet MS';
+    font-style: normal;
+    font-weight: bold;
+    src: url("{{ UriPath }}/Common/Style/Font/trebucbd.ttf") format('truetype');
+}
+
+@font-face {
+    font-family: 'Trebuchet MS';
+    font-style: italic;
+    font-weight: normal;
+    src: url("{{ UriPath }}/Common/Style/Font/trebucit.ttf") format('truetype');
+}
+
+@font-face {
+    font-family: 'Trebuchet MS';
+    font-style: italic;
+    font-weight: bold;
+    src: url("{{ UriPath }}/Common/Style/Font/trebucbi.ttf") format('truetype');
+}

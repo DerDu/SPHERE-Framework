@@ -355,7 +355,7 @@ var EventHelpers = new function()
         }
     };
 
-    var pageLoadEventArray = [];
+    var pageLoadEventArray = new Array();
 
     me.runPageLoadEvents = function(e)
     {

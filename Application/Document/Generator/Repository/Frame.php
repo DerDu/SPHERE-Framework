@@ -10,6 +10,7 @@ namespace SPHERE\Application\Document\Generator\Repository;
 
 use MOC\V\Component\Template\Component\IBridgeInterface;
 use MOC\V\Component\Template\Template;
+use SPHERE\Common\Style\Font\Font;
 
 /**
  * Class Frame
@@ -33,7 +34,7 @@ class Frame
     public function __construct()
     {
 
-        $this->Template = Template::getTwigTemplateString('<html><head><style type="text/css">'.file_get_contents(__DIR__.'/../Style.css').'{{ PreviewCss }}</style></head><body>{{ Documents }}</body></html>');
+        $this->Template = Template::getTwigTemplateString('<html><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"><style type="text/css">'.file_get_contents(__DIR__.'/../Style.css').(new Font()).'{{ PreviewCss }}</style></head><body>{{ Documents }}</body></html>');
     }
 
     /**

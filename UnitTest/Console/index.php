@@ -1,49 +1,55 @@
 <?php
 namespace SPHERE\UnitTest\Console;
 
-use MOC\V\Core\AutoLoader\AutoLoader;
-use SPHERE\Application\Transfer\Gateway\Operation\FESH;
-use SPHERE\Application\Transfer\Gateway\Operation\YubiEGE;
-use SPHERE\Application\Transfer\Gateway\Structure\MasterDataManagement;
-
 /**
  * Setup: Php
  */
+use MOC\V\Component\Document\Component\Bridge\Repository\DomPdf;
+use MOC\V\Component\Document\Document;
+use MOC\V\Component\Template\Template;
+use MOC\V\Core\AutoLoader\AutoLoader;
+use MOC\V\Core\HttpKernel\Component\Bridge\Repository\UniversalRequest;
+use MOC\V\Core\HttpKernel\HttpKernel;
+use SPHERE\Application\Api\Education\Certificate\Generator\Repository\EVSR\RadebeulKinderbrief;
+use SPHERE\Application\Document\Storage\FilePointer;
 
-header('Content-type: text/html; charset=utf-8');
+//header('Content-type: text/html; charset=utf-8');
 error_reporting(E_ALL);
 date_default_timezone_set('Europe/Berlin');
-session_start();
-session_write_close();
 set_time_limit(240);
-ob_implicit_flush();
-ini_set('display_errors', 1);
+ini_set('display_errors',1);
 
 /**
  * Setup: Loader
  */
-require_once( __DIR__.'/../../Library/MOC-V/Core/AutoLoader/AutoLoader.php' );
-AutoLoader::getNamespaceAutoLoader('MOC\V', __DIR__.'/../../Library/MOC-V');
-AutoLoader::getNamespaceAutoLoader('SPHERE', __DIR__.'/../../', 'SPHERE');
-AutoLoader::getNamespaceAutoLoader('Markdownify', __DIR__.'/../../Library/Markdownify/2.1.6/src');
+require_once(__DIR__ . '/../../Library/MOC-V/Core/AutoLoader/AutoLoader.php');
+AutoLoader::getNamespaceAutoLoader('MOC\V', __DIR__ . '/../../Library/MOC-V');
+AutoLoader::getNamespaceAutoLoader('SPHERE', __DIR__ . '/../../', 'SPHERE');
+AutoLoader::getNamespaceAutoLoader('Markdownify', __DIR__ . '/../../Library/Markdownify/2.1.6/src');
+AutoLoader::getNamespaceAutoLoader('phpFastCache', __DIR__ . '/../../Library/PhpFastCache/4.3.6/src');
 
-print '<pre>';
-new YubiEGE( __DIR__.'/lehrer-yubikeys.xlsx' );
+$Template = Template::getTwigTemplateString( file_get_contents(__DIR__.'/Twig.twig'));
+$Template->setVariable('HOST', (new UniversalRequest())->getHost() );
 
+$Fp = new FilePointer( 'pdf' );
+$Fp->saveFile();
 
-//
-//$I = new FESH(
-//    __DIR__.'/../bearbeitet interessenten.xlsx', new MasterDataManagement()
-//);
-//
-//$Xml = $I->getStructure()->getXml();
-//
-//var_dump( $Xml );
-//
-//$dom = new \DOMDocument;
-//$dom->preserveWhiteSpace = false;
-//$dom->loadXML($Xml, LIBXML_PARSEHUGE);
-//var_dump( $dom->getElementsByTagName('Import') );
-//var_dump( $dom->getElementsByTagName('Fragment') );
+/** @var DomPdf $Pdf */
+$Pdf = Document::getPdfDocument( $Fp->getRealPath() );
 
+$Pdf->setContent( $Template );
+$Pdf->saveFile();
 
+if (function_exists('mime_content_type')) {
+    $Type = mime_content_type($Fp->getRealPath());
+} else {
+    if (function_exists('finfo_file')) {
+        $Handler = finfo_open(FILEINFO_MIME);
+        $Type = finfo_file($Handler, $Fp->getRealPath());
+        finfo_close($Handler);
+    } else {
+        $Type = "application/force-download";
+    }
+}
+header('Content-Type: '.$Type);
+print file_get_contents($Fp->getRealPath());

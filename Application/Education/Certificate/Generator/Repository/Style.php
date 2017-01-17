@@ -18,7 +18,7 @@ abstract class Style extends Extension
 
     /**
      * Custom Font-Family
-     * - 'MetaPro Normal'
+     * - MetaPro
      *
      * @param string $Name
      *
@@ -27,7 +27,7 @@ abstract class Style extends Extension
     public function styleFontFamily($Name)
     {
 
-        $this->Style[] = 'font-family: '.$Name.' !important;';
+        $this->Style[] = "font-family: '".$Name."' !important;";
         return $this;
     }
 
@@ -272,6 +272,18 @@ abstract class Style extends Extension
     {
 
         $this->Style[] = 'height: '.$Height.' !important;';
+        return $this;
+    }
+
+    /**
+     * @param string $Height
+     *
+     * @return $this
+     */
+    public function styleLineHeight($Height = '100%')
+    {
+
+        $this->Style[] = 'line-height: '.$Height.' !important;';
         return $this;
     }
 

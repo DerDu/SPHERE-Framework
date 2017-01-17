@@ -80,7 +80,10 @@ class Map extends Extension
     public function getSprints()
     {
 
-        Utility::orderIssuesBy($this->Sprints, 'getVersion() ASC');
+        usort( $this->Sprints, function( Sprint $A, Sprint $B ) {
+            return strnatcmp( $A->getVersion(), $B->getVersion() );
+        });
+
         if( count( $this->Sprints ) > 4 ) {
             return array_slice($this->Sprints, -5);
         }
