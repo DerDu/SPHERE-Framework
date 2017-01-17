@@ -383,9 +383,19 @@ class Display extends Extension implements ITemplateInterface
                 $BrandTitle = '<a class="navbar-brand" href="/">Schulsoftware <span class="text-info">Professional</span></a>';
                 $this->Template->setVariable('RoadmapVersion', $Map ? $Map->getVersionRelease() : 'Roadmap');
                 break;
+            case 'trial.schulsoftware.schule':
+            case 'trial.kreda.schule':
+                $BrandTitle = '<a class="navbar-brand" href="/">Schulsoftware <span class="text-info">Trial</span></a>';
+                $this->Template->setVariable('RoadmapVersion', $Map ? $Map->getVersionRelease() : 'Roadmap');
+                break;
             case 'demo.schulsoftware.schule':
             case 'demo.kreda.schule':
                 $BrandTitle = '<a class="navbar-brand" href="/">Schulsoftware <span class="text-danger">Demo</span></a>';
+                $this->Template->setVariable('RoadmapVersion', $Map ? $Map->getVersionPreview() : 'Roadmap');
+                break;
+            case 'nightly.schulsoftware.schule':
+            case 'nightly.kreda.schule':
+                $BrandTitle = '<a class="navbar-brand" href="/">Schulsoftware <span class="text-danger">Nightly</span></a>';
                 $this->Template->setVariable('RoadmapVersion', $Map ? $Map->getVersionPreview() : 'Roadmap');
                 break;
             default:

@@ -1,4 +1,4 @@
-# KREDA-Professional 
+# Schulsoftware-Professional 
 _based on SPHERE-Framework_
 
 -----
@@ -31,7 +31,7 @@ _based on SPHERE-Framework_
 -----
 > License:
 
-#### KREDA-Professional - Management Tools for Schools
+#### Schulsoftware-Professional - Management Tools for Schools
 ###### Copyright (C) 2014 K&W Informatik GmbH, Software-Department
 
 - This program is free software: you can redistribute it and/or modify

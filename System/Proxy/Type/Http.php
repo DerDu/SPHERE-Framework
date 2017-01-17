@@ -6,7 +6,7 @@ use SPHERE\System\Proxy\ITypeInterface;
 /**
  * Class Http
  *
- * @package KREDA\Sphere\Common\Proxy
+ * @package SPHERE\System\Proxy\Type
  */
 class Http implements ITypeInterface
 {

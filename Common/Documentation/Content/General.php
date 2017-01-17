@@ -53,7 +53,7 @@ class General
             $Page->addParagraph('Diese Frage ist eigentlich schnell geklärt. Bislang schein wohl der Google Chrome gefolgt vom Apple Safari bei der Geschwindigkeit die Nase vorn zu haben. Trotz vieler Optimierungen seitens Mozilla ist der Firefox immer noch sehr träge und benötigt einige Zeit zum starten. Auch der neue Browser “Microsoft Edge” ist sehr schnell.');
             $Page->addParagraph('Auch beim Aufbau der Webseiten und gerade bei der Ausführung von Java Script ist der Firefox das Schlusslicht. Moderne Webseiten besitzen immer mehr dynamische Seitenelemente und Inhalte, die per Java Skript nachgeladen werden. Wer also einen stabilen und schnellen Browser sucht, ist mit dem Chrome sehr gut beraten.');
 
-            $Page->addHeadline('Welcher Browser wird für KREDA empfohlen?', '', true);
+            $Page->addHeadline('Welcher Browser wird für die Schulsoftware empfohlen?', '', true);
             $Page->addParagraph(
 
                 new Layout(new LayoutGroup(array(

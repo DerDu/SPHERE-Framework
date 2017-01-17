@@ -90,7 +90,7 @@ class License implements IClusterInterface, IApplicationInterface, IModuleInterf
                             ),
                         ))
                     ), new Title(
-                        'KREDA-Professional', 'Management Tools for Schools'
+                        'Schulsoftware-Professional', 'Management Tools for Schools'
                     )
                 ),
                 new LayoutGroup(
@@ -805,7 +805,7 @@ class License implements IClusterInterface, IApplicationInterface, IModuleInterf
                         new LayoutColumn(new Headline('END OF TERMS AND CONDITIONS')),
                         new LayoutColumn(new Headline('How to Apply These Terms to Your New Programs')),
                         new LayoutColumn(new Paragraph(
-                            'KREDA-Professional: '
+                            'Schulsoftware-Professional: '
                             .new Link('Version-Control-System - Source-Code',
                                 'https://github.com/DerDu/SPHERE-Framework')
                         )),

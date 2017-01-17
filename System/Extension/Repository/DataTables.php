@@ -11,7 +11,7 @@ use SPHERE\System\Extension\Extension;
 /**
  * Class DataTables
  *
- * @package KREDA\Sphere\Common\Extension
+ * @package SPHERE\System\Extension\Repository
  */
 class DataTables extends Extension
 {
