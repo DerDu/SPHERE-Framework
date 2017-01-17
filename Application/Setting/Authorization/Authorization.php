@@ -3,6 +3,7 @@ namespace SPHERE\Application\Setting\Authorization;
 
 use SPHERE\Application\IApplicationInterface;
 use SPHERE\Application\Setting\Authorization\Account\Account;
+use SPHERE\Application\Setting\Authorization\Group\Group;
 use SPHERE\Application\Setting\Authorization\Token\Token;
 use SPHERE\Common\Frontend\Icon\Repository\Person;
 use SPHERE\Common\Main;
@@ -22,6 +23,7 @@ class Authorization implements IApplicationInterface
 
         Token::registerModule();
         Account::registerModule();
+//        Group::registerModule();
 
         Main::getDisplay()->addApplicationNavigation(
             new Link(new Link\Route(__NAMESPACE__), new Link\Name('Benutzerverwaltung'), new Link\Icon(new Person()))

@@ -3,11 +3,11 @@ namespace SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service;
 
 use SPHERE\Application\People\Person\Person;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
-use SPHERE\Application\Platform\Gatekeeper\Authorization\Access\Access;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Access\Service\Entity\TblRole;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\TblAccount;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\TblAuthentication;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\TblAuthorization;
+use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\TblGroup;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\TblIdentification;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\TblSession;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\TblSetting;
@@ -15,7 +15,6 @@ use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Consumer;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Service\Entity\TblConsumer;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Token\Service\Entity\TblToken;
-use SPHERE\Application\Platform\Gatekeeper\Authorization\Token\Token;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
 use SPHERE\System\Cache\Handler\MemcachedHandler;
 use SPHERE\System\Cache\Handler\MemoryHandler;
@@ -95,6 +94,118 @@ class Data extends AbstractData
                 }
         */
     }
+
+    /**
+     * @param string           $Name
+     * @param string           $Description
+     * @param null|TblConsumer $tblConsumer
+     *
+     * @return TblGroup
+     */
+    public function createGroup($Name, $Description, TblConsumer $tblConsumer = null)
+    {
+
+        $Manager = $this->getConnection()->getEntityManager();
+        $Entity = $Manager->getEntity('TblGroup')->findOneBy(array(TblGroup::ATTR_NAME => $Name));
+        if (null === $Entity) {
+            $Entity = new TblGroup();
+            $Entity->setName($Name);
+            $Entity->setDescription($Description);
+            $Entity->setServiceTblConsumer($tblConsumer);
+            $Manager->saveEntity($Entity);
+            Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(), $Entity);
+        }
+        return $Entity;
+    }
+
+    /**
+     * @param TblGroup $tblGroup
+     * @param string $Name
+     * @param string $Description
+     * @param TblConsumer|null $tblConsumer
+     *
+     * @return false|TblGroup
+     */
+    public function changeGroup(TblGroup $tblGroup, $Name, $Description, TblConsumer $tblConsumer = null)
+    {
+
+        if (null === $tblConsumer) {
+            $tblConsumer = Consumer::useService()->getConsumerBySession();
+        }
+        $Manager = $this->getConnection()->getEntityManager();
+
+        /** @var TblGroup $Entity */
+        $Entity = $Manager->getEntityById('TblGroup', $tblGroup->getId());
+        $Protocol = clone $Entity;
+        if (null !== $Entity) {
+            $Entity->setName( $Name );
+            $Entity->setDescription( $Description );
+            $Entity->setServiceTblConsumer( $tblConsumer );
+            $Manager->saveEntity($Entity);
+            Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(), $Protocol, $Entity);
+            return $Entity;
+        }
+        return false;
+    }
+
+    /**
+     * @param TblGroup $tblGroup
+     *
+     * @return bool
+     */
+    public function destroyGroup(TblGroup $tblGroup)
+    {
+
+        $Manager = $this->getConnection()->getEntityManager();
+        /** @var TblSetting $Entity */
+        $Entity = $Manager->getEntityById('TblGroup', $tblGroup->getId());
+        if (null !== $Entity) {
+            Protocol::useService()->createDeleteEntry($this->getConnection()->getDatabase(), $Entity);
+            $Manager->killEntity($Entity);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param TblConsumer $tblConsumer
+     * @return bool|TblGroup[]
+     */
+    public function getGroupAll( TblConsumer $tblConsumer = null )
+    {
+        if( $tblConsumer ) {
+            return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblGroup', array(
+                TblGroup::SERVICE_TBL_CONSUMER => $tblConsumer->getId()
+            ));
+        } else {
+            return $this->getCachedEntityList(__METHOD__, $this->getConnection()->getEntityManager(), 'TblGroup');
+        }
+    }
+
+    /**
+     * @param int $Id
+     *
+     * @return bool|TblGroup
+     */
+    public function getGroupById($Id)
+    {
+
+        return $this->getCachedEntityById(__METHOD__, $this->getConnection()->getEntityManager(), 'TblGroup', $Id);
+    }
+
+    /**
+     * @param string $Name
+     *
+     * @return bool|TblGroup
+     */
+    public function getGroupByName($Name)
+    {
+
+        return $this->getCachedEntityBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblGroup', array(
+            TblGroup::ATTR_NAME => $Name
+        ));
+    }
+
 
     /**
      * @param string $Name

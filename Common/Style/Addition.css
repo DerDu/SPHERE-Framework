@@ -6,6 +6,8 @@ html {
 body {
     /* Margin bottom by footer height */
     margin-bottom: 60px;
+    overflow-y: scroll !important;
+    padding: 0 !important;
 }
 
 nav, .navbar {

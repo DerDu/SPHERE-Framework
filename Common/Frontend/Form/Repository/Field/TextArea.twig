@@ -8,13 +8,38 @@
             {{ ElementIcon }}
         </span>
         {% endif %}
-        <textarea name="{{ ElementName }}" class="form-control{% if( ElementClass is not empty ) %} {{ ElementClass }}{% endif %}{% if( DisableLineFeed is not empty ) %} DisableLineFeed{% endif %}" placeholder="{{ ElementPlaceholder }}"
+        <textarea id="TextArea-{{ ElementHash }}" name="{{ ElementName }}" class="form-control{% if( ElementClass is not empty ) %} {{ ElementClass }}{% endif %}{% if( DisableLineFeed is not empty ) %} DisableLineFeed{% endif %}" placeholder="{{ ElementPlaceholder }}"
                   rows="5"
                   {% if( Disabled is not empty ) %}disabled{% endif %} {% if( Required is not empty ) %}required{% endif %}
                   {% if( TabIndex is not empty ) %}tabindex="{{ TabIndex }}"{% endif %}
                   {% if( MaxLength is not empty ) %}maxlength="{{ MaxLength }}"{% endif %}
         >{{ ElementValue }}</textarea>
-        {% if( MaxLength is not empty ) %}<span class="TextAreaMaxLengthInfo text-muted small pull-right"><span class="TextAreaMaxLengthCounter">{{ MaxLength }}</span> Zeichen verfügbar</span>{% endif %}
+        {% if( MaxLength is not empty ) %}
+            <span class="TextAreaMaxLengthInfo text-muted small pull-right">
+                <span class="TextAreaMaxLengthCounter">{{ MaxLength }}</span> Zeichen verfügbar
+            </span>
+            <script type="text/javascript">
+                //noinspection JSUnresolvedFunction
+                executeScript(function() {
+                    Client.Use('ModAlways', function () {
+                        var TextArea = jQuery('textarea#TextArea-{{ ElementHash }}')
+                        var maxLength = TextArea.attr('maxlength');
+                        TextArea.parent('div').find('.TextAreaMaxLengthCounter').html(maxLength - TextArea.val().length);
+                        TextArea.on('input propertychange', function () {
+                            var maxLength = $(this).attr('maxlength');
+                            var disableLineFeed = $(this).hasClass('DisableLineFeed');
+                            if (disableLineFeed) {
+                                $(this).val($(this).val().replace(/\r?\n/gi, ' '));
+                            }
+                            if ($(this).val().length > maxLength) {
+                                $(this).val($(this).val().substring(0, maxLength));
+                            }
+                            $(this).parent('div').find('.TextAreaMaxLengthCounter').html(maxLength - $(this).val().length);
+                        })
+                    });
+                });
+            </script>
+        {% endif %}
         {{ ElementFeedbackIcon }}
         {% if( ElementIcon is not empty ) %}
     </div>

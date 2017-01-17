@@ -4,6 +4,7 @@ namespace SPHERE\Common\Frontend\Ajax;
 use MOC\V\Component\Template\Component\IBridgeInterface;
 use MOC\V\Component\Template\Template;
 use SPHERE\Common\Frontend\Ajax\Emitter\AbstractEmitter;
+use SPHERE\Common\Frontend\Ajax\Emitter\ScriptEmitter;
 use SPHERE\Common\Frontend\Ajax\Emitter\ServerEmitter;
 use SPHERE\Common\Frontend\Ajax\Emitter\ClientEmitter;
 use SPHERE\Common\Frontend\Form\Structure\Form;
@@ -150,7 +151,7 @@ class Pipeline
                 $Template->setVariable('Hash', json_encode(sha1(json_encode($Method) . json_encode($Url) . json_encode($Data) . json_encode($ReceiverContext))));
             }
             // ClientEmitter
-            if ($Emitter instanceof ClientEmitter) {
+            if ($Emitter instanceof ClientEmitter || $Emitter instanceof ScriptEmitter) {
 
                 $Content = $Emitter->getContent();
 

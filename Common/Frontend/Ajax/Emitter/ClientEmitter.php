@@ -15,7 +15,7 @@ class ClientEmitter extends AbstractEmitter
     private $Content = '';
 
     /**
-     * Emitter constructor.
+     * ClientEmitter constructor.
      *
      * @param AbstractReceiver|AbstractReceiver[] $Receiver
      * @param mixed $Content

@@ -141,9 +141,13 @@ class Main extends Extension
 
                 if ($this->runAuthenticator()) {
                     if (Access::useService()->existsRightByName($this->getRequest()->getPathInfo())) {
-                        echo self::getDispatcher()->fetchRoute(
-                            $this->getRequest()->getPathInfo()
-                        );
+                        if (!Access::useService()->hasAuthorization($this->getRequest()->getPathInfo())) {
+                            header('HTTP/1.0 403 Forbidden');
+                        } else {
+                            echo self::getDispatcher()->fetchRoute(
+                                $this->getRequest()->getPathInfo()
+                            );
+                        }
                     } else {
                         header('HTTP/1.0 511 Network Authentication Required');
                         self::getDisplay()->setContent(

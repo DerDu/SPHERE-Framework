@@ -65,13 +65,13 @@ class Service extends AbstractService
         if (in_array($Route, self::$AuthorizationCache) || in_array($Route, self::$AuthorizationRequest)) {
             return true;
         }
-        if (!$this->existsRightByName($Route)) {
+        if ($this->existsRightByName($Route) || preg_match('!^/Api/!is', $Route)) {
+            // MUST BE protected -> Access denied
+            return false;
+        } else {
             // Access valid PUBLIC -> Access granted
             self::$AuthorizationRequest[] = $Route;
             return true;
-        } else {
-            // MUST BE protected -> Access denied
-            return false;
         }
     }
 

@@ -33,6 +33,9 @@ class Setup extends AbstractSetup
         $this->setTableAuthentication($Schema, $tblAccount, $tblIdentification);
         $this->setTableUser($Schema, $tblAccount);
         $this->setTableSetting($Schema, $tblAccount);
+//        $tblGroup = $this->setTableGroup($Schema);
+//        $this->setTableGroupRole($Schema, $tblGroup);
+//        $this->setTableGroupAccount($Schema, $tblGroup, $tblAccount);
         /**
          * Migration & Protocol
          */
@@ -66,6 +69,51 @@ class Setup extends AbstractSetup
         if (!$this->getConnection()->hasColumn('tblAccount', 'serviceTblConsumer')) {
             $Table->addColumn('serviceTblConsumer', 'bigint', array('notnull' => false));
         }
+        return $Table;
+    }
+
+    /**
+     * @param Schema $Schema
+     *
+     * @return Table
+     */
+    private function setTableGroup(Schema $Schema)
+    {
+        $Table = $this->createTable( $Schema, 'tblGroup' );
+        $this->createColumn( $Table, 'Name', self::FIELD_TYPE_STRING );
+        $this->createColumn( $Table, 'Description', self::FIELD_TYPE_TEXT );
+        $this->createColumn( $Table, 'serviceTblConsumer', self::FIELD_TYPE_BIGINT, true );
+        return $Table;
+    }
+
+    /**
+     * @param Schema $Schema
+     * @param Table $tblGroup
+     *
+     * @return Table
+     */
+    private function setTableGroupRole(Schema &$Schema, Table $tblGroup)
+    {
+
+        $Table = $this->createTable($Schema, 'tblGroupRole');
+        $this->getConnection()->addForeignKey($Table, $tblGroup);
+        $this->createColumn($Table, 'serviceTblRole', self::FIELD_TYPE_BIGINT, true);
+        return $Table;
+    }
+
+    /**
+     * @param Schema $Schema
+     * @param Table $tblGroup
+     * @param Table $tblAccount
+     *
+     * @return Table
+     */
+    private function setTableGroupAccount(Schema &$Schema, Table $tblGroup, Table $tblAccount)
+    {
+
+        $Table = $this->createTable($Schema, 'tblGroupAccount');
+        $this->getConnection()->addForeignKey($Table, $tblGroup);
+        $this->getConnection()->addForeignKey($Table, $tblAccount);
         return $Table;
     }
 

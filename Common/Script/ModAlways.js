@@ -5,23 +5,24 @@
     {
         $(document).ready(function ()
         {
-            var worldForm = $('form:not(.AjaxSubmit)');
-            /**
-             * Autocomplete Attribute OFF
-             */
-            worldForm.attr('autocomplete', 'off');
-            $('input[type="password"]').attr('autocomplete', 'off');
-            $('input[type="text"]').attr('autocomplete', 'off');
-            $('input[type="number"]').attr('autocomplete', 'off');
-
-            /**
-             * Form Submit-Indicator
-             */
-            worldForm.on("submit", function()
-            {
-                $('button[type="submit"]:not(.disabled)').html(
-                    '<span class="loading-indicator-animate"></span> Bitte warten');
-            });
+            // MOVED TO FORM
+            // var worldForm = $('form:not(.AjaxSubmit)');
+            // /**
+            //  * Autocomplete Attribute OFF
+            //  */
+            // worldForm.attr('autocomplete', 'off');
+            // $('input[type="password"]').attr('autocomplete', 'off');
+            // $('input[type="text"]').attr('autocomplete', 'off');
+            // $('input[type="number"]').attr('autocomplete', 'off');
+            //
+            // /**
+            //  * Form Submit-Indicator
+            //  */
+            // worldForm.on("submit", function()
+            // {
+            //     $('button[type="submit"]:not(.disabled)').html(
+            //         '<span class="loading-indicator-animate"></span> Bitte warten');
+            // });
 
             //noinspection FunctionWithInconsistentReturnsJS
             /**
@@ -42,22 +43,23 @@
             /**
              * Activate MaxLength
              */
-            var worlTextAreaMaxLength = $("textarea[maxlength]");
-            worlTextAreaMaxLength.each(function(){
-                var maxLength = $(this).attr('maxlength');
-                $(this).parent('div').find('.TextAreaMaxLengthCounter').html( maxLength - $(this).val().length );
-            });
-            worlTextAreaMaxLength.on('input propertychange', function() {
-                var maxLength = $(this).attr('maxlength');
-                var disableLineFeed = $(this).hasClass('DisableLineFeed');
-                if( disableLineFeed ) {
-                    $(this).val($(this).val().replace(/\r?\n/gi, ' '));
-                }
-                if ($(this).val().length > maxLength) {
-                    $(this).val($(this).val().substring(0, maxLength));
-                }
-                $(this).parent('div').find('.TextAreaMaxLengthCounter').html( maxLength - $(this).val().length );
-            })
+            // MOVED TO TEXTAREA
+            // var worlTextAreaMaxLength = $("textarea[maxlength]");
+            // worlTextAreaMaxLength.each(function(){
+            //     var maxLength = $(this).attr('maxlength');
+            //     $(this).parent('div').find('.TextAreaMaxLengthCounter').html( maxLength - $(this).val().length );
+            // });
+            // worlTextAreaMaxLength.on('input propertychange', function() {
+            //     var maxLength = $(this).attr('maxlength');
+            //     var disableLineFeed = $(this).hasClass('DisableLineFeed');
+            //     if( disableLineFeed ) {
+            //         $(this).val($(this).val().replace(/\r?\n/gi, ' '));
+            //     }
+            //     if ($(this).val().length > maxLength) {
+            //         $(this).val($(this).val().substring(0, maxLength));
+            //     }
+            //     $(this).parent('div').find('.TextAreaMaxLengthCounter').html( maxLength - $(this).val().length );
+            // })
             /**
              * Activate: Tooltip
              */

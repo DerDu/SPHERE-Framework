@@ -1,6 +1,7 @@
 <?php
 namespace SPHERE\Application\People\Person;
 
+use SPHERE\Application\Api\People\ApiPerson;
 use SPHERE\Application\Contact\Address\Address;
 use SPHERE\Application\Contact\Mail\Mail;
 use SPHERE\Application\Contact\Phone\Phone;
@@ -14,6 +15,7 @@ use SPHERE\Application\People\Meta\Student\Student;
 use SPHERE\Application\People\Meta\Teacher\Teacher;
 use SPHERE\Application\People\Relationship\Relationship;
 use SPHERE\Common\Frontend\Ajax\Emitter\ClientEmitter;
+use SPHERE\Common\Frontend\Ajax\Emitter\ServerEmitter;
 use SPHERE\Common\Frontend\Ajax\Pipeline;
 use SPHERE\Common\Frontend\Ajax\Receiver\BlockReceiver;
 use SPHERE\Common\Frontend\Form\Repository\Button\Primary;
@@ -90,16 +92,29 @@ class Frontend extends Extension implements IFrontendInterface
 
         if (!$Id) {
 
-            $BasicTable = Person::useService()->createPerson(
-                $this->formPerson()
-                    ->appendFormButton(new Primary('Speichern', new Save()))
-                    ->setConfirm('Eventuelle Änderungen wurden noch nicht gespeichert'),
-                $Person);
+            $CreatePersonReceiver = new BlockReceiver();
+            $CreatePersonPipeline = new Pipeline();
+            $CreatePersonEmitter = new ServerEmitter( $CreatePersonReceiver, ApiPerson::getRoute() );
+            $CreatePersonEmitter->setGetPayload(array(
+                ApiPerson::API_DISPATCHER => 'pieceFormCreatePerson',
+                'CreatePersonReceiver' => $CreatePersonReceiver->getIdentifier()
+            ));
+            $CreatePersonPipeline->addEmitter( $CreatePersonEmitter );
+            $CreatePersonReceiver->initContent( $CreatePersonPipeline );
+
+
+//            $BasicTable = Person::useService()->createPerson(
+//                $this->formPerson()
+//                    ->appendFormButton(new Primary('Speichern', new Save()))
+//                    ->setConfirm('Eventuelle Änderungen wurden noch nicht gespeichert'),
+//                $Person);
 
             $Stage->setContent(
                 new Layout(array(
                     new LayoutGroup(
-                        new LayoutRow(new LayoutColumn(new Well($BasicTable))),
+                        new LayoutRow(new LayoutColumn(new Well(
+                            $CreatePersonReceiver
+                        ))),
                         new Title(new PersonParent().' Grunddaten', 'der Person')
                     ),
                 ))
@@ -374,7 +389,7 @@ class Frontend extends Extension implements IFrontendInterface
     /**
      * @return Form
      */
-    private function formPerson()
+    public function formPerson()
     {
 
         $tblGroupList = Group::useService()->getGroupAllSorted();

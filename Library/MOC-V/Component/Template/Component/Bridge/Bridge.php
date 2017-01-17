@@ -33,4 +33,12 @@ abstract class Bridge implements IBridgeInterface
      * @return object
      */
     abstract public function createInstance($Reload = false);
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getContent();
+    }
 }

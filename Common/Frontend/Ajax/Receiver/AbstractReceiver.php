@@ -12,6 +12,8 @@ use SPHERE\System\Extension\Extension;
 abstract class AbstractReceiver extends Extension implements IReceiverInterface
 {
 
+    const IDENTIFIER_PREFIX = 'Sphere-Ajax-Receiver';
+
     /** @var string $Identifier */
     private $Identifier = '';
     /** @var string $Content */
@@ -24,7 +26,7 @@ abstract class AbstractReceiver extends Extension implements IReceiverInterface
      */
     public function __construct()
     {
-        $this->Identifier = 'Sphere-Ajax-Receiver-' . sha1(uniqid('',true));
+        $this->Identifier = self::IDENTIFIER_PREFIX.'-' . sha1(uniqid('',true));
     }
 
     /**
@@ -50,10 +52,12 @@ abstract class AbstractReceiver extends Extension implements IReceiverInterface
 
     /**
      * @param string $Identifier
+     * @return $this
      */
     public function setIdentifier($Identifier)
     {
         $this->Identifier = $Identifier;
+        return $this;
     }
 
     /**
@@ -74,4 +78,14 @@ abstract class AbstractReceiver extends Extension implements IReceiverInterface
         return $this->Content;
     }
 
+    /**
+     * @param string $Content
+     *
+     * @return $this
+     */
+    public function initContent( $Content )
+    {
+        $this->setContent( $Content );
+        return $this;
+    }
 }

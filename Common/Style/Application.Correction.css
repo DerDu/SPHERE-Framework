@@ -493,14 +493,16 @@ code {
 }
 
 form > h4,
-div.row > div > h4 {
+div.row > div > h4,
+div.row > div > .Dynamic-Frontend > h4 {
     padding: 4px 6px;
     /*border-bottom: 2px solid gray;*/
     background: linear-gradient(90deg, rgba(100, 100, 100, 0.2) 20%, transparent 50%);
 }
 
 form > h4 + hr,
-div.row > div > h4 + hr {
+div.row > div > h4 + hr,
+div.row > div > .Dynamic-Frontend > h4 + hr {
     display: none;
 }
 

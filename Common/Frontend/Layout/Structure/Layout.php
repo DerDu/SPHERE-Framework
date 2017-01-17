@@ -2,6 +2,7 @@
 namespace SPHERE\Common\Frontend\Layout\Structure;
 
 use MOC\V\Component\Template\Component\IBridgeInterface;
+use SPHERE\Common\Frontend\ITemplateInterface;
 use SPHERE\Common\Frontend\Layout\ILayoutInterface;
 use SPHERE\System\Extension\Extension;
 
@@ -10,7 +11,7 @@ use SPHERE\System\Extension\Extension;
  *
  * @package SPHERE\Common\Frontend\Layout\Structure
  */
-class Layout extends Extension implements ILayoutInterface
+class Layout extends Extension implements ILayoutInterface, ITemplateInterface
 {
 
     /** @var LayoutGroup[] $LayoutGroup */

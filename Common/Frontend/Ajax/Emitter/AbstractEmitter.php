@@ -32,9 +32,15 @@ abstract class AbstractEmitter extends Extension
 
     /**
      * @param AbstractReceiver[] $AjaxReceiver
+     * @throws \Exception
      */
     final public function setAjaxReceiver($AjaxReceiver)
     {
+        foreach( $AjaxReceiver as $Receiver ) {
+            if( !$Receiver instanceof AbstractReceiver ) {
+                throw new \Exception( 'Parameter must be valid Receiver. See AbstractReceiver' );
+            }
+        }
         $this->AjaxReceiver = $AjaxReceiver;
     }
 

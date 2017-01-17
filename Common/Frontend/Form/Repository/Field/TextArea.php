@@ -28,6 +28,7 @@ class TextArea extends AbstractField implements IFieldInterface
 
         $this->Name = $Name;
         $this->Template = $this->getTemplate(__DIR__.'/TextArea.twig');
+        $this->Template->setVariable('ElementHash', md5(uniqid(microtime(),true)));
         $this->Template->setVariable('ElementName', $Name);
         $this->Template->setVariable('ElementLabel', $Label);
         $this->Template->setVariable('ElementPlaceholder', $Placeholder);

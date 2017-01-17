@@ -32,7 +32,7 @@ class BlockReceiver extends AbstractReceiver
      */
     public function getContainer()
     {
-        return '<div class="' . $this->getIdentifier() . '">'.$this->getContent().'</div>';
+        return '<div class="Dynamic-Frontend ' . $this->getIdentifier() . '">'.$this->getContent().'</div>';
     }
 
     /**
@@ -41,16 +41,5 @@ class BlockReceiver extends AbstractReceiver
     public function getSelector()
     {
         return '.'.$this->getIdentifier();
-    }
-
-    /**
-     * @param string $Content
-     *
-     * @return $this
-     */
-    public function initContent( $Content )
-    {
-        $this->setContent( $Content );
-        return $this;
     }
 }

@@ -2,6 +2,7 @@
 namespace SPHERE\Application\Api\Platform;
 
 use SPHERE\Application\Api\Platform\Database\Database;
+use SPHERE\Application\Api\Platform\Gatekeeper\ApiUserGroup;
 use SPHERE\Application\Api\Platform\Gatekeeper\Gatekeeper;
 use SPHERE\Application\IApplicationInterface;
 
@@ -18,5 +19,6 @@ class Platform implements IApplicationInterface
 
         Database::registerModule();
         Gatekeeper::registerModule();
+//        ApiUserGroup::registerApi();
     }
 }

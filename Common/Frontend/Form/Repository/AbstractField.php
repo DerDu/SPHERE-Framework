@@ -298,6 +298,17 @@ abstract class AbstractField extends Extension implements IFieldInterface
     }
 
     /**
+     * Set Field to automatically Focus on page load
+     *
+     * @return AbstractField
+     */
+    public function setAutoFocus()
+    {
+        $this->Template->setVariable('AutoFocus', 'autofocus');
+        return $this;
+    }
+
+    /**
      * @return AbstractField
      */
     public function setInputAlignLeft()

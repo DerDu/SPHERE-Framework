@@ -14,6 +14,24 @@
         var notifyFieldName;
         var notifyFieldList = this.find(':input:not(:button)');
 
+        /**
+         * Autocomplete Attribute OFF
+         */
+        thisForm.attr('autocomplete', 'off');
+        thisForm.find('input[type="password"]').attr('autocomplete', 'off');
+        thisForm.find('input[type="text"]').attr('autocomplete', 'off');
+        thisForm.find('input[type="number"]').attr('autocomplete', 'off');
+        /**
+         * Form Submit-Indicator
+         */
+        if( !thisForm.hasClass('AjaxSubmit') ) {
+            thisForm.on("submit", function () {
+                thisForm.find('button[type="submit"]:not(.disabled)').html(
+                    '<span class="loading-indicator-animate"></span> Bitte warten'
+                );
+            });
+        }
+
         // script goes here
         /**
          * Page-Leave Draft-Save: All

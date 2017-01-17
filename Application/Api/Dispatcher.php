@@ -103,6 +103,8 @@ class Dispatcher extends Extension
 
         if( $Result instanceof ITemplateInterface ) {
             $Result = $Result->__toString();
+        } else if( is_object($Result) ) {
+            $Result = (string)new Error( 'Ajax-Error', 'API-Method ('.$MethodName.') returned incompatiple JSON-Type ('.get_class($Result).')' );
         }
         return json_encode( $Result );
     }

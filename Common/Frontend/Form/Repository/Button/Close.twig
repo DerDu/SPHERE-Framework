@@ -1,0 +1,7 @@
+<button type="button" class="btn btn-dark" {% if( TabIndex is not empty ) %}tabindex="{{ TabIndex }}"{% endif %}
+        data-dismiss="modal">
+    <span class="text-danger">
+    {% if( Icon is not empty ) %}{{ Icon }}{% endif %}
+        {{ Name }}
+    </span>
+</button>

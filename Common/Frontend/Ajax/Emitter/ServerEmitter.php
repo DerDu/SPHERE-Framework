@@ -21,7 +21,7 @@ class ServerEmitter extends AbstractEmitter
     private $AjaxPostPayload = array();
 
     /**
-     * Emitter constructor.
+     * ServerEmitter constructor.
      *
      * @param AbstractReceiver|AbstractReceiver[] $Receiver
      * @param Route $Route

@@ -44,6 +44,11 @@ class Get extends Extension implements ITypeInterface
         array_walk_recursive($Global->GET, array($this, 'preventXSS'));
         array_walk_recursive($Global->GET, array($this, 'trimInput'));
 
+        // Respect jQuery no Cache Parameter
+        if( isset( $Global->GET['_'] ) ) {
+            unset( $Global->GET['_'] );
+        }
+
         if (!empty( $Global->GET ) && !isset( $Global->GET['_Sign'] )) {
             $Global->GET = array();
             $Global->saveGet();
@@ -51,10 +56,6 @@ class Get extends Extension implements ITypeInterface
         } else {
             if (isset( $Global->GET['_Sign'] )) {
                 $Data = $Global->GET;
-                // Respect jQuery no Cache Parameter
-                if( isset( $Global->GET['_'] ) ) {
-                    unset( $Data['_'] );
-                }
                 $Signature = $Global->GET['_Sign'];
                 unset( $Data['_Sign'] );
                 $Check = $this->createSignature($Data);
