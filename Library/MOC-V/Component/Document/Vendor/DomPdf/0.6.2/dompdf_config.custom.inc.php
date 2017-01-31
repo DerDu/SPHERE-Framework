@@ -4,7 +4,7 @@
 //define("DOMPDF_TEMP_DIR", "/tmp");
 //define("DOMPDF_FONT_DIR", DOMPDF_DIR."/lib/fonts/");
 //define("DOMPDF_FONT_CACHE", DOMPDF_DIR."/lib/fonts/");
-//define("DOMPDF_UNICODE_ENABLED", true);
+define("DOMPDF_UNICODE_ENABLED", true);
 //define("DOMPDF_PDF_BACKEND", "PDFLib");
 //define("DOMPDF_DEFAULT_MEDIA_TYPE", "print");
 //define("DOMPDF_DEFAULT_PAPER_SIZE", "letter");
@@ -22,7 +22,7 @@
 //define("DOMPDF_FONT_HEIGHT_RATIO", 1.0);
 //define("DEBUG_LAYOUT_PADDINGBOX", false);
 //define("DOMPDF_LOG_OUTPUT_FILE", DOMPDF_FONT_DIR."log.htm");
-//define("DOMPDF_ENABLE_HTML5PARSER", true);
+define("DOMPDF_ENABLE_HTML5PARSER", true);
 //define("DOMPDF_ENABLE_FONTSUBSETTING", true);
 
 // Authentication for the dompdf/www

@@ -3,8 +3,14 @@ namespace SPHERE\Application\Platform\Roadmap\Youtrack;
 
 use SPHERE\System\Cache\Handler\MemcachedHandler;
 use SPHERE\System\Debugger\DebuggerFactory;
+use SPHERE\System\Debugger\Logger\BenchmarkLogger;
 use SPHERE\System\Debugger\Logger\QueryLogger;
 
+/**
+ * Class Parser
+ *
+ * @package SPHERE\Application\Platform\Roadmap\Youtrack
+ */
 class Parser extends Connection
 {
 
@@ -63,7 +69,7 @@ class Parser extends Connection
     {
 
         $Url = $this->getCredentials()->getHost()
-            .'/rest/issue/byproject/KREDA'
+            .'/rest/issue/byproject/SSW'
             .'?filter='.urlencode($this->YouTrackFilter)
             .'&max='.urlencode('1000');
 

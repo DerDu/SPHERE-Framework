@@ -22,6 +22,7 @@ class FieldValueReceiver extends AbstractReceiver
     public function __construct( AbstractField $Field )
     {
         $this->Field = $Field;
+        parent::__construct();
         $this->setIdentifier( $this->Field->getName() );
     }
 

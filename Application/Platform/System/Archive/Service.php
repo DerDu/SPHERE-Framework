@@ -40,6 +40,7 @@ class Service extends AbstractService
      * @param null|TblConsumer $tblConsumer
      * @param null|Element     $Entity
      * @param int              $Type
+     * @param bool $useBulkSave
      *
      * @return false|TblArchive
      */
@@ -48,11 +49,12 @@ class Service extends AbstractService
         TblAccount $tblAccount = null,
         TblConsumer $tblConsumer = null,
         Element $Entity = null,
-        $Type = TblArchive::ARCHIVE_TYPE_CREATE
+        $Type = TblArchive::ARCHIVE_TYPE_CREATE,
+        $useBulkSave = false
     ) {
 
-        (new Data($this->getBinding()))->createArchiveEntry(
-            $DatabaseName, $tblAccount, $tblConsumer, $Entity, $Type
+        return (new Data($this->getBinding()))->createArchiveEntry(
+            $DatabaseName, $tblAccount, $tblConsumer, $Entity, $Type, $useBulkSave
         );
     }
 
@@ -124,5 +126,16 @@ class Service extends AbstractService
             }
             return $Object;
         }
+    }
+
+    /**
+     * MUST call if "useBulkSave" parameter was used with
+     * - createDeleteEntry
+     * - createUpdateEntry
+     * - createInsertEntry
+     */
+    public function flushBulkEntries()
+    {
+        (new Data($this->getBinding()))->flushBulkSave();
     }
 }

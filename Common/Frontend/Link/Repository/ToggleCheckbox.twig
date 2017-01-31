@@ -1,0 +1,38 @@
+{% if( Disabled is empty ) %}
+    <a id="{{ ElementHash }}" href="#" class="btn btn-default {{ ElementType }}" data-toggle="tooltip" data-container="body"
+       title="{{ ElementToolTip }}">{{ ElementIcon }} {{ ElementName }}</a>
+    <script language=javascript>
+        //noinspection JSUnresolvedFunction
+        executeScript(function()
+        {
+            Client.Use("ModAlways", function()
+            {
+                jQuery("a#{{ ElementHash }}").on("click", function(Event) {
+                    Event.preventDefault();
+                    // Enabled Boxes
+                    var FullList = jQuery('#{{ TargetHash }}').find('input[type="checkbox"]');
+                    var EnabledList = jQuery('#{{ TargetHash }}').find('input[type="checkbox"]:checked');
+                    var DisabledList = jQuery('#{{ TargetHash }}').find('input[type="checkbox"]:not(:checked)');
+                    if(
+                        EnabledList.length >= 0
+                        && DisabledList.length != 0
+                    ) {
+                        jQuery(FullList).each(function(){
+                            jQuery(this).prop('checked', true);
+                        });
+                    } else if(
+                        EnabledList.length !=0
+                        && DisabledList.length == 0
+                    ){
+                        jQuery(FullList).each(function(){
+                            jQuery(this).prop('checked', false);
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+{% else %}
+    <a href="#" class="btn btn-default {{ ElementType }}" data-toggle="tooltip" data-container="body"
+       title="{{ ElementToolTip }}" disabled>{{ ElementIcon }} {{ ElementName }}</a>
+{% endif %}

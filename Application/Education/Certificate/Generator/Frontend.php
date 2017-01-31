@@ -2,7 +2,6 @@
 namespace SPHERE\Application\Education\Certificate\Generator;
 
 use SPHERE\Application\Document\Explorer\Storage\Storage;
-use SPHERE\Application\Education\Certificate\Generator\Repository\Element;
 use SPHERE\Application\Education\Certificate\Generator\Service\Entity\TblCertificate;
 use SPHERE\Application\Education\Graduation\Gradebook\Gradebook;
 use SPHERE\Application\Education\Lesson\Division\Division;
@@ -15,7 +14,6 @@ use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Consumer;
 use SPHERE\Common\Frontend\Form\Repository\AbstractField;
 use SPHERE\Common\Frontend\Form\Repository\Button\Primary;
-use SPHERE\Common\Frontend\Form\Repository\Field;
 use SPHERE\Common\Frontend\Form\Repository\Field\RadioBox;
 use SPHERE\Common\Frontend\Form\Repository\Field\TextField;
 use SPHERE\Common\Frontend\Form\Structure\Form;
@@ -380,7 +378,6 @@ class Frontend extends Extension implements IFrontendInterface
                                 'Content.Input.Survey'         => 'TextArea',
                                 'Content.Input.Team'           => 'TextArea',
                                 'Content.Input.Deepening'      => 'TextField',
-                                'Content.Input.Choose'         => 'TextField',
                                 'Content.Input.SchoolType'     => 'TextField',
                                 'Content.Input.Date'           => 'DatePicker',
                                 'Content.Input.DateCertifcate' => 'DatePicker',
@@ -411,7 +408,6 @@ class Frontend extends Extension implements IFrontendInterface
                                 'Content.Input.Survey'         => 'Gutachten',
                                 'Content.Input.Team'           => 'Arbeitsgemeinschaften',
                                 'Content.Input.Deepening'      => 'Vertiefungsrichtung',
-                                'Content.Input.Choose'         => 'Wahlpflichtbereich',
                                 'Content.Input.SchoolType'     => 'Schulart (am Gymnasium/an der Mittelschule/...)',
                                 'Content.Input.Date'           => 'Datum',
                                 'Content.Input.DateCertifcate' => 'Datum des Zeugnisses',

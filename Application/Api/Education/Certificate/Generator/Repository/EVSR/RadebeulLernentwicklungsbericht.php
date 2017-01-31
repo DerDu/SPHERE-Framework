@@ -127,17 +127,15 @@ class RadebeulLernentwicklungsbericht extends Certificate
                     )
                 )
                 ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('
-                                {% if(Content.Input.Rating is not empty) %}
-                                    {{ Content.Input.Rating|nl2br }}
-                                {% else %}
-                                    &nbsp;
-                                {% endif %}
-                            ')
-                            ->styleMarginTop('10px')
-                        )
+                    ->addElement(( new Element() )
+                        ->setContent('
+                            {% if(Content.Input.Rating is not empty) %}
+                                {{ Content.Input.Rating|nl2br }}
+                            {% else %}
+                                &nbsp;
+                            {% endif %}
+                        ')
+                        ->styleMarginTop('10px')
                     )
                 )
                 ->addSlice((new Slice())

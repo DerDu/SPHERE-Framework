@@ -7,6 +7,7 @@ use SPHERE\Application\People\Group\Service\Entity\ViewPeopleGroupMember;
 use SPHERE\Application\People\Person\Person;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
+use SPHERE\System\Cache\Handler\DataCacheHandler;
 use SPHERE\System\Database\Binding\AbstractData;
 use SPHERE\System\Database\Fitting\ColumnHydrator;
 
@@ -184,7 +185,18 @@ class Data extends AbstractData
     {
 
         $EntityList = $this->getMemberAllByGroup($tblGroup);
-        if ($EntityList) {
+
+        $Cache = new DataCacheHandler(
+            __METHOD__.$tblGroup->getId(), array(
+                new TblGroup(''),
+                new TblMember(),
+                new TblPerson(),
+            )
+        );
+
+        if ((null === ( $ResultList = $Cache->getData() )
+            && !empty( $EntityList ))
+        ) {
             array_walk($EntityList, function (TblMember &$V) {
 
                 if (!$V->getServiceTblPerson()
@@ -196,6 +208,10 @@ class Data extends AbstractData
                 $V = $V->getServiceTblPerson();
             });
             $EntityList = array_filter($EntityList);
+
+            $Cache->setData($EntityList, 0);
+        } else {
+            $EntityList = $ResultList;
         }
         return ( null === $EntityList ? false : $EntityList );
     }

@@ -6,6 +6,8 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
 use SPHERE\Application\Contact\Address\Service\Entity\ViewAddressToPerson;
+use SPHERE\Application\Contact\Mail\Service\Entity\ViewMailToPerson;
+use SPHERE\Application\Contact\Phone\Service\Entity\ViewPhoneToPerson;
 use SPHERE\Application\People\Meta\Club\Club;
 use SPHERE\Application\People\Meta\Common\Service\Entity\ViewPeopleMetaCommon;
 use SPHERE\Application\People\Meta\Teacher\Service\Entity\ViewPeopleMetaTeacher;
@@ -89,7 +91,6 @@ class ViewPeopleMetaClub extends AbstractView
 //        $this->addForeignView(self::TBL_CLUB_SERVICE_TBL_PERSON, new ViewPerson(), ViewPerson::TBL_PERSON_ID);
 
         $this->addForeignView(self::TBL_CLUB_SERVICE_TBL_PERSON, new ViewRelationshipToPerson(), ViewRelationshipToPerson::TBL_TO_PERSON_SERVICE_TBL_PERSON_FROM);
-        $this->addForeignView(self::TBL_CLUB_SERVICE_TBL_PERSON, new ViewAddressToPerson(), ViewAddressToPerson::TBL_TO_PERSON_SERVICE_TBL_PERSON);
 //        $this->addForeignView(self::TBL_CLUB_SERVICE_TBL_PERSON, new ViewStudent(), ViewStudent::TBL_STUDENT_SERVICE_TBL_PERSON);
 //        $this->addForeignView(self::TBL_CLUB_SERVICE_TBL_PERSON, new ViewPeopleMetaClub(), ViewPeopleMetaClub::TBL_CLUB_SERVICE_TBL_PERSON);
         $this->addForeignView(self::TBL_CLUB_SERVICE_TBL_PERSON, new ViewPeopleMetaCommon(), ViewPeopleMetaCommon::TBL_COMMON_SERVICE_TBL_PERSON);
@@ -98,6 +99,13 @@ class ViewPeopleMetaClub extends AbstractView
         $this->addForeignView(self::TBL_CLUB_SERVICE_TBL_PERSON, new ViewPeopleMetaTeacher(), ViewPeopleMetaTeacher::TBL_TEACHER_SERVICE_TBL_PERSON);
 //        $this->addForeignView(self::TBL_CLUB_SERVICE_TBL_PERSON, new ViewDivisionStudent(), ViewDivisionStudent::TBL_DIVISION_STUDENT_SERVICE_TBL_PERSON);
 //        $this->addForeignView(self::TBL_CLUB_SERVICE_TBL_PERSON, new ViewDivisionTeacher(), ViewDivisionTeacher::TBL_DIVISION_TEACHER_SERVICE_TBL_PERSON);
+
+        $this->addForeignView(self::TBL_CLUB_SERVICE_TBL_PERSON, new ViewAddressToPerson(),
+            ViewAddressToPerson::TBL_TO_PERSON_SERVICE_TBL_PERSON);
+        $this->addForeignView(self::TBL_CLUB_SERVICE_TBL_PERSON, new ViewMailToPerson(),
+            ViewMailToPerson::TBL_TO_PERSON_SERVICE_TBL_PERSON);
+        $this->addForeignView(self::TBL_CLUB_SERVICE_TBL_PERSON, new ViewPhoneToPerson(),
+            ViewPhoneToPerson::TBL_TO_PERSON_SERVICE_TBL_PERSON);
     }
 
     /**

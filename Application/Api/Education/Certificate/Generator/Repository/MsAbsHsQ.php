@@ -8,7 +8,6 @@ use SPHERE\Application\Education\Certificate\Generator\Repository\Frame;
 use SPHERE\Application\Education\Certificate\Generator\Repository\Page;
 use SPHERE\Application\Education\Certificate\Generator\Repository\Section;
 use SPHERE\Application\Education\Certificate\Generator\Repository\Slice;
-use SPHERE\Common\Frontend\Layout\Repository\Container;
 
 /**
  * Class MsAbsHsQ
@@ -27,28 +26,27 @@ class MsAbsHsQ extends Certificate
     {
 
         if ($IsSample) {
-            $Header = (new Slice())
-                ->addSection((new Section())
-                    ->addElementColumn((new Element())
+            $Header = ( new Slice() )
+                ->addSection(( new Section() )
+                    ->addElementColumn(( new Element() )
                         ->setContent('&nbsp;')
                         ->styleTextSize('12px')
                         ->styleTextColor('#CCC')
                         ->styleAlignCenter()
                         , '25%')
-                    ->addElementColumn((new Element\Sample())
+                    ->addElementColumn(( new Element\Sample() )
                         ->styleTextSize('30px')
                     )
-                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
-                            '200px'))
+                    ->addElementColumn(( new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
+                        '165px', '50px') )
                         , '25%')
                 );
         } else {
-            $Header = (new Slice())
-                ->addSection((new Section())
-                    ->addElementColumn((new Element()), '25%')
-                    ->addElementColumn((new Element()))
-                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
-                            '200px'))
+            $Header = ( new Slice() )
+                ->addSection(( new Section() )
+                    ->addElementColumn(( new Element() ), '75%')
+                    ->addElementColumn(( new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
+                        '165px', '50px') )
                         , '25%')
                 );
         }
@@ -67,14 +65,14 @@ class MsAbsHsQ extends Certificate
                         ->styleTextBold()
                     )
                 )
-                ->addSlice((new Slice())
-                    ->addElement((new Element())
-                        ->setContent('der Mittelschule')
-                        ->styleTextSize('22px')
-                        ->styleAlignCenter()
-                        ->styleMarginTop('15px')
-                    )
-                )
+//                ->addSlice((new Slice())
+//                    ->addElement((new Element())
+//                        ->setContent('der Mittelschule')
+//                        ->styleTextSize('22px')
+//                        ->styleAlignCenter()
+//                        ->styleMarginTop('15px')
+//                    )
+//                )
             )
             ->addPage((new Page())
                 ->addSlice((new Slice())
@@ -142,11 +140,11 @@ class MsAbsHsQ extends Certificate
                                 {% else %}
                                       &nbsp;
                                 {% endif %}')
-                            ->styleBorderBottom('1px', '#BBB')
+                            ->styleBorderBottom('1px')
                             ->styleAlignCenter()
                         )
                         ->addElementColumn((new Element())
-                            ->styleBorderBottom('1px', '#BBB')
+                            ->styleBorderBottom('1px')
                             ->setContent('&nbsp;')
                             , '5%')
                     )
@@ -162,7 +160,7 @@ class MsAbsHsQ extends Certificate
                                 {% else %}
                                       &nbsp;
                                 {% endif %}')
-                                ->styleBorderBottom('1px', '#BBB')
+                                ->styleBorderBottom('1px')
                                 ->styleAlignCenter()
                         )
                         ->styleMarginTop('10px')
@@ -174,7 +172,7 @@ class MsAbsHsQ extends Certificate
                                 ->addElementColumn(
                                     (new Element())
                                         ->setContent('&nbsp;')
-                                        ->styleBorderBottom('1px', '#BBB')
+                                        ->styleBorderBottom('1px')
                                     , '10%')
                                 ->addElementColumn(
                                     (new Element())
@@ -184,7 +182,7 @@ class MsAbsHsQ extends Certificate
                                         {% else %}
                                               &nbsp;
                                         {% endif %}')
-                                        ->styleBorderBottom('1px', '#BBB')
+                                        ->styleBorderBottom('1px')
                                         ->styleAlignCenter()
                                 )
                                 ->addElementColumn(
@@ -207,7 +205,8 @@ class MsAbsHsQ extends Certificate
                 )
                 ->addSlice((new Slice())
                     ->addElement((new Element())
-                        ->setContent('und hat erfolgreich an der besonderen Leistungsfeststellung in der Klassenstufe 9 teilgenommen und den')
+                        ->setContent('und hat erfolgreich an der besonderen Leistungsfeststellung in der Klassenstufe 9 
+                        der Schulart Mittelschule teilgenommen und den')
                         ->styleMarginTop('8px')
                         ->styleAlignLeft()
                     )
@@ -255,91 +254,11 @@ class MsAbsHsQ extends Certificate
                         ->styleTextBold()
                     )
                 )
-                ->addSlice($this->getSubjectLanes()->styleHeight('240px'))
-                ->addSlice((new Slice())
-                    ->addElement((new Element())
-                        ->setContent('Wahlpflichtbereich:')
-                        ->styleMarginTop('15px')
-                        ->styleTextBold()
-                    )
-                )
-                ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Input.Choose is not empty) %}
-                                    {{ Content.Input.Choose }}
-                                {% else %}
-                                    &nbsp;
-                                {% endif %}')//ToDO Wahlpflichtbereich
-                            ->styleBorderBottom()
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                        )
-                        ->addElementColumn((new Element())
-                            ->setContent('&nbsp;')
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#BBB')
-                            ->styleBorderBottom('1px', '#000')
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            , '9%')
-                    )
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Person.Data.ToDO is not empty) %}
-                                    Vertiefungskurs
-                                {% else %}
-                                    {% if(Content.Person.Data.ToDO is not empty) %}
-                                        2. Fremdsprache (abschlussorientiert)
-                                    {% else %}
-                                        &nbsp;
-                                    {% endif %}
-                                {% endif %}')//ToDO Wahlpflichtbereich
-                            ->styleTextSize('11px')
-                        )
-                    )
-                    ->styleMarginTop('5px')
-                )
-                ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Bemerkungen:')
-                            , '16%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Input.Remark is not empty) %}
-                                    {{ Content.Input.Remark|nl2br }}
-                                {% else %}
-                                    &nbsp;
-                                {% endif %}')
-                            ->styleHeight('150px')
-                        )
-                    )
-                    ->styleMarginTop('15px')
-                )
-                ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Datum:')
-                            , '7%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Input.Date is not empty) %}
-                                                {{ Content.Input.Date }}
-                                            {% else %}
-                                                &nbsp;
-                                            {% endif %}')
-                            ->styleBorderBottom('1px', '#000')
-                            ->styleAlignCenter()
-                            , '23%')
-                        ->addElementColumn((new Element())
-                            , '5%')
-                        ->addElementColumn((new Element())
-                            , '30%')
-                        ->addElementColumn((new Element())
-                            , '5%')
-                        ->addElementColumn((new Element())
-                            , '30%')
-                    )->styleMarginTop('25px')
-                )
+                ->addSlice($this->getSubjectLanes()->styleHeight('270px'))
+                ->addSlice($this->getOrientationStandard())
+                ->addSlice($this->getDescriptionHead())
+                ->addSlice($this->getDescriptionContent('215px', '15px'))
+                ->addSlice($this->getDateLine())
                 ->addSlice((new Slice())
                     ->addSection((new Section())
                         ->addElementColumn((new Element())
@@ -366,7 +285,8 @@ class MsAbsHsQ extends Certificate
                             ->styleAlignCenter()
                             ->styleBorderBottom('1px', '#000')
                             , '30%')
-                    )->styleMarginTop('25px')
+                    )
+                    ->styleMarginTop('5px')
                 )
                 ->addSlice((new Slice())
                     ->addSection((new Section())
@@ -400,7 +320,7 @@ class MsAbsHsQ extends Certificate
                             ->styleAlignCenter()
                             ->styleBorderBottom('1px', '#000')
                             , '30%')
-                    )->styleMarginTop('25px')
+                    )
                 )
                 ->addSlice((new Slice())
                     ->addSection((new Section())
@@ -413,24 +333,9 @@ class MsAbsHsQ extends Certificate
                             , '30%')
                     )
                 )
-                ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->styleBorderBottom()
-                            , '30%')
-                        ->addElementColumn((new Element())
-                            , '70%')
-                    )->styleMarginTop('220px')
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Notenerläuterung:'
-                                . new Container('
-                                    1 = sehr gut; 2 = gut; 3 = befriedigend; 4 = ausreichend; 5 = mangelhaft;
-                                    6 = ungenügend'))
-                            ->styleTextSize('9.5px')
-                            , '30%')
-                    )
-                )
+                ->addSlice($this->getInfo('150px',
+                    'Notenerläuterung:',
+                    '1 = sehr gut; 2 = gut; 3 = befriedigend; 4 = ausreichend; 5 = mangelhaft; 6 = ungenügend'))
             )
         );
     }

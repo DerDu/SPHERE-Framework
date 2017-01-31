@@ -282,4 +282,15 @@ class Service extends AbstractService
 
         return (new Data($this->getBinding()))->destroyCommon($tblCommon, $IsSoftRemove);
     }
+
+    /**
+     * @param $Name
+     *
+     * @return false|TblCommonGender
+     */
+    public function getCommonGenderByName($Name)
+    {
+
+        return (new Data($this->getBinding()))->getCommonGenderByName($Name);
+    }
 }

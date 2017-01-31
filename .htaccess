@@ -15,7 +15,7 @@
 
 # Set Default Encoding to UTF-8
 
-    <FilesMatch "\.(html|css|js|php|map|woff|woff2)$">
+    <FilesMatch "\.(?i:html|css|js|php|map|woff|woff2)$">
         AddDefaultCharset UTF-8
         DefaultLanguage en-US
     </FilesMatch>
@@ -26,10 +26,10 @@
         Order Deny,Allow
         Deny from All
     </FilesMatch>
-    <FilesMatch "\.(css|js|map|woff|woff2|eot|ico|svg|png|jpg|ttf|gif)$">
+    <FilesMatch "\.(?i:css|js|json|map|woff|woff2|eot|ico|svg|png|jpg|ttf|gif)$">
         Allow from All
     </FilesMatch>
-    <FilesMatch "^(index\.php|piwik\.php|robots\.txt)$">
+    <FilesMatch "^(?i:index\.php|piwik\.php|robots\.txt)$">
         Allow from All
     </FilesMatch>
 
@@ -56,23 +56,23 @@
 
     # Header set Cache-Control "max-age=600, private, must-revalidate"
     # No ETag
-    <FilesMatch "\.(gif|jpg|jpeg|png|swf|css|js|html?|xml|txt|ico|woff|woff2|eot|map)$">
+    <FilesMatch "\.(?i:gif|jpg|jpeg|png|swf|css|js|html?|xml|txt|ico|woff|woff2|eot|map)$">
         FileETag none
     </FilesMatch>
     # 480 weeks
-    <FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|css|swf|woff|woff2|eot|map)$">
+    <FilesMatch "\.(?i:ico|pdf|flv|jpg|jpeg|png|gif|css|swf|woff|woff2|eot|map)$">
         Header set Cache-Control "max-age=290304000, public, must-revalidate"
     </FilesMatch>
     # 7 DAYS Js + cTag
-    <FilesMatch "\.(js)$">
+    <FilesMatch "\.(?i:js)$">
         Header set Cache-Control "max-age=604800, public, must-revalidate"
     </FilesMatch>
     # 2 DAYS
-    <FilesMatch "\.(xml|txt)$">
+    <FilesMatch "\.(?i:xml|txt)$">
         Header set Cache-Control "max-age=172800, public, must-revalidate"
     </FilesMatch>
     # 2 HOURS
-    <FilesMatch "\.(html|htm)$">
+    <FilesMatch "\.(?i:html|htm)$">
         Header set Cache-Control "max-age=7200, public, must-revalidate"
     </FilesMatch>
 

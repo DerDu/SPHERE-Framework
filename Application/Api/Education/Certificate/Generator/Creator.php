@@ -10,6 +10,7 @@ use SPHERE\Application\Document\Storage\Storage;
 use SPHERE\Application\Education\Certificate\Prepare\Prepare;
 use SPHERE\Application\Education\Lesson\Division\Division;
 use SPHERE\Application\People\Person\Person;
+use SPHERE\Common\Window\Redirect;
 use SPHERE\Common\Window\Stage;
 use SPHERE\System\Extension\Extension;
 
@@ -234,6 +235,89 @@ class Creator extends Extension
                     $ZipFile->getRealPath(),
                     $Name . '-' . $tblDivision->getDisplayName() . '-' . date("Y-m-d H:i:s") . ".zip"
                 )->__toString();
+            }
+        }
+
+        return new Stage($Name, 'Nicht gefunden');
+    }
+
+    /**
+     * Herunterladen in einem Zip-Ordner und revisionssicher speichern
+     *
+     * @param null $PrepareId
+     * @param string $Name
+     *
+     * @return Stage|string
+     */
+    public function downloadZip($PrepareId = null, $Name = 'Zeugnis')
+    {
+
+        if (($tblPrepare = Prepare::useService()->getPrepareById($PrepareId))
+            && ($tblDivision = $tblPrepare->getServiceTblDivision())
+            && ($tblStudentList = Division::useService()->getStudentAllByDivision($tblDivision))
+        ) {
+            $FileList = array();
+            foreach ($tblStudentList as $tblPerson) {
+                if (($tblPrepareStudent = Prepare::useService()->getPrepareStudentBy($tblPrepare, $tblPerson))
+                    && !$tblPrepareStudent->isPrinted()
+                ) {
+                    if (($tblCertificate = $tblPrepareStudent->getServiceTblCertificate())) {
+                        $CertificateClass = '\SPHERE\Application\Api\Education\Certificate\Generator\Repository\\' . $tblCertificate->getCertificate();
+                        if (class_exists($CertificateClass)) {
+
+                            /** @var \SPHERE\Application\Api\Education\Certificate\Generator\Certificate $Certificate */
+                            $Certificate = new $CertificateClass(false);
+
+                            // get Content
+                            $Content = Prepare::useService()->getCertificateContent($tblPrepare, $tblPerson);
+                            $personLastName = str_replace('ä', 'ae', $tblPerson->getLastName());
+                            $personLastName = str_replace('ü', 'ue', $personLastName);
+                            $personLastName = str_replace('ö', 'oe', $personLastName);
+                            $personLastName = str_replace('ß', 'ss', $personLastName);
+                            $File = Storage::createFilePointer('pdf', $Name . '-' . $personLastName
+                                . '-' . date('Y-m-d') . '--');
+                            /** @var DomPdf $Document */
+                            $Document = Document::getPdfDocument($File->getFileLocation());
+                            $Document->setContent($Certificate->createCertificate($Content));
+                            $Document->saveFile(new FileParameter($File->getFileLocation()));
+
+                            // Revisionssicher speichern
+                            if (($tblDivision = $tblPrepare->getServiceTblDivision()) && !$tblPrepareStudent->isPrinted()) {
+                                if (Storage::useService()->saveCertificateRevision($tblPerson, $tblDivision,
+                                    $Certificate,
+                                    $File)
+                                ) {
+                                    Prepare::useService()->updatePrepareStudentSetPrinted($tblPrepareStudent);
+                                }
+                            }
+
+                            $FileList[] = $File;
+                        }
+                    }
+                }
+            }
+
+            if (!empty($FileList)) {
+                $ZipFile = new FilePointer('zip');
+                $ZipFile->saveFile();
+
+                $ZipArchive = $this->getPacker($ZipFile->getRealPath());
+                /** @var FilePointer $File */
+                foreach ($FileList as $File) {
+                    $ZipArchive->compactFile(
+                        new \MOC\V\Component\Packer\Component\Parameter\Repository\FileParameter(
+                            $File->getRealPath()
+                        )
+                        , false);
+                }
+
+                return FileSystem::getDownload(
+                    $ZipFile->getRealPath(),
+                    $Name . '-' . $tblDivision->getDisplayName() . '-' . date("Y-m-d H:i:s") . ".zip"
+                )->__toString();
+            } else {
+                return new Stage($Name, 'Keine weiteren Zeungnisse zum Druck bereit.')
+                . new Redirect('/Education/Certificate/PrintCertificate');
             }
         }
 

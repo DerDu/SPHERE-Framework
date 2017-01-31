@@ -27,7 +27,7 @@ class ViewSubjectTeacher extends AbstractView
     const TBL_DIVISION_SUBJECT_TBL_SUBJECT_GROUP = 'TblDivisionSubject_tblSubjectGroup';
     const TBL_DIVISION_SUBJECT_TBL_DIVISION = 'TblDivisionSubject_tblDivision';
 
-    const TBL_LEVEL_ID = 'TblLevel_ID';
+    const TBL_LEVEL_ID = 'TblLevel_Id';
     const TBL_LEVEL_NAME = 'TblLevel_Name';
     const TBL_LEVEL_DESCRIPTION = 'TblLevel_Description';
     const TBL_LEVEL_IS_CHECKED = 'TblLevel_IsChecked';

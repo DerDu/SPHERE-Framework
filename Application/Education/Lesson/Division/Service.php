@@ -2052,4 +2052,16 @@ class Service extends AbstractService
             }
         }
     }
+
+    /**
+     * @param TblType $serviceTblType
+     * @param $Name
+     *
+     * @return bool|TblLevel
+     */
+    public function getLevelBy(TblType $serviceTblType, $Name)
+    {
+
+        return (new Data($this->getBinding()))->getLevelBy($serviceTblType, $Name);
+    }
 }

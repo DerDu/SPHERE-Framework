@@ -25,7 +25,9 @@ class Certificate extends Extension implements IModuleInterface
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
             __NAMESPACE__ . '/Generator/PreviewZip', __NAMESPACE__ . '\Generator\Creator::previewZip'
         ));
-
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__ . '/Generator/DownloadZip', __NAMESPACE__ . '\Generator\Creator::downloadZip'
+        ));
     }
 
     /**

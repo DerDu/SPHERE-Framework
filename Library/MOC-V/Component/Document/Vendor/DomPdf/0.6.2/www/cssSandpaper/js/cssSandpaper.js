@@ -28,7 +28,7 @@ var cssSandpaper = new function()
 {
     var me = this;
 
-    var styleNodes, styleSheets = [];
+    var styleNodes, styleSheets = new Array();
 
     var ruleSetRe = /[^\{]*{[^\}]*}/g;
     var ruleSplitRe = /[\{\}]/g;
@@ -44,7 +44,7 @@ var cssSandpaper = new function()
 
     var reFunctionSpaces = /\(\s*/g;
 
-    var ruleLists = [];
+    var ruleLists = new Array();
     var styleNode;
 
     var tempObj;
@@ -569,7 +569,7 @@ var cssSandpaper = new function()
 function RuleList(propertyName)
 {
     var me = this;
-    me.values = [];
+    me.values = new Array();
     me.propertyName = propertyName;
     me.add = function(selector, value)
     {
@@ -744,7 +744,7 @@ var CSS3Helpers = new function()
 
     var canvas;
 
-    var cache = [];
+    var cache = new Array();
 
     me.supports = function(cssProperty)
     {
@@ -822,7 +822,7 @@ var CSS3Helpers = new function()
 
     me.getBoxShadowValues = function(propertyValue)
     {
-        var r = {};
+        var r = new Object();
 
         var values = propertyValue.split(reSpaces);
 
@@ -851,8 +851,8 @@ var CSS3Helpers = new function()
 
     me.getGradient = function(propertyValue)
     {
-        var r = {};
-        r.colorStops = [];
+        var r = new Object();
+        r.colorStops = new Array();
 
         var substring = me.getBracketedSubstring(propertyValue, '-sand-gradient');
         if (substring == undefined) {
@@ -942,7 +942,7 @@ var CSS3Helpers = new function()
 
     function parseColorStop(colorStop, index)
     {
-        var r = {};
+        var r = new Object();
         var substring = me.getBracketedSubstring(colorStop, 'color-stop');
         var from = me.getBracketedSubstring(colorStop, 'from');
         var to = me.getBracketedSubstring(colorStop, 'to');
@@ -1433,6 +1433,7 @@ var CSS3Helpers = new function()
 
             canvasGradient.addColorStop(cs.stop, cs.color);
         }
+
         //Paint the gradient
         ctx.fillStyle = canvasGradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -1448,7 +1449,7 @@ function MSFilterList(node)
 {
     var me = this;
 
-    me.list = [];
+    me.list = new Array();
     me.node = node;
 
     var reFilterListSplitter = /[\s\S]*\([\s\S]*\)/g;
@@ -1654,7 +1655,7 @@ if (!window.StringHelpers) {
                 }
                 return rs;
             };
-            var converters = [];
+            var converters = new Array();
             converters['c'] = function(flags, width, precision, arg)
             {
                 if (typeof(arg) == 'number') {
@@ -1803,7 +1804,7 @@ if (!window.StringHelpers) {
                 return s;
             }
         }
-    }
+    };
 }
 
 if (!window.XMLHelpers) {
@@ -1871,7 +1872,7 @@ if (!window.XMLHelpers) {
 
             return req;
         }
-    }
+    };
 }
 
 if (!window.CSSHelpers) {
@@ -2005,7 +2006,7 @@ if (!window.CSSHelpers) {
             return '\\s' + className + '\\s|^' + className + '\\s|\\s' + className + '$|' + '^' + className + '$';
         }
 
-    }
+    };
 }
 
 /* 
@@ -2065,7 +2066,7 @@ if (!window.DOMHelpers) {
             }
             return ary;
         }
-    }
+    };
 }
 
 //+ Jonas Raoni Soares Silva

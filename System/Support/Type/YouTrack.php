@@ -12,7 +12,7 @@ use SPHERE\System\Support\ITypeInterface;
 /**
  * Class YouTrack
  *
- * @package KREDA\Sphere\Common\Support
+ * @package SPHERE\System\Support\Type
  */
 class YouTrack extends Extension implements ITypeInterface
 {
@@ -148,7 +148,7 @@ class YouTrack extends Extension implements ITypeInterface
         $this->ticketLogin();
         $CurlHandler = curl_init();
         curl_setopt($CurlHandler, CURLOPT_URL,
-            $this->Host.'/rest/issue/byproject/KREDA?filter='.urlencode('Status: -Gelöst Ersteller: KREDA-Support Ersteller: SWE-Kreda')
+            $this->Host.'/rest/issue/byproject/SSW?filter='.urlencode('Status: -Gelöst Ersteller: KREDA-Support Ersteller: SWE-Kreda')
         );
         curl_setopt($CurlHandler, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($CurlHandler, CURLOPT_SSL_VERIFYHOST, 0);
@@ -247,7 +247,7 @@ class YouTrack extends Extension implements ITypeInterface
         $this->ticketLogin();
         $CurlHandler = curl_init();
         curl_setopt($CurlHandler, CURLOPT_URL,
-            $this->Host.'/rest/issue?project=KREDA&summary='.urlencode($Summary).'&description='.urlencode($Description)
+            $this->Host.'/rest/issue?project=SSW&summary='.urlencode($Summary).'&description='.urlencode($Description)
         );
         curl_setopt($CurlHandler, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($CurlHandler, CURLOPT_SSL_VERIFYHOST, 0);

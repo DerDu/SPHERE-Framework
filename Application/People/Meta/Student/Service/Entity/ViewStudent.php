@@ -5,6 +5,9 @@ use Doctrine\ORM\Mapping\Cache;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
+use SPHERE\Application\Contact\Address\Service\Entity\ViewAddressToPerson;
+use SPHERE\Application\Contact\Mail\Service\Entity\ViewMailToPerson;
+use SPHERE\Application\Contact\Phone\Service\Entity\ViewPhoneToPerson;
 use SPHERE\Application\People\Meta\Student\Student;
 use SPHERE\System\Database\Binding\AbstractService;
 use SPHERE\System\Database\Binding\AbstractView;
@@ -111,8 +114,14 @@ class ViewStudent extends AbstractView
         $this->addForeignView(self::TBL_STUDENT_TBL_STUDENT_MEDICAL_RECORD, new ViewStudentMedicalRecord(), ViewStudentMedicalRecord::TBL_STUDENT_MEDICAL_RECORD_ID);
         $this->addForeignView(self::TBL_STUDENT_ID, new ViewStudentTransfer(), ViewStudentTransfer::TBL_STUDENT_TRANSFER_TBL_STUDENT);
         $this->addForeignView(self::TBL_STUDENT_TBL_STUDENT_TRANSPORT, new ViewStudentTransport(), ViewStudentTransport::TBL_STUDENT_TRANSPORT_ID);
-
         $this->addForeignView(self::TBL_STUDENT_ID, new ViewStudentSubject(), ViewStudentSubject::TBL_STUDENT_SUBJECT_TBL_STUDENT);
+
+        $this->addForeignView(self::TBL_STUDENT_SERVICE_TBL_PERSON, new ViewAddressToPerson(),
+            ViewAddressToPerson::TBL_TO_PERSON_SERVICE_TBL_PERSON);
+        $this->addForeignView(self::TBL_STUDENT_SERVICE_TBL_PERSON, new ViewMailToPerson(),
+            ViewMailToPerson::TBL_TO_PERSON_SERVICE_TBL_PERSON);
+        $this->addForeignView(self::TBL_STUDENT_SERVICE_TBL_PERSON, new ViewPhoneToPerson(),
+            ViewPhoneToPerson::TBL_TO_PERSON_SERVICE_TBL_PERSON);
     }
 
     /**

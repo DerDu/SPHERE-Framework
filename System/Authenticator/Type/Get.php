@@ -51,6 +51,10 @@ class Get extends Extension implements ITypeInterface
         } else {
             if (isset( $Global->GET['_Sign'] )) {
                 $Data = $Global->GET;
+                // Respect jQuery no Cache Parameter
+                if( isset( $Global->GET['_'] ) ) {
+                    unset( $Data['_'] );
+                }
                 $Signature = $Global->GET['_Sign'];
                 unset( $Data['_Sign'] );
                 $Check = $this->createSignature($Data);
@@ -85,7 +89,9 @@ class Get extends Extension implements ITypeInterface
         }
         $Nonce = date('Ymd');
         array_push($Data, $Location);
-        $Data = array_filter($Data);
+        $Data = array_filter($Data, function($Value) {
+            return ( $Value !== null && $Value !== false && $Value !== '' );
+        });
         $Ordered = $this->sortData((array)$Data);
         $Signature = serialize($Ordered);
         $Signature = hash_hmac('sha256', $Signature, $Nonce.$this->Secret);

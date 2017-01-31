@@ -35,6 +35,20 @@ class Page
     }
 
     /**
+     * @param array $SliceArray
+     * @return $this
+     */
+    public function addSliceArray($SliceArray)
+    {
+
+        foreach ($SliceArray as $Slice){
+            $this->Slices[] = $Slice;
+        }
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function __toString()

@@ -70,7 +70,7 @@ class Frontend extends Extension implements IFrontendInterface
      * @param null $County
      * @param null $Nation
      *
-     * @return Stage
+     * @return Stage|string
      */
     public function frontendCreateToPerson($Id, $Street, $City, $State, $Type, $County = null, $Nation = null)
     {
@@ -185,18 +185,17 @@ class Frontend extends Extension implements IFrontendInterface
      * @param null $County
      * @param null $Nation
      *
-     * @return Stage
+     * @return Stage|string
      */
     public function frontendCreateToCompany($Id, $Street, $City, $State, $Type, $County = null, $Nation = null)
     {
 
         $tblCompany = Company::useService()->getCompanyById($Id);
-
         $Stage = new Stage('Adresse', 'Hinzufügen');
-        $Stage->addButton( new Backward(true) );
         $Stage->setMessage('Eine Adresse zur gewählten Firma hinzufügen');
 
         if ($tblCompany) {
+            $Stage->addButton(new Standard('Zurück', '/Corporation/Company', new ChevronLeft(), array('Id' => $tblCompany->getId())));
 
             $Stage->setContent(
                 new Layout(array(
@@ -245,7 +244,7 @@ class Frontend extends Extension implements IFrontendInterface
      * @param null $County
      * @param null $Nation
      *
-     * @return Stage
+     * @return Stage|string
      */
     public function frontendUpdateToPerson($Id, $Street, $City, $State, $Type, $County = null, $Nation = null)
     {
@@ -326,7 +325,7 @@ class Frontend extends Extension implements IFrontendInterface
      * @param null $County
      * @param null $Nation
      *
-     * @return Stage
+     * @return Stage|string
      */
     public function frontendUpdateToCompany($Id, $Street, $City, $State, $Type, $County = null, $Nation = null)
     {
@@ -334,10 +333,11 @@ class Frontend extends Extension implements IFrontendInterface
         $tblToCompany = Address::useService()->getAddressToCompanyById($Id);
 
         $Stage = new Stage('Adresse', 'Bearbeiten');
-        $Stage->addButton( new Backward(true) );
         $Stage->setMessage('Die Adresse der gewählten Firma ändern');
         if ($tblToCompany->getServiceTblCompany()) {
 
+            $tblCompany = $tblToCompany->getServiceTblCompany();
+            $Stage->addButton(new Standard('Zurück', '/Corporation/Company', new ChevronLeft(), array('Id' => $tblCompany->getId())));
 
             $Global = $this->getGlobal();
             if (!isset($Global->POST['Address'])) {
@@ -399,7 +399,7 @@ class Frontend extends Extension implements IFrontendInterface
      * @param int $Id
      * @param bool $Confirm
      *
-     * @return Stage
+     * @return Stage|string
      */
     public function frontendDestroyToPerson($Id, $Confirm = false)
     {
@@ -469,7 +469,7 @@ class Frontend extends Extension implements IFrontendInterface
      * @param int $Id
      * @param bool $Confirm
      *
-     * @return Stage
+     * @return Stage|string
      */
     public function frontendDestroyToCompany($Id, $Confirm = false)
     {

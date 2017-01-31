@@ -6,7 +6,12 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
 use SPHERE\Application\Api\Education\Certificate\Generator\Certificate;
+use SPHERE\Application\Education\Certificate\Generator\Generator;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
+use SPHERE\Application\Education\School\Course\Course;
+use SPHERE\Application\Education\School\Course\Service\Entity\TblCourse;
+use SPHERE\Application\Education\School\Type\Service\Entity\TblType;
+use SPHERE\Application\Education\School\Type\Type;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Consumer;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Service\Entity\TblConsumer;
@@ -23,7 +28,11 @@ class TblCertificate extends Element
     const ATTR_NAME = 'Name';
     const ATTR_CERTIFICATE = 'Certificate';
     const SERVICE_TBL_CONSUMER = 'serviceTblConsumer';
+    const SERVICE_TBL_COURSE = 'serviceTblCourse';
+    const SERVICE_TBL_SCHOOL_TYPE = 'serviceTblSchoolType';
     const ATTR_IS_GRADE_INFORMATION = 'IsGradeInformation';
+    const ATTR_TBL_CERTIFICATE_TYPE = 'tblCertificateType';
+    const ATTR_IS_INFORMATION = 'IsInformation';
 
     /**
      * @Column(type="string")
@@ -47,6 +56,26 @@ class TblCertificate extends Element
      * @Column(type="boolean")
      */
     protected $IsGradeInformation;
+
+    /**
+     * @Column(type="bigint")
+     */
+    protected $tblCertificateType;
+
+    /**
+     * @Column(type="bigint")
+     */
+    protected $serviceTblCourse;
+
+    /**
+     * @Column(type="bigint")
+     */
+    protected $serviceTblSchoolType;
+
+    /**
+     * @Column(type="boolean")
+     */
+    protected $IsInformation;
 
     /**
      * @return bool|TblConsumer
@@ -165,5 +194,87 @@ class TblCertificate extends Element
     {
 
         return $this->isGradeInformation() ? 'Noteninformation' : 'Zeugnis';
+    }
+
+    /**
+     * @return bool|TblCertificateType
+     */
+    public function getTblCertificateType()
+    {
+
+        if (null === $this->tblCertificateType) {
+            return false;
+        } else {
+            return Generator::useService()->getCertificateTypeById($this->tblCertificateType);
+        }
+    }
+
+    /**
+     * @param TblCertificateType|null $tblCertificateType
+     */
+    public function setTblCertificateType(TblCertificateType $tblCertificateType = null)
+    {
+
+        $this->tblCertificateType = (null === $tblCertificateType ? null : $tblCertificateType->getId());
+    }
+
+    /**
+     * @return bool|TblCourse
+     */
+    public function getServiceTblCourse()
+    {
+
+        if (null === $this->serviceTblCourse) {
+            return false;
+        } else {
+            return Course::useService()->getCourseById($this->serviceTblCourse);
+        }
+    }
+
+    /**
+     * @param TblCourse|null $tblCourse
+     */
+    public function setServiceTblCourse(TblCourse $tblCourse = null)
+    {
+
+        $this->serviceTblCourse = (null === $tblCourse ? null : $tblCourse->getId());
+    }
+
+    /**
+     * @return bool|TblType
+     */
+    public function getServiceTblSchoolType()
+    {
+
+        if (null === $this->serviceTblSchoolType) {
+            return false;
+        } else {
+            return Type::useService()->getTypeById($this->serviceTblSchoolType);
+        }
+    }
+
+    /**
+     * @param TblType|null $tblSchoolType
+     */
+    public function setServiceTblSchoolType(TblType $tblSchoolType = null)
+    {
+
+        $this->serviceTblSchoolType = (null === $tblSchoolType ? null : $tblSchoolType->getId());
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isInformation()
+    {
+        return $this->IsInformation;
+    }
+
+    /**
+     * @param boolean $IsInformation
+     */
+    public function setIsInformation($IsInformation)
+    {
+        $this->IsInformation = $IsInformation;
     }
 }

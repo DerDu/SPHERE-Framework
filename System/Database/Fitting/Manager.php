@@ -148,7 +148,7 @@ class Manager extends Extension
             $Cache->getCache()->deleteMulti($ClearList);
         } else {
             if ($Cache instanceof MemcachedHandler) {
-                if (!preg_match('!'.preg_quote('Platform\System\\', '!').'(Archive|Protocol)!', $this->Namespace)) {
+                if (!preg_match('!'.preg_quote('Platform\\System\\', '!').'(Archive|Protocol)!', $this->Namespace)) {
                     // Clear distributed Cache-System (if possible)
                     if (null === $Region) {
                         /** @var MemcachedHandler $Cache */

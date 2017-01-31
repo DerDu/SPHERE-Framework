@@ -176,7 +176,18 @@ class Frontend extends Extension implements IFrontendInterface
                 $GroupTeacherCount = Division::useService()->countDivisionSubjectGroupTeacherByDivision($tblDivision);
                 $Temp['Description'] = $tblDivision->getDescription();
                 $Temp['StudentList'] = Division::useService()->countDivisionStudentAllByDivision($tblDivision);
-                $Temp['TeacherList'] = Division::useService()->countDivisionTeacherAllByDivision($tblDivision);
+//                $Temp['TeacherList'] = Division::useService()->countDivisionTeacherAllByDivision($tblDivision);
+                $tblTeacherList = Division::useService()->getTeacherAllByDivision($tblDivision);
+                if ($tblTeacherList) {
+                    $NameList = array();
+                    foreach ($tblTeacherList as $tblPerson) {
+                        $NameList[] = $tblPerson->getLastName();
+                    }
+//                    $Temp['TeacherList'] = new Listing($NameList);
+                    $Temp['TeacherList'] = implode('<br/>', $NameList);
+                } else {
+                    $Temp['TeacherList'] = '';
+                }
 //                $Custody = Division::useService()->countDivisionCustodyAllByDivision($tblDivision);
                 $SubjectCount = Division::useService()->countDivisionSubjectAllByDivision($tblDivision);
 
@@ -223,6 +234,16 @@ class Frontend extends Extension implements IFrontendInterface
                                     'TeacherList' => 'Klassenlehrer',
                                     'SubjectList' => 'Fächer',
                                     'Option'      => '',
+                                )
+                                , array(
+                                    'order'      => array(array(3, 'asc')),
+                                    'columnDefs' => array(
+                                        array('orderable' => false, 'width' => '20px', 'targets' => 0),
+                                        array('type' => 'de_date', 'targets' => 1),
+                                        array('type' => 'natural', 'targets' => 3),
+                                        array('type' => 'natural', 'targets' => 5),
+                                        array('type' => 'natural', 'targets' => 7),
+                                    )
                                 )
                             )
                         )

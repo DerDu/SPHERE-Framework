@@ -53,6 +53,8 @@ class Style extends Extension
                 $this->setSource('/Common/Style/Bootstrap.css');
         }
 
+        $this->setSource('/Library/Bootstrap/3.3.5/dist/css/bootstrap-theme.css');
+
         $this->setSource('/Library/Bootstrap.Glyphicons/1.9.2/glyphicons/web/html_css/css/glyphicons.css');
         $this->setSource('/Library/Bootstrap.Glyphicons/1.9.2/glyphicons-halflings/web/html_css/css/glyphicons-halflings.css');
         $this->setSource('/Library/Bootstrap.Glyphicons/1.9.2/glyphicons-filetypes/web/html_css/css/glyphicons-filetypes.css');

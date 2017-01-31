@@ -17,7 +17,7 @@ use SPHERE\System\Token\YubiKey\ReplayedOTPException;
 /**
  * Class YubiKey
  *
- * @package KREDA\Sphere\Common\Support
+ * @package SPHERE\System\Token\Type
  */
 class YubiKey implements ITypeInterface
 {
@@ -261,7 +261,7 @@ class YubiKey implements ITypeInterface
          */
         foreach ((array)$UrlRequestList as $Identifier => $UrlRequest) {
             $CurlHandleList[$Identifier] = curl_init($UrlRequest);
-            curl_setopt($CurlHandleList[$Identifier], CURLOPT_USERAGENT, "KREDA YubiKey");
+            curl_setopt($CurlHandleList[$Identifier], CURLOPT_USERAGENT, "YubiKey");
             curl_setopt($CurlHandleList[$Identifier], CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($CurlHandleList[$Identifier], CURLOPT_VERBOSE, true);
             curl_setopt($CurlHandleList[$Identifier], CURLOPT_HEADER, false);

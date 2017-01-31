@@ -8,6 +8,7 @@ use SPHERE\Application\Corporation\Group\Service\Entity\TblMember;
 use SPHERE\Application\Corporation\Group\Service\Entity\ViewCompanyGroupMember;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
 use SPHERE\System\Cache\CacheFactory;
+use SPHERE\System\Cache\Handler\DataCacheHandler;
 use SPHERE\System\Cache\Handler\MemcachedHandler;
 use SPHERE\System\Database\Binding\AbstractData;
 
@@ -159,8 +160,14 @@ class Data extends AbstractData
 
         $EntityList = $this->getMemberAllByGroup($tblGroup);
 
-        $Cache = (new CacheFactory())->createHandler(new MemcachedHandler());
-        if (null === ( $ResultList = $Cache->getValue($tblGroup->getId(), __METHOD__) )
+        $Cache = new DataCacheHandler(
+            __METHOD__.$tblGroup->getId(), array(
+                new TblGroup(''),
+                new TblMember(),
+                new TblCompany(),
+            )
+        );
+        if (null === ( $ResultList = $Cache->getData() )
             && !empty( $EntityList )
         ) {
 
@@ -170,7 +177,7 @@ class Data extends AbstractData
             });
             $EntityList = array_filter($EntityList);
 
-            $Cache->setValue($tblGroup->getId(), $EntityList, 0, __METHOD__);
+            $Cache->setData($EntityList, 0);
         } else {
             $EntityList = $ResultList;
         }

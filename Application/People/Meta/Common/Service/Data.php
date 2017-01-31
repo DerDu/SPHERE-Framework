@@ -336,4 +336,17 @@ class Data extends AbstractData
         }
         return false;
     }
+
+    /**
+     * @param $Name
+     *
+     * @return false|TblCommonGender
+     */
+    public function getCommonGenderByName($Name)
+    {
+
+        return $this->getCachedEntityBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblCommonGender', array(
+           TblCommonGender::ATTR_NAME => $Name
+        ));
+    }
 }

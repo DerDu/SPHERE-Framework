@@ -57,9 +57,16 @@ class Pile
     }
 
     /**
-     * @param array $Search array( PileIndex => array( 'Column' => array( 'Value', ... ), ... ), ... )
+     * Search-Value-Options:
+     *  - Default:
+     *     - Like Comparison -> = '%Value%'
+     *     - Column matches '!_Id$!s': If no Explicit set, automatically is converted to EqualComparison -> = 'Value'
+     *  - Explicit:
+     *     - Like: new LikeComparison( Value ) -> = '%Value%'
+     *     - Equal: new EqualComparison( Value ) -> = 'Value'
      *
-     * @param int $Timeout
+     * @param array $Search array( PileIndex => array( 'Column' => array( 'Value', ... ), ... ), ... )
+     * @param int $Timeout Default: 60
      * @return array
      * @throws \Exception
      */

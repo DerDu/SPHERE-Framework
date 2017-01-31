@@ -41,7 +41,7 @@ class Kreda
 
         $Designer = new Designer();
 
-        $this->Book = $Designer->createBook('KREDA Handbuch');
+        $this->Book = $Designer->createBook('Schulsoftware Handbuch');
         $this->Book->setVisible($Chapter, $Page);
 
         $this->setChapterGrades($Search);
@@ -66,7 +66,7 @@ class Kreda
                 'Gradebook/GradeType' => 'Zensuren-Typ'
             )));
             $Page->addParagraph(
-                'Die Zensuren-Typen bestimmen die Arten/Typen von Zensuren in Kreda. Sie werden in die Kategorien '
+                'Die Zensuren-Typen bestimmen die Arten/Typen von Zensuren der Schulsoftware. Sie werden in die Kategorien '
                 .new Italic('Kopfnote').' und '.new Italic('Leistungsüberprüfung').' unterteilt. Die Kateogie
                 bestimmt, wo die Zensuren-Typen ausgewählt werden können. Die Zensuren-Typen der Kategorie '
                 .new Italic('Kopfnote').' können nur bei Kopfnotenaufträgen (für Zeugnisse) gewählt werden, hingegen die Zensuren-Typen

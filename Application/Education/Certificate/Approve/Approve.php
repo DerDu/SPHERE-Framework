@@ -42,10 +42,16 @@ class Approve implements IModuleInterface
             __NAMESPACE__ . '\Prepare' , __NAMESPACE__ . '\Frontend::frontendDivision')
         );
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
-            __NAMESPACE__ . '\Prepare\SetApproved' , __NAMESPACE__ . '\Frontend::frontendApprovePrepare')
+            __NAMESPACE__ . '\Prepare\SetApproved' , __NAMESPACE__ . '\Frontend::frontendApprovePreparePerson')
         );
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
-            __NAMESPACE__ . '\Prepare\ResetApproved' , __NAMESPACE__ . '\Frontend::frontendResetApprovePrepare')
+            __NAMESPACE__ . '\Prepare\ResetApproved' , __NAMESPACE__ . '\Frontend::frontendResetApprovePreparePerson')
+        );
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__ . '\Prepare\Division\SetApproved' , __NAMESPACE__ . '\Frontend::frontendApprovePrepareDivision')
+        );
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__ . '\Prepare\Division\ResetApproved' , __NAMESPACE__ . '\Frontend::frontendResetApprovePrepareDivision')
         );
     }
 

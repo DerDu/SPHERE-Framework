@@ -49,4 +49,15 @@ class Service extends AbstractService
 
         return (new Data($this->getBinding()))->getCourseById($Id);
     }
+
+    /**
+     * @param string $Name
+     *
+     * @return bool|TblCourse
+     */
+    public function getCourseByName($Name)
+    {
+
+        return (new Data($this->getBinding()))->getCourseByName($Name);
+    }
 }

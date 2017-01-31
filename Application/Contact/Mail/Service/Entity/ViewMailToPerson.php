@@ -122,6 +122,10 @@ class ViewMailToPerson extends AbstractView
         $this->addForeignView(self::TBL_TO_PERSON_SERVICE_TBL_PERSON, new ViewRelationshipFromPerson(),
             ViewRelationshipFromPerson::TBL_TO_PERSON_SERVICE_TBL_PERSON_TO
         );
+//        $this->addForeignView(self::TBL_TO_PERSON_SERVICE_TBL_PERSON, new ViewAddressToPerson(),
+//            ViewAddressToPerson::TBL_TO_PERSON_SERVICE_TBL_PERSON);
+//        $this->addForeignView(self::TBL_TO_PERSON_SERVICE_TBL_PERSON, new ViewPhoneToPerson(),
+//            ViewPhoneToPerson::TBL_TO_PERSON_SERVICE_TBL_PERSON);
     }
 
     /**

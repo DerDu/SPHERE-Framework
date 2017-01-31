@@ -45,6 +45,7 @@ use SPHERE\Common\Frontend\Layout\Structure\LayoutGroup;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutRow;
 use SPHERE\Common\Frontend\Link\Repository\Backward;
 use SPHERE\Common\Frontend\Link\Repository\Standard;
+use SPHERE\Common\Frontend\Link\Repository\ToggleCheckbox;
 use SPHERE\Common\Frontend\Message\Repository\Danger;
 use SPHERE\Common\Frontend\Message\Repository\Success;
 use SPHERE\Common\Frontend\Message\Repository\Warning;
@@ -446,7 +447,7 @@ class Frontend extends Extension implements IFrontendInterface
                     new FormRow(array(
                         new FormColumn(array(
                             ($tblPersonList
-                                ? new TableData(
+                                ? $TableCurrent = new TableData(
                                     $tblPersonList,
                                     new \SPHERE\Common\Frontend\Table\Repository\Title('Mitglieder der Gruppe "'.$tblGroup->getName().'"',
                                         'entfernen'),
@@ -519,6 +520,21 @@ class Frontend extends Extension implements IFrontendInterface
                 ), new Title('Personensuche')),
                 ($Filter == null ?
                     new LayoutGroup(array(
+                        new LayoutRow(array(
+                            new LayoutColumn(
+                                ( isset($TableCurrent) && $TableCurrent instanceof TableData
+                                    ? new ToggleCheckbox( 'Alle wählen/abwählen', $TableCurrent )
+                                    : ''
+                                )
+                                ,6),
+                            new LayoutColumn(
+                                ( $displayAvailablePersons instanceof TableData
+                                    ? new ToggleCheckbox( 'Alle wählen/abwählen', $displayAvailablePersons )
+                                    : ''
+                                )
+                                ,6),
+                        )),
+
                         // TODO: Describe possible Action
 //                        new LayoutRow(array(
 //                            new LayoutColumn(
@@ -538,7 +554,7 @@ class Frontend extends Extension implements IFrontendInterface
                                     )
                                 )
                             ))
-                        ))
+                        )),
                     ), new Title('Zusammensetzung', 'der Gruppe')) : null )
             )));
 

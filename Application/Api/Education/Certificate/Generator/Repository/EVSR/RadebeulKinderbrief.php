@@ -81,17 +81,15 @@ class RadebeulKinderbrief  extends Certificate
                     )
                 )
                 ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('
+                    ->addElement(( new Element() )
+                        ->setContent('
                                 {% if(Content.Input.Rating is not empty) %}
                                     {{ Content.Input.Rating|nl2br }}
                                 {% else %}
                                     &nbsp;
                                 {% endif %}
                             ')
-                            ->styleMarginTop('30px')
-                        )
+                        ->styleMarginTop('30px')
                     )
                 )
             )

@@ -374,4 +374,17 @@ class TblTest extends Element
 
         return Evaluation::useService()->getTestLinkAllByTest($this);
     }
+
+    /**
+     * @return string
+     */
+    public function getGradeTypeName()
+    {
+
+        if ($this->getServiceTblGradeType()){
+            return $this->getServiceTblGradeType()->getName();
+        } else {
+            return '';
+        }
+    }
 }

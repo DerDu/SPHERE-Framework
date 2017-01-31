@@ -46,6 +46,7 @@
             stateSave: true,
             responsive: true,
             autoWidth: false,
+            deferRender: true,
             // Setup RowReorder Extension
             ExtensionRowReorder: {
                 Enabled: false,
@@ -170,6 +171,9 @@
             ExtensionDownloadExcel: {
                 Enabled: false
             },
+            ExtensionDownloadPdf: {
+                Enabled: false
+            },
             buttons: []
         }, options);
 
@@ -272,6 +276,20 @@
             settings.buttons.push(
                 {
                     'extend': 'excel',
+                    'text': 'Download',
+                    'exportOptions': {
+                        'columns': ':visible',
+                        'rows': function (idx, data, node) {
+                            if ($(node).find('td:not(:empty)').length > 0) return true;
+                        }
+                    }
+                }
+            );
+        }
+        if( settings.ExtensionDownloadPdf.Enabled ) {
+            settings.buttons.push(
+                {
+                    'extend': 'pdf',
                     'text': 'Download',
                     'exportOptions': {
                         'columns': ':visible',
@@ -417,8 +435,8 @@
                                                 ).addClass(
                                                     settings.ExtensionRowExchange.Handler.To
                                                 );
-                                                ExchangeTarget.row.add(SourceRow).draw();
-                                                TargetRow.remove().draw();
+                                                ExchangeTarget.row.add(SourceRow).draw(false);
+                                                TargetRow.remove().draw(false);
                                             })
                                             .done(function () {
                                                 SourceRows = Table.rows()[0];
@@ -478,8 +496,8 @@
                 }
 
                 var TargetRow = Table.row(SourceRow);
-                ExchangeTarget.row.add(SourceRow).draw();
-                TargetRow.remove().draw();
+                ExchangeTarget.row.add(SourceRow).draw(false);
+                TargetRow.remove().draw(false);
                 if (settings.ExtensionRowExchange.Url) {
                     $.post(settings.ExtensionRowExchange.Url,
                         {

@@ -8,7 +8,6 @@ use SPHERE\Application\Education\Certificate\Generator\Repository\Frame;
 use SPHERE\Application\Education\Certificate\Generator\Repository\Page;
 use SPHERE\Application\Education\Certificate\Generator\Repository\Section;
 use SPHERE\Application\Education\Certificate\Generator\Repository\Slice;
-use SPHERE\Common\Frontend\Layout\Repository\Container;
 
 /**
  * Class GymAbgRs
@@ -26,7 +25,7 @@ class GymAbgRs extends Certificate
     public function buildCertificate($IsSample = true)
     {
 
-        if( $IsSample ) {
+        if ($IsSample) {
             $Header = ( new Slice() )
                 ->addSection(( new Section() )
                     ->addElementColumn(( new Element() )
@@ -39,16 +38,15 @@ class GymAbgRs extends Certificate
                         ->styleTextSize('30px')
                     )
                     ->addElementColumn(( new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
-                            '200px') )
+                        '165px', '50px') )
                         , '25%')
                 );
         } else {
             $Header = ( new Slice() )
                 ->addSection(( new Section() )
-                    ->addElementColumn(( new Element() ), '25%')
-                    ->addElementColumn(( new Element() ))
+                    ->addElementColumn(( new Element() ), '75%')
                     ->addElementColumn(( new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
-                            '200px') )
+                        '165px', '50px') )
                         , '25%')
                 );
         }
@@ -152,11 +150,11 @@ class GymAbgRs extends Certificate
                                 {% else %}
                                       &nbsp;
                                 {% endif %}')
-                            ->styleBorderBottom('1px', '#BBB')
+                            ->styleBorderBottom('1px')
                             ->styleAlignCenter()
                         )
                         ->addElementColumn((new Element())
-                            ->styleBorderBottom('1px', '#BBB')
+                            ->styleBorderBottom('1px')
                             ->setContent('&nbsp;')
                             , '5%')
                     )
@@ -184,7 +182,7 @@ class GymAbgRs extends Certificate
                                 {% else %}
                                       &nbsp;
                                 {% endif %}')
-                                ->styleBorderBottom('1px', '#BBB')
+                                ->styleBorderBottom('1px')
                                 ->styleAlignCenter()
                         )
                         ->styleMarginTop('10px')
@@ -196,7 +194,7 @@ class GymAbgRs extends Certificate
                                 ->addElementColumn(
                                     (new Element())
                                         ->setContent('&nbsp;')
-                                        ->styleBorderBottom('1px', '#BBB')
+                                        ->styleBorderBottom('1px')
                                     , '10%')
                                 ->addElementColumn(
                                     (new Element())
@@ -206,7 +204,7 @@ class GymAbgRs extends Certificate
                                         {% else %}
                                               &nbsp;
                                         {% endif %}')
-                                        ->styleBorderBottom('1px', '#BBB')
+                                        ->styleBorderBottom('1px')
                                         ->styleAlignCenter()
                                 )
                                 ->addElementColumn(
@@ -298,7 +296,7 @@ class GymAbgRs extends Certificate
                         ->styleTextBold()
                     )
                 )
-                ->addSlice( $this->getSubjectLanes() )
+                ->addSlice($this->getSubjectLanes()->styleHeight('270px'))
                 ->addSlice((new Slice())
                     ->addSection((new Section())
                         ->addElementColumn((new Element())
@@ -317,9 +315,12 @@ class GymAbgRs extends Certificate
                             ->styleBorderBottom('1px', '#000')
                             ->stylePaddingTop()
                             ->stylePaddingBottom()
-                            , '77%')
+                            , '32%')
                         ->addElementColumn((new Element())
-                            , '3%'
+                            ->setContent('Profil mit Informatischer Bildung²')
+                            ->stylePaddingTop()
+                            ->stylePaddingLeft('6px')
+                            , '48%'
                         )
                     )
                     ->styleMarginTop('5px')
@@ -375,7 +376,7 @@ class GymAbgRs extends Certificate
                 ->addSlice((new Slice())
                     ->addSection((new Section())
                         ->addElementColumn((new Element())
-                            ->setContent('Vertiefungsrichtung²:')
+                            ->setContent('Vertiefungsrichtung³:')
                             ->styleTextBold()
                             , '20%'
                         )
@@ -389,147 +390,20 @@ class GymAbgRs extends Certificate
                         )
                     )->styleMarginTop('15px')
                 )
-                ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Bemerkungen:')
-                            , '16%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Input.Remark is not empty) %}
-                                    {{ Content.Input.Remark|nl2br }}
-                                {% else %}
-                                    &nbsp;
-                                {% endif %}')
-                            ->styleHeight('130px')
-                            , '84%')
-                    )
-                    ->styleMarginTop('15px')
-                )
-                ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Datum:')
-                            , '7%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Input.Date is not empty) %}
-                                                {{ Content.Input.Date }}
-                                            {% else %}
-                                                &nbsp;
-                                            {% endif %}')
-                            ->styleBorderBottom('1px', '#000')
-                            ->styleAlignCenter()
-                            , '23%')
-                        ->addElementColumn((new Element())
-                            , '5%')
-                        ->addElementColumn((new Element())
-                            , '30%')
-                        ->addElementColumn((new Element())
-                            , '5%')
-                        ->addElementColumn((new Element())
-                            , '30%')
-                    )
-                    ->styleMarginTop('25px')
-                )
-                ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('&nbsp;')
-                            ->styleAlignCenter()
-                            ->styleBorderBottom('1px', '#000')
-                            , '30%')
-                        ->addElementColumn((new Element())
-                            , '40%')
-                        ->addElementColumn((new Element())
-                            ->setContent('&nbsp;')
-                            ->styleAlignCenter()
-                            ->styleBorderBottom('1px', '#000')
-                            , '30%')
-                    )
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Schulleiter(in)')
-                            ->styleAlignCenter()
-                            ->styleTextSize('11px')
-                            , '30%')
-                        ->addElementColumn((new Element())
-                            , '5%')
-                        ->addElementColumn((new Element())
-                            ->setContent('Dienstsiegel der Schule')
-                            ->styleAlignCenter()
-                            ->styleTextSize('11px')
-                            , '30%')
-                        ->addElementColumn((new Element())
-                            , '5%')
-                        ->addElementColumn((new Element())
-                            ->setContent('Klassenlehrer(in)')
-                            ->styleAlignCenter()
-                            ->styleTextSize('11px')
-                            , '30%')
-                    )
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            , '30%')
-                        ->addElementColumn((new Element())
-                            , '40%')
-                        ->addElementColumn((new Element())
-                            ->setContent(
-                                '{% if(Content.DivisionTeacher.Name is not empty) %}
-                                    {{ Content.DivisionTeacher.Name }}
-                                {% else %}
-                                    &nbsp;
-                                {% endif %}'
-                            )
-                            ->styleTextSize('11px')
-                            ->stylePaddingTop('2px')
-                            ->styleAlignCenter()
-                            , '30%')
-                    )
-                    ->styleMarginTop('25px')
-                )
-                ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Zur Kenntnis genommen:')
-                            , '30%')
-                        ->addElementColumn((new Element())
-                            ->setContent('&nbsp;')
-                            ->styleBorderBottom()
-                            , '40%')
-                        ->addElementColumn((new Element())
-                            , '30%')
-                    )
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            , '30%')
-                        ->addElementColumn((new Element())
-                            ->setContent('Eltern')
-                            ->styleAlignCenter()
-                            ->styleTextSize('11px')
-                            , '40%')
-                        ->addElementColumn((new Element())
-                            , '30%')
-                    )->styleMarginTop('25px')
-                )
-                ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->styleBorderBottom()
-                            , '30%')
-                        ->addElementColumn((new Element())
-                            , '70%')
-                    )->styleMarginTop('160px')
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Notenerläuterung:'
-                                .new Container('1 = sehr gut; 2 = gut; 3 = befriedigend; 4 = ausreichend; 5 = mangelhaft;
-                                         6 = ungenügend (6 = ungenügend nur bei der Bewertung der Leistungen)')
-                                .new Container('&nbsp;')
-                                .new Container('¹ Gilt nicht an Gymnasien mit vertiefter Ausbildung gemäß § 4 SOGYA.')
-                                .new Container('² Nur für Schüler mit vertiefter Ausbildung gemäß § 4 SOGYA'))
-                            ->styleTextSize('9.5px')
-                            , '30%')
-                    )
-                )
+                ->addSlice($this->getDescriptionHead())
+                ->addSlice($this->getDescriptionContent('135px', '15px'))
+                ->addSlice($this->getDateLine())
+                ->addSlice($this->getSignPart())
+                ->addSlice($this->getParentSign())
+                ->addSlice($this->getInfo('70px',
+                    'Notenerläuterung:',
+                    '1 = sehr gut; 2 = gut; 3 = befriedigend; 4 = ausreichend; 5 = mangelhaft;
+                         6 = ungenügend (6 = ungenügend nur bei der Bewertung der Leistungen)',
+                    '¹ Gilt nicht an Gymnasien mit vertiefter Ausbildung gemäß § 4 SOGYA.',
+                    '² In Klassenstufe 8 ist der Zusatz „mit informatischer Bildung“ zu streichen. 
+                                    Beim sprachlichen Profil ist der Zusatz „mit informatischer Bildung“ zu
+                                    streichen und die Fremdsprache anzugeben.',
+                    '³ Nur für Schüler mit vertiefter Ausbildung gemäß § 4 SOGYA'))
             )
         );
     }

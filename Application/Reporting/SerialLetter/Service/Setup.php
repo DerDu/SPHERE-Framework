@@ -95,6 +95,9 @@ class Setup extends AbstractSetup
         if (!$this->getConnection()->hasColumn('tblFilterField', 'Value')) {
             $Table->addColumn('Value', 'string');
         }
+        if (!$this->getConnection()->hasColumn('tblFilterField', 'FilterNumber')) {
+            $Table->addColumn('FilterNumber', 'integer');
+        }
         $this->getConnection()->addForeignKey($Table, $tblFilterCategory, false);
         $this->getConnection()->addForeignKey($Table, $tblSerialLetter, false);
 
@@ -137,9 +140,6 @@ class Setup extends AbstractSetup
         }
         if (!$this->getConnection()->hasColumn('tblAddressPerson', 'serviceTblPersonToAddress')) {
             $Table->addColumn('serviceTblPersonToAddress', 'bigint', array('notnull' => false));
-        }
-        if (!$this->getConnection()->hasColumn('tblAddressPerson', 'serviceTblSalutation')) {
-            $Table->addColumn('serviceTblSalutation', 'bigint', array('notnull' => false));
         }
 
         $this->getConnection()->addForeignKey($Table, $tblSerialLetter, true);

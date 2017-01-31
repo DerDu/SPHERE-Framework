@@ -56,6 +56,10 @@ class History
     public function setStep(Step $Step)
     {
 
+        if( preg_match('!^/Api/!is', $Step->getRoute() ) ) {
+            return null;
+        }
+
         // Shrink History
         $this->shrinkHistory(8);
 

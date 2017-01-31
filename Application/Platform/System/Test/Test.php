@@ -57,7 +57,7 @@ class Test implements IModuleInterface
         );
         Main::getDispatcher()->registerRoute(
             Main::getDispatcher()->createRoute(__NAMESPACE__.'/DynamicFilter',
-                __NAMESPACE__.'\Frontend::frontendDynamicFilter'
+                __NAMESPACE__.'\Frontend::frontendSandBox'
             )
         );
     }

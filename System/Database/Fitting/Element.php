@@ -211,4 +211,33 @@ abstract class Element extends Extension
 
         return (new \ReflectionClass($this))->getName();
     }
+
+    /**
+     * @param mixed $Value
+     * @return float
+     * @deprecated Spelling (sanatizeNumber -> sanitizeNumber)
+     */
+    protected function sanatizeNumber( $Value ) {
+        return $this->sanitizeNumber( $Value );
+    }
+
+    /**
+     * @param mixed $Value
+     * @return float
+     */
+    protected function sanitizeNumber( $Value ) {
+
+        if( is_numeric( $Value ) ) {
+            return (float)$Value;
+        } else {
+            if( class_exists( 'Locale' ) && class_exists( 'NumberFormatter' ) ) {
+                $Browser = \Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+                $Converter = (new \NumberFormatter($Browser, \NumberFormatter::TYPE_DOUBLE));
+                if (false !== $Converter->parse($Value)) {
+                    return (float)$Converter->parse($Value);
+                }
+            }
+            return (float)str_replace(',', '.', str_replace('.', '', $Value ));
+        }
+    }
 }

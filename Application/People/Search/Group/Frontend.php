@@ -179,7 +179,7 @@ class Frontend extends Extension implements IFrontendInterface
                                 'Year' => ($year ? $year : ''),
                                 'Level' => ($level ? $level : ''),
                                 'SchoolOption' => ($option ? $option : ''),
-                                'Custody' => (empty($childrenList) ? '' : new Listing($childrenList))
+                                'Custody' => (empty($childrenList) ? '' : (string)new Listing($childrenList))
                             ));
                         });
                 }

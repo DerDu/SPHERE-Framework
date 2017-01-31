@@ -4,7 +4,11 @@ namespace SPHERE\System\Database\Filter\Link;
 use SPHERE\System\Cache\Handler\DataCacheHandler;
 use SPHERE\System\Database\Binding\AbstractService;
 use SPHERE\System\Database\Binding\AbstractView;
+use SPHERE\System\Database\Filter\Comparison\AbstractComparison;
+use SPHERE\System\Database\Filter\Comparison\EqualComparison;
+use SPHERE\System\Database\Filter\Comparison\LikeComparison;
 use SPHERE\System\Database\Filter\Link\Repository\NodeException;
+use SPHERE\System\Database\Filter\Logic\AbstractLogic;
 use SPHERE\System\Database\Filter\Logic\AndLogic;
 use SPHERE\System\Database\Filter\Logic\OrLogic;
 use SPHERE\System\Database\Fitting\Element;
@@ -170,9 +174,16 @@ abstract class AbstractNode extends Extension
     }
 
     /**
-     * @param array $Search array( ProbeIndex => array( 'Column' => 'Value', ... ), ... )
+     * Search-Value-Options:
+     *  - Default:
+     *     - Like Comparison -> = '%Value%'
+     *     - Column matches '!_Id$!s': If no Explicit set, automatically is converted to EqualComparison -> = 'Value'
+     *  - Explicit:
+     *     - Like: new LikeComparison( Value ) -> = '%Value%'
+     *     - Equal: new EqualComparison( Value ) -> = 'Value'
      *
-     * @param int $Timeout
+     * @param array $Search array( ProbeIndex => array( 'Column' => array( 'Value', ... ), ... ), ... )
+     * @param int $Timeout Default: 60
      * @return bool|\SPHERE\System\Database\Fitting\Element[]
      */
     public function searchData($Search, $Timeout = 60)
@@ -211,22 +222,24 @@ abstract class AbstractNode extends Extension
                     foreach ($Filter as $Expression => $PartList) {
                         $PartStorage = array();
                         foreach ($PartList as $Part => $Value) {
-                            // Bool (0,1,2) => (null,true,false)
-                            if (preg_match('!_Is[A-Z]!s', $Expression)) {
-                                $Filter[$Expression][$Part] = ($Value == 0 ? null : ($Value == 1 ? 1 : 0));
-                                if( $Filter[$Expression][$Part] === null ) {
-                                    $Filter = array();
-                                    $Search[$Index] = array();
-                                }
-                            } else {
-                                // DateTime
-                                if (preg_match('!^[0-9\.]{2,}$!is', $Value)) {
-                                    $ReFormat = $this->findDateTime($Value);
-                                    if (is_array($ReFormat)) {
-                                        unset($Filter[$Expression][$Part]);
-                                        $PartStorage = array_merge($PartStorage, $ReFormat);
-                                    } else {
-                                        $Filter[$Expression][$Part] = $ReFormat;
+                            if( !$Value instanceof AbstractComparison ) {
+                                // Bool (0,1,2) => (null,true,false)
+                                if (preg_match('!_Is[A-Z]!s', $Expression)) {
+                                    $Filter[$Expression][$Part] = ($Value == 0 ? null : ($Value == 1 ? 1 : 0));
+                                    if ($Filter[$Expression][$Part] === null) {
+                                        $Filter = array();
+                                        $Search[$Index] = array();
+                                    }
+                                } else {
+                                    // DateTime
+                                    if (preg_match('!^[0-9\.]{2,}$!is', $Value)) {
+                                        $ReFormat = $this->findDateTime($Value);
+                                        if (is_array($ReFormat)) {
+                                            unset($Filter[$Expression][$Part]);
+                                            $PartStorage = array_merge($PartStorage, $ReFormat);
+                                        } else {
+                                            $Filter[$Expression][$Part] = $ReFormat;
+                                        }
                                     }
                                 }
                             }
@@ -295,11 +308,25 @@ abstract class AbstractNode extends Extension
             );
         }
         if (!empty( $Search )) {
-            $Logic->addLogic(
-                (new AndLogic($this->getProbe($ProbeIndex)->useBuilder()))->addCriteriaList(
-                    $Search, AndLogic::COMPARISON_LIKE
-                )
-            );
+            // Dynamic Comparison
+            $AndLogic = (new AndLogic($this->getProbe($ProbeIndex)->useBuilder()));
+            foreach ( $Search as $Property => $ValueList ) {
+                foreach ( $ValueList as $Index => $Value ) {
+                    if( $Value instanceof LikeComparison ) {
+                        $AndLogic->addCriteria($Property, $Value, AbstractLogic::COMPARISON_LIKE );
+                    } else if ($Value instanceof EqualComparison) {
+                        $AndLogic->addCriteria($Property, $Value, AbstractLogic::COMPARISON_EXACT);
+                    } else {
+                        // Automaticaly Convert Id-Property to Explicit-EqualComparison
+                        if( preg_match( '!_Id$!s', $Property ) ) {
+                            $AndLogic->addCriteria($Property, $Value, AbstractLogic::COMPARISON_EXACT);
+                        } else {
+                            $AndLogic->addCriteria($Property, $Value, AbstractLogic::COMPARISON_LIKE);
+                        }
+                    }
+                }
+            }
+            $Logic->addLogic( $AndLogic );
         }
         $Logic->addLogic(
             (new AndLogic($this->getProbe($ProbeIndex)->useBuilder()))->addCriteria(

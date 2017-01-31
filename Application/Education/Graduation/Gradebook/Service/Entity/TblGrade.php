@@ -29,6 +29,7 @@ class TblGrade extends Element
 {
 
     const ATTR_TBL_GRADE_TYPE = 'tblGradeType';
+    const ATTR_TBL_GRADE_TEXT = 'tblGradeText';
     const ATTR_SERVICE_TBL_TEST = 'serviceTblTest';
     const ATTR_SERVICE_TBL_TEST_TYPE = 'serviceTblTestType';
     const ATTR_SERVICE_TBL_PERSON = 'serviceTblPerson';
@@ -101,6 +102,11 @@ class TblGrade extends Element
      * @Column(type="datetime")
      */
     protected $Date;
+
+    /**
+     * @Column(type="bigint")
+     */
+    protected $tblGradeText;
 
     /**
      * @return string
@@ -297,17 +303,26 @@ class TblGrade extends Element
     }
 
     /**
+     * @param bool $WithTrend
+     * 
      * @return string
      */
-    public function getDisplayGrade()
+    public function getDisplayGrade($WithTrend = true)
     {
+
+        if ($this->getTblGradeText()){
+            return $this->getTblGradeText()->getName();
+        }
+
         $gradeValue = $this->getGrade();
         if ($gradeValue) {
-            $trend = $this->getTrend();
-            if (TblGrade::VALUE_TREND_PLUS === $trend) {
-                $gradeValue .= '+';
-            } elseif (TblGrade::VALUE_TREND_MINUS === $trend) {
-                $gradeValue .= '-';
+            if ($WithTrend) {
+                $trend = $this->getTrend();
+                if (TblGrade::VALUE_TREND_PLUS === $trend) {
+                    $gradeValue .= '+';
+                } elseif (TblGrade::VALUE_TREND_MINUS === $trend) {
+                    $gradeValue .= '-';
+                }
             }
         }
 
@@ -375,5 +390,27 @@ class TblGrade extends Element
     {
 
         $this->Date = $Date;
+    }
+
+    /**
+     * @return bool|TblGradeText
+     */
+    public function getTblGradeText()
+    {
+
+        if (null === $this->tblGradeText) {
+            return false;
+        } else {
+            return Gradebook::useService()->getGradeTextById($this->tblGradeText);
+        }
+    }
+
+    /**
+     * @param TblGradeText|null $tblGradeText
+     */
+    public function setTblGradeText($tblGradeText)
+    {
+
+        $this->tblGradeText = ( null === $tblGradeText ? null : $tblGradeText->getId() );
     }
 }

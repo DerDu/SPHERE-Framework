@@ -377,12 +377,12 @@ class Service
 
                                 // division
                                 $tblDivision = false;
-                                $year = 15;
+                                $year = 16;
                                 $division = trim($Document->getValue($Document->getCell($Location['Schüler_Klasse'],
                                     $RunY)));
                                 if ($division !== '') {
                                     if ($division == '0') {
-                                        $year = 16;
+                                        $year = 17;
                                         $division = '1';
                                     }
 

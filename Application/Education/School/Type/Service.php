@@ -49,4 +49,15 @@ class Service extends AbstractService
 
         return (new Data($this->getBinding()))->getTypeById($Id);
     }
+
+    /**
+     * @param $Name
+     *
+     * @return bool|TblType
+     */
+    public function getTypeByName($Name)
+    {
+
+        return (new Data($this->getBinding()))->getTypeByName($Name);
+    }
 }

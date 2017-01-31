@@ -2,6 +2,11 @@
 namespace SPHERE\Application\Api;
 
 use SPHERE\Common\Frontend\ITemplateInterface;
+use SPHERE\Common\Frontend\Layout\Repository\Title;
+use SPHERE\Common\Frontend\Layout\Repository\Well;
+use SPHERE\Common\Frontend\Message\Repository\Danger;
+use SPHERE\Common\Frontend\Message\Repository\Warning;
+use SPHERE\Common\Window\Error;
 use SPHERE\System\Extension\Extension;
 
 /**
@@ -92,12 +97,13 @@ class Dispatcher extends Extension
                 $Result = '<hr/><samp class="text-danger"><div class="h6">'.get_class($Exception).'<br/><br/>'.nl2br($Exception->getMessage()).'</div>File: '.$Exception->getFile().'<br/>Line: '.$Exception->getLine().'</samp><hr/><div class="small">'.$TraceList.'</div>';
             }
 
-            if( $Result instanceof ITemplateInterface ) {
-                $Result = $Result->__toString();
-            }
-            return json_encode( $Result );
         } else {
-            throw new \Exception( 'Missing API-Method ('.$MethodName.')' );
+            $Result = new Error( 'Ajax-Error', 'Missing API-Method ('.$MethodName.')' );
         }
+
+        if( $Result instanceof ITemplateInterface ) {
+            $Result = $Result->__toString();
+        }
+        return json_encode( $Result );
     }
 }

@@ -13,6 +13,9 @@ use SPHERE\Application\People\Meta\Prospect\Prospect;
 use SPHERE\Application\People\Meta\Student\Student;
 use SPHERE\Application\People\Meta\Teacher\Teacher;
 use SPHERE\Application\People\Relationship\Relationship;
+use SPHERE\Common\Frontend\Ajax\Emitter\ClientEmitter;
+use SPHERE\Common\Frontend\Ajax\Pipeline;
+use SPHERE\Common\Frontend\Ajax\Receiver\BlockReceiver;
 use SPHERE\Common\Frontend\Form\Repository\Button\Primary;
 use SPHERE\Common\Frontend\Form\Repository\Field\AutoCompleter;
 use SPHERE\Common\Frontend\Form\Repository\Field\CheckBox;
@@ -31,6 +34,7 @@ use SPHERE\Common\Frontend\Icon\Repository\ChevronUp;
 use SPHERE\Common\Frontend\Icon\Repository\Conversation;
 use SPHERE\Common\Frontend\Icon\Repository\Disable;
 use SPHERE\Common\Frontend\Icon\Repository\Exclamation;
+use SPHERE\Common\Frontend\Icon\Repository\Pen;
 use SPHERE\Common\Frontend\Icon\Repository\Ok;
 use SPHERE\Common\Frontend\Icon\Repository\PersonParent;
 use SPHERE\Common\Frontend\Icon\Repository\Question;
@@ -130,6 +134,47 @@ class Frontend extends Extension implements IFrontendInterface
                         ->appendFormButton(new Primary('Speichern', new Save()))
                         ->setConfirm('Eventuelle Änderungen wurden noch nicht gespeichert'),
                     $tblPerson, $Person, $Group);
+
+                $UpdatePersonPipeline = new Pipeline();
+                $UpdatePersonPipeline->addEmitter( new ClientEmitter( $UpdatePersonReceiver = new BlockReceiver(), $BasicTable ) );
+                $GroupList = array();
+                if (!empty($tblGroupAll)) {
+                    /** @var TblGroup $tblGroup */
+                    foreach ((array)$tblGroupAll as $tblGroup) {
+                        array_unshift($GroupList, $tblGroup->getName().' '.new Muted(new Small($tblGroup->getDescription())));
+                    }
+                }
+                sort($GroupList, SORT_NATURAL);
+                $UpdatePersonReceiver->initContent(
+                    new Layout(
+                        new LayoutGroup(array(
+                            new LayoutRow( array(
+                                new LayoutColumn(new Panel('Anrede', array(
+                                        $tblPerson->getTblSalutation() ? $tblPerson->getTblSalutation()->getSalutation() : '',
+                                        $tblPerson->getTitle()
+                                    ), Panel::PANEL_TYPE_INFO)
+                                    ,3),
+                                new LayoutColumn(new Panel('Vorname', array(
+                                        $tblPerson->getFirstName(),
+                                        $tblPerson->getSecondName(),
+                                    ), Panel::PANEL_TYPE_INFO)
+                                    ,3),
+                                new LayoutColumn(new Panel('Nachname', array(
+                                        $tblPerson->getLastName(),
+                                        $tblPerson->getBirthName(),
+                                    ), Panel::PANEL_TYPE_INFO)
+                                    ,3),
+                                new LayoutColumn(new Panel('Gruppen', $GroupList, Panel::PANEL_TYPE_INFO)
+                                    ,3),
+                            ) ),
+                            new LayoutRow(
+                                new LayoutColumn(
+                                    (new \SPHERE\Common\Frontend\Link\Repository\Primary( 'Anpassen', '#', new Pen() ))->ajaxPipelineOnClick( $UpdatePersonPipeline )
+                                )
+                            )
+                        ))
+                    )
+                );
 
                 $MetaTabs = Group::useService()->getGroupAllByPerson($tblPerson);
                 // Sort by Name
@@ -231,7 +276,7 @@ class Frontend extends Extension implements IFrontendInterface
                     new Layout(array(
                         new LayoutGroup(
                             new LayoutRow(new LayoutColumn(array(
-                                new Well($BasicTable)
+                                new Well((empty($Person) ? $UpdatePersonReceiver : $BasicTable) )
                             ))),
                             new Title(new PersonParent().' Grunddaten',
                                 'der Person '.new Bold(new SuccessText($tblPerson->getFullName())))
@@ -292,7 +337,7 @@ class Frontend extends Extension implements IFrontendInterface
                 );
 
             } else {
-                return $Stage . new Danger('Person nicht gefunden', new Exclamation());
+                return $Stage->setContent( new Danger('Person nicht gefunden', new Exclamation() ) );
             }
         }
 

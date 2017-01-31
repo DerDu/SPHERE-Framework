@@ -111,14 +111,16 @@ class Service extends AbstractService
     }
 
     /**
-     * @param string  $DatabaseName
+     * @param string $DatabaseName
      * @param Element $Entity
+     * @param bool $useBulkSave MUST call "flushBulkEntries" if true
      *
      * @return false|TblProtocol
      */
     public function createInsertEntry(
         $DatabaseName,
-        Element $Entity
+        Element $Entity,
+        $useBulkSave = false
     ) {
 
         $tblAccount = Account::useService()->getAccountBySession();
@@ -132,7 +134,8 @@ class Service extends AbstractService
             $DatabaseName,
             ( $tblAccount ? $tblAccount : null ),
             ( $tblConsumer ? $tblConsumer : null ),
-            $Entity, TblArchive::ARCHIVE_TYPE_CREATE
+            $Entity, TblArchive::ARCHIVE_TYPE_CREATE,
+            $useBulkSave
         );
 
         return (new Data($this->getBinding()))->createProtocolEntry(
@@ -140,7 +143,8 @@ class Service extends AbstractService
             ( $tblAccount ? $tblAccount : null ),
             ( $tblConsumer ? $tblConsumer : null ),
             null,
-            $Entity
+            $Entity,
+            $useBulkSave
         );
     }
 
@@ -148,13 +152,15 @@ class Service extends AbstractService
      * @param string  $DatabaseName
      * @param Element $From
      * @param Element $To
+     * @param bool $useBulkSave MUST call "flushBulkEntries" if true
      *
      * @return false|TblProtocol
      */
     public function createUpdateEntry(
         $DatabaseName,
         Element $From,
-        Element $To
+        Element $To,
+        $useBulkSave = false
     ) {
 
         $tblAccount = Account::useService()->getAccountBySession();
@@ -169,14 +175,16 @@ class Service extends AbstractService
             ( $tblAccount ? $tblAccount : null ),
             ( $tblConsumer ? $tblConsumer : null ),
             $From,
-            $To
+            $To,
+            $useBulkSave
         ) )
         ) {
             Archive::useService()->createArchiveEntry(
                 $DatabaseName,
                 ( $tblAccount ? $tblAccount : null ),
                 ( $tblConsumer ? $tblConsumer : null ),
-                $To, TblArchive::ARCHIVE_TYPE_UPDATE
+                $To, TblArchive::ARCHIVE_TYPE_UPDATE,
+                $useBulkSave
             );
         };
         return $Protocol;
@@ -185,12 +193,14 @@ class Service extends AbstractService
     /**
      * @param string  $DatabaseName
      * @param Element $Entity
+     * @param bool $useBulkSave MUST call "flushBulkEntries" if true
      *
      * @return false|TblProtocol
      */
     public function createDeleteEntry(
         $DatabaseName,
-        Element $Entity = null
+        Element $Entity = null,
+        $useBulkSave = false
     ) {
 
         $tblAccount = Account::useService()->getAccountBySession();
@@ -205,7 +215,20 @@ class Service extends AbstractService
             ( $tblAccount ? $tblAccount : null ),
             ( $tblConsumer ? $tblConsumer : null ),
             $Entity,
-            null
+            null,
+            $useBulkSave
         );
+    }
+
+    /**
+     * MUST call if "useBulkSave" parameter was used with
+     * - createDeleteEntry
+     * - createUpdateEntry
+     * - createInsertEntry
+     */
+    public function flushBulkEntries()
+    {
+        (new Data($this->getBinding()))->flushBulkSave();
+        Archive::useService()->flushBulkEntries();
     }
 }

@@ -13,7 +13,6 @@ use SPHERE\Application\Education\ClassRegister\Absence\Absence;
 use SPHERE\Application\Education\Lesson\Division\Division;
 use SPHERE\Application\Education\Lesson\Term\Service\Entity\TblYear;
 use SPHERE\Application\Education\Lesson\Term\Term;
-use SPHERE\Application\People\Meta\Common\Common;
 use SPHERE\Application\People\Meta\Student\Student;
 use SPHERE\Application\People\Person\Person;
 use SPHERE\Common\Frontend\Icon\Repository\Ban;
@@ -21,11 +20,11 @@ use SPHERE\Common\Frontend\Icon\Repository\Check;
 use SPHERE\Common\Frontend\Icon\Repository\ChevronLeft;
 use SPHERE\Common\Frontend\Icon\Repository\Disable;
 use SPHERE\Common\Frontend\Icon\Repository\Download;
+use SPHERE\Common\Frontend\Icon\Repository\Edit;
 use SPHERE\Common\Frontend\Icon\Repository\Enable;
 use SPHERE\Common\Frontend\Icon\Repository\Exclamation;
-use SPHERE\Common\Frontend\Icon\Repository\Select;
+use SPHERE\Common\Frontend\Icon\Repository\EyeOpen;
 use SPHERE\Common\Frontend\IFrontendInterface;
-use SPHERE\Common\Frontend\Layout\Repository\Container;
 use SPHERE\Common\Frontend\Layout\Repository\Panel;
 use SPHERE\Common\Frontend\Layout\Repository\Title;
 use SPHERE\Common\Frontend\Layout\Structure\Layout;
@@ -36,6 +35,8 @@ use SPHERE\Common\Frontend\Link\Repository\External;
 use SPHERE\Common\Frontend\Link\Repository\Standard;
 use SPHERE\Common\Frontend\Message\Repository\Danger;
 use SPHERE\Common\Frontend\Table\Structure\TableData;
+use SPHERE\Common\Frontend\Text\Repository\Bold;
+use SPHERE\Common\Frontend\Text\Repository\Info;
 use SPHERE\Common\Frontend\Text\Repository\Muted;
 use SPHERE\Common\Frontend\Text\Repository\Small;
 use SPHERE\Common\Frontend\Text\Repository\Success;
@@ -53,42 +54,43 @@ class Frontend extends Extension implements IFrontendInterface
 {
 
     /**
+     * @param bool $IsAllYears
      * @param null $YearId
      *
      * @return Stage
      */
-    public function frontendSelectPrepare($YearId = null)
+    public function frontendSelectPrepare($IsAllYears = false, $YearId = null)
     {
 
-        $Stage = new Stage('Zeugnisvorbereitungen', 'Übersicht');
+        $Stage = new Stage('Zeugnisse freigeben', 'Übersicht');
 
-        $tblYearDisplayList = array();
-        $tblYearList = Term::useService()->getYearAllSinceYears(2);
-        if ($tblYearList) {
-            foreach ($tblYearList as $item) {
-                if (Prepare::useService()->getPrepareAllByYear($item)) {
-                    $tblYearDisplayList[$item->getId()] = $item;
-                }
-            }
+        $tblYear = false;
+        $tblYearList = Term::useService()->getYearByNow();
+        if ($YearId) {
+            $tblYear = Term::useService()->getYearById($YearId);
+        } elseif (!$IsAllYears && $tblYearList) {
+            $tblYear = end($tblYearList);
         }
 
-        $tblYear = Term::useService()->getYearById($YearId);
-
-        if (!empty($tblYearDisplayList)) {
-            $tblYearDisplayList = $this->getSorter($tblYearDisplayList)->sortObjectBy('DisplayName');
-
-            if (count($tblYearDisplayList) > 0) {
-                /** @var TblYear $year */
-                foreach ($tblYearDisplayList as $year) {
-                    $Stage->addButton(new Standard(
-                        $year->getDisplayName(),
-                        '/Education/Certificate/Approve',
-                        null,
-                        array('YearId' => $year->getId())
-                    ));
+        if ($tblYearList) {
+            $tblYearList = $this->getSorter($tblYearList)->sortObjectBy('DisplayName');
+            /** @var TblYear $tblYearItem */
+            foreach ($tblYearList as $tblYearItem) {
+                if ($tblYear && $tblYear->getId() == $tblYearItem->getId()) {
+                    $Stage->addButton(new Standard(new Info(new Bold($tblYearItem->getDisplayName())),
+                        '/Education/Certificate/Approve', new Edit(), array('YearId' => $tblYearItem->getId())));
+                } else {
+                    $Stage->addButton(new Standard($tblYearItem->getDisplayName(), '/Education/Certificate/Approve',
+                        null, array('YearId' => $tblYearItem->getId())));
                 }
+            }
+
+            if ($IsAllYears) {
+                $Stage->addButton(new Standard(new Info(new Bold('Alle Schuljahre')),
+                    '/Education/Certificate/Approve', new Edit(), array('IsAllYears' => true)));
             } else {
-                $tblYear = current($tblYearDisplayList);
+                $Stage->addButton(new Standard('Alle Schuljahre', '/Education/Certificate/Approve', null,
+                    array('IsAllYears' => true)));
             }
         }
 
@@ -98,35 +100,69 @@ class Frontend extends Extension implements IFrontendInterface
             $prepareList = array();
             if ($tblPrepareList) {
                 foreach ($tblPrepareList as $tblPrepare) {
+                    $countStudents = 0;
+                    $countApproved = 0;
                     $tblDivision = $tblPrepare->getServiceTblDivision();
                     if ($tblDivision) {
-                        $countStudent = Division::useService()->countDivisionStudentAllByDivision($tblDivision);
-                    } else {
-                        $countStudent = 0;
+                        if (($tblPersonList = Division::useService()->getStudentAllByDivision($tblDivision))) {
+                            $countStudents = count($tblPersonList);
+                            foreach ($tblPersonList as $tblPerson) {
+                                if (($tblPrepareStudent = Prepare::useService()->getPrepareStudentBy($tblPrepare,
+                                        $tblPerson))
+                                    && $tblPrepareStudent->isApproved()
+                                ) {
+                                    $countApproved++;
+                                }
+                            }
+                        }
                     }
 
                     $prepareList[] = array(
                         'Date' => $tblPrepare->getDate(),
                         'Name' => $tblPrepare->getName(),
                         'Division' => $tblDivision ? $tblDivision->getDisplayName() : '',
-                        'CountCertificate' => $countStudent,
+                        'Status' => $countApproved < $countStudents
+                            ? new Warning(new Exclamation() . ' ' . $countApproved . ' von ' . $countStudents . ' Zeugnisse freigegeben.')
+                            : new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success()
+                                . ' ' . $countApproved . ' von ' . $countStudents . ' Zeugnissen freigegeben.'),
                         'Option' =>
-                            $tblPrepare->getServiceTblAppointedDateTask()
-                            && $tblPrepare->getServiceTblBehaviorTask()
-                                ? new Standard(
+                            (new Standard(
                                 '',
                                 '/Education/Certificate/Approve/Prepare',
-                                new Select(),
+                                new EyeOpen(),
                                 array(
                                     'PrepareId' => $tblPrepare->getId()
                                 ),
-                                'Zeugnisvorbereitung auswählen und Zeugnisse freigeben'
-                            )
-                                :
-                                (
-                                    (!$tblPrepare->getServiceTblAppointedDateTask() ? new Container(new Warning( new Ban().' Kein Stichtagsnotenauftrag vorbereitet' )) : '')
-                                    . (!$tblPrepare->getServiceTblBehaviorTask() ? new Container(new Warning(  new Ban().' Kein Kopfnotenauftrag vorbereitet' )) : '')
-                                )
+                                'Klassenansicht -> Zeugnisse einzeln freigeben'
+                            ))
+                            . (new External(
+                                '',
+                                '/Api/Education/Certificate/Generator/PreviewZip',
+                                new Download(),
+                                array(
+                                    'PrepareId' => $tblPrepare->getId(),
+                                    'Name' => 'Zeugnismuster'
+                                ), 'Alle Zeugnisse als Muster herunterladen'))
+                            . (new Standard(
+                                '',
+                                '/Education/Certificate/Approve/Prepare/Division/SetApproved',
+                                new Check(),
+                                array(
+                                    'PrepareId' => $tblPrepare->getId(),
+                                    'Route' => '/Education/Certificate/Approve'
+                                ),
+                                'Alle Zeugnisse dieser Klasse freigeben'
+                            ))
+                            . (new Standard(
+                                '',
+                                '/Education/Certificate/Approve/Prepare/Division/ResetApproved',
+                                new Disable(),
+                                array(
+                                    'PrepareId' => $tblPrepare->getId(),
+                                    'Route' => '/Education/Certificate/Approve'
+                                ),
+                                'Alle Zeugnisfreigaben dieser Klasse entfernen'
+                            ))
                     );
                 }
 
@@ -135,7 +171,7 @@ class Frontend extends Extension implements IFrontendInterface
                         'Date' => 'Zeugnisdatum',
                         'Division' => 'Klasse',
                         'Name' => 'Name',
-                        'CountCertificate' => 'Zeugnisse',
+                        'Status' => 'Freigaben',
                         'Option' => ''
                     ),
                     array(
@@ -145,7 +181,87 @@ class Frontend extends Extension implements IFrontendInterface
                             array(2, 'asc'),
                         ),
                         'columnDefs' => array(
-                            array('type' => 'de_date', 'targets' => 0)
+                            array('type' => 'de_date', 'targets' => 0),
+                            array('type' => 'natural', 'targets' => 1),
+                        )
+                    )
+                );
+            }
+        } else {
+            $tblPrepareList = Prepare::useService()->getPrepareAll();
+            $prepareList = array();
+            if ($tblPrepareList) {
+                foreach ($tblPrepareList as $tblPrepare) {
+                    $tblDivision = $tblPrepare->getServiceTblDivision();
+
+                    $prepareList[] = array(
+                        'Year' => $tblDivision->getServiceTblYear()
+                            ? $tblDivision->getServiceTblYear()->getDisplayName() : '',
+                        'Date' => $tblPrepare->getDate(),
+                        'Name' => $tblPrepare->getName(),
+                        'Division' => $tblDivision ? $tblDivision->getDisplayName() : '',
+                        'Option' =>
+                            (new Standard(
+                                '',
+                                '/Education/Certificate/Approve/Prepare',
+                                new EyeOpen(),
+                                array(
+                                    'PrepareId' => $tblPrepare->getId(),
+                                    'IsAllYears' => true
+                                ),
+                                'Klassenansicht -> Zeugnisse einzeln freigeben'
+                            ))
+                            . (new External(
+                                '',
+                                '/Api/Education/Certificate/Generator/PreviewZip',
+                                new Download(),
+                                array(
+                                    'PrepareId' => $tblPrepare->getId(),
+                                    'Name' => 'Zeugnismuster'
+                                ), 'Alle Zeugnisse als Muster herunterladen'))
+                            . (new Standard(
+                                '',
+                                '/Education/Certificate/Approve/Prepare/Division/SetApproved',
+                                new Check(),
+                                array(
+                                    'PrepareId' => $tblPrepare->getId(),
+                                    'Route' => '/Education/Certificate/Approve',
+                                    'IsAllYears' => true
+                                ),
+                                'Alle Zeugnisse dieser Klasse freigeben'
+                            ))
+                            . (new Standard(
+                                '',
+                                '/Education/Certificate/Approve/Prepare/Division/ResetApproved',
+                                new Disable(),
+                                array(
+                                    'PrepareId' => $tblPrepare->getId(),
+                                    'Route' => '/Education/Certificate/Approve',
+                                    'IsAllYears' => true
+                                ),
+                                'Alle Zeugnisfreigaben dieser Klasse entfernen'
+                            ))
+                    );
+                }
+
+                $content = new TableData($prepareList, null,
+                    array(
+                        'Year' => 'Schuljahr',
+                        'Date' => 'Zeugnisdatum',
+                        'Division' => 'Klasse',
+                        'Name' => 'Name',
+                        'Option' => ''
+                    ),
+                    array(
+                        'order' => array(
+                            array(0, 'desc'),
+                            array(1, 'desc'),
+                            array(2, 'asc'),
+                            array(3, 'asc'),
+                        ),
+                        'columnDefs' => array(
+                            array('type' => 'de_date', 'targets' => 1),
+                            array('type' => 'natural', 'targets' => 2),
                         )
                     )
                 );
@@ -159,12 +275,20 @@ class Frontend extends Extension implements IFrontendInterface
                         new LayoutColumn(array(
                             new Panel(
                                 'Schuljahr',
-                                $tblYear ? $tblYear->getDisplayName() : new Warning(new Exclamation()
-                                    . ' Bitte wählen Sie ein Schuljahr aus'),
+                                $tblYear ? $tblYear->getDisplayName() : 'Alle Schuljahre',
                                 Panel::PANEL_TYPE_INFO
                             ),
                         )),
                         new LayoutColumn(array(
+                            // Massenfreigabe aktuell nicht performant realisierbar
+//                            new Standard(
+//                                'Alle Zeugnisse aller Klassen freigeben',
+//                                '',
+//                                new Check(),
+//                                array(
+//
+//                                )
+//                            ),
                             $content ? $content : null
                         )),
                     ))
@@ -177,13 +301,14 @@ class Frontend extends Extension implements IFrontendInterface
 
     /**
      * @param null $PrepareId
+     * @param bool $IsAllYears
      *
-     * @return Stage
+     * @return Stage|string
      */
-    public function frontendDivision($PrepareId = null)
+    public function frontendDivision($PrepareId = null, $IsAllYears = false)
     {
 
-        $Stage = new Stage('Zeugnis', 'Übersicht');
+        $Stage = new Stage('Zeugnisse freigeben', 'Klassenansicht');
 
         $tblPrepare = Prepare::useService()->getPrepareById($PrepareId);
         if ($tblPrepare) {
@@ -192,7 +317,11 @@ class Frontend extends Extension implements IFrontendInterface
             if ($tblDivision) {
                 $Stage->addButton(new Standard(
                     'Zurück', '/Education/Certificate/Approve', new ChevronLeft(),
-                    array(
+                    $IsAllYears ?
+                        array(
+                            'IsAllYears' => $IsAllYears
+                        )
+                        : array(
                         'YearId' => ($tblDivision->getServiceTblYear() ? $tblDivision->getServiceTblYear()->getId() : null)
                     )
                 ));
@@ -200,13 +329,6 @@ class Frontend extends Extension implements IFrontendInterface
                 $tblStudentList = Division::useService()->getStudentAllByDivision($tblDivision);
                 if ($tblStudentList) {
                     foreach ($tblStudentList as $tblPerson) {
-                        $tblAddress = $tblPerson->fetchMainAddress();
-                        $birthday = '';
-                        if (($tblCommon = Common::useService()->getCommonByPerson($tblPerson))) {
-                            if ($tblCommon->getTblCommonBirthDates()) {
-                                $birthday = $tblCommon->getTblCommonBirthDates()->getBirthday();
-                            }
-                        }
                         $course = '';
                         if (($tblStudent = Student::useService()->getStudentByPerson($tblPerson))) {
                             $tblTransferType = Student::useService()->getStudentTransferTypeByIdentifier('PROCESS');
@@ -234,8 +356,6 @@ class Frontend extends Extension implements IFrontendInterface
                         $studentTable[] = array(
                             'Number' => count($studentTable) + 1,
                             'Name' => $tblPerson->getLastFirstName(),
-                            'Address' => $tblAddress ? $tblAddress->getGuiTwoRowString() : '',
-                            'Birthday' => $birthday,
                             'Course' => $course,
                             'ExcusedAbsence' => Absence::useService()->getExcusedDaysByPerson($tblPerson, $tblDivision),
                             'UnexcusedAbsence' => Absence::useService()->getUnexcusedDaysByPerson($tblPerson,
@@ -262,7 +382,8 @@ class Frontend extends Extension implements IFrontendInterface
                                     new Check(),
                                     array(
                                         'PrepareId' => $tblPrepare->getId(),
-                                        'PersonId' => $tblPerson->getId()
+                                        'PersonId' => $tblPerson->getId(),
+                                        'IsAllYears' => $IsAllYears
                                     ),
                                     'Zeugnis freigeben')) : '')
                                 . ($isApproved ? (new Standard(
@@ -270,7 +391,8 @@ class Frontend extends Extension implements IFrontendInterface
                                     new Disable(),
                                     array(
                                         'PrepareId' => $tblPrepare->getId(),
-                                        'PersonId' => $tblPerson->getId()
+                                        'PersonId' => $tblPerson->getId(),
+                                        'IsAllYears' => $IsAllYears
                                     ),
                                     'Zeugnisfreigabe entfernen')) : '')
                         );
@@ -298,17 +420,44 @@ class Frontend extends Extension implements IFrontendInterface
                                     Panel::PANEL_TYPE_INFO
                                 ),
                             ), 6),
+                            new LayoutColumn(array(
+                                new External(
+                                    'Alle Zeugnisse als Muster herunterladen',
+                                    '/Api/Education/Certificate/Generator/PreviewZip',
+                                    new Download(),
+                                    array(
+                                        'PrepareId' => $tblPrepare->getId(),
+                                        'Name' => 'Zeugnismuster'
+                                    ), 'Alle Zeugnisse als Muster herunterladen'),
+                                new Standard(
+                                    'Alle Zeugnisse dieser Klasse freigeben',
+                                    '/Education/Certificate/Approve/Prepare/Division/SetApproved',
+                                    new Check(),
+                                    array(
+                                        'PrepareId' => $tblPrepare->getId(),
+                                        'Route' => '/Education/Certificate/Approve/Prepare',
+                                        'IsAllYears' => $IsAllYears
+                                    )
+                                ),
+                                new Standard(
+                                    'Alle Zeugnisfreigaben dieser Klasse entfernen',
+                                    '/Education/Certificate/Approve/Prepare/Division/ResetApproved',
+                                    new Disable(),
+                                    array(
+                                        'PrepareId' => $tblPrepare->getId(),
+                                        'Route' => '/Education/Certificate/Approve/Prepare',
+                                        'IsAllYears' => $IsAllYears
+                                    )
+                                ),
+                            )),
                         )),
                     )),
                     new LayoutGroup(array(
                         new LayoutRow(array(
                             new LayoutColumn(array(
-                                '<br>',
                                 new TableData($studentTable, null, array(
                                     'Number' => '#',
                                     'Name' => 'Name',
-                                    'Address' => 'Adresse',
-                                    'Birthday' => 'Geburts&shy;datum',
                                     'Course' => 'Bildungs&shy;gang',
                                     'Template' => 'Zeugnis&shy;vorlage',
                                     'Status' => 'Freigabe',
@@ -339,12 +488,13 @@ class Frontend extends Extension implements IFrontendInterface
     /**
      * @param null $PrepareId
      * @param null $PersonId
+     * @param bool $IsAllYears
      *
      * @return Stage|string
      */
-    public function frontendApprovePrepare($PrepareId = null, $PersonId = null)
+    public function frontendApprovePreparePerson($PrepareId = null, $PersonId = null, $IsAllYears = false)
     {
-        $Stage = new Stage('Zeugnis', 'Freigeben');
+        $Stage = new Stage('Zeugnisse freigeben', 'Freigabe');
 
         if (($tblPrepare = Prepare::useService()->getPrepareById($PrepareId))
             && ($tblPerson = Person::useService()->getPersonById($PersonId))
@@ -353,7 +503,10 @@ class Frontend extends Extension implements IFrontendInterface
 
             $Stage->addButton(new Standard(
                 'Zurück', '/Education/Certificate/Approve/Prepare', new ChevronLeft(),
-                array('PrepareId' => $tblPrepare->getId())
+                array(
+                    'PrepareId' => $tblPrepare->getId(),
+                    'IsAllYears' => $IsAllYears
+                )
             ));
 
             $Stage->setContent(
@@ -395,14 +548,14 @@ class Frontend extends Extension implements IFrontendInterface
                 . new \SPHERE\Common\Frontend\Message\Repository\Success('Zeugnis wurde freigegeben.',
                     new \SPHERE\Common\Frontend\Icon\Repository\Success())
                 . new Redirect('/Education/Certificate/Approve/Prepare', Redirect::TIMEOUT_SUCCESS,
-                    array('PrepareId' => $tblPrepare->getId()));
+                    array('PrepareId' => $tblPrepare->getId(), 'IsAllYears' => $IsAllYears));
             }
 
             return $Stage;
 
         } else {
             $Stage->addButton(new Standard(
-                'Zurück', '/Education/Certificate/Approve', new ChevronLeft()
+                'Zurück', '/Education/Certificate/Approve', new ChevronLeft(), array('IsAllYears' => $IsAllYears)
             ));
 
             return $Stage . new Danger('Zeugnisvorbereitung nicht gefunden.', new Ban());
@@ -412,10 +565,11 @@ class Frontend extends Extension implements IFrontendInterface
     /**
      * @param null $PrepareId
      * @param null $PersonId
+     * @param bool $IsAllYears
      *
      * @return Stage|string
      */
-    public function frontendResetApprovePrepare($PrepareId = null, $PersonId = null)
+    public function frontendResetApprovePreparePerson($PrepareId = null, $PersonId = null, $IsAllYears = false)
     {
         $Stage = new Stage('Zeugnis', 'Freigabe entfernen');
 
@@ -426,7 +580,7 @@ class Frontend extends Extension implements IFrontendInterface
 
             $Stage->addButton(new Standard(
                 'Zurück', '/Education/Certificate/Approve/Prepare', new ChevronLeft(),
-                array('PrepareId' => $tblPrepare->getId())
+                array('PrepareId' => $tblPrepare->getId(), 'IsAllYears' => $IsAllYears)
             ));
 
             $Stage->setContent(
@@ -468,14 +622,132 @@ class Frontend extends Extension implements IFrontendInterface
                 . new \SPHERE\Common\Frontend\Message\Repository\Success('Zeugnisfreigabe wurde entfernt.',
                     new \SPHERE\Common\Frontend\Icon\Repository\Success())
                 . new Redirect('/Education/Certificate/Approve/Prepare', Redirect::TIMEOUT_SUCCESS,
-                    array('PrepareId' => $tblPrepare->getId()));
+                    array('PrepareId' => $tblPrepare->getId(), 'IsAllYears' => $IsAllYears));
             }
 
             return $Stage;
 
         } else {
             $Stage->addButton(new Standard(
-                'Zurück', '/Education/Certificate/Approve', new ChevronLeft()
+                'Zurück', '/Education/Certificate/Approve', new ChevronLeft(), array('IsAllYears' => $IsAllYears)
+            ));
+
+            return $Stage . new Danger('Zeugnisvorbereitung nicht gefunden.', new Ban());
+        }
+    }
+
+    /**
+     * @param null $PrepareId
+     * @param string $Route
+     * @param bool $IsAllYears
+     *
+     * @return Stage|string
+     */
+    public function frontendApprovePrepareDivision(
+        $PrepareId = null,
+        $Route = '/Education/Certificate/Approve/Prepare',
+        $IsAllYears = false
+    ) {
+        $Stage = new Stage('Zeugnisse freigeben', 'Klasse freigeben');
+
+        if (($tblPrepare = Prepare::useService()->getPrepareById($PrepareId))
+            && ($tblDivision = $tblPrepare->getServiceTblDivision())
+        ) {
+
+            $Stage->setContent(
+                new Layout(array(
+                    new LayoutGroup(array(
+                        new LayoutRow(array(
+                            new LayoutColumn(array(
+                                new Panel(
+                                    'Zeugnisvorbereitung',
+                                    array(
+                                        $tblPrepare->getName() . ' ' . new Small(new Muted($tblPrepare->getDate())),
+                                    ),
+                                    Panel::PANEL_TYPE_INFO
+                                ),
+                            ), 6),
+                            new LayoutColumn(array(
+                                new Panel(
+                                    'Klasse',
+                                    $tblDivision ? $tblDivision->getDisplayName() : '',
+                                    Panel::PANEL_TYPE_INFO
+                                ),
+                            ), 6),
+                        )),
+                    )),
+                ))
+            );
+
+            Prepare::useService()->updatePrepareDivisionSetApproved($tblPrepare);
+
+            return $Stage
+            . new \SPHERE\Common\Frontend\Message\Repository\Success('Zeugnisse wurden freigegeben.',
+                new \SPHERE\Common\Frontend\Icon\Repository\Success())
+            . new Redirect($Route, Redirect::TIMEOUT_SUCCESS,
+                array('PrepareId' => $tblPrepare->getId(), 'IsAllYears' => $IsAllYears));
+        } else {
+            $Stage->addButton(new Standard(
+                'Zurück', $Route, new ChevronLeft(), array('IsAllYears' => $IsAllYears)
+            ));
+
+            return $Stage . new Danger('Zeugnisvorbereitung nicht gefunden.', new Ban());
+        }
+    }
+
+    /**
+     * @param null $PrepareId
+     * @param string $Route
+     * @param bool $IsAllYears
+     *
+     * @return Stage|string
+     */
+    public function frontendResetApprovePrepareDivision(
+        $PrepareId = null,
+        $Route = '/Education/Certificate/Approve/Prepare',
+        $IsAllYears = false
+    ) {
+        $Stage = new Stage('Zeugnisse freigeben', 'Klassen Freigabe entfernen');
+
+        if (($tblPrepare = Prepare::useService()->getPrepareById($PrepareId))
+            && ($tblDivision = $tblPrepare->getServiceTblDivision())
+        ) {
+
+            $Stage->setContent(
+                new Layout(array(
+                    new LayoutGroup(array(
+                        new LayoutRow(array(
+                            new LayoutColumn(array(
+                                new Panel(
+                                    'Zeugnisvorbereitung',
+                                    array(
+                                        $tblPrepare->getName() . ' ' . new Small(new Muted($tblPrepare->getDate())),
+                                    ),
+                                    Panel::PANEL_TYPE_INFO
+                                ),
+                            ), 6),
+                            new LayoutColumn(array(
+                                new Panel(
+                                    'Klasse',
+                                    $tblDivision ? $tblDivision->getDisplayName() : '',
+                                    Panel::PANEL_TYPE_INFO
+                                ),
+                            ), 6),
+                        )),
+                    )),
+                ))
+            );
+
+            Prepare::useService()->updatePrepareDivisionResetApproved($tblPrepare);
+
+            return $Stage
+            . new \SPHERE\Common\Frontend\Message\Repository\Success('Zeugnisfreigaben wurden entfernt.',
+                new \SPHERE\Common\Frontend\Icon\Repository\Success())
+            . new Redirect($Route, Redirect::TIMEOUT_SUCCESS,
+                array('PrepareId' => $tblPrepare->getId(), 'IsAllYears' => $IsAllYears));
+        } else {
+            $Stage->addButton(new Standard(
+                'Zurück', $Route, new ChevronLeft()
             ));
 
             return $Stage . new Danger('Zeugnisvorbereitung nicht gefunden.', new Ban());

@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="de">
 <head>
-    <title>KREDA Professional{{ SeoTitle }}</title>
+    <title>Schulsoftware Professional{{ SeoTitle }}</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="KREDA Professional"/>
+    <meta name="description" content="Schulsoftware Professional"/>
     <link hreflang="de">
     {{ ManagerStyle }}
     <link rel="apple-touch-icon" sizes="57x57"
@@ -43,7 +43,6 @@
     <script type="text/javascript">
         var executeScript = function (Callback)
         {
-
             var Event = window.onload;
             if (typeof window.onload != 'function') {
                 window.onload = Callback;
@@ -55,6 +54,32 @@
                     Callback();
                 }
             }
+        }
+    </script>
+
+    <script type="text/javascript">
+        var executeScript = function (Callback)
+        {
+            // Save On-Load
+            var Event = window.onload;
+            // Init On-Load
+            if (typeof window.onload != 'function') {
+                window.onload = function ()
+                {
+                    executeScript = function (Callback)
+                    {
+                        Callback();
+                    };
+                };
+                Event = window.onload;
+            }
+            // Append On-Load
+            window.onload = function () {
+                if (Event) {
+                    Event();
+                }
+                Callback();
+            };
         }
     </script>
 </head>

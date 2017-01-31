@@ -2,6 +2,7 @@
 namespace SPHERE\Application\Education\Certificate;
 
 use SPHERE\Application\Education\Certificate\Approve\Approve;
+use SPHERE\Application\Education\Certificate\Generate\Generate;
 use SPHERE\Application\Education\Certificate\GradeInformation\GradeInformation;
 use SPHERE\Application\Education\Certificate\Prepare\Prepare;
 use SPHERE\Application\Education\Certificate\PrintCertificate\PrintCertificate;
@@ -23,6 +24,7 @@ class Certificate implements IApplicationInterface
     {
 
         Setting::registerModule();
+        Generate::registerModule();
         Prepare::registerModule();
         Approve::registerModule();
         PrintCertificate::registerModule();

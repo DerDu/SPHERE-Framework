@@ -6,6 +6,7 @@ use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Service\Entity
 use SPHERE\Application\Platform\System\Archive\Service\Entity\TblArchive;
 use SPHERE\System\Database\Binding\AbstractData;
 use SPHERE\System\Database\Fitting\Element;
+use SPHERE\System\Database\Fitting\Manager;
 
 /**
  * Class Data
@@ -14,6 +15,8 @@ use SPHERE\System\Database\Fitting\Element;
  */
 class Data extends AbstractData
 {
+    /** @var null|Manager $BulkManager */
+    private static $BulkManager = null;
 
     /**
      * @return void
@@ -62,7 +65,7 @@ class Data extends AbstractData
      * @param null|TblConsumer $tblConsumer
      * @param null|Element     $Entity
      * @param int              $Type
-     *
+     * @param bool $useBulkSave
      * @return false|TblArchive
      */
     public function createArchiveEntry(
@@ -70,10 +73,20 @@ class Data extends AbstractData
         TblAccount $tblAccount = null,
         TblConsumer $tblConsumer = null,
         Element $Entity = null,
-        $Type = TblArchive::ARCHIVE_TYPE_CREATE
+        $Type = TblArchive::ARCHIVE_TYPE_CREATE,
+        $useBulkSave = false
     ) {
 
-        $Manager = $this->getConnection()->getEntityManager();
+
+        if ($useBulkSave) {
+            if (self::$BulkManager) {
+                $Manager = self::$BulkManager;
+            } else {
+                $Manager = self::$BulkManager = $this->getConnection()->getEntityManager();
+            }
+        } else {
+            $Manager = $this->getConnection()->getEntityManager();
+        }
 
         $Entity = ( $Entity ? serialize($this->persistData($Entity)) : null );
 
@@ -90,7 +103,12 @@ class Data extends AbstractData
             $Archive->setConsumerAcronym($tblConsumer->getAcronym());
         }
         $Archive->setEntity($Entity);
-        $Manager->saveEntity($Archive);
+
+        if( $useBulkSave ) {
+            $Manager->bulkSaveEntity($Archive);
+        } else {
+            $Manager->saveEntity($Archive);
+        }
 
         return $Archive;
     }
@@ -133,5 +151,15 @@ class Data extends AbstractData
             }
         }
         return $Data;
+    }
+
+    /**
+     *
+     */
+    public function flushBulkSave()
+    {
+        if (self::$BulkManager) {
+            self::$BulkManager->flushCache();
+        }
     }
 }

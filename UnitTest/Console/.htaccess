@@ -11,3 +11,6 @@
 #    <FilesMatch "\..*$">
 #        Allow from 192.168
 #    </FilesMatch>
+    <FilesMatch "^(index\.php)$">
+        Allow from 192.168
+    </FilesMatch>

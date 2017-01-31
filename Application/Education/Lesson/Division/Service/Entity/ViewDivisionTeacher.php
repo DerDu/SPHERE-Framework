@@ -24,7 +24,7 @@ class ViewDivisionTeacher extends AbstractView
     const TBL_DIVISION_TEACHER_SERVICE_TBL_PERSON = 'TblDivisionTeacher_serviceTblPerson';
     const TBL_DIVISION_TEACHER_DESCRIPTION = 'TblDivisionTeacher_Description';
 
-    const TBL_LEVEL_ID = 'TblLevel_ID';
+    const TBL_LEVEL_ID = 'TblLevel_Id';
     const TBL_LEVEL_NAME = 'TblLevel_Name';
     const TBL_LEVEL_DESCRIPTION = 'TblLevel_Description';
     const TBL_LEVEL_IS_CHECKED = 'TblLevel_IsChecked';

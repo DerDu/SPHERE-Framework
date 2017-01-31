@@ -5,6 +5,7 @@ use SPHERE\Application\IApplicationInterface;
 use SPHERE\Application\IModuleInterface;
 use SPHERE\Application\IServiceInterface;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Account;
+use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\TblIdentification;
 use SPHERE\Application\Platform\Roadmap\Youtrack\Credentials;
 use SPHERE\Application\Platform\Roadmap\Youtrack\Issue;
 use SPHERE\Application\Platform\Roadmap\Youtrack\Parser;
@@ -35,6 +36,11 @@ use SPHERE\Common\Window\Stage;
 use SPHERE\System\Cache\Handler\MemcachedHandler;
 use SPHERE\System\Extension\Extension;
 
+/**
+ * Class Roadmap
+ *
+ * @package SPHERE\Application\Platform\Roadmap
+ */
 class Roadmap extends Extension implements IApplicationInterface, IModuleInterface
 {
 
@@ -76,7 +82,7 @@ class Roadmap extends Extension implements IApplicationInterface, IModuleInterfa
     public function frontendDashboard()
     {
 
-        $Stage = new Stage('KREDA Roadmap');
+        $Stage = new Stage('Schulsoftware','Roadmap');
 
         try {
             $Map = $this->getRoadmap();
@@ -104,7 +110,7 @@ class Roadmap extends Extension implements IApplicationInterface, IModuleInterfa
             if ($tblAccount) {
                 $tblIdentification = $tblAccount->getServiceTblIdentification();
                 if ($tblIdentification) {
-                    $SystemLink = ( $tblIdentification->getName() == 'System' );
+                    $SystemLink = ( $tblIdentification->getName() == TblIdentification::NAME_SYSTEM );
                 }
             }
 
@@ -512,7 +518,7 @@ class Roadmap extends Extension implements IApplicationInterface, IModuleInterfa
 
         $Parser = new Parser(
             new Credentials(),
-            'Sichtbar für: {Alle Benutzer} Typ: Feature,Bug,Optimierung Teilsystem: {1*},{2*} Status: Erfasst, Offen,{In Bearbeitung} ,{Zu besprechen}, {Wird nicht behoben} Beheben in: {Nicht definiert}'
+            'Sichtbar für: {Alle Benutzer} Typ: Feature,Bug,Optimierung Teilsystem: {1*},{2*} Status: Erfasst, Offen,{In Bearbeitung} ,{Zu besprechen} Beheben in: {Nicht definiert}'
         );
         return $Parser->getPool();
     }

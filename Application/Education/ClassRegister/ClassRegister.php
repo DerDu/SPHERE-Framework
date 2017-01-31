@@ -29,6 +29,7 @@ use SPHERE\Common\Frontend\Message\Repository\Danger;
 use SPHERE\Common\Frontend\Table\Structure\TableData;
 use SPHERE\Common\Frontend\Text\Repository\Bold;
 use SPHERE\Common\Frontend\Text\Repository\Info;
+use SPHERE\Common\Frontend\Text\Repository\Muted;
 use SPHERE\Common\Frontend\Text\Repository\Success;
 use SPHERE\Common\Main;
 use SPHERE\Common\Window\Navigation\Link;
@@ -334,6 +335,11 @@ class ClassRegister implements IApplicationInterface
                 )
             );
 
+            $YearString = new Muted('-NA-');
+            if (( $tblYear = $tblDivision->getServiceTblYear() )) {
+                $YearString = $tblYear->getName();
+            }
+
             $Stage->setContent(
                 new Layout(array(
                     new LayoutGroup(array(
@@ -344,7 +350,14 @@ class ClassRegister implements IApplicationInterface
                                     $tblDivision->getDisplayName(),
                                     Panel::PANEL_TYPE_INFO
                                 ),
-                            )),
+                            ), 6),
+                            new LayoutColumn(array(
+                                new Panel(
+                                    'Schuljahr',
+                                    $YearString,
+                                    Panel::PANEL_TYPE_INFO
+                                ),
+                            ), 6),
                             new LayoutColumn($buttonList),
                             new LayoutColumn(array(
                                 new TableData($studentTable, null, array(

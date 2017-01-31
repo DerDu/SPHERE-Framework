@@ -12,6 +12,8 @@ use Doctrine\ORM\Mapping\Cache;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
+use SPHERE\Application\Education\Certificate\Generate\Generate;
+use SPHERE\Application\Education\Certificate\Generate\Service\Entity\TblGenerateCertificate;
 use SPHERE\Application\Education\Certificate\Prepare\Prepare;
 use SPHERE\Application\Education\Graduation\Evaluation\Evaluation;
 use SPHERE\Application\Education\Graduation\Evaluation\Service\Entity\TblTask;
@@ -31,6 +33,7 @@ class TblPrepareCertificate extends Element
 
     const ATTR_SERVICE_TBL_DIVISION = 'serviceTblDivision';
     const ATTR_IS_GRADE_INFORMATION = 'IsGradeInformation';
+    const ATTR_SERVICE_TBL_GENERATE_CERTIFICATE = 'serviceTblGenerateCertificate';
 
     /**
      * @Column(type="string")
@@ -66,6 +69,11 @@ class TblPrepareCertificate extends Element
      * @Column(type="boolean")
      */
     protected $IsGradeInformation;
+
+    /**
+     * @Column(type="bigint")
+     */
+    protected $serviceTblGenerateCertificate;
 
     /**
      * @return string
@@ -199,15 +207,6 @@ class TblPrepareCertificate extends Element
     }
 
     /**
-     * @return bool
-     */
-    public function isAppointedDateTaskUpdated()
-    {
-
-        return Prepare::useService()->isAppointedDateTaskUpdated($this);
-    }
-
-    /**
      * @return boolean
      */
     public function isGradeInformation()
@@ -221,6 +220,28 @@ class TblPrepareCertificate extends Element
     public function setIsGradeInformation($IsGradeInformation)
     {
         $this->IsGradeInformation = $IsGradeInformation;
+    }
+
+    /**
+     * @return bool|TblGenerateCertificate
+     */
+    public function getServiceTblGenerateCertificate()
+    {
+
+        if (null === $this->serviceTblGenerateCertificate) {
+            return false;
+        } else {
+            return Generate::useService()->getGenerateCertificateById($this->serviceTblGenerateCertificate);
+        }
+    }
+
+    /**
+     * @param TblGenerateCertificate|null $tblGenerateCertificate
+     */
+    public function setServiceTblGenerateCertificate(TblGenerateCertificate $tblGenerateCertificate = null)
+    {
+
+        $this->serviceTblGenerateCertificate = (null === $tblGenerateCertificate ? null : $tblGenerateCertificate->getId());
     }
 
     public function getDisplayTypeName()

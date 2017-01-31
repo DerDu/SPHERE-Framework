@@ -4,6 +4,13 @@ namespace SPHERE\Application\Platform\System\Test;
 use MOC\V\Core\FileSystem\FileSystem;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
 use SPHERE\Application\Platform\System\Test\Service\Entity\TblTestPicture;
+use SPHERE\Common\Frontend\Ajax\Emitter\ServerEmitter;
+use SPHERE\Common\Frontend\Ajax\Emitter\ClientEmitter;
+use SPHERE\Common\Frontend\Ajax\Pipeline;
+use SPHERE\Common\Frontend\Ajax\Receiver\BlockReceiver;
+use SPHERE\Common\Frontend\Ajax\Receiver\FieldValueReceiver;
+use SPHERE\Common\Frontend\Ajax\Receiver\InlineReceiver;
+use SPHERE\Common\Frontend\Ajax\Receiver\ModalReceiver;
 use SPHERE\Common\Frontend\Form\Repository\Button\Danger;
 use SPHERE\Common\Frontend\Form\Repository\Button\Primary;
 use SPHERE\Common\Frontend\Form\Repository\Button\Reset;
@@ -49,11 +56,11 @@ use SPHERE\Common\Frontend\Layout\Structure\LayoutSocial;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutTab;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutTabs;
 use SPHERE\Common\Frontend\Link\Repository\Standard;
+use SPHERE\Common\Frontend\Message\Repository\Info;
 use SPHERE\Common\Frontend\Table\Structure\TableData;
 use SPHERE\Common\Frontend\Text\Repository\Warning;
 use SPHERE\Common\Window\Navigation\Link\Route;
 use SPHERE\Common\Window\Stage;
-//use SPHERE\System\Database\Filter\Repository\Test;
 use SPHERE\System\Extension\Extension;
 
 /**
@@ -432,74 +439,77 @@ class Frontend extends Extension implements IFrontendInterface
         return $Stage;
     }
 
-    public function frontendDynamicFilter($Root = 0, $Designer = array(), $Search = array())
+    public function frontendSandbox()
     {
 
-        $Stage = new Stage('DynamicFilter', 'Test');
+        $Stage = new Stage('SandBox');
 
-        new Test();
-        /*
-                $Stage->addButton(new Standard('Start bei Person', '/Platform/System/Test/DynamicFilter', null,
-                    array('Root' => 1)));
-                $Stage->addButton(new Standard('Start bei Adresse', '/Platform/System/Test/DynamicFilter', null,
-                    array('Root' => 2)));
-        
-                switch ($Root) {
-                    case 1:
-                        $RootCriteria = new \SPHERE\System\Database\Filter\Criteria\Person();
-                        break;
-                    case 2:
-                        $RootCriteria = new \SPHERE\System\Database\Filter\Criteria\Address();
-                        break;
-                    default:
-                        $RootCriteria = new \SPHERE\System\Database\Filter\Criteria\Person();
-                        break;
-                }
-        
-                $DesignerSetup = $Designer;
-                // "Load" Setup
-                $DesignerSetup['Person']['FirstName'] = 1;
-                $DesignerSetup['Person']['LastName'] = 1;
-                $DesignerSetup['Address']['StreetName'] = 1;
-        
-                $SearchSetup = $Search;
-        
-                $Designer = $RootCriteria->getDesignerGui();
-                array_walk($Designer, function (&$Panel) {
-        
-                    $Panel = new FormColumn($Panel, 3);
-                });
-        
-                $Search = $RootCriteria->getSearchGui($DesignerSetup);
-                array_walk($Search, function (&$Panel) {
-        
-                    $Panel = new FormColumn($Panel, 3);
-                });
-        
-                $Stage->setContent(
-                    new Layout(array(
-                        new LayoutGroup(new LayoutRow(
-                            new LayoutColumn(
-                                new Form(new FormGroup(new FormRow(
-                                    $Designer
-                                )), new Primary('Speichern'))
-                            )
-                        ), new Title('Designer')),
-                        new LayoutGroup(new LayoutRow(
-                            new LayoutColumn(
-                                new Form(new FormGroup(new FormRow(
-                                    $Search
-                                )), new Primary('Suchen'))
-                            )
-                        ), new Title('Search')),
-                        new LayoutGroup(new LayoutRow(
-                            new LayoutColumn(
-                                new TableData($RootCriteria->findBy($SearchSetup))
-                            )
-                        ), new Title('Result'))
+        $R1 = new ModalReceiver();
+        $R2 = new FieldValueReceiver( (new NumberField( 'NUFF' ))->setDefaultValue(9));
+        $R3 = new BlockReceiver( new \SPHERE\Common\Frontend\Message\Repository\Warning( ':/' ));
+        $R4 = new InlineReceiver( new \SPHERE\Common\Frontend\Message\Repository\Warning( ':P' ));
+
+        $P = new Pipeline();
+//        $P->setLoadingMessage('Bitte warten', 'Interface wird geladen..');
+//        $P->setSuccessMessage('Erfolgreich', 'Daten wurden geladen');
+
+        $P->addEmitter( $E2 = new ClientEmitter($R2, 0 ) );
+        $P->addEmitter( $E4 = new ClientEmitter(array($R1,$R4), new Info( ':)' ) ) );
+
+        $P->addEmitter( $E3 = new ServerEmitter(array($R4,$R3), new Route('SPHERE\Application\Api\Corporation/Similar')) );
+        $E3->setGetPayload(array(
+            'MethodName' => 'ajaxContent'
+        ));
+//        $E3->setLoadingMessage('Bitte warten', 'Interface wird geladen..');
+//        $E3->setSuccessMessage('Erfolgreich', 'Daten wurden geladen');
+
+        $P->addEmitter( $E1 = new ServerEmitter($R1, new Route('SPHERE\Application\Api\Corporation/Similar')) );
+        $E1->setGetPayload(array(
+            'MethodName' => 'ajaxLayoutSimilarPerson'
+        ));
+        $E1->setPostPayload(array(
+            'Reload' => (string)$R1->getIdentifier(),
+            'E4' => (string)$R4->getIdentifier()
+        ));
+        $E1->setLoadingMessage('Bitte warten', 'Inhalte werden geladen..');
+        $E1->setSuccessMessage('Erfolgreich', 'Daten wurden geladen');
+
+
+        $Stage->setContent(
+            new Layout(array(
+                new LayoutGroup(
+                    new LayoutRow(
+                        new LayoutColumn(array(
+                            (new Standard( 'Call', '#' ))->ajaxPipelineOnClick( $P ),
+                            (new Form(
+                                new FormGroup(
+                                    new FormRow(
+                                        new FormColumn(array(
+                                            $R2
+                                        ))
+                                    )
+                                )
+                            , new Primary('Ajax-Form?')))->ajaxPipelineOnSubmit( $P )
+                        ))
+                    )
+                ),
+                new LayoutGroup(
+                    new LayoutRow(array(
+                        new LayoutColumn(array(
+                            $R1,
+                            $R4
+                        ),4),
+                        new LayoutColumn(
+                            $R2
+                        ,4),
+                        new LayoutColumn(
+                            $R3
+                        ,4)
                     ))
-                );
-        */
+                )
+            ))
+        );
+
         return $Stage;
     }
 }

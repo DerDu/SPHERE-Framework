@@ -93,7 +93,7 @@ class Frontend extends Extension implements IFrontendInterface
 
             if ($Data === null) {
                 $Global = $this->getGlobal();
-                $Global->POST['Data']['Status'] = TblAbsence::VALUE_STATUS_UNEXCUSED;
+                $Global->POST['Data']['Status'] = TblAbsence::VALUE_STATUS_EXCUSED;
                 $Global->savePost();
             }
 

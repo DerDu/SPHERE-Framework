@@ -127,6 +127,7 @@ class DataCacheHandler extends AbstractHandler
      * @param int $Timeout
      * @param string $Region
      *
+     * @internal use setData instead
      * @return HandlerInterface
      */
     public function setValue($Key, $Value, $Timeout = 0, $Region = 'Default')
@@ -141,6 +142,7 @@ class DataCacheHandler extends AbstractHandler
      * @param string $Key
      * @param string $Region
      *
+     * @internal use getData instead
      * @return null|mixed
      */
     public function getValue($Key, $Region = 'Default')

@@ -27,7 +27,6 @@ use SPHERE\Common\Frontend\Icon\Repository\Exclamation;
 use SPHERE\Common\Frontend\Message\Repository\Danger;
 use SPHERE\Common\Frontend\Message\Repository\Success;
 use SPHERE\Common\Window\Redirect;
-use SPHERE\Common\Window\Stage;
 
 /**
  * Class Service
@@ -191,35 +190,6 @@ class Service
         . new Redirect('/Education/Certificate/GradeInformation/Setting', Redirect::TIMEOUT_SUCCESS, array(
             'PrepareId' => $tblPrepare->getId()
         ));
-    }
-
-    /**
-     * @param TblPrepareCertificate $tblPrepare
-     *
-     * @return string
-     */
-    public function updatePrepareUpdateAppointedDateTask(
-        TblPrepareCertificate $tblPrepare
-    ) {
-
-        $Stage = new Stage('Stichtagsnotenauftrag', 'Aktualisieren');
-        if ($tblPrepare->getServiceTblAppointedDateTask()) {
-            Prepare::useService()->updatePrepareSubjectGrades($tblPrepare,
-                $tblPrepare->getServiceTblAppointedDateTask());
-
-            return $Stage
-            . new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success() . ' Stichtagsnotenauftrag wurde ausgewählt.')
-            . new Redirect('/Education/Certificate/GradeInformation/Setting/Preview', Redirect::TIMEOUT_SUCCESS, array(
-                'PrepareId' => $tblPrepare->getId()
-            ));
-        } else {
-            return $Stage
-            . new Danger('Kein Stichtagsnotenauftrag ausgewählt.', new Exclamation())
-            . new Redirect('/Education/Certificate/GradeInformation/Setting/Preview', Redirect::TIMEOUT_SUCCESS,
-                array(
-                    'PrepareId' => $tblPrepare->getId()
-                ));
-        }
     }
 
     /**

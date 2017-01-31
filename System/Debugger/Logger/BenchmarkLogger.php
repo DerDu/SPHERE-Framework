@@ -2,7 +2,10 @@
 namespace SPHERE\System\Debugger\Logger;
 
 use SPHERE\Common\Frontend\Layout\Repository\Label;
+use SPHERE\Common\Frontend\Layout\Repository\PullRight;
 use SPHERE\Common\Frontend\Text\Repository\Danger;
+use SPHERE\Common\Frontend\Text\Repository\Muted;
+use SPHERE\Common\Frontend\Text\Repository\Small;
 use SPHERE\Common\Frontend\Text\Repository\Success;
 use SPHERE\Common\Frontend\Text\Repository\Warning;
 
@@ -49,7 +52,7 @@ class BenchmarkLogger extends AbstractLogger implements LoggerInterface
     /**
      * @param string $Content
      *
-     * @return BenchmarkLogger
+     * @return BenchmarkLogger|LoggerInterface
      */
     public function addLog($Content)
     {
@@ -63,7 +66,7 @@ class BenchmarkLogger extends AbstractLogger implements LoggerInterface
         if (strpos($Content, 'Query') === 0) {
             $Content = new Danger($Content);
         }
-        return parent::addLog(new Label($this->getTimer()).' '.$Content);
+        return parent::addLog(new Label($this->getTimer()).' '.$Content.new PullRight( new Small(new Muted('#'.(count($this->getLog()) +1)))));
     }
 
     /**

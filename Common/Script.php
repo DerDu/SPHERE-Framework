@@ -244,6 +244,17 @@ class Script extends Extension
             )
         );
         $this->setModule(
+            'ModAjax', array(
+                'Bootbox.js',
+                'List.Js',
+                'Bootstrap.Notify',
+                'Bootstrap',
+                'jQuery.Ui',
+                'jQuery'
+            )
+        );
+
+        $this->setModule(
             'ModTable',
             array(
 //                'jQuery.DataTable.Plugin.Sorting.Weekday',

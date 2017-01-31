@@ -36,6 +36,10 @@ class CheckList implements IApplicationInterface, IModuleInterface
                 __NAMESPACE__.'\Frontend::frontendListElementSelect')
         );
         Main::getDispatcher()->registerRoute(
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'/Element/Edit',
+                __NAMESPACE__.'\Frontend::frontendListElementEdit')
+        );
+        Main::getDispatcher()->registerRoute(
             Main::getDispatcher()->createRoute(__NAMESPACE__.'/Element/Remove',
                 __NAMESPACE__.'\Frontend::frontendListElementRemove')
         );

@@ -26,8 +26,10 @@ class Setup extends AbstractSetup
          * Table
          */
         $Schema = clone $this->getConnection()->getSchema();
+
         $tblGradeType = $this->setTableGradeType($Schema);
-        $this->setTableGrade($Schema, $tblGradeType);
+        $tblGradeText = $this->setTableGradeText($Schema);
+        $this->setTableGrade($Schema, $tblGradeType, $tblGradeText);
 
         $tblScoreRule = $this->setTableScoreRule($Schema);
         $tblScoreCondition = $this->setTableScoreCondition($Schema);
@@ -84,11 +86,12 @@ class Setup extends AbstractSetup
 
     /**
      * @param Schema $Schema
-     * @param Table  $tblGradeType
+     * @param Table $tblGradeType
+     * @param Table $tblGradeText
      *
      * @return Table
      */
-    private function setTableGrade(Schema &$Schema, Table $tblGradeType)
+    private function setTableGrade(Schema &$Schema, Table $tblGradeType, Table $tblGradeText)
     {
 
         $Table = $this->getConnection()->createTable($Schema, 'tblGrade');
@@ -127,9 +130,10 @@ class Setup extends AbstractSetup
         }
 
         $this->getConnection()->addForeignKey($Table, $tblGradeType, true);
+        $this->createForeignKey($Table, $tblGradeText, true);
 
-        $this->createIndex( $Table, array( 'serviceTblPerson', 'serviceTblTest' ), false );
-        $this->createIndex( $Table, array( 'serviceTblDivision', 'serviceTblSubject' ), false );
+        $this->createIndex($Table, array('serviceTblPerson', 'serviceTblTest'), false);
+        $this->createIndex($Table, array('serviceTblDivision', 'serviceTblSubject'), false);
 
         return $Table;
     }
@@ -193,7 +197,7 @@ class Setup extends AbstractSetup
         if (!$this->getConnection()->hasColumn('tblScoreGroup', 'Multiplier')) {
             $Table->addColumn('Multiplier', 'string');
         }
-        if (!$Table->hasColumn('IsEveryGradeASingleGroup')){
+        if (!$Table->hasColumn('IsEveryGradeASingleGroup')) {
             $Table->addColumn('IsEveryGradeASingleGroup', 'boolean');
         }
 
@@ -224,8 +228,8 @@ class Setup extends AbstractSetup
 
     /**
      * @param Schema $Schema
-     * @param Table  $tblScoreRule
-     * @param Table  $tblScoreCondition
+     * @param Table $tblScoreRule
+     * @param Table $tblScoreCondition
      *
      * @return Table
      */
@@ -242,8 +246,8 @@ class Setup extends AbstractSetup
 
     /**
      * @param Schema $Schema
-     * @param Table  $tblGradeType
-     * @param Table  $tblScoreCondition
+     * @param Table $tblGradeType
+     * @param Table $tblScoreCondition
      *
      * @return Table
      */
@@ -260,8 +264,8 @@ class Setup extends AbstractSetup
 
     /**
      * @param Schema $Schema
-     * @param Table  $tblScoreCondition
-     * @param Table  $tblScoreGroup
+     * @param Table $tblScoreCondition
+     * @param Table $tblScoreGroup
      *
      * @return Table
      */
@@ -278,8 +282,8 @@ class Setup extends AbstractSetup
 
     /**
      * @param Schema $Schema
-     * @param Table  $tblGradeType
-     * @param Table  $tblScoreGroup
+     * @param Table $tblGradeType
+     * @param Table $tblScoreGroup
      *
      * @return Table
      */
@@ -319,7 +323,7 @@ class Setup extends AbstractSetup
         $this->getConnection()->addForeignKey($Table, $tblScoreRule, true);
         $this->getConnection()->addForeignKey($Table, $tblScoreType, true);
 
-        $this->createIndex( $Table, array('serviceTblDivision','serviceTblSubject'), false );
+        $this->createIndex($Table, array('serviceTblDivision', 'serviceTblSubject'), false);
 
         return $Table;
     }
@@ -347,7 +351,7 @@ class Setup extends AbstractSetup
 
         $this->getConnection()->addForeignKey($Table, $tblScoreRule, true);
 
-        $this->createIndex( $Table, array('serviceTblDivision','serviceTblSubject', 'serviceTblSubjectGroup'), false );
+        $this->createIndex($Table, array('serviceTblDivision', 'serviceTblSubject', 'serviceTblSubjectGroup'), false);
 
         return $Table;
     }
@@ -373,6 +377,24 @@ class Setup extends AbstractSetup
         }
 
         $this->getConnection()->addForeignKey($Table, $tblGradeType, true);
+
+        return $Table;
+    }
+
+    /**
+     * @param Schema $Schema
+     *
+     * @return Table
+     */
+    private function setTableGradeText(Schema &$Schema)
+    {
+
+        $Table = $this->createTable($Schema, 'tblGradeText');
+
+        $this->createColumn($Table, 'Name', self::FIELD_TYPE_STRING);
+        $this->createColumn($Table, 'Identifier', self::FIELD_TYPE_STRING);
+
+        $this->createIndex($Table, array('Identifier'));
 
         return $Table;
     }

@@ -13,6 +13,7 @@ use SPHERE\Application\Transfer\Import\LebensweltZwenkau\Zwenkau;
 use SPHERE\Application\Transfer\Import\Muldental\Muldental;
 use SPHERE\Application\Transfer\Import\Radebeul\Radebeul;
 use SPHERE\Application\Transfer\Import\Schneeberg\Schneeberg;
+use SPHERE\Application\Transfer\Import\Schulstiftung\Schulstiftung;
 use SPHERE\Application\Transfer\Import\Seelitz\Seelitz;
 use SPHERE\Common\Main;
 use SPHERE\Common\Window\Navigation\Link;
@@ -30,6 +31,7 @@ class Import implements IApplicationInterface
     {
 
         FuxSchool::registerModule();
+        Schulstiftung::registerModule();
 
         $consumerAcronym = ( Consumer::useService()->getConsumerBySession() ? Consumer::useService()->getConsumerBySession()->getAcronym() : '' );
         if ($consumerAcronym == 'ESZC' || $consumerAcronym == 'DEMO') {

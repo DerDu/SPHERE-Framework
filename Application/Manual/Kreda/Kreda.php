@@ -27,7 +27,7 @@ class Kreda implements IApplicationInterface, IModuleInterface
     {
 
         Main::getDisplay()->addApplicationNavigation(
-            new Link(new Link\Route(__NAMESPACE__), new Link\Name('KREDA Handbuch'), new Link\Icon(new Book()))
+            new Link(new Link\Route(__NAMESPACE__), new Link\Name('Schulsoftware Handbuch'), new Link\Icon(new Book()))
         );
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
             __NAMESPACE__, 'Frontend::frontendKreda'

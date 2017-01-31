@@ -100,7 +100,8 @@ class Service
                     'Vorname' => null,
                     'Geb.-Datum' => null,
                     'Straße' => null,
-                    'PLZ/Wohnort' => null,
+                    'PLZ' => null,
+                    'Ort' => null,
                     'Anmeldedat.' => null,
                     'Telefon' => null,
                     'Sorg1_Vorname' => null,
@@ -108,9 +109,10 @@ class Service
                     'Sorg2_Vorname' => null,
                     'Sorg2_Name' => null,
                     'Konfession' => null,
-                    'derzeitige Schule' => null,
                     'Email' => null,
                     'Bemerkung' => null,
+                    'Handy' => null,
+                    'über' => null
                 );
                 for ($RunX = 0; $RunX < $X; $RunX++) {
                     $Value = trim($Document->getValue($Document->getCell($RunX, 0)));
@@ -153,20 +155,19 @@ class Service
                             if ($tblPerson !== false) {
                                 $countInterestedPerson++;
 
-                                $cityName = trim($Document->getValue($Document->getCell($Location['PLZ/Wohnort'],
+                                $cityName = trim($Document->getValue($Document->getCell($Location['Ort'],
                                     $RunY)));
-                                $cityCode = '';
+                                $cityCode = str_pad(
+                                    trim($Document->getValue($Document->getCell($Location['PLZ'], $RunY))),
+                                    5,
+                                    "0",
+                                    STR_PAD_LEFT
+                                );
                                 $cityDistrict = '';
-                                $pos = strpos($cityName, " ");
+                                $pos = strpos($cityName, " OT ");
                                 if ($pos !== false) {
-                                    $cityCode = trim(substr($cityName, 0, $pos));
-                                    $cityName = trim(substr($cityName, $pos + 1));
-
-                                    $pos = strpos($cityName, " OT ");
-                                    if ($pos !== false) {
-                                        $cityDistrict = trim(substr($cityName, $pos + 4));
-                                        $cityName = trim(substr($cityName, 0, $pos));
-                                    }
+                                    $cityDistrict = trim(substr($cityName, $pos + 4));
+                                    $cityName = trim(substr($cityName, 0, $pos));
                                 }
 
                                 $day = trim($Document->getValue($Document->getCell($Location['Geb.-Datum'],
@@ -201,13 +202,13 @@ class Service
                                 );
 
                                 // Mittelschule/Oberschule
-                                $tblOptionTypeA = Type::useService()->getTypeById(8);
+//                                $tblOptionTypeA = Type::useService()->getTypeById(8);
 
                                 $remark = '';
-                                $info = trim($Document->getValue($Document->getCell($Location['derzeitige Schule'],
+                                $info = trim($Document->getValue($Document->getCell($Location['über'],
                                     $RunY)));
                                 if ($info !== '') {
-                                    $remark = 'derzeitige Schule: ' . $info . ' ';
+                                    $remark = 'Anmerkung über: ' . $info . ' ';
                                 }
                                 $info = trim($Document->getValue($Document->getCell($Location['Bemerkung'], $RunY)));
                                 if ($info !== '') {
@@ -229,7 +230,7 @@ class Service
                                     '',
                                     trim($Document->getValue($Document->getCell($Location['Schuljahr'], $RunY))),
                                     trim($Document->getValue($Document->getCell($Location['Klassenstufe'], $RunY))),
-                                    $tblOptionTypeA,
+                                    null,
                                     null,
                                     $remark
                                 );
@@ -404,6 +405,25 @@ class Service
                                 * Phone
                                 */
                                 $phoneNumber = trim($Document->getValue($Document->getCell($Location['Telefon'],
+                                    $RunY)));
+                                if ($phoneNumber !== '') {
+                                    $phoneNumberList = explode(';', $phoneNumber);
+                                    foreach ($phoneNumberList as $phone) {
+                                        $phone = trim($phone);
+                                        $tblType = Phone::useService()->getTypeById(1);
+                                        if (0 === strpos($phone, '01')) {
+                                            $tblType = Phone::useService()->getTypeById(2);
+                                        }
+                                        Phone::useService()->insertPhoneToPerson(
+                                            $tblPerson,
+                                            $phone,
+                                            $tblType,
+                                            ''
+                                        );
+                                    }
+                                }
+
+                                $phoneNumber = trim($Document->getValue($Document->getCell($Location['Handy'],
                                     $RunY)));
                                 if ($phoneNumber !== '') {
                                     $phoneNumberList = explode(';', $phoneNumber);

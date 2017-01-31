@@ -7,6 +7,7 @@ use SPHERE\Application\Platform\System\Protocol\Service\Entity\TblProtocol;
 use SPHERE\Common\Frontend\Message\Repository\Danger;
 use SPHERE\System\Database\Binding\AbstractData;
 use SPHERE\System\Database\Fitting\Element;
+use SPHERE\System\Database\Fitting\Manager;
 
 /**
  * Class Data
@@ -15,6 +16,8 @@ use SPHERE\System\Database\Fitting\Element;
  */
 class Data extends AbstractData
 {
+    /** @var null|Manager $BulkManager */
+    private static $BulkManager = null;
 
     /**
      * Takes an __PHP_Incomplete_Class and casts it to a stdClass object.
@@ -99,11 +102,22 @@ class Data extends AbstractData
     }
 
     /**
-     * @param string           $DatabaseName
-     * @param null|TblAccount  $tblAccount
+     *
+     */
+    public function flushBulkSave()
+    {
+        if (self::$BulkManager) {
+            self::$BulkManager->flushCache();
+        }
+    }
+
+    /**
+     * @param string $DatabaseName
+     * @param null|TblAccount $tblAccount
      * @param null|TblConsumer $tblConsumer
-     * @param null|Element     $FromEntity
-     * @param null|Element     $ToEntity
+     * @param null|Element $FromEntity
+     * @param null|Element $ToEntity
+     * @param bool $useBulkSave
      *
      * @return false|TblProtocol
      */
@@ -112,7 +126,8 @@ class Data extends AbstractData
         TblAccount $tblAccount = null,
         TblConsumer $tblConsumer = null,
         Element $FromEntity = null,
-        Element $ToEntity = null
+        Element $ToEntity = null,
+        $useBulkSave = false
     ) {
 
         // Skip if nothing changed
@@ -126,7 +141,15 @@ class Data extends AbstractData
             }
         }
 
-        $Manager = $this->getConnection()->getEntityManager();
+        if ($useBulkSave) {
+            if (self::$BulkManager) {
+                $Manager = self::$BulkManager;
+            } else {
+                $Manager = self::$BulkManager = $this->getConnection()->getEntityManager();
+            }
+        } else {
+            $Manager = $this->getConnection()->getEntityManager();
+        }
 
         $Entity = new TblProtocol();
         $Entity->setProtocolDatabase($DatabaseName);
@@ -143,7 +166,11 @@ class Data extends AbstractData
         $Entity->setEntityFrom(( $FromEntity ? serialize($FromEntity) : null ));
         $Entity->setEntityTo(( $ToEntity ? serialize($ToEntity) : null ));
 
-        $Manager->saveEntity($Entity);
+        if( $useBulkSave ) {
+            $Manager->bulkSaveEntity($Entity);
+        } else {
+            $Manager->saveEntity($Entity);
+        }
 
         return $Entity;
     }

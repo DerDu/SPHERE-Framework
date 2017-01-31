@@ -17,6 +17,8 @@ class TblFilterField extends Element
 {
 
     const ATTR_FIELD = 'Field';
+    const ATTR_VALUE = 'Value';
+    const ATTR_FILTER_NUMBER = 'FilterNumber';
     const ATTR_TBL_FILTER_CATEGORY = 'tblFilterCategory';
     const ATTR_TBL_SERIAL_LETTER = 'tblSerialLetter';
 
@@ -28,6 +30,10 @@ class TblFilterField extends Element
      * @Column(type="string")
      */
     protected $Value;
+    /**
+     * @Column(type="integer")
+     */
+    protected $FilterNumber;
     /**
      * @Column(type="bigint")
      */
@@ -71,6 +77,24 @@ class TblFilterField extends Element
     {
 
         $this->Value = $Value;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getFilterNumber()
+    {
+
+        return $this->FilterNumber;
+    }
+
+    /**
+     * @param integer $FilterNumber
+     */
+    public function setFilterNumber($FilterNumber)
+    {
+
+        $this->FilterNumber = $FilterNumber;
     }
 
     /**

@@ -1970,4 +1970,21 @@ class Data extends AbstractData
             )
         );
     }
+
+    /**
+     * @param TblType $serviceTblType
+     * @param $Name
+     *
+     * @return bool|TblLevel
+     */
+    public function getLevelBy(TblType $serviceTblType, $Name)
+    {
+
+        $Entity = $this->getCachedEntityBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblLevel',
+            array(
+                TblLevel::SERVICE_TBL_TYPE => $serviceTblType->getId(),
+                TblLevel::ATTR_NAME => $Name
+            ));
+        return ($Entity ? $Entity : false);
+    }
 }

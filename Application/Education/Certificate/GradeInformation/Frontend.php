@@ -19,7 +19,6 @@ use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Access\Access;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Account;
 use SPHERE\Common\Frontend\Form\Repository\Button\Primary;
-use SPHERE\Common\Frontend\Form\Repository\Field\DatePicker;
 use SPHERE\Common\Frontend\Form\Repository\Field\TextArea;
 use SPHERE\Common\Frontend\Form\Repository\Field\TextField;
 use SPHERE\Common\Frontend\Form\Structure\Form;
@@ -27,21 +26,18 @@ use SPHERE\Common\Frontend\Form\Structure\FormColumn;
 use SPHERE\Common\Frontend\Form\Structure\FormGroup;
 use SPHERE\Common\Frontend\Form\Structure\FormRow;
 use SPHERE\Common\Frontend\Icon\Repository\Ban;
-use SPHERE\Common\Frontend\Icon\Repository\Calendar;
 use SPHERE\Common\Frontend\Icon\Repository\ChevronLeft;
 use SPHERE\Common\Frontend\Icon\Repository\Download;
 use SPHERE\Common\Frontend\Icon\Repository\Edit;
 use SPHERE\Common\Frontend\Icon\Repository\Exclamation;
 use SPHERE\Common\Frontend\Icon\Repository\EyeOpen;
 use SPHERE\Common\Frontend\Icon\Repository\ListingTable;
-use SPHERE\Common\Frontend\Icon\Repository\PlusSign;
 use SPHERE\Common\Frontend\Icon\Repository\Save;
 use SPHERE\Common\Frontend\Icon\Repository\Select;
 use SPHERE\Common\Frontend\Icon\Repository\Setup;
 use SPHERE\Common\Frontend\IFrontendInterface;
 use SPHERE\Common\Frontend\Layout\Repository\Panel;
 use SPHERE\Common\Frontend\Layout\Repository\Title;
-use SPHERE\Common\Frontend\Layout\Repository\Well;
 use SPHERE\Common\Frontend\Layout\Structure\Layout;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutColumn;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutGroup;
@@ -177,7 +173,6 @@ class Frontend extends Extension implements IFrontendInterface
                 '/Education/Certificate/GradeInformation/Headmaster', new Edit()));
         }
 
-
         $divisionTable = array();
         if (($tblDivisionList = Division::useService()->getDivisionAll())) {
             foreach ($tblDivisionList as $tblDivision) {
@@ -226,11 +221,10 @@ class Frontend extends Extension implements IFrontendInterface
     /**
      * @param null $DivisionId
      * @param string $Route
-     * @param null $Data
      *
      * @return Stage|string
      */
-    public function frontendGradeInformation($DivisionId = null, $Route = 'Teacher', $Data = null)
+    public function frontendGradeInformation($DivisionId = null, $Route = 'Teacher')
     {
 
         $Stage = new Stage('Noteninformation', 'Übersicht');
@@ -246,27 +240,21 @@ class Frontend extends Extension implements IFrontendInterface
             if ($tblPrepareCertificateAllByDivision) {
                 foreach ($tblPrepareCertificateAllByDivision as $tblPrepareCertificate) {
 
+                    // Setzen der Zeugnisvorlagen
+                    Prepare::useService()->setTemplatesAllByPrepareCertificate($tblPrepareCertificate);
+
                     $tableData[] = array(
                         'Date' => $tblPrepareCertificate->getDate(),
                         'Name' => $tblPrepareCertificate->getName(),
                         'Option' =>
                             (new Standard(
-                                '', '/Education/Certificate/GradeInformation/Edit', new Edit(),
-                                array(
-                                    'PrepareId' => $tblPrepareCertificate->getId(),
-                                    'Route' => $Route
-                                )
-                                , 'Bearbeiten'
-                            ))
-                            . (new Standard(
                                 '', '/Education/Certificate/GradeInformation/Setting', new Setup(),
                                 array(
                                     'PrepareId' => $tblPrepareCertificate->getId(),
                                     'Route' => $Route
                                 )
                                 , 'Einstellungen'
-                            )
-                            )
+                            ))
                             . (new Standard(
                                 '', '/Education/Certificate/GradeInformation/Setting/Preview', new EyeOpen(),
                                 array(
@@ -278,10 +266,6 @@ class Frontend extends Extension implements IFrontendInterface
                     );
                 }
             }
-
-            $Form = $this->formPrepare()
-                ->appendFormButton(new Primary('Speichern', new Save()))
-                ->setConfirm('Eventuelle Änderungen wurden noch nicht gespeichert');
 
             $Stage->setContent(
                 new Layout(array(
@@ -316,15 +300,6 @@ class Frontend extends Extension implements IFrontendInterface
                                 ))
                             ))
                         ), new Title(new ListingTable() . ' Übersicht')),
-                        new LayoutGroup(array(
-                            new LayoutRow(array(
-                                new LayoutColumn(
-                                    new Well(GradeInformation::useService()->createGradeInformation(
-                                        $Form, $tblDivision, $Route, $Data)
-                                    )
-                                )
-                            ))
-                        ), new Title(new PlusSign() . ' Hinzufügen'))
                     )
                 )
             );
@@ -333,103 +308,6 @@ class Frontend extends Extension implements IFrontendInterface
         } else {
 
             return $Stage . new Danger('Klasse nicht gefunden.', new Ban());
-        }
-    }
-
-    /**
-     * @return Form
-     */
-    private function formPrepare()
-    {
-
-        return new Form(new FormGroup(array(
-            new FormRow(array(
-                new FormColumn(
-                    new DatePicker('Data[Date]', '', 'Datum', new Calendar()), 3
-                ),
-                new FormColumn(
-                    new TextField('Data[Name]', 'Name', 'Name'), 9
-                ),
-            )),
-        )));
-    }
-
-    /**
-     * @param null $PrepareId
-     * @param string $Route
-     * @param null $Data
-     *
-     * @return Stage|string
-     */
-    public function frontendEditGradeInformation($PrepareId = null, $Route = 'Teacher', $Data = null)
-    {
-
-        $Stage = new Stage('Noteninformation', 'Bearbeiten');
-
-        $tblPrepare = Prepare::useService()->getPrepareById($PrepareId);
-        if ($tblPrepare) {
-            $tblDivision = $tblPrepare->getServiceTblDivision();
-            if ($tblDivision) {
-                $Stage->addButton(new Standard(
-                    'Zurück', '/Education/Certificate/GradeInformation/Create', new ChevronLeft(),
-                    array(
-                        'DivisionId' => $tblDivision->getId(),
-                        'Route' => $Route
-                    )
-                ));
-            }
-
-            if ($Data === null) {
-                $Global = $this->getGlobal();
-                $Global->POST['Data']['Date'] = $tblPrepare->getDate();
-                $Global->POST['Data']['Name'] = $tblPrepare->getName();
-                $Global->savePost();
-            }
-
-            $Form = $this->formPrepare()
-                ->appendFormButton(new Primary('Speichern', new Save()))
-                ->setConfirm('Eventuelle Änderungen wurden noch nicht gespeichert');
-
-            $Stage->setContent(
-                new Layout(array(
-                        new LayoutGroup(array(
-                            new LayoutRow(array(
-                                new LayoutColumn(array(
-                                    new Panel(
-                                        'Noteninformation',
-                                        $tblPrepare->getName() . ' ' . new Small(new Muted($tblPrepare->getDate())),
-                                        Panel::PANEL_TYPE_INFO
-                                    ),
-                                ), 6),
-                                new LayoutColumn(array(
-                                    new Panel(
-                                        'Klasse',
-                                        $tblDivision ? $tblDivision->getDisplayName() : '',
-                                        Panel::PANEL_TYPE_INFO
-                                    ),
-                                ), 6),
-                            ))
-                        )),
-                        new LayoutGroup(array(
-                            new LayoutRow(array(
-                                new LayoutColumn(
-                                    new Well(GradeInformation::useService()->updateGradeInformation(
-                                        $Form, $tblPrepare, $Route, $Data)
-                                    )
-                                )
-                            ))
-                        ), new Title(new PlusSign() . ' Hinzufügen'))
-                    )
-                )
-            );
-
-            return $Stage;
-        } else {
-            $Stage->addButton(new Standard(
-                'Zurück', '/Education/Certificate/GradeInformation', new ChevronLeft()
-            ));
-
-            return $Stage . new Danger('Noteninformation nicht gefunden.', new Ban());
         }
     }
 
@@ -538,7 +416,7 @@ class Frontend extends Extension implements IFrontendInterface
 
             $tableData = new TableData($studentTable, null, $columnTable,
                 array(
-                    "columnDefs" => array(
+                        "columnDefs" => array(
                         array(
                             "width" => "7px",
                             "targets" => 0
@@ -549,9 +427,10 @@ class Frontend extends Extension implements IFrontendInterface
                         ),
                         array(
                             "width" => "50px",
-                            "targets" => array(2, 3, 4, 5)
+                            "targets" => count($columnTable) == 7 ? array(2, 3, 4, 5) : null
                         ),
-                    ),
+                    )
+                ,
                     'order' => array(
                         array('0', 'asc'),
                     ),
@@ -797,25 +676,6 @@ class Frontend extends Extension implements IFrontendInterface
                 }
             }
 
-//            $buttonAppointedDateTask = new Standard(
-//                'Stichtagsnotenauftrag wählen',
-//                '/Education/Certificate/GradeInformation/Setting/AppointedDateTask',
-//                new Select(),
-//                array(
-//                    'PrepareId' => $tblPrepare->getId()
-//                ),
-//                'Stichtagsnotenauftrag auswählen und Fachnoten übernehmen'
-//            );
-//            $buttonBehaviorTask = new Standard(
-//                'Kopfnotenauftrag wählen',
-//                '/Education/Certificate/GradeInformation/Setting/BehaviorTask',
-//                new Select(),
-//                array(
-//                    'PrepareId' => $tblPrepare->getId()
-//                ),
-//                'Kopfnotenauftrag auswählen'
-//            );
-
             $tableData = new TableData($studentTable, null, $columnTable,
                 array(
                     "columnDefs" => array(
@@ -860,40 +720,6 @@ class Frontend extends Extension implements IFrontendInterface
                             ), 6),
                         )),
                     )),
-//                    new LayoutGroup(array(
-//                        new LayoutRow(array(
-//                            new LayoutColumn(array(
-//                                new Panel(
-//                                    'Stichtagsnotenauftrag',
-//                                    array(
-//                                        $tblPrepare->getServiceTblAppointedDateTask()
-//                                            ? $tblPrepare->getServiceTblAppointedDateTask()->getName()
-//                                            . ' ' . $tblPrepare->getServiceTblAppointedDateTask()->getDate()
-//                                            : new Exclamation() . ' Kein Stichtagsnotenauftrag ausgewählt',
-//                                        $buttonAppointedDateTask
-//                                    ),
-//                                    $tblPrepare->getServiceTblAppointedDateTask()
-//                                        ? Panel::PANEL_TYPE_SUCCESS
-//                                        : Panel::PANEL_TYPE_WARNING
-//                                ),
-//                            ), 6),
-//                            new LayoutColumn(array(
-//                                new Panel(
-//                                    'Kopfnotenauftrag',
-//                                    array(
-//                                        $tblPrepare->getServiceTblBehaviorTask()
-//                                            ? $tblPrepare->getServiceTblBehaviorTask()->getName()
-//                                            . ' ' . $tblPrepare->getServiceTblBehaviorTask()->getDate()
-//                                            : 'Kein Kopfnotenauftrag ausgewählt',
-//                                        $buttonBehaviorTask
-//                                    ),
-//                                    $tblPrepare->getServiceTblBehaviorTask()
-//                                        ? Panel::PANEL_TYPE_SUCCESS
-//                                        : Panel::PANEL_TYPE_WARNING
-//                                ),
-//                            ), 6),
-//                        )),
-//                    ), new Title('Notenaufträge')),
                     new LayoutGroup(array(
                         new LayoutRow(array(
                             new LayoutColumn(array(
@@ -909,7 +735,6 @@ class Frontend extends Extension implements IFrontendInterface
                             ))
                         ))
                     ))
-//                    ), new Title('Vorschau und Herunterladen'))
                 ))
             );
 
@@ -922,367 +747,4 @@ class Frontend extends Extension implements IFrontendInterface
             return $Stage . new Danger('Noteninformation nicht gefunden.', new Ban());
         }
     }
-
-//    /**
-//     * @param null $PrepareId
-//     *
-//     * @return Stage|string
-//     */
-//    public function frontendAppointedDateTask($PrepareId = null)
-//    {
-//
-//        $Stage = new Stage('Noteninformation', 'Stichtagsnotenauftrag auswählen');
-//        $Stage->addButton(new Standard(
-//            'Zurück', '/Education/Certificate/GradeInformation/Setting', new ChevronLeft(), array(
-//                'PrepareId' => $PrepareId
-//            )
-//        ));
-//
-//        $Stage->setMessage(new WarningText(new Bold(new Exclamation() . ' Hinweis:')
-//            . ' Bei der Auswahl des Stichtagsnotenauftrags werden alle Zensuren dieses Auftrags übernommen. Dieser Vorgang kann
-//             einen Augenblick dauern.'));
-//
-//        $tblPrepare = Prepare::useService()->getPrepareById($PrepareId);
-//        if ($tblPrepare) {
-//            $tblDivision = $tblPrepare->getServiceTblDivision();
-//
-//            $tblTestType = Evaluation::useService()->getTestTypeByIdentifier('APPOINTED_DATE_TASK');
-//            $tblTaskList = Evaluation::useService()->getTaskAllByDivision($tblDivision, $tblTestType);
-//            $tableContent = array();
-//            if ($tblTaskList) {
-//                foreach ($tblTaskList as $tblTask) {
-//                    if ($tblPrepare->getServiceTblAppointedDateTask()) {
-//                        $isChosen = $tblTask->getId() == $tblPrepare->getServiceTblAppointedDateTask()->getId();
-//                    } else {
-//                        $isChosen = false;
-//                    }
-//                    $tableContent[] = array(
-//                        'Date' => $isChosen ? new Bold($tblTask->getDate()) : $tblTask->getDate(),
-//                        'Name' => $isChosen ? new Bold($tblTask->getName()) : $tblTask->getName(),
-//                        'Period' => $tblTask->getServiceTblPeriod()
-//                            ? $tblTask->getServiceTblPeriod()->getDisplayName()
-//                            : 'Gesamtes Schuljahr',
-//                        'Option' => $isChosen
-//                            ? ''
-//                            : new Standard(
-//                                '',
-//                                '/Education/Certificate/GradeInformation/Setting/AppointedDateTask/Select',
-//                                new Select(),
-//                                array(
-//                                    'PrepareId' => $tblPrepare->getId(),
-//                                    'TaskId' => $tblTask->getId()
-//                                ),
-//                                'Auswählen'
-//                            )
-//                    );
-//                }
-//            }
-//
-//            $Stage->setContent(
-//                new Layout(array(
-//                    new LayoutGroup(array(
-//                        new LayoutRow(array(
-//                            new LayoutColumn(array(
-//                                new Panel(
-//                                    'Noteninformation',
-//                                    $tblPrepare->getName() . ' ' . new Small(new Muted($tblPrepare->getDate())),
-//                                    Panel::PANEL_TYPE_INFO
-//                                ),
-//                            ), 6),
-//                            new LayoutColumn(array(
-//                                new Panel(
-//                                    'Klasse',
-//                                    $tblDivision->getDisplayName(),
-//                                    Panel::PANEL_TYPE_INFO
-//                                ),
-//                            ), 6),
-//                            new LayoutColumn(array(
-//                                new Panel(
-//                                    'Stichtagsnotenauftrag',
-//                                    array(
-//                                        $tblPrepare->getServiceTblAppointedDateTask()
-//                                            ? $tblPrepare->getServiceTblAppointedDateTask()->getName()
-//                                            . ' ' . $tblPrepare->getServiceTblAppointedDateTask()->getDate()
-//                                            : new Exclamation() . ' Kein Stichtagsnotenauftrag ausgewählt',
-//                                    ),
-//                                    $tblPrepare->getServiceTblAppointedDateTask()
-//                                        ? Panel::PANEL_TYPE_SUCCESS
-//                                        : Panel::PANEL_TYPE_WARNING
-//                                ),
-//                            ), 12),
-//                            new LayoutColumn(array(
-//                                $tblTaskList
-//                                    ? new TableData($tableContent, null, array(
-//                                    'Date' => 'Stichtag',
-//                                    'Name' => 'Name',
-//                                    'Period' => 'Zeitraum',
-//                                    'Option' => ''
-//                                ),
-//                                    array(
-//                                        'order' => array(
-//                                            array(0, 'desc')
-//                                        ),
-//                                        'columnDefs' => array(
-//                                            array('type' => 'de_date', 'targets' => 0)
-//                                        ),
-//                                        "paging" => false, // Deaktivieren Blättern
-//                                        "iDisplayLength" => -1,    // Alle Einträge zeigen
-//                                    )
-//                                )
-//                                    : new Warning('Für diese Klasse sind keine Notenaufträge vorhanden.',
-//                                    new Exclamation())
-//                            )),
-//                        ))
-//                    ))
-//                ))
-//            );
-//
-//            return $Stage;
-//        } else {
-//
-//            return $Stage . new Danger('Noteninformation nicht gefunden.', new Ban());
-//        }
-//    }
-//
-//    /**
-//     * @param null $PrepareId
-//     * @param null $TaskId
-//     *
-//     * @return Stage|string
-//     */
-//    public function frontendSelectAppointedDateTask($PrepareId = null, $TaskId = null)
-//    {
-//
-//        $Stage = new Stage('Noteninformation', 'Stichtagsnotenauftrag auswählen');
-//        $Stage->addButton(new Standard(
-//            'Zurück', '/Education/Certificate/GradeInformation/Setting', new ChevronLeft(), array(
-//                'PrepareId' => $PrepareId
-//            )
-//        ));
-//
-//        $Stage->setMessage(new WarningText(new Bold(new Exclamation() . ' Hinweis:')
-//            . ' Bei der Auswahl des Stichtagsnotenauftrags werden alle Zensuren dieses Auftrags übernommen. Dieser Vorgang kann
-//             einen Augenblick dauern.'));
-//
-//        $tblPrepare = Prepare::useService()->getPrepareById($PrepareId);
-//        $tblTask = Evaluation::useService()->getTaskById($TaskId);
-//
-//        if ($tblPrepare && $tblTask) {
-//            $tblDivision = $tblPrepare->getServiceTblDivision();
-//
-//            $Stage->setContent(
-//                new Layout(array(
-//                    new LayoutGroup(array(
-//                        new LayoutRow(array(
-//                            new LayoutColumn(array(
-//                                new Panel(
-//                                    'Noteninformation',
-//                                    $tblPrepare->getName() . ' ' . new Small(new Muted($tblPrepare->getDate())),
-//                                    Panel::PANEL_TYPE_INFO
-//                                ),
-//                            ), 6),
-//                            new LayoutColumn(array(
-//                                new Panel(
-//                                    'Klasse',
-//                                    $tblDivision->getDisplayName(),
-//                                    Panel::PANEL_TYPE_INFO
-//                                ),
-//                            ), 6),
-//                            new LayoutColumn(array(
-//                                GradeInformation::useService()->updatePrepareSetAppointedDateTask(
-//                                    $tblPrepare, $tblTask
-//                                )
-//                            )),
-//                        ))
-//                    ))
-//                ))
-//            );
-//
-//            return $Stage;
-//        } else {
-//
-//            return $Stage . new Danger('Noteninformation oder Notenauftrag nicht gefunden.', new Ban());
-//        }
-//    }
-//
-//    /**
-//     * @param null $PrepareId
-//     *
-//     * @return Stage|string
-//     */
-//    public function frontendBehaviorTask($PrepareId = null)
-//    {
-//
-//        $Stage = new Stage('Noteninformation', 'Kopfnotenauftrag auswählen');
-//        $Stage->addButton(new Standard(
-//            'Zurück', '/Education/Certificate/GradeInformation/Setting', new ChevronLeft(), array(
-//                'PrepareId' => $PrepareId
-//            )
-//        ));
-//
-//        $Stage->setMessage(new WarningText(new Bold(new Exclamation() . ' Hinweis:')
-//            . ' Bei der Auswahl eines anderen Kopfnotenauftrages werden alle bereits festgelegten Kopfnoten entfernt.'));
-//
-//        $tblPrepare = Prepare::useService()->getPrepareById($PrepareId);
-//        if ($tblPrepare) {
-//            $tblDivision = $tblPrepare->getServiceTblDivision();
-//
-//            $tblTestType = Evaluation::useService()->getTestTypeByIdentifier('BEHAVIOR_TASK');
-//            $tblTaskList = Evaluation::useService()->getTaskAllByDivision($tblDivision, $tblTestType);
-//
-//            $tableContent = array();
-//            if ($tblTaskList) {
-//                foreach ($tblTaskList as $tblTask) {
-//                    if ($tblPrepare->getServiceTblBehaviorTask()) {
-//                        $isChosen = ($tblTask->getId() == $tblPrepare->getServiceTblBehaviorTask()->getId());
-//                    } else {
-//                        $isChosen = false;
-//                    }
-//                    $tableContent[] = array(
-//                        'Date' => $isChosen ? new Bold($tblTask->getDate()) : $tblTask->getDate(),
-//                        'Name' => $isChosen ? new Bold($tblTask->getName()) : $tblTask->getName(),
-//                        'Period' => $tblTask->getServiceTblPeriod()
-//                            ? $tblTask->getServiceTblPeriod()->getDisplayName()
-//                            : 'Gesamtes Schuljahr',
-//                        'Option' => $isChosen
-//                            ? ''
-//                            : new Standard(
-//                                '',
-//                                '/Education/Certificate/GradeInformation/Setting/BehaviorTask/Select',
-//                                new Select(),
-//                                array(
-//                                    'PrepareId' => $tblPrepare->getId(),
-//                                    'TaskId' => $tblTask->getId()
-//                                ),
-//                                'Auswählen'
-//                            )
-//                    );
-//                }
-//            }
-//
-//            $Stage->setContent(
-//                new Layout(array(
-//                    new LayoutGroup(array(
-//                        new LayoutRow(array(
-//                            new LayoutColumn(array(
-//                                new Panel(
-//                                    'Noteninformation',
-//                                    $tblPrepare->getName() . ' ' . new Small(new Muted($tblPrepare->getDate())),
-//                                    Panel::PANEL_TYPE_INFO
-//                                ),
-//                            ), 6),
-//                            new LayoutColumn(array(
-//                                new Panel(
-//                                    'Klasse',
-//                                    $tblDivision->getDisplayName(),
-//                                    Panel::PANEL_TYPE_INFO
-//                                ),
-//                            ), 6),
-//                            new LayoutColumn(array(
-//                                new Panel(
-//                                    'Kopfnotenauftrag',
-//                                    array(
-//                                        $tblPrepare->getServiceTblBehaviorTask()
-//                                            ? $tblPrepare->getServiceTblBehaviorTask()->getName()
-//                                            . ' ' . $tblPrepare->getServiceTblBehaviorTask()->getDate()
-//                                            : new Exclamation() . ' Kein Kopfnotenauftrag ausgewählt',
-//                                    ),
-//                                    $tblPrepare->getServiceTblBehaviorTask()
-//                                        ? Panel::PANEL_TYPE_SUCCESS
-//                                        : Panel::PANEL_TYPE_WARNING
-//                                ),
-//                            ), 12),
-//                            new LayoutColumn(array(
-//                                $tblTaskList
-//                                    ? new TableData($tableContent, null, array(
-//                                    'Date' => 'Stichtag',
-//                                    'Name' => 'Name',
-//                                    'Period' => 'Zeitraum',
-//                                    'Option' => ''
-//                                ),
-//                                    array(
-//                                        'order' => array(
-//                                            array(0, 'desc')
-//                                        ),
-//                                        'columnDefs' => array(
-//                                            array('type' => 'de_date', 'targets' => 0)
-//                                        ),
-//                                        "paging" => false, // Deaktivieren Blättern
-//                                        "iDisplayLength" => -1,    // Alle Einträge zeigen
-//                                    )
-//                                )
-//                                    : new Warning('Für diese Klasse sind keine Kopfnotenaufträge vorhanden.',
-//                                    new Exclamation())
-//                            )),
-//                        ))
-//                    ))
-//                ))
-//            );
-//
-//            return $Stage;
-//        } else {
-//
-//            return $Stage . new Danger('Noteninformation nicht gefunden.', new Ban());
-//        }
-//    }
-//
-//    /**
-//     * @param null $PrepareId
-//     * @param null $TaskId
-//     *
-//     * @return Stage|string
-//     */
-//    public function frontendSelectBehaviorTask($PrepareId = null, $TaskId = null)
-//    {
-//
-//        $Stage = new Stage('Noteninformation', 'Kopfnotenauftrag auswählen');
-//        $Stage->addButton(new Standard(
-//            'Zurück', '/Education/Certificate/GradeInformation/Setting', new ChevronLeft(), array(
-//                'PrepareId' => $PrepareId
-//            )
-//        ));
-//
-//        $Stage->setMessage(new WarningText(new Bold(new Exclamation() . ' Hinweis:')
-//            . ' Bei der Auswahl eines anderen Kopfnotenauftrages werden alle bereits festgelegten Kopfnoten entfernt.'));
-//
-//        $tblPrepare = Prepare::useService()->getPrepareById($PrepareId);
-//        $tblTask = Evaluation::useService()->getTaskById($TaskId);
-//
-//        if ($tblPrepare && $tblTask) {
-//            $tblDivision = $tblPrepare->getServiceTblDivision();
-//
-//            $Stage->setContent(
-//                new Layout(array(
-//                    new LayoutGroup(array(
-//                        new LayoutRow(array(
-//                            new LayoutColumn(array(
-//                                new Panel(
-//                                    'Noteninformation',
-//                                    $tblPrepare->getName() . ' ' . new Small(new Muted($tblPrepare->getDate())),
-//                                    Panel::PANEL_TYPE_INFO
-//                                ),
-//                            ), 6),
-//                            new LayoutColumn(array(
-//                                new Panel(
-//                                    'Klasse',
-//                                    $tblDivision->getDisplayName(),
-//                                    Panel::PANEL_TYPE_INFO
-//                                ),
-//                            ), 6),
-//                            new LayoutColumn(array(
-//                                GradeInformation::useService()->updatePrepareSetBehaviorTask(
-//                                    $tblPrepare, $tblTask
-//                                )
-//                            )),
-//                        ))
-//                    ))
-//                ))
-//            );
-//
-//            return $Stage;
-//        } else {
-//
-//            return $Stage . new Danger('Noteninformation oder Notenauftrag nicht gefunden.', new Ban());
-//        }
-//    }
 }

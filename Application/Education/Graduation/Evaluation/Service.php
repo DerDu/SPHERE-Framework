@@ -125,13 +125,14 @@ class Service extends AbstractService
 
     /**
      * @param TblTestType $tblTestType
+     * @param TblYear $tblYear
      *
      * @return bool|TblTask[]
      */
-    public function getTaskAllByTestType(TblTestType $tblTestType)
+    public function getTaskAllByTestType(TblTestType $tblTestType, TblYear $tblYear = null)
     {
 
-        return (new Data($this->getBinding()))->getTaskAllByTestType($tblTestType);
+        return (new Data($this->getBinding()))->getTaskAllByTestType($tblTestType, $tblYear);
     }
 
     /**
@@ -687,7 +688,12 @@ class Service extends AbstractService
     public function getTestAllByTask(TblTask $tblTask, TblDivision $tblDivision = null)
     {
 
-        return (new Data($this->getBinding()))->getTestAllByTask($tblTask, $tblDivision);
+        $tblTestList = (new Data($this->getBinding()))->getTestAllByTask($tblTask, $tblDivision);
+        if ($tblTestList){
+            $tblTestList = $this->getSorter($tblTestList)->sortObjectBy('GradeTypeName');
+        }
+
+        return $tblTestList;
     }
 
     /**

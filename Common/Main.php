@@ -145,6 +145,7 @@ class Main extends Extension
                             $this->getRequest()->getPathInfo()
                         );
                     } else {
+                        header('HTTP/1.0 511 Network Authentication Required');
                         self::getDisplay()->setContent(
                             self::getDispatcher()->fetchRoute(
                                 $this->getRequest()->getPathInfo()

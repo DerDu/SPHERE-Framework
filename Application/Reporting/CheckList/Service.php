@@ -6,6 +6,8 @@ namespace SPHERE\Application\Reporting\CheckList;
 use MOC\V\Component\Document\Component\Bridge\Repository\PhpExcel;
 use MOC\V\Component\Document\Component\Parameter\Repository\FileParameter;
 use MOC\V\Component\Document\Document;
+use SPHERE\Application\Contact\Address\Address;
+use SPHERE\Application\Contact\Phone\Phone;
 use SPHERE\Application\Corporation\Company\Company;
 use SPHERE\Application\Corporation\Company\Service\Entity\TblCompany;
 use SPHERE\Application\Corporation\Group\Group as CompanyGroup;
@@ -21,6 +23,7 @@ use SPHERE\Application\People\Group\Service\Entity\TblGroup as PersonGroupEntity
 use SPHERE\Application\People\Meta\Prospect\Prospect;
 use SPHERE\Application\People\Person\Person;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
+use SPHERE\Application\People\Relationship\Relationship;
 use SPHERE\Application\Reporting\CheckList\Service\Data;
 use SPHERE\Application\Reporting\CheckList\Service\Entity\TblElementType;
 use SPHERE\Application\Reporting\CheckList\Service\Entity\TblList;
@@ -262,6 +265,47 @@ class Service extends AbstractService
             );
             return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success() . ' Die Check-List ist erfolgreich gespeichert worden')
             . new Redirect('/Reporting/CheckList', Redirect::TIMEOUT_SUCCESS);
+        }
+
+        return $Stage;
+    }
+
+    /**
+     * @param IFormInterface|null $Stage
+     * @param TblList             $tblList
+     * @param TblListElementList  $tblListElementList
+     * @param string              $ElementName
+     *
+     * @return IFormInterface|string
+     */
+    public function updateListElementList(IFormInterface $Stage = null, TblList $tblList, TblListElementList $tblListElementList, $ElementName)
+    {
+
+        /**
+         * Skip to Frontend
+         */
+        if (null === $ElementName) {
+            return $Stage;
+        }
+
+        $Error = false;
+        if (isset($ElementName) && empty($ElementName)) {
+            $Stage->setError('ElementName', 'Bitte geben sie einen Namen an');
+            $Error = true;
+        }
+
+        if (!$tblListElementList) {
+            return new Danger(new Ban().' Listenelement nicht gefunden')
+                .new Redirect('/Reporting/CheckList/Element/Select', Redirect::TIMEOUT_ERROR, array('Id' => $tblList->getId()));
+        }
+
+        if (!$Error) {
+            if (( new Data($this->getBinding()) )->updateListElementList($tblListElementList, $ElementName)) {
+                return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success().' Das Check-Listen Element ist erfolgreich gespeichert worden')
+                    .new Redirect('/Reporting/CheckList/Element/Select', Redirect::TIMEOUT_SUCCESS, array('Id' => $tblList->getId()));
+            } else {
+                return new Danger('Das Check-Listen Element konnte nicht gespeichert werden.');
+            }
         }
 
         return $Stage;
@@ -896,6 +940,9 @@ class Service extends AbstractService
                         $export->setValue($export->getCell($columnCount++, $rowCount), 'Klassenstufe');
                         $export->setValue($export->getCell($columnCount++, $rowCount), 'Schulart');
                         $export->setValue($export->getCell($columnCount++, $rowCount), 'Eingangsdatum');
+                        $export->setValue($export->getCell($columnCount++, $rowCount), 'Telefon Interessent');
+                        $export->setValue($export->getCell($columnCount++, $rowCount), 'Telefon Sorgeberechtigte');
+                        $export->setValue($export->getCell($columnCount++, $rowCount), 'Adresse');
 
                         $tblListElementListByList = $this->getListElementListByList($tblList);
                         if ($tblListElementListByList) {
@@ -936,8 +983,73 @@ class Service extends AbstractService
                                             $year = false;
                                             $option = false;
                                             $reservationDate = false;
+                                            $Phone = false;
+                                            $PhoneGuardian = false;
+                                            $Address = false;
                                             $tblProspect = Prospect::useService()->getProspectByPerson($tblPerson);
                                             if ($tblProspect) {
+                                                // display PhoneNumber
+                                                $tblToPhoneList = Phone::useService()->getPhoneAllByPerson($tblPerson);
+                                                if ($tblToPhoneList) {
+                                                    foreach ($tblToPhoneList as $tblToPhone) {
+                                                        $tblPhone = $tblToPhone->getTblPhone();
+                                                        if ($tblPhone) {
+                                                            if (!$Phone) {
+                                                                $Phone = $tblPerson->getFirstName().' '.$tblPerson->getLastName()
+                                                                    .' ('.$tblPhone->getNumber().' '.
+                                                                    str_replace('.', '', Phone::useService()->getPhoneTypeShort($tblToPhone));
+                                                            } else {
+                                                                $Phone .= ', '.$tblPhone->getNumber().' '.
+                                                                    str_replace('.', '', Phone::useService()->getPhoneTypeShort($tblToPhone));
+                                                            }
+                                                        }
+                                                    }
+                                                    if ($Phone) {
+                                                        $Phone .= ')';
+                                                    }
+                                                }
+                                                // fill phoneGuardian
+                                                $guardianList = Relationship::useService()->getPersonRelationshipAllByPerson($tblPerson);
+                                                if ($guardianList) {
+                                                    foreach ($guardianList as $guardian) {
+                                                        if ($guardian->getServiceTblPersonFrom() && $guardian->getTblType()->getId() == 1) {
+                                                            // get PhoneNumber by Guardian
+                                                            $tblPersonGuardian = $guardian->getServiceTblPersonFrom();
+                                                            if ($tblPersonGuardian) {
+                                                                $tblToPhoneList = Phone::useService()->getPhoneAllByPerson($tblPersonGuardian);
+                                                                if ($tblToPhoneList) {
+                                                                    foreach ($tblToPhoneList as $tblToPhone) {
+                                                                        if (( $tblPhone = $tblToPhone->getTblPhone() )) {
+                                                                            if (!isset($Item['PhoneGuardian'][$tblPersonGuardian->getId()])) {
+                                                                                $Item['PhoneGuardian'][$tblPersonGuardian->getId()] =
+                                                                                    $tblPersonGuardian->getFirstName().' '.$tblPersonGuardian->getLastName().
+                                                                                    ' ('.$tblPhone->getNumber().' '.
+                                                                                    // modify TypeShort
+                                                                                    str_replace('.', '', Phone::useService()->getPhoneTypeShort($tblToPhone));
+                                                                            } else {
+                                                                                $Item['PhoneGuardian'][$tblPersonGuardian->getId()] .= ', '.$tblPhone->getNumber().' '.
+                                                                                    // modify TypeShort
+                                                                                    str_replace('.', '', Phone::useService()->getPhoneTypeShort($tblToPhone));
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                                if (isset($Item['PhoneGuardian'][$tblPersonGuardian->getId()])) {
+                                                                    $Item['PhoneGuardian'][$tblPersonGuardian->getId()] .= ')';
+                                                                }
+                                                                if (!$PhoneGuardian && isset($Item['PhoneGuardian'][$tblPersonGuardian->getId()])) {
+                                                                    $PhoneGuardian = $Item['PhoneGuardian'][$tblPersonGuardian->getId()];
+                                                                } elseif ($PhoneGuardian && isset($Item['PhoneGuardian'][$tblPersonGuardian->getId()])) {
+                                                                    $PhoneGuardian .= ', '.$Item['PhoneGuardian'][$tblPersonGuardian->getId()];
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                // display Address
+                                                if (( $tblAddress = Address::useService()->getAddressByPerson($tblPerson) )) {
+                                                    $Address = $tblAddress->getGuiString();
+                                                }
                                                 $tblProspectReservation = $tblProspect->getTblProspectReservation();
                                                 if ($tblProspectReservation) {
                                                     $level = $tblProspectReservation->getReservationDivision();
@@ -958,14 +1070,18 @@ class Service extends AbstractService
                                                 }
                                             }
                                             $export->setValue($export->getCell($columnCount++, $rowCount), trim($year));
-                                            $export->setValue($export->getCell($columnCount++, $rowCount),
-                                                trim($level));
-                                            $export->setValue($export->getCell($columnCount++, $rowCount),
-                                                trim($option));
+                                            $export->setValue($export->getCell($columnCount++, $rowCount), trim($level));
+                                            $export->setValue($export->getCell($columnCount++, $rowCount), trim($option));
                                             if ($reservationDate) {
-                                                $export->setValue($export->getCell($columnCount, $rowCount),
+                                                $export->setValue($export->getCell($columnCount++, $rowCount),
                                                     $reservationDate);
+                                            } else {
+                                                $export->setValue($export->getCell($columnCount++, $rowCount),
+                                                    '');
                                             }
+                                            $export->setValue($export->getCell($columnCount++, $rowCount), trim($Phone));
+                                            $export->setValue($export->getCell($columnCount++, $rowCount), trim($PhoneGuardian));
+                                            $export->setValue($export->getCell($columnCount, $rowCount), trim($Address));
                                         }
                                     }
                                 } elseif ($tblObjectType->getIdentifier() === 'COMPANY') {
@@ -983,7 +1099,7 @@ class Service extends AbstractService
                                     );
                                     if ($tblListObjectElementList) {
                                         foreach ($tblListObjectElementList as $item) {
-                                            $columnCount = $isProspectList ? 5 : 1;
+                                            $columnCount = $isProspectList ? 8 : 1;
                                             foreach ($tblListElementListByList as $tblListElementList) {
                                                 if ($tblListElementList->getId() === $item->getTblListElementList()->getId()) {
                                                     $export->setValue($export->getCell($columnCount, $rowCount),

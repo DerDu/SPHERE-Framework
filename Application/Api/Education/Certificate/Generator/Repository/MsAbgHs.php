@@ -26,7 +26,7 @@ class MsAbgHs extends Certificate
     public function buildCertificate($IsSample = true)
     {
 
-        if( $IsSample ) {
+        if ($IsSample) {
             $Header = ( new Slice() )
                 ->addSection(( new Section() )
                     ->addElementColumn(( new Element() )
@@ -39,16 +39,15 @@ class MsAbgHs extends Certificate
                         ->styleTextSize('30px')
                     )
                     ->addElementColumn(( new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
-                            '200px') )
+                        '165px', '50px') )
                         , '25%')
                 );
         } else {
             $Header = ( new Slice() )
                 ->addSection(( new Section() )
-                    ->addElementColumn(( new Element() ), '25%')
-                    ->addElementColumn(( new Element() ))
+                    ->addElementColumn(( new Element() ), '75%')
                     ->addElementColumn(( new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
-                            '200px') )
+                        '165px', '50px') )
                         , '25%')
                 );
         }
@@ -65,14 +64,14 @@ class MsAbgHs extends Certificate
                         ->styleTextBold()
                     )
                 )
-                ->addSlice((new Slice())
-                    ->addElement((new Element())
-                        ->setContent('der Mittelschule')
-                        ->styleTextSize('22px')
-                        ->styleAlignCenter()
-                        ->styleMarginTop('15px')
-                    )
-                )
+//                ->addSlice((new Slice())
+//                    ->addElement((new Element())
+//                        ->setContent('der Mittelschule')
+//                        ->styleTextSize('22px')
+//                        ->styleAlignCenter()
+//                        ->styleMarginTop('15px')
+//                    )
+//                )
             )
             ->addPage((new Page())
                 ->addSlice((new Slice())
@@ -145,28 +144,16 @@ class MsAbgHs extends Certificate
                                 {% else %}
                                       &nbsp;
                                 {% endif %}')
-                            ->styleBorderBottom('1px', '#BBB')
+                            ->styleBorderBottom('1px')
                             ->styleAlignCenter()
                         )
                         ->addElementColumn((new Element())
-                            ->styleBorderBottom('1px', '#BBB')
+                            ->styleBorderBottom('1px')
                             ->setContent('&nbsp;')
                             , '5%')
                     )
                     ->styleMarginTop('20px')
                 )
-//                ->addSlice(
-//                    (new Slice())
-//                        ->addElement(
-//                            (new Element())
-//                                ->setContent('
-//                                            {{ Content.Company.Data.Name }},
-//                                        ')
-//                                ->styleBorderBottom('1px', '#BBB')
-//                                ->styleAlignCenter()
-//                        )
-//                        ->styleMarginTop('10px')
-//                )
                 ->addSlice(
                     (new Slice())
                         ->addElement(
@@ -177,7 +164,7 @@ class MsAbgHs extends Certificate
                                 {% else %}
                                       &nbsp;
                                 {% endif %}')
-                                ->styleBorderBottom('1px', '#BBB')
+                                ->styleBorderBottom('1px')
                                 ->styleAlignCenter()
                         )
                         ->styleMarginTop('10px')
@@ -189,7 +176,7 @@ class MsAbgHs extends Certificate
                                 ->addElementColumn(
                                     (new Element())
                                         ->setContent('&nbsp;')
-                                        ->styleBorderBottom('1px', '#BBB')
+                                        ->styleBorderBottom('1px')
                                     , '10%')
                                 ->addElementColumn(
                                     (new Element())
@@ -199,7 +186,7 @@ class MsAbgHs extends Certificate
                                         {% else %}
                                               &nbsp;
                                         {% endif %}')
-                                        ->styleBorderBottom('1px', '#BBB')
+                                        ->styleBorderBottom('1px')
                                         ->styleAlignCenter()
                                 )
                                 ->addElementColumn(
@@ -222,8 +209,8 @@ class MsAbgHs extends Certificate
                 )
                 ->addSlice((new Slice())
                     ->addElement((new Element())
-                        ->setContent('und verlässt nach Erfüllung der Vollzeitschulpflicht gemäß § 28 Abs. 1 Nr. 1 SchulG die'
-                            .new Container('Mittelschule - Hauptschulbildungsgang.')
+                        ->setContent('und verlässt nach Erfüllung der Vollzeitschulpflicht gemäß § 28 Abs. 1 Nr. 1 SchulG'
+                            .new Container('die Schulart Mittelschule - Hauptschulbildungsgang.')
                         )
                         ->styleMarginTop('8px')
                         ->styleAlignCenter()
@@ -264,169 +251,16 @@ class MsAbgHs extends Certificate
                         ->styleTextBold()
                     )
                 )
-                ->addSlice( $this->getSubjectLanes() ->styleHeight('240px'))
-                ->addSlice((new Slice())
-                    ->addElement((new Element())
-                        ->setContent('Wahlpflichtbereich:')
-                        ->styleMarginTop('15px')
-                        ->styleTextBold()
-                    )
-                )
-                ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Input.Choose is not empty) %}
-                                    {{ Content.Input.Choose }}
-                                {% else %}
-                                    &nbsp;
-                                {% endif %}')//ToDO Wahlpflichtbereich
-                            ->styleBorderBottom()
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                        )
-                        ->addElementColumn((new Element())
-                            ->setContent('&nbsp;')
-                            ->styleAlignCenter()
-                            ->styleBackgroundColor('#BBB')
-                            ->styleBorderBottom('1px', '#000')
-                            ->stylePaddingTop()
-                            ->stylePaddingBottom()
-                            , '9%')
-                    )
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Person.Data.ToDO is not empty) %}
-                                    Vertiefungskurs
-                                {% else %}
-                                    {% if(Content.Person.Data.ToDO is not empty) %}
-                                        2. Fremdsprache (abschlussorientiert)
-                                    {% else %}
-                                        &nbsp;
-                                    {% endif %}
-                                {% endif %}')//ToDO Wahlpflichtbereich
-                            ->styleTextSize('11px')
-                        )
-                    )
-                    ->styleMarginTop('15px')
-                )
-                ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Bemerkungen:')
-                            , '16%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Input.Remark is not empty) %}
-                                    {{ Content.Input.Remark|nl2br }}
-                                {% else %}
-                                    &nbsp;
-                                {% endif %}')
-                            ->styleHeight('150px')
-                        )
-                    )
-                    ->styleMarginTop('15px')
-                )
-                ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Datum:')
-                            , '7%')
-                        ->addElementColumn((new Element())
-                            ->setContent('{% if(Content.Input.Date is not empty) %}
-                                    {{ Content.Input.Date }}
-                                {% else %}
-                                    &nbsp;
-                                {% endif %}')
-                            ->styleBorderBottom('1px', '#000')
-                            ->styleAlignCenter()
-                            , '23%')
-                        ->addElementColumn((new Element())
-                            , '5%')
-                        ->addElementColumn((new Element())
-                            , '30%')
-                        ->addElementColumn((new Element())
-                            , '5%')
-                        ->addElementColumn((new Element())
-                            , '30%')
-                    )
-                    ->styleMarginTop('30px')
-                )
-                ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('&nbsp;')
-                            ->styleAlignCenter()
-                            ->styleBorderBottom('1px', '#000')
-                            , '30%')
-                        ->addElementColumn((new Element())
-                            , '40%')
-                        ->addElementColumn((new Element())
-                            ->setContent('&nbsp;')
-                            ->styleAlignCenter()
-                            ->styleBorderBottom('1px', '#000')
-                            , '30%')
-                    )
-                    ->styleMarginTop('25px')
-                )
-                ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Schulleiter(in)')
-                            ->styleAlignCenter()
-                            ->styleTextSize('11px')
-                            , '30%')
-                        ->addElementColumn((new Element())
-                            , '5%')
-                        ->addElementColumn((new Element())
-                            ->setContent('Dienstsiegel der Schule')
-                            ->styleAlignCenter()
-                            ->styleTextSize('11px')
-                            , '30%')
-                        ->addElementColumn((new Element())
-                            , '5%')
-                        ->addElementColumn((new Element())
-                            ->setContent('Klassenlehrer(in)')
-                            ->styleAlignCenter()
-                            ->styleTextSize('11px')
-                            , '30%')
-                    )
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            , '30%')
-                        ->addElementColumn((new Element())
-                            , '40%')
-                        ->addElementColumn((new Element())
-                            ->setContent(
-                                '{% if(Content.DivisionTeacher.Name is not empty) %}
-                                    {{ Content.DivisionTeacher.Name }}
-                                {% else %}
-                                    &nbsp;
-                                {% endif %}'
-                            )
-                            ->styleTextSize('11px')
-                            ->stylePaddingTop('2px')
-                            ->styleAlignCenter()
-                            , '30%')
-                    )
-                )
-                ->addSlice((new Slice())
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->styleBorderBottom()
-                            , '30%')
-                        ->addElementColumn((new Element())
-                            , '70%')
-                    )->styleMarginTop('290px')
-                    ->addSection((new Section())
-                        ->addElementColumn((new Element())
-                            ->setContent('Notenerläuterung:'
-                                .new Container('1 = sehr gut; 2 = gut; 3 = befriedigend; 4 = ausreichend; 5 = mangelhaft;
-                                    6 = ungenügend'))
-                            ->styleTextSize('9.5px')
-                            , '30%')
-                    )
-                )
+                ->addSlice($this->getSubjectLanes()->styleHeight('270px'))
+                ->addSlice($this->getOrientationStandard())
+                ->addSlice($this->getDescriptionHead())
+                ->addSlice($this->getDescriptionContent('235px', '15px'))
+                ->addSlice($this->getDateLine())
+                ->addSlice($this->getSignPart())
+                ->addSlice($this->getInfo('150px',
+                    'Notenerläuterung:',
+                    '1 = sehr gut; 2 = gut; 3 = befriedigend; 4 = ausreichend; 5 = mangelhaft; 6 = ungenügend'))
             )
         );
     }
-
 }

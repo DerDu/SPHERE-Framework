@@ -102,6 +102,29 @@ class Service extends AbstractService
     }
 
     /**
+     * @param TblToPerson $tblToPerson
+     *
+     * @return string
+     */
+    public function getPhoneTypeShort(TblToPerson $tblToPerson)
+    {
+
+        $tblType = $tblToPerson->getTblType();
+        if ($tblType) {
+            if ($tblType->getName() == 'Privat') {
+                return 'p.';
+            } elseif ($tblType->getName() == 'Geschäftlich') {
+                return 'd.';
+            } elseif ($tblType->getName() == 'Notfall') {
+                return 'N.';
+            } elseif ($tblType->getName() == 'Fax') {
+                return 'F.';
+            }
+        }
+        return '';
+    }
+
+    /**
      * @param IFormInterface $Form
      * @param TblPerson      $tblPerson
      * @param string         $Number

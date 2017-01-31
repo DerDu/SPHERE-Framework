@@ -3,6 +3,11 @@ namespace SPHERE\Application\Education\Certificate\Generator\Repository;
 
 use SPHERE\System\Extension\Extension;
 
+/**
+ * Class Style
+ *
+ * @package SPHERE\Application\Education\Certificate\Generator\Repository
+ */
 abstract class Style extends Extension
 {
 
@@ -10,6 +15,21 @@ abstract class Style extends Extension
     protected $Design = array();
     /** @var array $Style */
     protected $Style = array();
+
+    /**
+     * Custom Font-Family
+     * - MetaPro
+     *
+     * @param string $Name
+     *
+     * @return $this
+     */
+    public function styleFontFamily($Name)
+    {
+
+        $this->Style[] = "font-family: '".$Name."' !important;";
+        return $this;
+    }
 
     /**
      * @param string $Color
@@ -252,6 +272,18 @@ abstract class Style extends Extension
     {
 
         $this->Style[] = 'height: '.$Height.' !important;';
+        return $this;
+    }
+
+    /**
+     * @param string $Height
+     *
+     * @return $this
+     */
+    public function styleLineHeight($Height = '100%')
+    {
+
+        $this->Style[] = 'line-height: '.$Height.' !important;';
         return $this;
     }
 

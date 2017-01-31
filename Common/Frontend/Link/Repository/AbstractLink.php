@@ -48,7 +48,7 @@ abstract class AbstractLink extends Extension implements ILinkInterface
      */
     public function getHash()
     {
-        return 'Link-Hash-'.self::$LinkCounter;
+        return 'Link-Hash-'.sha1($this->getName().$this->getPath()).'-'.self::$LinkCounter;
     }
 
     /**
@@ -215,12 +215,21 @@ abstract class AbstractLink extends Extension implements ILinkInterface
     }
 
     /**
-     * @param Pipeline $Pipeline
+     * @param Pipeline|Pipeline[] $Pipeline
      * @return $this
      */
-    public function ajaxPipelineOnClick( Pipeline $Pipeline )
+    public function ajaxPipelineOnClick( $Pipeline )
     {
-        $this->Template->setVariable('AjaxEventClick', $Pipeline->parseScript());
+        $Script = '';
+        if( is_array( $Pipeline ) ) {
+            foreach( $Pipeline as $Element ) {
+                $Script .= $Element->parseScript();
+            }
+        } else {
+            $Script = $Pipeline->parseScript();
+        }
+
+        $this->Template->setVariable('AjaxEventClick', $Script);
         return $this;
     }
 }

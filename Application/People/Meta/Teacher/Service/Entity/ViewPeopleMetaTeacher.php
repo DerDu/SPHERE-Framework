@@ -5,6 +5,9 @@ use Doctrine\ORM\Mapping\Cache;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
+use SPHERE\Application\Contact\Address\Service\Entity\ViewAddressToPerson;
+use SPHERE\Application\Contact\Mail\Service\Entity\ViewMailToPerson;
+use SPHERE\Application\Contact\Phone\Service\Entity\ViewPhoneToPerson;
 use SPHERE\Application\People\Meta\Teacher\Teacher;
 use SPHERE\Application\People\Person\Service\Entity\ViewPerson;
 use SPHERE\System\Database\Binding\AbstractService;
@@ -66,6 +69,13 @@ class ViewPeopleMetaTeacher extends AbstractView
     {
 
         $this->addForeignView(self::TBL_TEACHER_SERVICE_TBL_PERSON, new ViewPerson(), ViewPerson::TBL_PERSON_ID);
+
+        $this->addForeignView(self::TBL_TEACHER_SERVICE_TBL_PERSON, new ViewAddressToPerson(),
+            ViewAddressToPerson::TBL_TO_PERSON_SERVICE_TBL_PERSON);
+        $this->addForeignView(self::TBL_TEACHER_SERVICE_TBL_PERSON, new ViewMailToPerson(),
+            ViewMailToPerson::TBL_TO_PERSON_SERVICE_TBL_PERSON);
+        $this->addForeignView(self::TBL_TEACHER_SERVICE_TBL_PERSON, new ViewPhoneToPerson(),
+            ViewPhoneToPerson::TBL_TO_PERSON_SERVICE_TBL_PERSON);
     }
 
     /**

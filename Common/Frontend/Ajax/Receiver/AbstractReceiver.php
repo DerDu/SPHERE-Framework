@@ -2,18 +2,20 @@
 namespace SPHERE\Common\Frontend\Ajax\Receiver;
 
 use SPHERE\Common\Frontend\Ajax\IReceiverInterface;
+use SPHERE\System\Extension\Extension;
 
 /**
  * Class AbstractReceiver
  *
  * @package SPHERE\Common\Frontend\Ajax\Receiver
  */
-abstract class AbstractReceiver implements IReceiverInterface
+abstract class AbstractReceiver extends Extension implements IReceiverInterface
 {
-    /** @var int $IdentifierCounter */
-    private static $IdentifierCounter = 0;
-    /** @var string $ReceiverIdentifier */
+
+    /** @var string $Identifier */
     private $Identifier = '';
+    /** @var string $Content */
+    private $Content = '';
 
     const RESPONSE_CONTAINER = 'Response';
 
@@ -22,8 +24,7 @@ abstract class AbstractReceiver implements IReceiverInterface
      */
     public function __construct()
     {
-        self::$IdentifierCounter++;
-        $this->Identifier = 'Sphere-Ajax-Node-' . self::$IdentifierCounter;
+        $this->Identifier = 'Sphere-Ajax-Receiver-' . sha1(uniqid('',true));
     }
 
     /**
@@ -54,4 +55,23 @@ abstract class AbstractReceiver implements IReceiverInterface
     {
         $this->Identifier = $Identifier;
     }
+
+    /**
+     * @param $Content
+     * @return $this
+     */
+    protected function setContent( $Content )
+    {
+        $this->Content = $Content;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getContent()
+    {
+        return $this->Content;
+    }
+
 }

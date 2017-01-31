@@ -77,6 +77,10 @@ class Setup extends AbstractSetup
             $Table->addColumn('IsGradeInformation', 'boolean');
         }
 
+        $this->createColumn($Table, 'serviceTblGenerateCertificate', self::FIELD_TYPE_BIGINT, true);
+
+        $this->createIndex($Table, array('serviceTblGenerateCertificate', 'serviceTblDivision'));
+
         return $Table;
     }
 
@@ -144,6 +148,7 @@ class Setup extends AbstractSetup
         }
 
         $this->getConnection()->addForeignKey($Table, $tblPrepare, true);
+        $this->createIndex($Table, array('serviceTblPerson' , 'tblPrepareCertificate'));
 
         return $Table;
     }

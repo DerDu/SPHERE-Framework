@@ -13,7 +13,6 @@ use SPHERE\Application\Contact\Address\Service\Entity\TblToCompany;
 use SPHERE\Application\Contact\Address\Service\Entity\TblToPerson;
 use SPHERE\Application\People\Person\Person;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
-use SPHERE\Application\People\Person\Service\Entity\TblSalutation;
 use SPHERE\Application\Reporting\SerialLetter\SerialLetter;
 use SPHERE\System\Database\Fitting\Element;
 use Doctrine\ORM\Mapping\Cache;
@@ -34,8 +33,6 @@ class TblAddressPerson extends Element
     const ATTR_SERVICE_TBL_PERSON_TO_ADDRESS = 'serviceTblPersonToAddress';
     const ATTR_SERVICE_TBL_TO_PERSON = 'serviceTblToPerson';
 
-    const SALUTATION_FAMILY = 1000;
-
     /**
      * @Column(type="bigint")
      */
@@ -55,11 +52,6 @@ class TblAddressPerson extends Element
      * @Column(type="bigint")
      */
     protected $serviceTblToPerson;
-
-    /**
-     * @Column(type="bigint")
-     */
-    protected $serviceTblSalutation;
 
     /**
      * @return bool|TblSerialLetter
@@ -158,34 +150,5 @@ class TblAddressPerson extends Element
         } else {
             $this->serviceTblToPerson = $tblToCompany->getId();
         }
-    }
-
-    /**
-     * @return bool|TblSalutation
-     */
-    public function getServiceTblSalutation()
-    {
-
-        if (null === $this->serviceTblSalutation) {
-            return false;
-        } else {
-            if ($this->serviceTblSalutation == 1000){
-                $tblSalutation = new TblSalutation('Familie');
-                $tblSalutation->setId(TblAddressPerson::SALUTATION_FAMILY);
-
-                return $tblSalutation;
-            } else {
-                return Person::useService()->getSalutationById($this->serviceTblSalutation);
-            }
-        }
-    }
-
-    /**
-     * @param null|TblSalutation $tblSalutation
-     */
-    public function setServiceTblSalutation(TblSalutation $tblSalutation = null)
-    {
-
-        $this->serviceTblSalutation = ( null === $tblSalutation ? null : $tblSalutation->getId() );
     }
 }
