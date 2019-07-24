@@ -1976,6 +1976,10 @@ abstract class Certificate extends Extension
         $tblSubjectProfile = false;
         $tblSubjectForeign = false;
 
+        $TextSizeSmall = '8.5px';
+        $paddingTopShrinking = '5px';
+        $paddingBottomShrinking = '6px';
+
         // Profil
         if ($tblPerson
             && ($tblStudent = Student::useService()->getStudentByPerson($tblPerson))
@@ -2045,9 +2049,27 @@ abstract class Certificate extends Extension
                 ->styleAlignCenter()
                 ->styleBackgroundColor('#BBB')
                 ->styleBorderBottom($IsGradeUnderlined ? '1px' : '0px', '#000')
-                ->stylePaddingTop('2px')
-                ->stylePaddingBottom('2px')
-                ->styleTextSize($TextSize);
+                ->stylePaddingTop(
+                    '{% if(Content.P' . $personId . '.Grade.Data.IsShrinkSize["' . $subjectAcronymForGrade . '"] is not empty) %}
+                         ' . $paddingTopShrinking . ' 
+                    {% else %}
+                        2px
+                    {% endif %}'
+                )
+                ->stylePaddingBottom(
+                    '{% if(Content.P' . $personId . '.Grade.Data.IsShrinkSize["' . $subjectAcronymForGrade . '"] is not empty) %}
+                         ' . $paddingBottomShrinking . ' 
+                    {% else %}
+                        2px
+                    {% endif %}'
+                )
+                ->styleTextSize(
+                    '{% if(Content.P' . $personId . '.Grade.Data.IsShrinkSize["' . $subjectAcronymForGrade . '"] is not empty) %}
+                        ' . $TextSizeSmall . '
+                    {% else %}
+                        ' . $TextSize . '
+                    {% endif %}'
+                );
         } else {
             $elementName = (new Element())
                 ->setContent('---')
@@ -2106,9 +2128,27 @@ abstract class Certificate extends Extension
                 ->styleAlignCenter()
                 ->styleBackgroundColor('#BBB')
                 ->styleBorderBottom($IsGradeUnderlined ? '1px' : '0px', '#000')
-                ->stylePaddingTop('2px')
-                ->stylePaddingBottom('2px')
-                ->styleTextSize($TextSize);
+                ->stylePaddingTop(
+                    '{% if(Content.P' . $personId . '.Grade.Data.IsShrinkSize["' . $tblSubjectForeign->getAcronym() . '"] is not empty) %}
+                         ' . $paddingTopShrinking . ' 
+                    {% else %}
+                        2px
+                    {% endif %}'
+                )
+                ->stylePaddingBottom(
+                    '{% if(Content.P' . $personId . '.Grade.Data.IsShrinkSize["' . $tblSubjectForeign->getAcronym() . '"] is not empty) %}
+                         ' . $paddingBottomShrinking . ' 
+                    {% else %}
+                        2px
+                    {% endif %}'
+                )
+                ->styleTextSize(
+                    '{% if(Content.P' . $personId . '.Grade.Data.IsShrinkSize["' . $tblSubjectForeign->getAcronym() . '"] is not empty) %}
+                        ' . $TextSizeSmall . '
+                    {% else %}
+                        ' . $TextSize . '
+                    {% endif %}'
+                );
         } else {
             $elementForeignName = (new Element())
                 ->setContent('---')
