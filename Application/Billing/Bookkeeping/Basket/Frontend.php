@@ -25,7 +25,6 @@ use SPHERE\Common\Frontend\Icon\Repository\Download;
 use SPHERE\Common\Frontend\Icon\Repository\Edit;
 use SPHERE\Common\Frontend\Icon\Repository\EyeOpen;
 use SPHERE\Common\Frontend\Icon\Repository\FolderClosed;
-use SPHERE\Common\Frontend\Icon\Repository\Listing;
 use SPHERE\Common\Frontend\Icon\Repository\Pencil;
 use SPHERE\Common\Frontend\Icon\Repository\Plus;
 use SPHERE\Common\Frontend\Icon\Repository\Remove;
@@ -75,7 +74,7 @@ class Frontend extends Extension implements IFrontendInterface
             $Stage = new Stage('Archiv', 'Abrechnung');
             $Stage->setMessage('Zeigt alle archivierten Abrechnungen an');
 
-            $Stage->addButton(new Standard('Aktuelle Abrechnungen', '/Billing/Bookkeeping/Basket', new Listing()));
+            $Stage->addButton(new Standard('Zurück', '/Billing/Bookkeeping/Basket', new ChevronLeft()));
             $Stage->setContent(
                 ApiBasket::receiverService('')
                 .new Layout(
