@@ -99,7 +99,6 @@ class ClassRegister implements IApplicationInterface
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
             __NAMESPACE__.'\Sort\Gender', __NAMESPACE__.'\Sort\Frontend::frontendSortDivisionGender')
         );
-
     }
 
     /**

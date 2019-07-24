@@ -7,6 +7,7 @@ use SPHERE\Application\Api\Education\Division\StudentStatus;
 use SPHERE\Application\Api\Education\Division\SubjectSelect as SubjectSelectAPI;
 use SPHERE\Application\Api\Education\Division\SubjectSelect;
 use SPHERE\Application\Api\Education\Division\ValidationFilter;
+use SPHERE\Application\Education\Diary\Diary;
 use SPHERE\Application\Education\Lesson\Division\Filter\Filter;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionSubject;
@@ -2279,6 +2280,28 @@ class Frontend extends Extension implements IFrontendInterface
         $Content2[] = 'Elternvertreter: '.new Bold(Division::useService()->countDivisionCustodyAllByDivision($tblDivision));
         $Content2[] = 'Fächer: '.new Bold(Division::useService()->countDivisionSubjectAllByDivision($tblDivision));
 
+        $copyDiary = true;
+        $contentDiary = 'Es sind keine Einträge im pädagogischen Tagebuch vorhanden.';
+        if (($tblType = $tblLevel->getServiceTblType())) {
+            if (($tblType->getName() == 'Grundschule')
+                && intval($tblLevel->getName()) == 4
+            ) {
+                $contentDiary = new \SPHERE\Common\Frontend\Text\Repository\Warning(
+                    'Die Einträge des pädagogischen Tagebuchs werden mit dem Verlassen der Grundschule nicht mit übernommen.'
+                );
+                $copyDiary = false;
+            } elseif (($tblType->getName() == 'Gymnasium')
+                && intval($tblLevel->getName()) == 10
+            ) {
+                $contentDiary = new \SPHERE\Common\Frontend\Text\Repository\Warning(
+                    'Die Einträge des pädagogischen Tagebuchs werden ins Kurssystem nicht mit übernommen.'
+                );
+                $copyDiary = false;
+            } elseif (($tblDiaryDivisionList = Diary::useService()->getDiaryAllByDivision($tblDivision, true))) {
+                $contentDiary = 'Es werden ' . count($tblDiaryDivisionList) . ' Einträge übernommen.';
+            }
+        }
+
         if (is_numeric($tblLevel->getName())) {
             $length = strlen($tblLevel->getName());
             if ($Zahl = (int)( $tblLevel->getName() )) {
@@ -2325,28 +2348,33 @@ class Frontend extends Extension implements IFrontendInterface
                 new LayoutGroup(
                     new LayoutRow(array(
                         new LayoutColumn(
-//                            new Well(
-                            new Layout(
-                                new LayoutGroup(
-                                    new LayoutRow(array(
-                                            new LayoutColumn(
-                                                new Panel('Zu kopierende Klassenstufe:',
-                                                    $Content, Panel::PANEL_TYPE_INFO)
-                                                , 6),
-                                            new LayoutColumn(
-                                                new Panel('Zu kopierende Klassengruppe:',
-                                                    $Content1, Panel::PANEL_TYPE_INFO)
-                                                , 6),
-                                        )
-                                    )
-                                )
+                            new Panel(
+                                'Zu kopierende Klassenstufe:',
+                                $Content,
+                                Panel::PANEL_TYPE_INFO
                             )
-//                            )
-                            , 8),
+                        , 3),
                         new LayoutColumn(
-                            new Panel('Anzahl Personen und Fächer:',
-                                $Content2, Panel::PANEL_TYPE_SUCCESS)
-                            , 4),
+                            new Panel(
+                                'Zu kopierende Klassengruppe:',
+                                $Content1,
+                                Panel::PANEL_TYPE_INFO
+                            )
+                        , 3),
+                        new LayoutColumn(
+                            new Panel(
+                                'Zu kopierendes pägogisches Tagebuch:',
+                                $contentDiary,
+                                Panel::PANEL_TYPE_INFO
+                            )
+                        , 3),
+                        new LayoutColumn(
+                            new Panel(
+                                'Anzahl Personen und Fächer:',
+                                $Content2,
+                                Panel::PANEL_TYPE_SUCCESS
+                            )
+                        , 3),
                     ))
                 )
             )
@@ -2358,7 +2386,7 @@ class Frontend extends Extension implements IFrontendInterface
                                 $this->formLevelDivision($tblLevel, $tblDivision, true)
                                     ->appendFormButton(new Primary('Speichern', new Save()))
                                     ->setConfirm('Eventuelle Änderungen wurden noch nicht gespeichert')
-                                , $tblDivision, $Level, $Division
+                                , $tblDivision, $Level, $Division, $copyDiary
                             )
                         ))
                     ), new Title(new MoreItems().' Kopie erstellen')

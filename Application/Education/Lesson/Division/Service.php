@@ -1,6 +1,7 @@
 <?php
 namespace SPHERE\Application\Education\Lesson\Division;
 
+use SPHERE\Application\Education\Diary\Diary;
 use SPHERE\Application\Education\Graduation\Evaluation\Evaluation;
 use SPHERE\Application\Education\Graduation\Gradebook\Gradebook;
 use SPHERE\Application\Education\Lesson\Division\Filter\Filter;
@@ -1830,18 +1831,19 @@ class Service extends AbstractService
 
     /**
      * @param IFormInterface $Form
-     * @param                $tblDivision
+     * @param TblDivision    $tblDivision
      * @param                $Level
      * @param                $Division
+     * @param bool           $CopyDiary
      *
      * @return IFormInterface|string
      */
-    public
-    function copyDivision(
+    public function copyDivision(
         IFormInterface $Form,
         TblDivision $tblDivision,
         $Level,
-        $Division
+        $Division,
+        $CopyDiary = false
     ) {
 
         /**
@@ -1918,6 +1920,10 @@ class Service extends AbstractService
                 $tblDivisionCopy = (new Data($this->getBinding()))->createDivision(
                     $tblYear, $tblLevel, $Division['Name'], $Division['Description']
                 );
+
+                if ($tblDivisionCopy && $CopyDiary) {
+                    Diary::useService()->addDiaryDivision($tblDivisionCopy, $tblDivision);
+                }
 
                 if ($tblDivision->getTblLevel()->getServiceTblType() && $tblLevel->getServiceTblType()
                     && $tblDivision->getTblLevel()->getServiceTblType()->getId() !== $tblLevel->getServiceTblType()->getId()
