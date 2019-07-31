@@ -28,6 +28,7 @@ use SPHERE\Common\Frontend\Icon\Repository\Exclamation;
 use SPHERE\Common\Frontend\Icon\Repository\Ok;
 use SPHERE\Common\Frontend\Message\Repository\Danger;
 use SPHERE\Common\Frontend\Message\Repository\Success;
+use SPHERE\Common\Frontend\Text\Repository\Bold;
 use SPHERE\Common\Frontend\Text\Repository\Success as TextSuccess;
 use SPHERE\Common\Frontend\Text\Repository\Warning;
 use SPHERE\Common\Window\Redirect;
@@ -231,9 +232,9 @@ abstract class Service extends AbstractService
         $count = $this->getMinimumGradeCountNumber($tblDivisionSubject, $tblPerson, $tblMinimumGradeCount);
 
         if ($count < $tblMinimumGradeCount->getCount()){
-            return new Warning(new Disable() . ' '. $count);
+            return new Warning(new Disable() . ' '. new Bold($count));
         } else {
-            return new TextSuccess(new Ok() . ' ' . $count);
+            return new TextSuccess(new Ok() . ' ' . new Bold($count));
         }
     }
 

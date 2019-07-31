@@ -187,20 +187,19 @@ class Service extends Extension
 
                 $tblType = Relationship::useService()->getTypeByName(TblType::IDENTIFIER_GUARDIAN);
                 $tblToPersonGuardianList = array();
-                if ($tblType) {
-                    $GuardianList = Relationship::useService()->getPersonRelationshipAllByPerson($tblPerson,
-                        $tblType);
-                    if($GuardianList){
-                        $tblToPersonGuardianList = $GuardianList;
-                    }
+                if ($tblType
+                && $GuardianList = Relationship::useService()->getPersonRelationshipAllByPerson($tblPerson, $tblType)){
+                    $tblToPersonGuardianList = $GuardianList;
                 }
                 $tblType = Relationship::useService()->getTypeByName(TblType::IDENTIFIER_AUTHORIZED);
-                if ($tblType) {
-                    $AuthorizedList = Relationship::useService()->getPersonRelationshipAllByPerson($tblPerson,
-                        $tblType);
-                    if($AuthorizedList){
-                        $tblToPersonGuardianList = array_merge($tblToPersonGuardianList, $AuthorizedList);
-                    }
+                if ($tblType
+                && $AuthorizedList = Relationship::useService()->getPersonRelationshipAllByPerson($tblPerson, $tblType)){
+                    $tblToPersonGuardianList = array_merge($tblToPersonGuardianList, $AuthorizedList);
+                }
+                $tblType = Relationship::useService()->getTypeByName(TblType::IDENTIFIER_GUARDIAN_SHIP);
+                if ($tblType
+                && $AuthorizedList = Relationship::useService()->getPersonRelationshipAllByPerson($tblPerson, $tblType)){
+                    $tblToPersonGuardianList = array_merge($tblToPersonGuardianList, $AuthorizedList);
                 }
                 if (!empty($tblToPersonGuardianList)) {
                     foreach ($tblToPersonGuardianList as $tblToPersonGuardian) {
@@ -238,20 +237,32 @@ class Service extends Extension
                                     $key = 'Sort_3_' . $tblPersonGuardian->getId();
                                 }
                             }
+                            if ($tblToPersonGuardian->getTblType()->getName() == TblType::IDENTIFIER_GUARDIAN_SHIP) {
+                                $pre = 'Vorm. ';
+                                if ($isFemale) {
+                                    $key = 'Sort_6_' . $tblPersonGuardian->getId();
+                                } else {
+                                    $key = 'Sort_7_' . $tblPersonGuardian->getId();
+                                }
+                            }
+
+                            $tblPhoneList[$key] = $pre . $tblPersonGuardian->getFirstName() . ' ' .
+                            $tblPersonGuardian->getLastName();
 
                             //Phone Guardian
                             $tblToPersonPhoneList = Phone::useService()->getPhoneAllByPerson($tblPersonGuardian);
                             if ($tblToPersonPhoneList) {
+                                $FirstNumber = true;
                                 foreach ($tblToPersonPhoneList as $tblToPersonPhone) {
                                     $tblPhone = $tblToPersonPhone->getTblPhone();
                                     if ($tblPhone) {
-                                        if (isset($tblPhoneList[$key])) {
-                                            $tblPhoneList[$key] = $tblPhoneList[$key] . ', '
+                                        if (!$FirstNumber) {
+                                            $tblPhoneList[$key] .= ', '
                                                 . $tblPhone->getNumber() . ' ' . $this->getShortTypeByTblToPersonPhone($tblToPersonPhone);
                                         } else {
-                                            $tblPhoneList[$key] = $pre . $tblPersonGuardian->getFirstName() . ' ' .
-                                                $tblPersonGuardian->getLastName() . ' ('
-                                                . $tblPhone->getNumber() . ' ' . $this->getShortTypeByTblToPersonPhone($tblToPersonPhone);
+                                            $tblPhoneList[$key] .= ' ('. $tblPhone->getNumber() . ' '
+                                                . $this->getShortTypeByTblToPersonPhone($tblToPersonPhone);
+                                            $FirstNumber = false;
                                         }
                                     }
                                 }

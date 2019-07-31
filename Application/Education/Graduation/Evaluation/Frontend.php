@@ -3322,12 +3322,12 @@ class Frontend extends Extension implements IFrontendInterface
                                         $gradeTypeId = $tblGradeType->getId();
                                         // Kopfnotenvorschlag KL
                                         if ($showProposalBehaviorGrade) {
-                                            $proposalGrade = new Warning('f');
+                                            $proposalGrade = new Warning(new Bold('f'));
                                             if (($tblProposalBehaviorGrade = Gradebook::useService()->getProposalBehaviorGrade(
                                                 $tblDivision, $tblTask, $tblGradeType, $tblPerson
                                                 )) && $tblProposalBehaviorGrade->getDisplayGrade() !== ''
                                             ) {
-                                                $proposalGrade = $tblProposalBehaviorGrade->getDisplayGrade();
+                                                $proposalGrade = new Bold($tblProposalBehaviorGrade->getDisplayGrade());
                                             }
 
                                             if (isset($studentListByDivision['Type' . $gradeTypeId])) {
@@ -3473,14 +3473,16 @@ class Frontend extends Extension implements IFrontendInterface
                 $gradeValue = new \SPHERE\Common\Frontend\Text\Repository\Danger($gradeValue);
             }
 
+            $gradeValue = new Bold($gradeValue);
+
             $studentList[$tblDivision->getId()][$tblPerson->getId()]
             ['Subject' . $tblSubject->getId()] = ($tblGrade->getGrade() !== null ?
-                    $gradeValue : '') . (($average || $average === (float)0) ? new Muted('&nbsp;&nbsp; &#216;' . $average) : '');
+                    $gradeValue : '') . (($average || $average === (float)0) ? new Muted(new Small('&nbsp;&nbsp; &#216;' . $average)) : '');
             return $studentList;
         } else {
             $studentList[$tblDivision->getId()][$tblPerson->getId()]
             ['Subject' . $tblSubject->getId()] =
-                new Warning('fehlt')
+                new Warning(new Bold('fehlt'))
                 . (($average || $average === (float)0) ? new Muted('&nbsp;&nbsp; &#216;' . $average) : '');
             return $studentList;
         }
@@ -3527,7 +3529,7 @@ class Frontend extends Extension implements IFrontendInterface
                 }
             } else {
                 $gradeText = $tblSubject->getAcronym() . ': ' .
-                    new Warning('f');
+                    new Warning(new Bold('f'));
             }
 
             if (!isset($studentList[$tblDivision->getId()][$tblPerson->getId()]['Type' . $gradeTypeId])) {
