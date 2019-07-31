@@ -1939,11 +1939,11 @@ class Service extends Extension
                 $export->setValue($export->getCell(33, $Row), $PersonData['RemarkExcel']);
 
                 // WrapText
-                $export->setStyle($export->getCell(31, $Row))->setWrapText();
+                $export->setStyle($export->getCell(33, $Row))->setWrapText();
                 $Row++;
             }
 
-            $export->setStyle($export->getCell(31, 0))->setColumnWidth(50);
+            $export->setStyle($export->getCell(33, 0))->setColumnWidth(50);
 
             $Row++;
             $export->setValue($export->getCell(0, $Row), 'Weiblich:');
