@@ -8,6 +8,8 @@ use SPHERE\Application\Billing\Inventory\Item\Service\Entity\TblItem;
 use SPHERE\Application\Education\Lesson\Division\Division;
 use SPHERE\Application\IModuleInterface;
 use SPHERE\Application\IServiceInterface;
+use SPHERE\Application\People\Group\Group;
+use SPHERE\Application\People\Person\Person;
 use SPHERE\Common\Frontend\IFrontendInterface;
 use SPHERE\Common\Main;
 use MOC\V\Core\FileSystem\FileSystem;
@@ -50,10 +52,12 @@ class BalanceDownload implements IModuleInterface
      * @param string $From
      * @param string $To
      * @param string $DivisionId
+     * @param string $GroupId
+     * @param string $PersonId
      *
      * @return bool|string
      */
-    public function downloadBalanceList($ItemIdString = '', $Year = '', $From = '', $To = '', $DivisionId = '0')
+    public function downloadBalanceList($ItemIdString = '', $Year = '', $From = '', $To = '', $DivisionId = '', $GroupId = '', $PersonId = '')
     {
 
         if($ItemIdString){
@@ -62,17 +66,35 @@ class BalanceDownload implements IModuleInterface
             foreach($ItemIdList as $ItemId){
                 $tblItemList[] = Item::useService()->getItemById($ItemId);
             }
-            $DivisionString = '';
-            // ToDO später sollen andere Personenlisten auswählbar werden (Personengruppen / Einzelperson)
-            if($DivisionId && ( $tblDivision = Division::useService()->getDivisionById($DivisionId))){
-                // Datei erhält Name der Klasse
-                $DivisionString = $tblDivision->getDisplayName().'_';
+
+            $tblDivision = false;
+            $tblGroup = false;
+            $tblPerson = false;
+
+            if($DivisionId){
+                $tblDivision = Division::useService()->getDivisionById($DivisionId);
+            }
+            if($GroupId){
+                $tblGroup = Group::useService()->getGroupById($GroupId);
+            }
+            if($PersonId){
+                $tblPerson = Person::useService()->getPersonById($PersonId);
+            }
+
+            $FileName = '';
+            if($tblDivision){
                 // Pesronenliste aus der Klasse:
                 $tblPersonList = Division::useService()->getPersonAllByDivisionList(array($tblDivision));
-            } else {
-                // Personenliste, wenn keine Klasse gewählt wurde:
-                $tblPersonList = Balance::useService()->getPersonListByInvoiceTime($Year,
-                    $From, $To);
+                // Datei erhält Name der Klasse
+                $FileName = $tblDivision->getDisplayName().'_';
+            } elseif($tblGroup) {
+                $tblPersonList = Group::useService()->getPersonAllByGroup($tblGroup);
+                // Datei erhält Name der Gruppe
+                $FileName = $tblGroup->getName().'_';
+            } elseif($tblPerson){
+                $tblPersonList = array($tblPerson);
+                // Datei erhält Name der Gruppe
+                $FileName = $tblPerson->getLastName().'_';
             }
             $PriceList = array();
             if($tblPersonList){
@@ -94,7 +116,7 @@ class BalanceDownload implements IModuleInterface
                 $ToMonth = $MonthList[$To];
 
                 return FileSystem::getDownload($fileLocation->getRealPath(),
-                    $DivisionString.$Year.'-'.$StartMonth.'-'.$ToMonth.'.xlsx')->__toString();
+                    $FileName.$Year.'-'.$StartMonth.'-'.$ToMonth.'.xlsx')->__toString();
             }
         }
 

@@ -266,14 +266,19 @@ class ApiDocument implements IApiInterface
     }
 
     /**
+     * @param string $IsMultiItem
+     *
      * @return Pipeline
      */
-    public static function pipelineChangeFilter()
+    public static function pipelineChangeFilter($IsMultiItem = '0')
     {
         $Pipeline = new Pipeline(false);
         $ModalEmitter = new ServerEmitter(self::receiverBlock('', 'changeFilter'), self::getEndpoint());
         $ModalEmitter->setGetPayload(array(
             self::API_TARGET => 'changeFilter',
+        ));
+        $ModalEmitter->setPostPayload(array(
+            'IsMultiItem' => $IsMultiItem,
         ));
         $Pipeline->appendEmitter($ModalEmitter);
 
@@ -466,9 +471,10 @@ class ApiDocument implements IApiInterface
      *
      * @return \SPHERE\Common\Frontend\Form\IFormInterface
      */
-    public function changeFilter($Balance)
+    public function changeFilter($Balance, $IsMultiItem = '0')
     {
-        return Balance::useFrontend()->getFilterForm($Balance);
+
+        return Balance::useFrontend()->getFilterForm($Balance, null, $IsMultiItem);
     }
 
     /**

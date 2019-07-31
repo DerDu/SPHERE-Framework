@@ -94,9 +94,12 @@ class Frontend extends Extension implements IFrontendInterface
         if(!isset($Balance['To'])){
             $_POST['Balance']['To'] = '12';
         }
+        if(!isset($Balance['Filter'])){
+            $_POST['Balance']['Filter'] = self::FILTER_CLASS;
+        }
         // Standard Download
         $Download = (new PrimaryLink('Herunterladen', '', new Download()))->setDisabled();
-        $tableContent = array();
+        $tblPersonList = array();
 
         $tblItemList = array();
         if(isset($Balance['ItemList'])){
@@ -105,20 +108,58 @@ class Frontend extends Extension implements IFrontendInterface
             }
         }
 
+        $tableContent = array();
+        $tblPerson = false;
+        $error = false;
+        $message = null;
+        if(!empty($Balance)){
+            if (isset($Balance['Search'])) {
+                if (!($tblPerson = Person::useService()->getPersonById(isset($Balance['PersonId']) ? $Balance['PersonId'] : 0))) {
+                    $message = new Warning('Bitte wählen Sie eine Person aus', new Exclamation());
+                    $error = true;
+                }
+            }
+        }
+
+//        if(empty($tblItemList)){
+//            $message = new Warning('Bitte wählen Sie mindestens eine Beitragsart aus', new Exclamation());
+//            $error = true;
+//        }
+
+        $filterForm = $this->getFilterForm($Balance, $message, '1');
+        $filterBlock = ApiDocument::receiverBlock($filterForm, 'changeFilter');
+
         if(!empty($Balance) && !empty($tblItemList)){
-            if(!isset($Balance['Division'])){
-                $Balance['Division'] = '';
+            $tblDivision = false;
+            $tblGroup = false;
+            if (isset($Balance['Division'])) {
+                if (!($tblDivision = Division::useService()->getDivisionById($Balance['Division']))) {
+                    $filterForm->setError('Balance[Division]', 'Bitte wählen Sie eine Klasse aus');
+                    $error = true;
+                }
+            }
+            if (isset($Balance['Group'])) {
+                if (!($tblGroup = Group::useService()->getGroupById($Balance['Group']))) {
+                    $filterForm->setError('Balance[Group]', 'Bitte wählen Sie eine Gruppe aus');
+                    $error = true;
+                }
             }
 
-            // ToDO später sollen andere Personenlisten auswählbar werden (Personengruppen / Einzelperson)
-            if($Balance['Division'] && ( $tblDivision = Division::useService()->getDivisionById($Balance['Division']))){
+            if($tblDivision){
                 // Pesronenliste aus der Klasse:
                 $tblPersonList = Division::useService()->getPersonAllByDivisionList(array($tblDivision));
-            } else {
-                // Personenliste, wenn keine Klasse gewählt wurde:
-                $tblPersonList = Balance::useService()->getPersonListByInvoiceTime($Balance['Year'],
-                    $Balance['From'], $Balance['To']);
+            } elseif($tblGroup) {
+                $tblPersonList = Group::useService()->getPersonAllByGroup($tblGroup);
+            } elseif($tblPerson){
+                $tblPersonList = array($tblPerson);
             }
+
+            // Suche ohne Filterung erstmal deaktiviert
+//            } else {
+//                // Personenliste, wenn keine Klasse gewählt wurde:
+//                $tblPersonList = Balance::useService()->getPersonListByInvoiceTime($Balance['Year'],
+//                    $Balance['From'], $Balance['To']);
+//            }
 
             $ItemIdString = '';
             /** @var TblItem $tblItem */
@@ -143,20 +184,41 @@ class Frontend extends Extension implements IFrontendInterface
                 $PriceList = Balance::useService()->getSummaryByItemPrice($PriceList);
                 //
                 $tableContent = Balance::useService()->getTableContentByItemPriceList($PriceList);
-                $Download = new PrimaryLink('Herunterladen', '/Api/Billing/Balance/Balance/Print/Download',
-                    new Download(), array(
-                        'ItemIdString' => $ItemIdString,
-                        'Year'       => $Balance['Year'],
-                        'From'       => $Balance['From'],
-                        'To'         => $Balance['To'],
-                        'DivisionId' => $Balance['Division'],
-                    ));
+                if($tblDivision){
+                    $Download = new PrimaryLink('Herunterladen', '/Api/Billing/Balance/Balance/Print/Download',
+                        new Download(), array(
+                            'ItemIdString' => $ItemIdString,
+                            'Year'       => $Balance['Year'],
+                            'From'       => $Balance['From'],
+                            'To'         => $Balance['To'],
+                            'DivisionId' => $Balance['Division'],
+                        ));
+                } elseif($tblGroup) {
+                    $Download = new PrimaryLink('Herunterladen', '/Api/Billing/Balance/Balance/Print/Download',
+                        new Download(), array(
+                            'ItemIdString' => $ItemIdString,
+                            'Year'       => $Balance['Year'],
+                            'From'       => $Balance['From'],
+                            'To'         => $Balance['To'],
+                            'GroupId' => $Balance['Group'],
+                        ));
+                } elseif($tblPerson) {
+                    $Download = new PrimaryLink('Herunterladen', '/Api/Billing/Balance/Balance/Print/Download',
+                        new Download(), array(
+                            'ItemIdString' => $ItemIdString,
+                            'Year'       => $Balance['Year'],
+                            'From'       => $Balance['From'],
+                            'To'         => $Balance['To'],
+                            'PersonId' => $Balance['PersonId'],
+                        ));
+                }
             }
         }
 
         // Selectbox soll nach unten aufklappen (tritt nur noch bei Anwendungsansicht auf)
         $Space = '<div style="height: 100px;"></div>';
-        if(empty($Balance)){
+
+        if(empty($Balance) || $error){
             $Table = new Info('Bitte benutzen Sie die Filterung');
         } elseif(empty($tblItemList)) {
             $Table = new Info('Bitte wählen Sie mindestens eine Beitragsart aus');
@@ -196,7 +258,7 @@ class Frontend extends Extension implements IFrontendInterface
         $Stage->setContent(new Layout(
             new LayoutGroup(array(
                 new LayoutRow(
-                    new LayoutColumn($this->formBalanceFilter())
+                    new LayoutColumn(new Well($filterBlock))
                 ),
                 new LayoutRow(
                     new LayoutColumn(new Container($Download).new Container('&nbsp;'))
@@ -211,60 +273,6 @@ class Frontend extends Extension implements IFrontendInterface
         ));
 
         return $Stage;
-    }
-
-    public function formBalanceFilter()
-    {
-
-        // SelectBox content
-        $YearList = Invoice::useService()->getYearList(1, 1);
-        $MonthList = Invoice::useService()->getMonthList();
-        $tblItemAll = Item::useService()->getItemAll();
-
-        $tblYear = false;
-        $tblDivisionList = array();
-        if(($tblYearList = Term::useService()->getYearByNow())){
-            $tblYear = current($tblYearList);
-        }
-        if($tblYear){
-            if(!($tblDivisionList = Division::useService()->getDivisionAllByYear($tblYear))){
-                $tblDivisionList = array();
-            }
-        }
-
-        $CheckboxItemList = array();
-        if($tblItemAll){
-            foreach($tblItemAll as $tblItem){
-                $CheckboxItemList[] = new CheckBox('Balance[ItemList]['.$tblItem->getId().']', $tblItem->getName(), $tblItem->getId());
-            }
-        }
-
-        return new Well(
-            new Title('Filterung für Belegdruck', '').
-            new Form(
-                new FormGroup(array(
-                    new FormRow(array(
-                        new FormColumn((new SelectBox('Balance[Year]', 'Jahr', $YearList))->setRequired(), 3),
-                        new FormColumn(new SelectBox('Balance[From]', 'Zeitraum Von', $MonthList, null, true, null), 3),
-                        new FormColumn(new SelectBox('Balance[To]', 'Zeitraum Bis', $MonthList, null, true, null), 3),
-                        new FormColumn(new SelectBox('Balance[Division]', 'Klasse '.new ToolTip(new InfoIcon(),
-                                'Klassen aus dem aktuellem Schuljahr (Datum '.(new \DateTime())->format('d.m.Y').')')
-                            , array( '{{ tblLevel.Name }} {{ Name }}' => $tblDivisionList), null, true, null), 3),
-                    )),
-                    new FormRow(array(
-//                        new FormColumn(
-//                            (new SelectBox('Balance[Item]', 'Beitragsart',
-//                            array('{{ Name }}' => $tblItemAll)))->setRequired(), 3),
-                        new FormColumn(
-                            new Panel(new Bold('Beitragsarten '.new DangerText('*')),
-                                $CheckboxItemList, Panel::PANEL_TYPE_INFO)
-                        ),
-                    )),
-                    new FormRow(
-                        new FormColumn(new Primary('Filtern', new Filter()))
-                    )
-                ))
-            ));
     }
 
     /**
@@ -413,12 +421,13 @@ class Frontend extends Extension implements IFrontendInterface
     }
 
     /**
-     * @param $Balance
+     * @param array             $Balance
      * @param IMessageInterface $message
+     * @param string            $IsMultiItem
      *
      * @return IFormInterface
      */
-    public function getFilterForm($Balance, IMessageInterface $message = null)
+    public function getFilterForm($Balance, IMessageInterface $message = null, $IsMultiItem = '0')
     {
 
         $filterOptions = array(
@@ -437,6 +446,23 @@ class Frontend extends Extension implements IFrontendInterface
             $YearList = Invoice::useService()->getYearList(1, 1);
             $MonthList = Invoice::useService()->getMonthList();
             $tblItemAll = Item::useService()->getItemAll();
+
+            // ohne Mehrfachauswahl Beitragsarten
+            $ItemSelect = new FormColumn((new SelectBox('Balance[Item]', 'Beitragsart',
+                array('{{ Name }}' => $tblItemAll)))->setRequired(), 3);
+            // mit Mehrfachauswahl Beitragsarten
+            if($IsMultiItem != '0'){
+                $CheckboxItemList = array();
+                if($tblItemAll){
+                    foreach($tblItemAll as $tblItem){
+                        $CheckboxItemList[] = new CheckBox('Balance[ItemList]['.$tblItem->getId().']', $tblItem->getName(), $tblItem->getId());
+                    }
+                }
+                $ItemSelect = new FormColumn(
+                    new Panel(new Bold('Beitragsarten '.new DangerText('*')),
+                        $CheckboxItemList, Panel::PANEL_TYPE_INFO)
+                , 6);
+            }
 
             $tblYear = false;
             if (($tblYearList = Term::useService()->getYearByNow())) {
@@ -478,7 +504,7 @@ class Frontend extends Extension implements IFrontendInterface
                                     new Panel(
                                         'Filter für',
                                         (new SelectBox('Balance[Filter]', '',
-                                            $filterOptions))->ajaxPipelineOnChange(ApiDocument::pipelineChangeFilter()),
+                                            $filterOptions))->ajaxPipelineOnChange(ApiDocument::pipelineChangeFilter($IsMultiItem)),
                                         Panel::PANEL_TYPE_PRIMARY
                                     )
                                 , 3)
@@ -492,8 +518,7 @@ class Frontend extends Extension implements IFrontendInterface
                                 new FormColumn($selectBox, 3),
                             )),
                             new FormRow(array(
-                                new FormColumn((new SelectBox('Balance[Item]', 'Beitragsart',
-                                    array('{{ Name }}' => $tblItemAll)))->setRequired(), 3),
+                                $ItemSelect,
                             )),
                             new FormRow(
                                 new FormColumn(new Primary('Filtern', new Filter()))
@@ -509,7 +534,7 @@ class Frontend extends Extension implements IFrontendInterface
                                     new Panel(
                                         'Filter für',
                                         (new SelectBox('Balance[Filter]', '',
-                                            $filterOptions))->ajaxPipelineOnChange(ApiDocument::pipelineChangeFilter()),
+                                            $filterOptions))->ajaxPipelineOnChange(ApiDocument::pipelineChangeFilter($IsMultiItem)),
                                         Panel::PANEL_TYPE_PRIMARY
                                     )
                                 )
@@ -522,8 +547,7 @@ class Frontend extends Extension implements IFrontendInterface
                                     null), 4),
                             )),
                             new FormRow(array(
-                                new FormColumn((new SelectBox('Balance[Item]', 'Beitragsart',
-                                    array('{{ Name }}' => $tblItemAll)))->setRequired(), 3),
+                                $ItemSelect,
                             )),
                             new FormRow(array(
                                 new FormColumn(array(
