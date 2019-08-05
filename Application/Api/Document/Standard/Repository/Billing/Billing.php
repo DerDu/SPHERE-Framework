@@ -104,6 +104,7 @@ class Billing
      * @param $CauserSalutation
      * @param $CauserFirstName
      * @param $CauserLastName
+     * @param $Birthday
      * @param $From
      * @param $To
      * @param $Date
@@ -125,6 +126,7 @@ class Billing
         $CauserSalutation,
         $CauserFirstName,
         $CauserLastName,
+        $Birthday,
         $From,
         $To,
         $Date,
@@ -144,6 +146,7 @@ class Billing
         $Text = str_replace('[Beitragsverursacher Anrede]', $CauserSalutation, $Text);
         $Text = str_replace('[Beitragsverursacher Vorname]', $CauserFirstName, $Text);
         $Text = str_replace('[Beitragsverursacher Nachname]', $CauserLastName, $Text);
+        $Text = str_replace('[Beitragsverursacher Geburtstag]', $Birthday, $Text);
         $Text = str_replace('[Datum]', $Date, $Text);
         $Text = str_replace('[Ort]', $Location, $Text);
         $Text = str_replace('[Trägername]', $CompanyName, $Text);
@@ -187,6 +190,24 @@ class Billing
         $CauserSalutation = $tblPersonCauser->getSalutation();
         $CauserFirstName = $tblPersonCauser->getFirstSecondName();
         $CauserLastName = $tblPersonCauser->getLastName();
+        $Birthday = '';
+        if(($tblCommon = $tblPersonCauser->getCommon())){
+            if(($tblCommonBirthDates = $tblCommon->getTblCommonBirthDates())){
+                $Birthday = $tblCommonBirthDates->getBirthday();
+            }
+        }
+
+        // Umgang mit nicht gefüllten Werten
+        $ItemName = $this->setEmptyString($ItemName);
+        $DebtorSalutation = $this->setEmptyString($DebtorSalutation);
+        $DebtorFirstName = $this->setEmptyString($DebtorFirstName);
+        $DebtorLastName = $this->setEmptyString($DebtorLastName);
+        $CauserSalutation = $this->setEmptyString($CauserSalutation);
+        $CauserFirstName = $this->setEmptyString($CauserFirstName);
+        $CauserLastName = $this->setEmptyString($CauserLastName);
+        $Birthday = $this->setEmptyString($Birthday);
+
+
 
         $Subject = $this->setPlaceholders(
             $Subject,
@@ -199,6 +220,7 @@ class Billing
             $CauserSalutation,
             $CauserFirstName,
             $CauserLastName,
+            $Birthday,
             $From,
             $To,
             $Date,
@@ -219,6 +241,7 @@ class Billing
             $CauserSalutation,
             $CauserFirstName,
             $CauserLastName,
+            $Birthday,
             $From,
             $To,
             $Date,
@@ -255,6 +278,20 @@ class Billing
                     ->styleMarginTop('25px')
                 )
             );
+    }
+
+    /**
+     * @param string $Value
+     *
+     * @return string
+     */
+    private function setEmptyString($Value = '')
+    {
+
+        if($Value === ''){
+            return '...';
+        }
+        return $Value;
     }
 
     /**

@@ -265,11 +265,11 @@ class Frontend extends Extension implements IFrontendInterface
         )));
         $form->appendFormButton(new \SPHERE\Common\Frontend\Form\Repository\Button\Primary('Speichern', new Save()));
 
-        $StandardPlaceholder = true;
+        $IsWarning = false;
         if($tblDocument->getIsWarning()){
-            $StandardPlaceholder = false;
+            $IsWarning = true;
         }
-        $freeFields = $this->getFreeFields($StandardPlaceholder);
+        $freeFields = $this->getFreeFields($IsWarning);
 
         $Stage->setContent(new Layout(new LayoutGroup(array(
             new LayoutRow(array(
@@ -294,26 +294,30 @@ class Frontend extends Extension implements IFrontendInterface
     }
 
     /**
-     * @param bool $StandardPlaceholder
+     * @param bool $IsWarning
      *
      * @return array
      */
-    public function getFreeFields($StandardPlaceholder = true)
+    public function getFreeFields($IsWarning = false)
     {
 
-        if($StandardPlaceholder){
+        if($IsWarning){
             return array(
-                '[Jahr]',
-                '[Zeitraum von]',
-                '[Zeitraum bis]',
+                '[Rechnungsnummer]',
+                '[Abrechnungszeitraum]',
+                '[Name der Abrechnung]',
+                '[Fälligkeit]',
                 '[Beitragsart]',
-                '[Beitragssumme]',
+                '[Anzahl]',
+                '[Einzelpreis]',
+                '[Gesamtpreis]',
                 '[Beitragszahler Anrede]',
                 '[Beitragszahler Vorname]',
                 '[Beitragszahler Nachname]',
                 '[Beitragsverursacher Anrede]',
                 '[Beitragsverursacher Vorname]',
                 '[Beitragsverursacher Nachname]',
+                '[Beitragsverursacher Geburtstag]',
                 '[Datum]',
                 '[Ort]',
                 '[Trägername]',
@@ -322,20 +326,18 @@ class Frontend extends Extension implements IFrontendInterface
             );
         }
         return array(
-            '[Rechnungsnummer]',
-            '[Abrechnungszeitraum]',
-            '[Name der Abrechnung]',
-            '[Fälligkeit]',
+            '[Jahr]',
+            '[Zeitraum von]',
+            '[Zeitraum bis]',
             '[Beitragsart]',
-            '[Anzahl]',
-            '[Einzelpreis]',
-            '[Gesamtpreis]',
+            '[Beitragssumme]',
             '[Beitragszahler Anrede]',
             '[Beitragszahler Vorname]',
             '[Beitragszahler Nachname]',
             '[Beitragsverursacher Anrede]',
             '[Beitragsverursacher Vorname]',
             '[Beitragsverursacher Nachname]',
+            '[Beitragsverursacher Geburtstag]',
             '[Datum]',
             '[Ort]',
             '[Trägername]',

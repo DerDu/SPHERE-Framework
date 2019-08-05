@@ -10,6 +10,7 @@ use SPHERE\Application\Billing\Inventory\Item\Service\Entity\TblItem;
 use SPHERE\Application\Billing\Inventory\Setting\Setting;
 use SPHERE\Application\Education\Graduation\Gradebook\MinimumGradeCount\SelectBoxItem;
 use SPHERE\Application\Education\Lesson\Division\Division;
+use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
 use SPHERE\Application\Education\Lesson\Term\Term;
 use SPHERE\Application\People\Group\Group;
 use SPHERE\Application\People\Person\Person;
@@ -474,6 +475,9 @@ class Frontend extends Extension implements IFrontendInterface
                     if (!($tblDivisionList = Division::useService()->getDivisionAllByYear($tblYear))) {
                         $tblDivisionList = array();
                     }
+                }
+                if(empty($tblDivisionList)){
+                    $tblDivisionList[] = new TblDivision();
                 }
 
                 if ($Filter == self::FILTER_CLASS) {
