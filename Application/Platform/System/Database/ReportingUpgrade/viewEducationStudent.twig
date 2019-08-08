@@ -6,6 +6,7 @@ SELECT distinct
     vDS.TblLevel_IsChecked AS TblLevel_IsChecked,
     vDS.TblDivision_Name AS TblDivision_Name,
     vDS.TblDivision_Description AS TblDivision_Description,
+    concat(vDS.TblLevel_Name, TblDivision_Name) as TblDivision_Display,
     vST.TblType_Name AS TblType_Name,
     vST.TblType_Description AS TblType_Description,
     (CASE WHEN (ISNULL(vYP.TblYear_Year) OR (vYP.TblYear_Year = '')) THEN vYP.TblYear_Name ELSE vYP.TblYear_Year END) AS TblYear_Year,

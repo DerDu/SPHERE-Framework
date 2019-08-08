@@ -27,9 +27,7 @@ class ViewEducationStudent extends AbstractView
     // Sortierung beeinflusst die Gruppenreihenfolge im Frontend
     const TBL_PERSON_ID = 'TblPerson_Id';
 
-    const TBL_TYPE_NAME = 'TblType_Name';
-    const TBL_TYPE_DESCRIPTION = 'TblType_Description';
-
+    const TBL_DIVISION_DISPLAY = 'TblDivision_Display';
     const TBL_LEVEL_ID = 'TblLevel_Id';
     const TBL_LEVEL_NAME = 'TblLevel_Name';
     const TBL_LEVEL_DESCRIPTION = 'TblLevel_Description';
@@ -37,6 +35,9 @@ class ViewEducationStudent extends AbstractView
 
     const TBL_DIVISION_NAME = 'TblDivision_Name';
     const TBL_DIVISION_DESCRIPTION = 'TblDivision_Description';
+
+    const TBL_TYPE_NAME = 'TblType_Name';
+    const TBL_TYPE_DESCRIPTION = 'TblType_Description';
 
     const TBL_YEAR_YEAR = 'TblYear_Year';
     const TBL_YEAR_DESCRIPTION = 'TblYear_Description';
@@ -54,6 +55,10 @@ class ViewEducationStudent extends AbstractView
      * @Column(type="string")
      */
     protected $TblPerson_Id;
+    /**
+     * @Column(type="string")
+     */
+    protected $TblDivision_Display;
     /**
      * @Column(type="string")
      */
@@ -104,6 +109,7 @@ class ViewEducationStudent extends AbstractView
     {
 
         //NameDefinition
+        $this->setNameDefinition(self::TBL_DIVISION_DISPLAY, 'Bildung: Klasse');
         $this->setNameDefinition(self::TBL_LEVEL_ID, 'Bildung: Klassenstufe');
 //        $this->setNameDefinition(self::TBL_LEVEL_NAME, 'Bildung: Klassenstufe');
         $this->setNameDefinition(self::TBL_LEVEL_DESCRIPTION, 'Bildung: Stufen Beschreibung');
@@ -116,10 +122,11 @@ class ViewEducationStudent extends AbstractView
 
         //GroupDefinition
         $this->setGroupDefinition('Klasse', array(
-            self::TBL_TYPE_NAME,
+            self::TBL_DIVISION_DISPLAY,
             self::TBL_LEVEL_ID,
             self::TBL_DIVISION_NAME,
             self::TBL_DIVISION_DESCRIPTION,
+            self::TBL_TYPE_NAME,
         ));
 
         $this->setGroupDefinition('Zeitraum', array(
