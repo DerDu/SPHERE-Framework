@@ -143,6 +143,8 @@ class CustodySorter
             }
         // 2 Sorberechtigte falsch zugeordnet
         } elseif ($assignedCount == 2 && $unAssignedCount == 0
+            && $this->Custody1
+            && $this->Custody2
             && ($gender1 = $this->Custody1->getGenderName())
             && ($gender2 = $this->Custody2->getGenderName())
             && $gender1 != $gender2
