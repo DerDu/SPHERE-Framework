@@ -84,3 +84,27 @@
     font-weight: bold;
     src: url("{{ UriPath }}/Common/Style/Font/Myriad-Pro-BoldItalic.ttf") format('truetype');
 }
+@font-face {
+    font-family: 'AndikaNewBasic';
+    font-style: normal;
+    font-weight: normal;
+    src: url("{{ UriPath }}/Common/Style/Font/AndikaNewBasic-R.ttf") format('truetype');
+}
+@font-face {
+    font-family: 'AndikaNewBasic';
+    font-style: normal;
+    font-weight: bold;
+    src: url("{{ UriPath }}/Common/Style/Font/AndikaNewBasic-B.ttf") format('truetype');
+}
+@font-face {
+    font-family: 'AndikaNewBasic';
+    font-style: italic;
+    font-weight: normal;
+    src: url("{{ UriPath }}/Common/Style/Font/AndikaNewBasic-I.ttf") format('truetype');
+}
+@font-face {
+    font-family: 'AndikaNewBasic';
+    font-style: italic;
+    font-weight: bold;
+    src: url("{{ UriPath }}/Common/Style/Font/AndikaNewBasic-BI.ttf") format('truetype');
+}

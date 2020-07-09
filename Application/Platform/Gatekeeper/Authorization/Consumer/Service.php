@@ -3,6 +3,7 @@ namespace SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer;
 
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Service\Data;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Service\Entity\TblConsumer;
+use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Service\Entity\TblConsumerLogin;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Service\Setup;
 use SPHERE\Common\Frontend\Form\IFormInterface;
 use SPHERE\Common\Window\Redirect;
@@ -62,6 +63,17 @@ class Service extends AbstractService
     }
 
     /**
+     * @param $Id
+     *
+     * @return bool|TblConsumer
+     */
+    public function getConsumerLoginById($Id)
+    {
+
+        return (new Data($this->getBinding()))->getConsumerLoginById($Id);
+    }
+
+    /**
      * @param string $Name
      *
      * @return bool|TblConsumer
@@ -70,6 +82,33 @@ class Service extends AbstractService
     {
 
         return (new Data($this->getBinding()))->getConsumerByName($Name);
+    }
+
+    /**
+     * @param TblConsumer $tblConsumer
+     *
+     * @return bool|TblConsumerLogin
+     */
+    public function getConsumerLoginByConsumer(TblConsumer $tblConsumer)
+    {
+
+        return (new Data($this->getBinding()))->getConsumerLoginByConsumer($tblConsumer);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSchoolSeparated()
+    {
+
+        if(($tblConsumer = $this->getConsumerBySession())){
+            if(($tblConsumerLogin = Consumer::useService()->getConsumerLoginByConsumer($tblConsumer))){
+                if($tblConsumerLogin->getIsSchoolSeparated()){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

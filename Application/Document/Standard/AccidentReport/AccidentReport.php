@@ -210,88 +210,82 @@ class AccidentReport extends Extension
 
             $tblStudent = Student::useService()->getStudentByPerson($tblPerson);
             if ($tblStudent) {
-
                 // Schuldaten der Schule des Schülers
-                $tblStudentTransferType = Student::useService()->getStudentTransferTypeByIdentifier('PROCESS');
-                $tblStudentTransfer = Student::useService()->getStudentTransferByType($tblStudent,
-                    $tblStudentTransferType);
-                if ($tblStudentTransfer) {
-                    $tblType = false;
-                    $tblCompanySchool = $tblStudentTransfer->getServiceTblCompany();
+                $tblCompanySchool = Student::useService()->getCurrentSchoolByPerson($tblPerson);
+                $tblType = false;
 
-                    // Schulart über Klasse in der der Schüler aktuell ist
-                    $tblDivision = Student::useService()->getCurrentDivisionByPerson($tblPerson);
-                    if($tblDivision && ($tblLevel = $tblDivision->getTblLevel())){
-                        $tblType = $tblLevel->getServiceTblType();
-                    }
-                    // Unternehmensnummer wird sofern möglich und vorhanden aus den Mandantenschulen gezogen
-                    // und überschreibt damit die Unternehmensnummer der Schulträger
-                    if($tblType){
-                        // Schule aus Mandanteneinstellung mit Schulart
-                        if(($tblSchoolList = School::useService()->getSchoolByType($tblType))){
-                            // bei einer Schule kann diese genommen werden. (Normalfall)
-                            if(count($tblSchoolList) == 1){
-                                $tblSchool = current($tblSchoolList);
-                                // Übernahme nur, wenn eine Unternehmensnummer hinterlegt ist
-                                if($tblSchool->getCompanyNumber() != ''){
-                                    $Global->POST['Data']['CompanyNumber'] = $tblSchool->getCompanyNumber();
-                                }
-                            } else {
-                                // mehr als eine Schule mit gleicher Schulart
-                                if(($tblSchool = School::useService()->getSchoolByCompanyAndType($tblCompanySchool, $tblType))){
-                                    if($tblSchool){
-                                        // Übernahme nur, wenn eine Unternehmensnummer hinterlegt ist
-                                        if($tblSchool->getCompanyNumber() != '') {
-                                            $Global->POST['Data']['CompanyNumber'] = $tblSchool->getCompanyNumber();
-                                        }
+                // Schulart über Klasse in der der Schüler aktuell ist
+                $tblDivision = Student::useService()->getCurrentDivisionByPerson($tblPerson);
+                if($tblDivision && ($tblLevel = $tblDivision->getTblLevel())){
+                    $tblType = $tblLevel->getServiceTblType();
+                }
+                // Unternehmensnummer wird sofern möglich und vorhanden aus den Mandantenschulen gezogen
+                // und überschreibt damit die Unternehmensnummer der Schulträger
+                if($tblType){
+                    // Schule aus Mandanteneinstellung mit Schulart
+                    if(($tblSchoolList = School::useService()->getSchoolByType($tblType))){
+                        // bei einer Schule kann diese genommen werden. (Normalfall)
+                        if(count($tblSchoolList) == 1){
+                            $tblSchool = current($tblSchoolList);
+                            // Übernahme nur, wenn eine Unternehmensnummer hinterlegt ist
+                            if($tblSchool->getCompanyNumber() != ''){
+                                $Global->POST['Data']['CompanyNumber'] = $tblSchool->getCompanyNumber();
+                            }
+                        } else {
+                            // mehr als eine Schule mit gleicher Schulart
+                            if(($tblSchool = School::useService()->getSchoolByCompanyAndType($tblCompanySchool, $tblType))){
+                                if($tblSchool){
+                                    // Übernahme nur, wenn eine Unternehmensnummer hinterlegt ist
+                                    if($tblSchool->getCompanyNumber() != '') {
+                                        $Global->POST['Data']['CompanyNumber'] = $tblSchool->getCompanyNumber();
                                     }
                                 }
                             }
                         }
                     }
-                    if ($tblCompanySchool) {
-                        $Global->POST['Data']['School'] = $tblCompanySchool->getName();
-                        $Global->POST['Data']['SchoolExtended'] = $tblCompanySchool->getExtendedName();
-                        $tblAddressSchool = Address::useService()->getAddressByCompany($tblCompanySchool);
-                        if ($tblAddressSchool) {
-                            $Global->POST['Data']['SchoolAddressStreet'] = $tblAddressSchool->getStreetName().', '.$tblAddressSchool->getStreetNumber();
-                            $tblCitySchool = $tblAddressSchool->getTblCity();
-                            if ($tblCitySchool) {
-                                $Global->POST['Data']['SchoolAddressCity'] = $tblCitySchool->getCode().' '.$tblCitySchool->getName();
+                }
+                if ($tblCompanySchool) {
+                    $Global->POST['Data']['School'] = $tblCompanySchool->getName();
+                    $Global->POST['Data']['SchoolExtended'] = $tblCompanySchool->getExtendedName();
+                    $tblAddressSchool = Address::useService()->getAddressByCompany($tblCompanySchool);
+                    if ($tblAddressSchool) {
+                        $Global->POST['Data']['SchoolAddressStreet'] = $tblAddressSchool->getStreetName().', '.$tblAddressSchool->getStreetNumber();
+                        $tblCitySchool = $tblAddressSchool->getTblCity();
+                        if ($tblCitySchool) {
+                            $Global->POST['Data']['SchoolAddressCity'] = $tblCitySchool->getCode().' '.$tblCitySchool->getName();
+                        }
+                    }
+
+                    $tblToPersonList = Phone::useService()->getPhoneAllByCompany($tblCompanySchool);
+                    $tblToPersonPhoneList = array();
+                    $tblToPersonFaxList = array();
+                    if ($tblToPersonList) {
+                        foreach ($tblToPersonList as $tblToPerson) {
+                            if ($tblType = $tblToPerson->getTblType()) {
+                                $TypeName = $tblType->getName();
+                                $TypeDescription = $tblType->getDescription();
+                                if (($TypeName == 'Privat' || $TypeName == 'Geschäftlich') && $TypeDescription == 'Festnetz') {
+                                    $tblToPersonPhoneList[] = $tblToPerson;
+                                }
+                                if ($TypeName == 'Fax') {
+                                    $tblToPersonFaxList[] = $tblToPerson;
+                                }
                             }
                         }
-
-                        $tblToPersonList = Phone::useService()->getPhoneAllByCompany($tblCompanySchool);
-                        $tblToPersonPhoneList = array();
-                        $tblToPersonFaxList = array();
-                        if ($tblToPersonList) {
-                            foreach ($tblToPersonList as $tblToPerson) {
-                                if ($tblType = $tblToPerson->getTblType()) {
-                                    $TypeName = $tblType->getName();
-                                    $TypeDescription = $tblType->getDescription();
-                                    if (($TypeName == 'Privat' || $TypeName == 'Geschäftlich') && $TypeDescription == 'Festnetz') {
-                                        $tblToPersonPhoneList[] = $tblToPerson;
-                                    }
-                                    if ($TypeName == 'Fax') {
-                                        $tblToPersonFaxList[] = $tblToPerson;
-                                    }
-                                }
+                        if (!empty($tblToPersonPhoneList)) {
+                            /** @var TblToPersonPhone $tblPersonToPhone */
+                            $tblPersonToPhone = current($tblToPersonPhoneList);
+                            $tblPhone = $tblPersonToPhone->getTblPhone();
+                            if ($tblPhone) {
+                                $Global->POST['Data']['Phone'] = $tblPhone->getNumber();
                             }
-                            if (!empty($tblToPersonPhoneList)) {
-                                /** @var TblToPersonPhone $tblPersonToPhone */
-                                $tblPersonToPhone = current($tblToPersonPhoneList);
-                                $tblPhone = $tblPersonToPhone->getTblPhone();
-                                if ($tblPhone) {
-                                    $Global->POST['Data']['Phone'] = $tblPhone->getNumber();
-                                }
-                            }
-                            if (!empty($tblToPersonFaxList)) {
-                                /** @var TblToPersonPhone $tblPersonToFax */
-                                $tblPersonToFax = current($tblToPersonFaxList);
-                                $tblPhoneFax = $tblPersonToFax->getTblPhone();
-                                if ($tblPhoneFax) {
-                                    $Global->POST['Data']['Fax'] = $tblPhoneFax->getNumber();
-                                }
+                        }
+                        if (!empty($tblToPersonFaxList)) {
+                            /** @var TblToPersonPhone $tblPersonToFax */
+                            $tblPersonToFax = current($tblToPersonFaxList);
+                            $tblPhoneFax = $tblPersonToFax->getTblPhone();
+                            if ($tblPhoneFax) {
+                                $Global->POST['Data']['Fax'] = $tblPhoneFax->getNumber();
                             }
                         }
                     }

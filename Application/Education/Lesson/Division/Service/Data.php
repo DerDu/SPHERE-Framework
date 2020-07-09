@@ -1,6 +1,7 @@
 <?php
 namespace SPHERE\Application\Education\Lesson\Division\Service;
 
+use SPHERE\Application\Corporation\Company\Service\Entity\TblCompany;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionCustody;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionStudent;
@@ -128,10 +129,11 @@ class Data extends AbstractData
      * @param TblLevel $tblLevel
      * @param string $Name
      * @param string $Description
+     * @param TblCompany|null $tblCompany
      *
      * @return null|object|TblDivision
      */
-    public function createDivision(TblYear $tblYear, TblLevel $tblLevel, $Name, $Description = '')
+    public function createDivision(TblYear $tblYear, TblLevel $tblLevel, $Name, $Description = '', TblCompany $tblCompany = null)
     {
 
         $Manager = $this->getConnection()->getEntityManager();
@@ -148,6 +150,7 @@ class Data extends AbstractData
             $Entity->setTblLevel($tblLevel);
             $Entity->setName($Name);
             $Entity->setDescription($Description);
+            $Entity->setServiceTblCompany($tblCompany);
             $Manager->saveEntity($Entity);
             Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(), $Entity);
             return $Entity;
@@ -1510,10 +1513,11 @@ class Data extends AbstractData
      * @param TblDivision $tblDivision
      * @param             $Name
      * @param string $Description
+     * @param TblCompany|null $tblCompany
      *
      * @return bool
      */
-    public function updateDivision(TblDivision $tblDivision, $Name, $Description = '')
+    public function updateDivision(TblDivision $tblDivision, $Name, $Description = '', TblCompany $tblCompany = null)
     {
 
         $Manager = $this->getConnection()->getEntityManager();
@@ -1524,6 +1528,7 @@ class Data extends AbstractData
         if (null !== $Entity) {
             $Entity->setName($Name);
             $Entity->setDescription($Description);
+            $Entity->setServiceTblCompany($tblCompany);
             $Manager->saveEntity($Entity);
             Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(),
                 $Protocol,

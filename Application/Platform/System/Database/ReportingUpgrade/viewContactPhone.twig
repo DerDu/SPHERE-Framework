@@ -1,7 +1,25 @@
-SELECT
-vPTP.TblToPerson_serviceTblPerson AS TblPerson_Id,
-vPTP.TblToPerson_Remark AS TblToPerson_Remark,
-vPTP.TblType_Name AS TblType_Name,
-vPTP.TblType_Description AS TblType_Description,
-vPTP.TblPhone_Number AS TblPhone_Number
-FROM ContactPhone_{{ ConsumerAcronym }}.viewPhoneToPerson vPTP
+SELECT distinct
+
+-- PersonId to match with all View's // tblToPerson
+    tTP.serviceTblPerson AS TblPerson_Id,
+    tTP.Remark AS TblToPerson_Remark,
+-- tblType
+    tT.Name AS TblType_Name,
+    tT.Description AS TblType_Description,
+-- tblPhone
+    (SELECT
+        group_concat(
+            concat(
+                tPtemp.Number
+            ) separator ', \n'
+        )
+        FROM ContactPhone_{{ ConsumerAcronym }}.tblToPerson as tTPtemp
+        left join ContactPhone_{{ ConsumerAcronym }}.tblPhone as tPtemp on tPtemp.Id = tTPtemp.tblPhone
+        where tTPtemp.serviceTblPerson = tTP.serviceTblPerson
+        and tTPtemp.tblType = tT.Id
+    ) AS TblPhone_Number
+
+FROM ContactPhone_{{ ConsumerAcronym }}.tblToPerson tTP
+    LEFT JOIN ContactPhone_{{ ConsumerAcronym }}.tblType tT ON tT.Id = tTP.tblType
+
+WHERE tTP.EntityRemove IS NULL

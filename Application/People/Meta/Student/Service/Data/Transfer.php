@@ -97,14 +97,14 @@ abstract class Transfer extends Agreement
     }
 
     /**
-     * @param TblStudent $tblStudent
-     * @param TblStudentTransferType $tblStudentTransferType
-     * @param TblCompany|null $tblCompany
-     * @param TblCompany|null $tblStateCompany
-     * @param TblType|null $tblType
-     * @param TblCourse|null $tblCourse
-     * @param $TransferDate
-     * @param $Remark
+     * @param TblStudent                          $tblStudent
+     * @param TblStudentTransferType              $tblStudentTransferType
+     * @param TblCompany|null                     $tblCompany
+     * @param TblCompany|null                     $tblStateCompany
+     * @param TblType|null                        $tblType
+     * @param TblCourse|null                      $tblCourse
+     * @param string                              $TransferDate
+     * @param string                              $Remark
      * @param TblStudentSchoolEnrollmentType|null $tblStudentSchoolEnrollmentType
      *
      * @return TblStudentTransfer
@@ -116,8 +116,8 @@ abstract class Transfer extends Agreement
         TblCompany $tblStateCompany = null,
         TblType $tblType = null,
         TblCourse $tblCourse = null,
-        $TransferDate,
-        $Remark,
+        $TransferDate = '',
+        $Remark = '',
         TblStudentSchoolEnrollmentType $tblStudentSchoolEnrollmentType = null
     ) {
 

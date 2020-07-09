@@ -39,6 +39,9 @@ class ViewPerson extends AbstractView
     const TBL_PERSON_CALL_NAME = 'TblPerson_CallName';
     const TBL_PERSON_LAST_NAME = 'TblPerson_LastName';
     const TBL_PERSON_BIRTH_NAME = 'TblPerson_BirthName';
+    // Special Column #SSW-704
+    const TBL_PERSON_FIRST_LAST_NAME = 'TblPerson_FirstLastName';
+    const TBL_PERSON_LAST_FIRST_NAME = 'TblPerson_LastFirstName';
 
     const TBL_GROUP_GROUP_LIST = 'TblGroup_GroupList';
 
@@ -99,6 +102,14 @@ class ViewPerson extends AbstractView
     /**
      * @Column(type="string")
      */
+    protected $TblPerson_FirstLastName;
+    /**
+     * @Column(type="string")
+     */
+    protected $TblPerson_LastFirstName;
+    /**
+     * @Column(type="string")
+     */
     protected $TblGroup_GroupList;
     /**
      * @Column(type="string")
@@ -146,6 +157,9 @@ class ViewPerson extends AbstractView
         $this->setNameDefinition(self::TBL_PERSON_LAST_NAME, 'Person: Nachname');
         $this->setNameDefinition(self::TBL_PERSON_BIRTH_NAME, 'Person: Geburtsname');
 
+        $this->setNameDefinition(self::TBL_PERSON_FIRST_LAST_NAME, 'Person: Vorname Nachname');
+        $this->setNameDefinition(self::TBL_PERSON_LAST_FIRST_NAME, 'Person: Nachname Vorname');
+
         $this->setNameDefinition(self::TBL_GROUP_GROUP_LIST, 'Person: Gruppenliste');
 
         $this->setNameDefinition(self::TBL_COMMON_BIRTHDATES_BIRTHDAY, 'Person: Geburtstag');
@@ -165,6 +179,8 @@ class ViewPerson extends AbstractView
             self::TBL_PERSON_SECOND_NAME,
             self::TBL_PERSON_CALL_NAME,
             self::TBL_PERSON_LAST_NAME,
+            self::TBL_PERSON_FIRST_LAST_NAME,
+            self::TBL_PERSON_LAST_FIRST_NAME,
 //            self::TBL_PERSON_BIRTH_NAME,
         ));
         $this->setGroupDefinition('Personendaten', array(
@@ -180,7 +196,8 @@ class ViewPerson extends AbstractView
         ));
 
         // Flag um Filter zu deaktivieren (nur Anzeige von Informationen)
-//        $this->setDisableDefinition(self::TBL_SALUTATION_SALUTATION_S1);
+        $this->setDisableDefinition(self::TBL_PERSON_FIRST_LAST_NAME);
+        $this->setDisableDefinition(self::TBL_PERSON_LAST_FIRST_NAME);
     }
 
     /**
@@ -268,4 +285,26 @@ class ViewPerson extends AbstractView
         return $Field;
     }
 
+
+    // only necessary if need in twig (SelectBox etc.)
+//    /** @return string */
+//    public function getTblPerson_Id(){return $this->TblPerson_Id;}
+//    public function getTblCommonGender_Name(){return $this->TblCommonGender_Name;}
+//    public function getTblSalutation_Salutation(){return $this->TblSalutation_Salutation;}
+//    public function getTblPerson_Title(){return $this->TblPerson_Title;}
+//    public function TblPerson_FirstName(){return $this->TblPerson_FirstName;}
+//    public function TblPerson_SecondName(){return $this->TblPerson_SecondName;}
+//    public function TblPerson_CallName(){return $this->TblPerson_CallName;}
+//    public function getTblPerson_LastName(){return $this->TblPerson_LastName;}
+//    public function getTblPerson_BirthName(){return $this->TblPerson_BirthName;}
+//    public function getTblPerson_FirstLastName(){return $this->TblPerson_FirstLastName;}
+//    public function getTblPerson_LastFirstName(){return $this->TblPerson_LastFirstName;}
+//    public function getTblGroup_GroupList(){return $this->TblGroup_GroupList;}
+//    public function getTblCommonInformation_Denomination(){return $this->TblCommonInformation_Denomination;}
+//    public function getTblCommonInformation_Nationality(){return $this->TblCommonInformation_Nationality;}
+//    public function getTblCommonInformation_IsAssistance(){return $this->TblCommonInformation_IsAssistance;}
+//    public function getTblCommonInformation_AssistanceActivity(){return $this->TblCommonInformation_AssistanceActivity;}
+//    public function getTblCommon_Remark(){return $this->TblCommon_Remark;}
+//    public function getTblCommonBirthDates_Birthday(){return $this->TblCommonBirthDates_Birthday;}
+//    public function getTblCommonBirthDates_Birthplace(){return $this->TblCommonBirthDates_Birthplace;}
 }

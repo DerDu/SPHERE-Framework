@@ -35,7 +35,7 @@ class ViewStudentAuthorized extends AbstractView
     const TBL_ADDRESS_STREET_NAME_BEV = 'TblAddress_StreetName_Bev';
     const TBL_ADDRESS_STREET_NUMBER_BEV = 'TblAddress_StreetNumber_Bev';
     const TBL_CITY_CODE_BEV = 'TblCity_Code_Bev';
-    const TBL_CITY_CITY_BEV = 'TblCity_City_Bev';
+    const TBL_CITY_NAME_BEV = 'TblCity_Name_Bev';
     const TBL_CITY_DISTRICT_BEV = 'TblCity_District_Bev';
     const TBL_ADDRESS_COUNTY_BEV = 'TblAddress_County_Bev';
     const TBL_ADDRESS_STATE_BEV = 'TblState_Name_Bev';
@@ -106,7 +106,7 @@ class ViewStudentAuthorized extends AbstractView
     /**
      * @Column(type="string")
      */
-    protected $TblCity_City_Bev;
+    protected $TblCity_Name_Bev;
     /**
      * @Column(type="string")
      */
@@ -164,7 +164,7 @@ class ViewStudentAuthorized extends AbstractView
         $this->setNameDefinition(self::TBL_ADDRESS_STREET_NAME_BEV, 'Bev: Straße');
         $this->setNameDefinition(self::TBL_ADDRESS_STREET_NUMBER_BEV, 'Bev: Hausnummer');
         $this->setNameDefinition(self::TBL_CITY_CODE_BEV, 'Bev: PLZ');
-        $this->setNameDefinition(self::TBL_CITY_CITY_BEV, 'Bev: Ort');
+        $this->setNameDefinition(self::TBL_CITY_NAME_BEV, 'Bev: Ort');
         $this->setNameDefinition(self::TBL_CITY_DISTRICT_BEV, 'Bev: Ortsteil');
         $this->setNameDefinition(self::TBL_ADDRESS_COUNTY_BEV, 'Bev: Landkreis');
         $this->setNameDefinition(self::TBL_ADDRESS_STATE_BEV, 'Bev: Bundesland');
@@ -189,7 +189,7 @@ class ViewStudentAuthorized extends AbstractView
             self::TBL_ADDRESS_STREET_NAME_BEV,
             self::TBL_ADDRESS_STREET_NUMBER_BEV,
             self::TBL_CITY_CODE_BEV,
-            self::TBL_CITY_CITY_BEV,
+            self::TBL_CITY_NAME_BEV,
             self::TBL_CITY_DISTRICT_BEV,
             self::TBL_ADDRESS_COUNTY_BEV,
             self::TBL_ADDRESS_STATE_BEV,
@@ -213,7 +213,7 @@ class ViewStudentAuthorized extends AbstractView
         $this->setDisableDefinition(self::TBL_ADDRESS_STREET_NAME_BEV);
         $this->setDisableDefinition(self::TBL_ADDRESS_STREET_NUMBER_BEV);
         $this->setDisableDefinition(self::TBL_CITY_CODE_BEV);
-        $this->setDisableDefinition(self::TBL_CITY_CITY_BEV);
+        $this->setDisableDefinition(self::TBL_CITY_NAME_BEV);
         $this->setDisableDefinition(self::TBL_CITY_DISTRICT_BEV);
         $this->setDisableDefinition(self::TBL_ADDRESS_COUNTY_BEV);
         $this->setDisableDefinition(self::TBL_ADDRESS_STATE_BEV);

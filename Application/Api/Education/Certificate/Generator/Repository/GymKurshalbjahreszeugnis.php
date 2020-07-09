@@ -43,7 +43,7 @@ class GymKurshalbjahreszeugnis extends Certificate
 
         $personId = $tblPerson ? $tblPerson->getId() : 0;
 
-        $Header = $this->getHead($this->isSample(), true, 'auto', '50px');
+        $Header = $this->getHead($this->isSample(), false);
 
         $this->setCourses($tblPerson);
 
@@ -150,20 +150,7 @@ class GymKurshalbjahreszeugnis extends Certificate
                     )
                 )
             )
-            ->addSlice((new Slice())
-                ->addSection((new Section())
-                    ->addElementColumn((new Element())
-                        ->setContent('Bemerkungen: &nbsp;&nbsp;&nbsp; {% if(Content.P' . $personId . '.Input.Remark is not empty) %}
-                                    {{ Content.P' . $personId . '.Input.Remark|nl2br }}
-                                {% else %}
-                                    &nbsp;
-                                {% endif %}')
-                        ->styleTextSize('11pt')
-                        ->styleHeight('45px')
-                    )
-                )
-                ->styleMarginTop('10px')
-            )
+            ->addSlice($this->getDescriptionContent($personId, '45px', '10px', 'Bemerkungen: &nbsp;&nbsp;&nbsp; ', '11pt'))
             ->addSlice($this->getDateLine($personId))
             ->addSlice($this->getOwnSignPart($personId))
             ->addSlice($this->getParentSign())

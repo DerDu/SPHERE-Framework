@@ -1,5 +1,9 @@
 SELECT
-    vPMT.TblTeacher_serviceTblPerson AS TblPerson_Id,
-    vPMT.TblTeacher_Acronym
 
-FROM PeopleMeta_{{ ConsumerAcronym }}.viewPeopleMetaTeacher vPMT
+-- PersonId to match with all View's // tblTeacher
+    tT.serviceTblPerson AS TblPerson_Id,
+    tT.Acronym AS TblTeacher_Acronym
+
+FROM PeopleMeta_{{ ConsumerAcronym }}.tblTeacher tT
+
+where tT.EntityRemove IS NULL

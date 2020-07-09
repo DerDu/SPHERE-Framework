@@ -46,7 +46,7 @@ class FilePointer extends DummyFile
                 $this->FileName = $Prefix . '-' . md5(uniqid($Prefix, true)) . '.' . $Extension;
                 break;
             case FilePointer::TYPE_DATE:
-                $this->FileName = $Prefix . '-' . date('dmy') . '.' . $Extension;
+                $this->FileName = $Prefix . '-' . date('ymd') . '.' . $Extension;
                 break;
             default:
                 $this->FileName = $Prefix . '-' . md5(uniqid($Prefix, true)) . '.' . $Extension;

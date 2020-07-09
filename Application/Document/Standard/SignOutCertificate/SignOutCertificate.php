@@ -182,22 +182,16 @@ class SignOutCertificate extends Extension
             $tblStudent = Student::useService()->getStudentByPerson($tblPerson);
             if ($tblStudent) {
                 // Schuldaten der Schule des Schülers
-                $tblStudentTransferType = Student::useService()->getStudentTransferTypeByIdentifier('PROCESS');
-                $tblStudentTransfer = Student::useService()->getStudentTransferByType($tblStudent,
-                    $tblStudentTransferType);
-                if ($tblStudentTransfer) {
-                    $tblCompanySchool = $tblStudentTransfer->getServiceTblCompany();
-                    if ($tblCompanySchool) {
-                        $Global->POST['Data']['School1'] = $tblCompanySchool->getName();
-                        $Global->POST['Data']['School2'] = $tblCompanySchool->getExtendedName();
-                        $tblAddressSchool = Address::useService()->getAddressByCompany($tblCompanySchool);
-                        if ($tblAddressSchool) {
-                            $Global->POST['Data']['SchoolAddressStreet'] = $tblAddressSchool->getStreetName().' '.$tblAddressSchool->getStreetNumber();
-                            $tblCitySchool = $tblAddressSchool->getTblCity();
-                            if ($tblCitySchool) {
-                                $Global->POST['Data']['SchoolAddressCity'] = $tblCitySchool->getCode().' '.$tblCitySchool->getName();
-                                $Global->POST['Data']['SchoolCity'] = $tblCitySchool->getName().', ';
-                            }
+                if (($tblCompanySchool = Student::useService()->getCurrentSchoolByPerson($tblPerson))) {
+                    $Global->POST['Data']['School1'] = $tblCompanySchool->getName();
+                    $Global->POST['Data']['School2'] = $tblCompanySchool->getExtendedName();
+                    $tblAddressSchool = Address::useService()->getAddressByCompany($tblCompanySchool);
+                    if ($tblAddressSchool) {
+                        $Global->POST['Data']['SchoolAddressStreet'] = $tblAddressSchool->getStreetName().' '.$tblAddressSchool->getStreetNumber();
+                        $tblCitySchool = $tblAddressSchool->getTblCity();
+                        if ($tblCitySchool) {
+                            $Global->POST['Data']['SchoolAddressCity'] = $tblCitySchool->getCode().' '.$tblCitySchool->getName();
+                            $Global->POST['Data']['SchoolCity'] = $tblCitySchool->getName().', ';
                         }
                     }
                 }
@@ -282,7 +276,7 @@ class SignOutCertificate extends Extension
                         new LayoutColumn(
                             new Title('Vorlage des Standard-Dokuments "Abmeldebescheinigung"')
                             .new Thumbnail(
-                                FileSystem::getFileLoader('/Common/Style/Resource/Document/SignOutCertificate.png')
+                                FileSystem::getFileLoader('/Common/Style/Resource/Document/SignOutCertificate_V2.png')
                                 , ''
                             )
                             , 5),

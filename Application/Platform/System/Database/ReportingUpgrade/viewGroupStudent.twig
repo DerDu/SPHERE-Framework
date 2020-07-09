@@ -1,57 +1,75 @@
--- ViewGroupStudent
 SELECT
-vS.TblStudent_serviceTblPerson AS TblPerson_Id,
-vS.TblStudent_Id AS TblStudent_Id,
-(select distinct
-group_concat(
-concat(
-vSA.TblStudentAgreementType_Name
-) separator ', \n'
-)
-from PeopleMeta_{{ ConsumerAcronym }}.viewStudentAgreement vSA
-where vSA.TblStudentAgreementCategory_Name like '%Foto%'
-and vSA.TblStudent_Id =  vS.TblStudent_Id
-and vSA.TblStudentAgreementType_Name is not null
-) TblStudent_PictureAgreement,
 
-viewStudentBaptism.TblStudentBaptism_Location AS TblStudentBaptism_Location,
-DATE_FORMAT( viewStudentBaptism.TblStudentBaptism_BaptismDate, '%d.%m.%Y' ) AS TblStudentBaptism_BaptismDate,
-(select distinct
-group_concat(
-concat(
-vSA.TblStudentAgreementType_Name
-) separator ', \n'
-)
-from PeopleMeta_{{ ConsumerAcronym }}.viewStudentAgreement vSA
-where vSA.TblStudentAgreementCategory_Name like '%Namentliche%'
-and vSA.TblStudent_Id =  vS.TblStudent_Id
-and vSA.TblStudentAgreementType_Name is not null
-) TblStudent_NameAgreement,
+-- PersonId to match with all View's // tblStudent
+	tS.serviceTblPerson AS TblPerson_Id,
+	tS.Id AS TblStudent_Id,
+-- tblStudentBaptism
+    tSB.Location AS TblStudentBaptism_Location,
+	DATE_FORMAT( tSB.BaptismDate, '%d.%m.%Y' ) AS TblStudentBaptism_BaptismDate,
+-- tblStudentLocker
+	tSL.LockerNumber AS TblStudentLocker_LockerNumber,
+	tSL.LockerLocation AS TblStudentLocker_LockerLocation,
+	tSL.KeyNumber AS TblStudentLocker_KeyNumber,
+-- tblStudentMedicalRecord
+    tSMR.AttendingDoctor AS TblStudentMedicalRecord_AttendingDoctor,
+	tSMR.Disease AS TblStudentMedicalRecord_Disease,
+	tSMR.Medication AS TblStudentMedicalRecord_Medication,
+	tSIS.Name AS TblStudentInsuranceState_Name,
+	tSMR.Insurance AS TblStudentMedicalRecord_Insurance,
+	DATE_FORMAT( tSMR.MasernDate, '%d.%m.%Y' ) AS TblStudentMedicalRecord_MasernDate,
+	tSMI.TextShort AS TblStudentMedicalRecord_MasernDocumentType,
+	tSMI2.TextShort AS TblStudentMedicalRecord_MasernCreatorType,
+-- tblStudentTransport
+	tST.Route AS TblStudentTransport_Route,
+	tST.StationEntrance AS TblStudentTransport_StationEntrance,
+	tST.StationExit AS TblStudentTransport_StationExit,
+	tST.Remark AS TblStudentTransport_Remark,
+    (SELECT DISTINCT
+		group_concat(
+			concat(
+				tSAT.Name
+			) SEPARATOR ', \n'
+		)
+-- follow content is merged (select result)
+	FROM PeopleMeta_{{ ConsumerAcronym }}.tblStudentAgreement tSA
+		LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblStudentAgreementType tSAT ON tSAT.Id = tSA.tblStudentAgreementType
+		LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblStudentAgreementCategory tSAC ON tSAC.Id = tSAT.tblStudentAgreementCategory
+	WHERE tSAC.Name LIKE '%Foto%'
+		AND tSA.tblStudent = tS.Id
+		AND tSAT.Name IS NOT NULL
+        AND tSA.EntityRemove IS NULL
+	) TblStudent_PictureAgreement,
+	(SELECT DISTINCT
+		group_concat(
+			concat(
+				tSAT.Name
+			) SEPARATOR ', \n'
+		)
+	FROM PeopleMeta_{{ ConsumerAcronym }}.tblStudentAgreement tSA
+		LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblStudentAgreementType tSAT ON tSAT.Id = tSA.tblStudentAgreementType
+		LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblStudentAgreementCategory tSAC ON tSAC.Id = tSAT.tblStudentAgreementCategory
+	WHERE tSAC.Name LIKE '%Namentliche%'
+		AND tSA.tblStudent = tS.Id
+		AND tSAT.Name IS NOT NULL
+        AND tSA.EntityRemove IS NULL
+	) TblStudent_NameAgreement,
+	(SELECT tSLT.Name
+	FROM PeopleMeta_{{ ConsumerAcronym }}.tblStudentLiberation tSL
+		LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblStudentLiberationType tSLT ON tSLT.Id = tSL.tblStudentLiberationType
+		LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblStudentLiberationCategory tSLC ON tSLC.Id = tSLT.tblStudentLiberationCategory
+	WHERE tSLC.Name LIKE 'Sportbefreiung'
+		AND tSL.tblStudent = tS.Id
+        AND tSL.EntityRemove IS NULL
+		LIMIT 1
+	) TblStudentLiberationSportType_Name
 
-viewStudentLocker.TblStudentLocker_LockerNumber AS TblStudentLocker_LockerNumber,
-viewStudentLocker.TblStudentLocker_LockerLocation AS TblStudentLocker_LockerLocation,
-viewStudentLocker.TblStudentLocker_KeyNumber AS TblStudentLocker_KeyNumber,
-viewStudentMedicalRecord.TblStudentMedicalRecord_Disease AS TblStudentMedicalRecord_Disease,
-viewStudentMedicalRecord.TblStudentMedicalRecord_Medication AS TblStudentMedicalRecord_Medication,
-viewStudentMedicalRecord.TblStudentMedicalRecord_InsuranceState AS TblStudentMedicalRecord_InsuranceState,
-viewStudentMedicalRecord.TblStudentMedicalRecord_Insurance AS TblStudentMedicalRecord_Insurance,
+FROM PeopleMeta_{{ ConsumerAcronym }}.tblStudent tS
+	LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblStudentBaptism tSB ON tSB.Id = tS.tblStudentBaptism
+	LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblStudentLocker tSL ON tSL.Id = tS.tblStudentLocker
+	LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblStudentMedicalRecord tSMR ON tSMR.Id = tS.tblStudentMedicalRecord
+	LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblStudentMasernInfo tSMI ON tSMI.Id = tSMR.MasernDocumentType
+	LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblStudentMasernInfo tSMI2 ON tSMI2.Id = tSMR.MasernCreatorType
+	LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblStudentInsuranceState tSIS ON tSIS.Id = tSMR.InsuranceState
+	LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblStudentTransport tST ON tST.Id = tS.tblStudentTransport
 
-viewStudentTransport.TblStudentTransport_Route AS TblStudentTransport_Route,
-viewStudentTransport.TblStudentTransport_StationEntrance AS TblStudentTransport_StationEntrance,
-viewStudentTransport.TblStudentTransport_StationExit AS TblStudentTransport_StationExit,
-viewStudentTransport.TblStudentTransport_Remark AS TblStudentTransport_Remark,
-(select concat(TblStudentLiberationType_Name)
-from PeopleMeta_{{ ConsumerAcronym }}.viewStudentLiberation vSL
-where vSL.TblStudentLiberationCategory_Name like 'Sportbefreiung'
-and vSL.TblStudent_Id =  vS.TblStudent_Id
-limit 1
-) TblStudentLiberationSportType_Name
-
-FROM PeopleMeta_{{ ConsumerAcronym }}.viewStudent vS
-LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.viewStudentBaptism ON vS.TblStudent_Id = viewStudentBaptism.TblStudent_Id
-LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.viewStudentIntegration ON vS.TblStudent_Id = viewStudentIntegration.TblStudent_Id
-LEFT JOIN PeoplePerson_{{ ConsumerAcronym }}.viewPerson viewPersonCoach ON viewStudentIntegration.TblStudentIntegration_serviceTblPerson = viewPersonCoach.TblPerson_Id
-LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.viewStudentLiberation ON vS.TblStudent_serviceTblPerson = viewStudentLiberation.TblStudent_serviceTblPerson
-LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.viewStudentLocker ON vS.TblStudent_serviceTblPerson = viewStudentLocker.TblStudent_serviceTblPerson
-LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.viewStudentMedicalRecord ON vS.TblStudent_serviceTblPerson = viewStudentMedicalRecord.TblStudent_serviceTblPerson
-LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.viewStudentTransport ON viewStudentTransport.TblStudent_Id = vS.TblStudent_Id
+WHERE tS.EntityRemove IS NULL

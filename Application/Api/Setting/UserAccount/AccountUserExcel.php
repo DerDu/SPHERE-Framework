@@ -49,7 +49,7 @@ class AccountUserExcel implements IModuleInterface
                 $tblUserAccount = current($tblUserAccountList);
                 $Type = 'Schüler';
                 $Time = new \DateTime();
-                $Time = $Time->format('d_m_Y-h_i_s');
+                $Time = $Time->format('d-m-Y_H-i-s');
                 if ($tblUserAccount->getType() == TblUserAccount::VALUE_TYPE_STUDENT) {
                     $Type = 'Schüler';
                 } elseif ($tblUserAccount->getType() == TblUserAccount::VALUE_TYPE_CUSTODY) {
@@ -61,7 +61,7 @@ class AccountUserExcel implements IModuleInterface
                     $fileLocation = Account::useService()->createClassListExcel($result);
 
                     return FileSystem::getDownload($fileLocation->getRealPath(),
-                        "Zugang-Schulsoftware-".$Type."-".$Time.".xlsx")->__toString();
+                        "Zugang-Schulsoftware-".$Type."_".$Time.".xlsx")->__toString();
                 }
             }
         }

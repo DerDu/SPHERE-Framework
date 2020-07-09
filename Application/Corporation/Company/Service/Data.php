@@ -34,10 +34,11 @@ class Data extends AbstractData
      * @param string $Name
      * @param string $ExtendedName
      * @param string $Description
+     * @param string $ImportId
      *
      * @return null|object|TblCompany
      */
-    public function createCompany($Name, $ExtendedName = '', $Description = '')
+    public function createCompany($Name, $ExtendedName = '', $Description = '', $ImportId = '')
     {
 
         $Manager = $this->getConnection()->getEntityManager();
@@ -51,6 +52,7 @@ class Data extends AbstractData
             $Entity->setName($Name);
             $Entity->setExtendedName($ExtendedName);
             $Entity->setDescription($Description);
+            $Entity->setImportId($ImportId);
             $Manager->saveEntity($Entity);
             Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(), $Entity);
         }
@@ -275,5 +277,18 @@ class Data extends AbstractData
         $result = $query->getResult();
 
         return $result;
+    }
+
+    /**
+     * @param integer $ImportId
+     *
+     * @return bool|TblCompany
+     */
+    public function getCompanyByImportId($ImportId)
+    {
+        return $this->getCachedEntityBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblCompany',
+            array(
+                TblCompany::ATTR_IMPORT_ID => $ImportId
+            ));
     }
 }

@@ -35,6 +35,12 @@ class TblCertificate extends Element
     const ATTR_IS_INFORMATION = 'IsInformation';
     const ATTR_IS_CHOSEN_DEFAULT = 'IsChosenDefault';
     const ATTR_IS_IGNORED_FOR_AUTO_SELECT = 'IsIgnoredForAutoSelect';
+    const ATTR_IS_GRADE_VERBAL = 'IsGradeVerbal';
+
+    const CERTIFICATE_TYPE_PRIMARY = 'Primary';
+    const CERTIFICATE_TYPE_SECONDARY = 'Secondary';
+    const CERTIFICATE_TYPE_GYM = 'Gym';
+    const CERTIFICATE_TYPE_BERUFSFACHSCHULE = 'Berufsfachschule';
 
     /**
      * @Column(type="string")
@@ -88,6 +94,11 @@ class TblCertificate extends Element
      * @Column(type="boolean")
      */
     protected $IsIgnoredForAutoSelect;
+
+    /**
+     * @Column(type="boolean")
+     */
+    protected $IsGradeVerbal;
 
     /**
      * @return bool|TblConsumer
@@ -320,5 +331,21 @@ class TblCertificate extends Element
     public function setIsIgnoredForAutoSelect($IsIgnoredForAutoSelect)
     {
         $this->IsIgnoredForAutoSelect = $IsIgnoredForAutoSelect;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getIsGradeVerbal()
+    {
+        return $this->IsGradeVerbal;
+    }
+
+    /**
+     * @param boolean $IsGradeVerbal
+     */
+    public function setIsGradeVerbal($IsGradeVerbal)
+    {
+        $this->IsGradeVerbal = $IsGradeVerbal;
     }
 }

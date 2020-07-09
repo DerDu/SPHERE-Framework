@@ -51,10 +51,11 @@ class Data extends AbstractData
      * @param string $Remark
      * @param bool   $IsLocked
      * @param string $MetaTable
+     * @param bool   $IsCoreGroup
      *
      * @return TblGroup
      */
-    public function createGroup($Name, $Description, $Remark, $IsLocked = false, $MetaTable = '')
+    public function createGroup($Name, $Description, $Remark, $IsLocked = false, $MetaTable = '', $IsCoreGroup = false)
     {
 
         $Manager = $this->getConnection()->getEntityManager();
@@ -76,6 +77,7 @@ class Data extends AbstractData
             $Entity->setRemark($Remark);
             $Entity->setLocked($IsLocked);
             $Entity->setMetaTable($MetaTable);
+            $Entity->setCoreGroup($IsCoreGroup);
             $Manager->saveEntity($Entity);
             Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(), $Entity);
         }
@@ -88,10 +90,11 @@ class Data extends AbstractData
      * @param string   $Name
      * @param string   $Description
      * @param string   $Remark
+     * @param bool     $isCoreGroup
      *
      * @return bool
      */
-    public function updateGroup(TblGroup $tblGroup, $Name, $Description, $Remark)
+    public function updateGroup(TblGroup $tblGroup, $Name, $Description, $Remark, $isCoreGroup = false)
     {
 
         $Manager = $this->getConnection()->getEntityManager();
@@ -102,6 +105,7 @@ class Data extends AbstractData
             $Entity->setName($Name);
             $Entity->setDescription($Description);
             $Entity->setRemark($Remark);
+            $Entity->setCoreGroup($isCoreGroup);
             $Manager->saveEntity($Entity);
             Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(), $Protocol, $Entity);
             return true;
@@ -178,6 +182,21 @@ class Data extends AbstractData
             ));
         /** @var TblGroup $Entity */
         return ( null === $Entity ? false : $Entity );
+    }
+
+    /**
+     * @param bool $isCoreGroup
+     *
+     * @return false|TblGroup[]
+     */
+    public function getGroupListByIsCoreGroup($isCoreGroup = true)
+    {
+
+        $Entity = $this->getCachedEntityListBy(__Method__, $this->getConnection()->getEntityManager(), 'TblGroup',
+            array(
+                TblGroup::ATTR_IS_CORE_GROUP => $isCoreGroup
+            ));
+        return (null === $Entity ? false : $Entity);
     }
 
     /**
@@ -552,5 +571,29 @@ class Data extends AbstractData
             return true;
         }
         return false;
+    }
+
+    /**
+     * @param string $Name
+     *
+     * @return false|TblGroup[]
+     */
+    public function getGroupListLike($Name)
+    {
+        $queryBuilder = $this->getConnection()->getEntityManager()->getQueryBuilder();
+
+        $and = $queryBuilder->expr()->andX();
+        $and->add($queryBuilder->expr()->like('t.Name', '?1'));
+        $and->add($queryBuilder->expr()->isNull('t.EntityRemove'));
+        $queryBuilder->setParameter(1, '%' . $Name . '%');
+
+        $queryBuilder->select('t')
+            ->from(__NAMESPACE__ . '\Entity\TblGroup', 't')
+            ->where($and);
+
+        $query = $queryBuilder->getQuery();
+        $result = $query->getResult();
+
+        return $result;
     }
 }

@@ -2,6 +2,8 @@
 namespace SPHERE\Application\Platform\System\Test;
 
 use MOC\V\Core\FileSystem\FileSystem;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use SPHERE\Application\Api\Platform\Test\ApiSystemTest;
 use SPHERE\Application\Education\Certificate\Generator\Repository\Element\Ruler;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
@@ -35,9 +37,12 @@ use SPHERE\Common\Frontend\Form\Structure\Form;
 use SPHERE\Common\Frontend\Form\Structure\FormColumn;
 use SPHERE\Common\Frontend\Form\Structure\FormGroup;
 use SPHERE\Common\Frontend\Form\Structure\FormRow;
+use SPHERE\Common\Frontend\Icon\Repository\Check;
 use SPHERE\Common\Frontend\Icon\Repository\Disable;
 use SPHERE\Common\Frontend\Icon\Repository\Ok;
+use SPHERE\Common\Frontend\Icon\Repository\Select;
 use SPHERE\Common\Frontend\Icon\Repository\Time;
+use SPHERE\Common\Frontend\Icon\Repository\Unchecked;
 use SPHERE\Common\Frontend\Icon\Repository\Upload;
 use SPHERE\Common\Frontend\IFrontendInterface;
 use SPHERE\Common\Frontend\Layout\Repository\Badge;
@@ -61,13 +66,15 @@ use SPHERE\Common\Frontend\Layout\Structure\LayoutTab;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutTabs;
 use SPHERE\Common\Frontend\Link\Repository\External;
 use SPHERE\Common\Frontend\Link\Repository\Standard;
+use SPHERE\Common\Frontend\Link\Repository\ToggleCheckbox;
+use SPHERE\Common\Frontend\Link\Repository\ToggleSelective;
 use SPHERE\Common\Frontend\Message\Repository\Info;
 use SPHERE\Common\Frontend\Table\Structure\TableData;
+use SPHERE\Common\Frontend\Text\Repository\Bold;
 use SPHERE\Common\Frontend\Text\Repository\ToolTip;
 use SPHERE\Common\Frontend\Text\Repository\Warning;
 use SPHERE\Common\Window\Navigation\Link\Route;
 use SPHERE\Common\Window\Stage;
-use SPHERE\System\Cache\Handler\TwigHandler;
 use SPHERE\System\Extension\Extension;
 
 /**
@@ -83,10 +90,10 @@ class Frontend extends Extension implements IFrontendInterface
      */
     public function frontendPlatform()
     {
-        $Global = $this->getGlobal();
-        $this->getDebugger()->screenDump($Global);
-        $this->getDebugger()->screenDump($_REQUEST);
-        $this->getDebugger()->screenDump($_FILES);
+//        $Global = $this->getGlobal();
+//        $this->getDebugger()->screenDump($Global);
+//        $this->getDebugger()->screenDump($_REQUEST);
+//        $this->getDebugger()->screenDump($_FILES);
 
         $Stage = new Stage('Test', 'Frontend');
 
@@ -104,19 +111,24 @@ class Frontend extends Extension implements IFrontendInterface
             new External('Link', 'http://www.google.de')
         );
 
-        $D1 = new TblDivision();
-        $D1->setName('A');
-        $D1->setId(1);
-        $D2 = new TblDivision();
-        $D2->setName('B');
-        $D2->setId(2);
-        $Check = array($D1, $D2);
+        $D1 = new TblDivision();$D1->setName('A');$D1->setId(1);
+        $D2 = new TblDivision();$D2->setName('B');$D2->setId(2);
+        $D3 = new TblDivision();$D3->setName('C');$D3->setId(3);
+        $D4 = new TblDivision();$D4->setName('D');$D4->setId(4);
+        $D5 = new TblDivision();$D5->setName('E');$D5->setId(5);
+        $D6 = new TblDivision();$D6->setName('F');$D6->setId(6);
+        $D7 = new TblDivision();$D7->setName('G');$D7->setId(7);
+        $D8 = new TblDivision();$D8->setName('H');$D8->setId(8);
+
+        $Check = array($D1, $D2, $D3, $D4, $D5, $D6, $D7, $D8);
+        $Check2 = array($D1, $D2, $D3, $D4, $D5, $D6, $D7);
+        $Check3 = array($D1, $D2);
 
         $IconList = array();
         if (false !== ( $Path = realpath(__DIR__.'/../../../../Common/Frontend/Icon/Repository') )) {
-            $Iterator = new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($Path, \RecursiveDirectoryIterator::SKIP_DOTS),
-                \RecursiveIteratorIterator::CHILD_FIRST
+            $Iterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($Path, RecursiveDirectoryIterator::SKIP_DOTS),
+                RecursiveIteratorIterator::CHILD_FIRST
             );
             /** @var \SplFileInfo $FileInfo */
             foreach ($Iterator as $FileInfo) {
@@ -146,6 +158,23 @@ class Frontend extends Extension implements IFrontendInterface
             ->ajaxPipelineOnClick(ApiSystemTest::pipelineOpenThirdModal());
         $fourReceiverButton = (new Standard('Modal mit "Tabs"', ApiSystemTest::getEndpoint()))
             ->ajaxPipelineOnClick(ApiSystemTest::pipelineOpenFourthModal());
+        // reconstruct Table with content
+        $CheckboxList = array(
+            new CheckBox('ToggleSelective1', 'T1', 1),
+            new CheckBox('ToggleSelective2', 'T2', 2),
+            new CheckBox('ToggleSelective3', 'T3', 3),
+            new CheckBox('ToggleSelective4', 'T4', 4),
+            new CheckBox('ToggleSelective5', 'T5', 5)
+        );
+
+
+        $CheckBoxTable = new TableData(
+            array(
+                '1' => array('Check' => new CheckBox('ToggleTable1', 'C1', 1),),
+                '2' => array('Check' => new CheckBox('ToggleTable2', 'C2', 2),),
+                '3' => array('Check' => new CheckBox('ToggleTable3', 'C3', 3),),
+                '4' => array('Check' => new CheckBox('ToggleTable4', 'C4', 4),),
+            ), null, array('Check' => 'CheckBox'), null);
 
         $Stage->setContent(
             (new Form(
@@ -207,12 +236,18 @@ class Frontend extends Extension implements IFrontendInterface
                     )),
                     new FormRow(array(
                         new FormColumn(array(
-                            new SelectBox('SelectBox1', 'SelectBox - Bootstrap Default',
-                                array('0' => 'A', '2' => '1', '3' => '2', '4' => '3')
-                            ),
-                            (new SelectBox('SelectBox2', 'SelectBox - jQuery Select2',
-                                array('{{ Id }}{{ Name }}{{ Name }} {{ Id }}{{ Name }}{{ Name }}' => $Check)
+                            (new SelectBox('SelectBox1', 'SelectBox - Bootstrap (funktioniert nicht auf Tablet\'s)',
+                                array('0' => 'A', '2' => '1', '3' => '2', '4' => '3'), new Select()
+                            ))->configureLibrary( SelectBox::LIBRARY_SELECTER ),
+                            (new SelectBox('SelectBox2', 'SelectBox2 - Lang (ab 7 Einträge) - Default',
+                                array('{{ Id }}{{ Name }} nochmal {{ Name }} "Twig test"' => $Check)
                             ))->configureLibrary( SelectBox::LIBRARY_SELECT2 ),
+                            (new SelectBox('SelectBox3', 'SelectBox2 - Kurz',
+                                array('{{ Id }}{{ Name }} nochmal {{ Name }} "Twig test"' => $Check2)
+                            ))->configureLibrary( SelectBox::LIBRARY_SELECT2 ),
+                            (new SelectBox('SelectBox4', 'SelectBox2 - Filter bei weniger Einträgen aktivieren',
+                                array('{{ Id }}{{ Name }} nochmal {{ Name }} "Twig test"' => $Check3)
+                            ))->setMinimumResultForSerach(3),
                         ), 3),
                         new FormColumn(
                             new TextArea('TextArea', 'TextArea', 'TextArea')
@@ -224,6 +259,44 @@ class Frontend extends Extension implements IFrontendInterface
                             new TextField('TextField', 'TextField', 'TextField')
                             , 3),
                     )),
+                    new FormRow(array(
+                        new FormColumn(array(
+                            new ToggleCheckbox('Alle wählen/abwählen', $CheckBoxTable),
+                            $CheckBoxTable
+                        ), 6),
+                        new FormColumn(
+                            new Layout( new LayoutGroup(new LayoutRow( array(
+                                new LayoutColumn(
+                                    new ToggleSelective('Alle wählen/abwählen', array(
+                                        'ToggleSelective1', 'ToggleSelective2', 'ToggleSelective3', 'ToggleSelective4', 'ToggleSelective5'
+                                    ))
+                                    , 3),
+                                new LayoutColumn(
+                                    new ToggleSelective('2-5 '.new Check().' / '.new Unchecked(), array(
+                                        'ToggleSelective2', 'ToggleSelective3', 'ToggleSelective4', 'ToggleSelective5'
+                                    ))
+                                    , 2),
+                                new LayoutColumn(
+                                    new ToggleSelective('4-5 '.new Check().' / '.new Unchecked(), array(
+                                        'ToggleSelective4', 'ToggleSelective5'
+                                    ))
+                                    , 2),
+                                new LayoutColumn(
+                                    (new ToggleSelective(new Bold('4-5 '.new Check()), array(
+                                        'ToggleSelective4', 'ToggleSelective5'
+                                    )))->setMode(1)
+                                    , 2),
+                                new LayoutColumn(
+                                    (new ToggleSelective(new Bold('4-5 '.new Unchecked()), array(
+                                        'ToggleSelective4', 'ToggleSelective5'
+                                    )))->setMode(2)
+                                    , 2),
+                                new LayoutColumn(
+                                    $CheckboxList
+                                )
+                            ))))
+                        , 6)
+                    ))
 //                    new FormRow( array(
 //                        new FormColumn(
 //                            new \SPHERE\Common\Frontend\Form\Repository\Title('Title')
@@ -281,7 +354,7 @@ class Frontend extends Extension implements IFrontendInterface
                             )
                         ), 3),
                         new LayoutColumn(array(
-                            new Well('Well', array())
+                            new Well('Well')
                         ), 3),
                         new LayoutColumn(
                             new TableData(array(
@@ -320,16 +393,16 @@ class Frontend extends Extension implements IFrontendInterface
                             (new LayoutSocial())
                                 ->addMediaItem('Head1', new Paragraph('Content').new Paragraph('Content'), new Time())
                                 ->addMediaItem('Head2', 'Content',
-                                    '<img src="/Common/Style/Resource/logo_kreide2.png" class="image-responsive" style="width:20px;"/>',
+                                    '<img src="/Common/Style/Resource/logo_kreide2.png" alt="Logo" class="image-responsive" style="width:20px;"/>',
                                     '', LayoutSocial::ALIGN_BOTTOM)
                                 ->addMediaList(
                                     (new LayoutSocial())
                                         ->addMediaItem('Head2.1',
                                             new Well(new Paragraph('Content').new Paragraph('Content')),
-                                            '<img src="/Common/Style/Resource/logo_kreide2.png" class="image-responsive" style="width:20px;"/>',
+                                            '<img src="/Common/Style/Resource/logo_kreide2.png" alt="Logo" class="image-responsive" style="width:20px;"/>',
                                             '', LayoutSocial::ALIGN_TOP)
                                         ->addMediaItem('', new Well('Content'),
-                                            '<img src="/Common/Style/Resource/logo_kreide2.png" class="image-responsive" style="width:20px;"/>',
+                                            '<img src="/Common/Style/Resource/logo_kreide2.png" alt="Logo" class="image-responsive" style="width:20px;"/>',
                                             '', LayoutSocial::ALIGN_MIDDLE)
                                 )
                             , 4),

@@ -334,9 +334,9 @@ class ApiDocument implements IApiInterface
     private function getDocumentModal($form, $DocumentId = null)
     {
         if ($DocumentId) {
-            $title = new Title(new Edit() . ' Beleg bearbeiten');
+            $title = new Title(new Edit() . ' Bescheinigung bearbeiten');
         } else {
-            $title = new Title(new Plus() . ' Beleg hinzufügen');
+            $title = new Title(new Plus() . ' Bescheinigung hinzufügen');
         }
 
         return $title
@@ -366,11 +366,11 @@ class ApiDocument implements IApiInterface
         }
 
         if (Document::useService()->createDocument($Data)) {
-            return new Success('Der Beleg wurde erfolgreich gespeichert.')
+            return new Success('Die Bescheinigung wurde erfolgreich gespeichert.')
                 . self::pipelineLoadDocumentOverviewContent()
                 . self::pipelineClose();
         } else {
-            return new Danger('Der Beleg konnte nicht gespeichert werden.') . self::pipelineClose();
+            return new Danger('Die Bescheinigung konnte nicht gespeichert werden.') . self::pipelineClose();
         }
     }
 
@@ -383,7 +383,7 @@ class ApiDocument implements IApiInterface
     {
 
         if (!($tblDocument = Document::useService()->getDocumentById($DocumentId))) {
-            return new Danger('Der Beleg wurde nicht gefunden', new Exclamation());
+            return new Danger('Die Bescheinigung wurde nicht gefunden', new Exclamation());
         }
 
         return $this->getDocumentModal(Document::useFrontend()->formDocument($DocumentId, true), $DocumentId);
@@ -398,7 +398,7 @@ class ApiDocument implements IApiInterface
     public function saveEditDocumentModal($DocumentId, $Data)
     {
         if (!($tblDocument = Document::useService()->getDocumentById($DocumentId))) {
-            return new Danger('Der Beleg wurde nicht gefunden', new Exclamation());
+            return new Danger('Die Bescheinigung wurde nicht gefunden', new Exclamation());
         }
 
         if (($form = Document::useService()->checkFormDocument($Data, $tblDocument))) {
@@ -407,11 +407,11 @@ class ApiDocument implements IApiInterface
         }
 
         if (Document::useService()->updateDocument($tblDocument, $Data)) {
-            return new Success('Der Beleg wurde erfolgreich gespeichert.')
+            return new Success('Die Bescheinigung wurde erfolgreich gespeichert.')
                 . self::pipelineLoadDocumentOverviewContent()
                 . self::pipelineClose();
         } else {
-            return new Danger('Der Beleg konnte nicht gespeichert werden.') . self::pipelineClose();
+            return new Danger('Die Bescheinigung konnte nicht gespeichert werden.') . self::pipelineClose();
         }
     }
 
@@ -423,15 +423,15 @@ class ApiDocument implements IApiInterface
     public function openDeleteDocumentModal($DocumentId)
     {
         if (!($tblDocument = Document::useService()->getDocumentById($DocumentId))) {
-            return new Danger('Der Beleg wurde nicht gefunden', new Exclamation());
+            return new Danger('Die Bescheinigung wurde nicht gefunden', new Exclamation());
         }
 
-        return new Title(new Remove() . ' Beleg löschen')
+        return new Title(new Remove() . ' Bescheinigung löschen')
             . new Layout(
                 new LayoutGroup(
                     new LayoutRow(
                         new LayoutColumn(
-                            new Panel(new Question() . ' Diesen Beleg wirklich löschen?', array(
+                            new Panel(new Question() . ' Diese Bescheinigung wirklich löschen?', array(
                                 $tblDocument->getName(),
                                 $tblDocument->getDescription(),
                             ),
@@ -454,15 +454,15 @@ class ApiDocument implements IApiInterface
     public function saveDeleteDocumentModal($DocumentId)
     {
         if (!($tblDocument = Document::useService()->getDocumentById($DocumentId))) {
-            return new Danger('Der Beleg wurde nicht gefunden', new Exclamation());
+            return new Danger('Die Bescheinigung wurde nicht gefunden', new Exclamation());
         }
 
         if (Document::useService()->removeDocument($tblDocument)) {
-            return new Success('Der Beleg wurde erfolgreich gelöscht.')
+            return new Success('Die Bescheinigung wurde erfolgreich gelöscht.')
                 . self::pipelineLoadDocumentOverviewContent()
                 . self::pipelineClose();
         } else {
-            return new Danger('Der Beleg konnte nicht gelöscht werden.') . self::pipelineClose();
+            return new Danger('Die Bescheinigung konnte nicht gelöscht werden.') . self::pipelineClose();
         }
     }
 

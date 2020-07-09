@@ -45,7 +45,7 @@ class Database extends Extension implements IModuleInterface
     private static $ServiceRegister = array();
     /** @var array $SetupRegister */
     private static $SetupRegister = array();
-    /** @var array $SetupRegister */
+    /** @var array $SetupUTF8 */
     private static $SetupUTF8 = array();
 
     public static function registerModule()
@@ -532,19 +532,12 @@ class Database extends Extension implements IModuleInterface
                                     self::$SetupUTF8[$Database] = $Class;
                                 }
                             }
-                            // insert Data
+                            // insert Data without doubled work
                             if (!array_key_exists(get_class($Class), self::$SetupRegister)) {
-                                $Result = $Class->setupService(false, true, false);
-                                self::$SetupRegister[get_class($Class)] = $Result;
-                                $Class = $Result;
-                            } else {
-                                $Class = new PullClear(new PullLeft(new Repeat()).self::$SetupRegister[get_class($Class)]);
+                                $Class->setupService(false, true, false);
+                                self::$SetupRegister[get_class($Class)] = true;
                             }
-                        } else {
-                            $Class = false;
                         }
-                    } else {
-                        $Class = false;
                     }
                 }
             });

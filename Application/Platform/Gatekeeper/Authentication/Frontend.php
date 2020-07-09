@@ -5,6 +5,7 @@ namespace SPHERE\Application\Platform\Gatekeeper\Authentication;
 use SPHERE\Application\Education\Graduation\Evaluation\Evaluation;
 use SPHERE\Application\Education\Graduation\Gradebook\Gradebook;
 use SPHERE\Application\People\Group\Group;
+use SPHERE\Application\Platform\Gatekeeper\Authentication\Saml\SamlEVSSN;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Access\Access;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Account;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\TblIdentification;
@@ -45,11 +46,13 @@ use SPHERE\Common\Frontend\Layout\Repository\Paragraph;
 use SPHERE\Common\Frontend\Layout\Repository\PullLeft;
 use SPHERE\Common\Frontend\Layout\Repository\PullRight;
 use SPHERE\Common\Frontend\Layout\Repository\Ruler;
+use SPHERE\Common\Frontend\Layout\Repository\Title;
 use SPHERE\Common\Frontend\Layout\Structure\Layout;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutColumn;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutGroup;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutRow;
 use SPHERE\Common\Frontend\Link\Repository\Danger as DangerLink;
+use SPHERE\Common\Frontend\Link\Repository\Primary as PrimaryLink;
 use SPHERE\Common\Frontend\Link\Repository\Standard;
 use SPHERE\Common\Frontend\Link\Repository\Success;
 use SPHERE\Common\Frontend\Message\Repository\Danger as DangerMessage;
@@ -67,6 +70,7 @@ use SPHERE\System\Debugger\DebuggerFactory;
 use SPHERE\System\Debugger\Logger\ErrorLogger;
 use SPHERE\System\Debugger\Logger\FileLogger;
 use SPHERE\System\Extension\Extension;
+use SPHERE\System\Extension\Repository\phpSaml;
 
 /**
  * Class Frontend
@@ -311,7 +315,7 @@ class Frontend extends Extension implements IFrontendInterface
             new FormGroup(array(
                     new FormRow(
                         new FormColumn(array(
-                            new Headline('Bitte geben Sie Ihre Zugangsdaten ein'),
+                            new Headline('Anmeldung Schulsoftware'),
                             new Ruler(),
                             new Listing(array(
                                 new Container($CredentialNameField) .
@@ -322,18 +326,114 @@ class Frontend extends Extension implements IFrontendInterface
                     ),
                     new FormRow(
                         new FormColumn(array(
-                            (new Primary('Anmelden')),
+                            (new Primary('Login')),
                         ))
                     )
                 )
             )
         );
 
+        // set depending information
+        if(strtolower($this->getRequest()->getHost()) == 'www.schulsoftware.schule'
+//            || $this->getRequest()->getHost() == '192.168.75.128' // local test
+        ){
+            $Form.= new Layout(new LayoutGroup(new LayoutRow(
+                new LayoutColumn(array(
+                    '<br/><br/><br/><br/>',
+                    new Title('Anmeldung CONNEXION (Pilot)'),
+                    new PrimaryLink('Login', 'SPHERE\Application\Platform\Gatekeeper\Saml\Login\EVSSN')
+                    //. new Link('.', 'SPHERE\Application\Platform\Gatekeeper\Saml\Login\EKM') // EKM -> Beispiel kann für zukünftige IDP's verwendet werden
+                ))
+            )));
+        }
+
         setcookie('cookies_available', 'enabled', time() + (86400 * 365), '/');
 
         $View->setContent($this->getIdentificationLayout($Form));
 
         return $View;
+    }
+
+    /**
+     * @return Stage
+     */
+    public function frontendIdentificationSamlEVSSN()
+    {
+
+        return $this->LoginSecondPageLogic(SamlEVSSN::getSAML());
+    }
+
+//    /**
+//     * // EKM -> Beispiel kann für zukünftige IDP's verwendet werden
+//     * @return Stage
+//     */
+//    public function frontendIdentificationSamlEKM()
+//    {
+//
+//        return $this->LoginSecondPageLogic(SamlEKM::getSAML());
+//    }
+
+    private function LoginSecondPageLogic($Config = array())
+    {
+
+        $Stage = new Stage(new Nameplate().' Anmelden', '', $this->getIdentificationEnvironment());
+
+        $Saml = new phpSaml($Config);
+        if(($Error = $Saml->getAuthRequest())){
+            $Stage->setContent($Error);
+            return $Stage;
+        }
+        $tblAccount = null;
+        $LoginOk = false;
+
+        if(isset($_SESSION['samlUserdata']['ucsschoolRecordUID']) && $_SESSION['samlUserdata']['ucsschoolRecordUID']){
+            $AccountId = current($_SESSION['samlUserdata']['ucsschoolRecordUID']);
+
+            $tblAccount = Account::useService()->getAccountById($AccountId);
+        }
+        if(isset($_SESSION['isAuthenticated']) && $_SESSION['isAuthenticated']){
+            $LoginOk = true;
+        }
+
+        if(($ExistSessionAccount = Account::useService()->getAccountBySession())){
+            // is requested account the same like session account go to welcome
+            if($tblAccount && $ExistSessionAccount->getId() == $tblAccount->getId()){
+                $Stage->setContent(new Redirect('/', Redirect::TIMEOUT_SUCCESS));
+                return $Stage;
+            }
+            // remove existing Session if User is not the same
+            if($Session = session_id()){
+                Account::useService()->destroySession(null, $Session);
+            }
+
+        }
+
+        $tblIdentification = null;
+        if($tblAccount
+            && $LoginOk
+            && ($tblAuthentication = Account::useService()->getAuthenticationByAccount($tblAccount))){
+            $tblIdentification = $tblAuthentication->getTblIdentification();
+        }
+
+        // Matching Account found?
+        if ($tblAccount && $tblIdentification) {
+            // Anfragen von SAML müssen Cookies aktiviert haben
+            $isCookieAvailable = true;
+            switch ($tblIdentification->getName()) {
+                case TblIdentification::NAME_TOKEN:
+                case TblIdentification::NAME_SYSTEM:
+                    return $this->frontendIdentificationToken($tblAccount->getId(), $tblIdentification->getId(), null, $isCookieAvailable);
+                case TblIdentification::NAME_CREDENTIAL:
+                case TblIdentification::NAME_USER_CREDENTIAL:
+                    return $this->frontendIdentificationAgb($tblAccount->getId(), $tblIdentification->getId(), 0, $isCookieAvailable);
+            }
+        }
+
+        $Stage->setContent(new Layout(new LayoutGroup(new LayoutRow(
+            new LayoutColumn(new Warning('Ihr Login von CONNEXION ist im System nicht bekannt, bitte wenden Sie sich an einen zuständigen Administrator'))
+        ))));
+
+        return $Stage;
     }
 
     /**
@@ -358,12 +458,14 @@ class Frontend extends Extension implements IFrontendInterface
     }
 
     /**
-     * @param int $tblAccount
-     * @param int $tblIdentification
+     * @param int         $tblAccount
+     * @param int         $tblIdentification
      * @param null|string $CredentialKey
+     * @param bool        $isCookieAvailable
+     *
      * @return Stage
      */
-    public function frontendIdentificationToken($tblAccount, $tblIdentification, $CredentialKey = null)
+    public function frontendIdentificationToken($tblAccount, $tblIdentification, $CredentialKey = null, $isCookieAvailable = false)
     {
         $View = new Stage(new YubiKey().' Anmelden', '', $this->getIdentificationEnvironment());
 
@@ -438,7 +540,7 @@ class Frontend extends Extension implements IFrontendInterface
             // . new PullRight(new Small(new Link('Mit einem anderen Benutzer anmelden', new Route(__NAMESPACE__))))
         );
 
-        if (isset($_COOKIE['cookies_available'])) {
+        if (isset($_COOKIE['cookies_available']) || $isCookieAvailable) {
             // Create Form
             $Form = new Form(
                 new FormGroup(array(
@@ -488,13 +590,15 @@ class Frontend extends Extension implements IFrontendInterface
     private function getCookieMessage()
     {
         return new DangerMessage(
-            'Ihre Browsereinstellungen lassen keine Cookies zu.' . '<br><br>'
-            . 'Um auf die Schulsoftware zu können, müssen Sie Cookies in Ihrem Browser zulassen.' . '<br><br>'
-            . 'Darum sind Cookies notwendig:' . '<br>'
-            . 'Aus Sicherheitsgründen wird beim Login ein Cookie auf Ihrem Rechner gespeichert. ' . '<br>'
-            . 'So wird sichergestellt, dass nur Sie während einer Sitzung auf die Schulsoftware zugreifen können.' . '<br>'
-            . 'Wenn Sie sich ausloggen oder das Browserfenster schließen, wird das Cookie gelöscht und Ihre Sitzung dadurch ungültig gemacht.'
-            , new Exclamation()
+            new Title(new Exclamation().' Browsereinstellungen')
+            .'Sie scheinen Cookies in Ihrem Browser deaktiviert zu haben.' . '<br/>'
+            .'Bitte überprüfen Sie die Einstellungen in Ihrem Browser und versuchen Sie es erneut.'
+//            'Ihre Browsereinstellungen lassen keine Cookies zu.' . '<br><br>'
+//            . 'Um auf die Schulsoftware zu können, müssen Sie Cookies in Ihrem Browser zulassen.' . '<br><br>'
+//            . 'Darum sind Cookies notwendig:' . '<br>'
+//            . 'Aus Sicherheitsgründen wird beim Login ein Cookie auf Ihrem Rechner gespeichert. ' . '<br>'
+//            . 'So wird sichergestellt, dass nur Sie während einer Sitzung auf die Schulsoftware zugreifen können.' . '<br>'
+//            . 'Wenn Sie sich ausloggen oder das Browserfenster schließen, wird das Cookie gelöscht und Ihre Sitzung dadurch ungültig gemacht.'
         );
     }
 
@@ -522,13 +626,16 @@ class Frontend extends Extension implements IFrontendInterface
     }
 
     /**
-     * @param int $tblAccount
-     * @param int $tblIdentification
-     * @param int $doAccept 0|1
+     * @param int  $tblAccount
+     * @param int  $tblIdentification
+     * @param int  $doAccept 0|1
+     * @param bool $isCookieAvailable
+     *
      * @return Stage
      */
-    public function frontendIdentificationAgb($tblAccount, $tblIdentification, $doAccept = 0)
+    public function frontendIdentificationAgb($tblAccount, $tblIdentification, $doAccept = 0, $isCookieAvailable = false)
     {
+
         $View = new Stage(new MoreItems().' Anmelden', '', $this->getIdentificationEnvironment());
 
         $tblAccount = Account::useService()->getAccountById($tblAccount);
@@ -548,24 +655,26 @@ class Frontend extends Extension implements IFrontendInterface
 
         // es sind keine Cookies erlaubt -> Login ist nicht möglich
         if (!isset($_COOKIE['cookies_available'])) {
+            // Bypass Cookies
+            if(!$isCookieAvailable){
+                $FormInformation = array(
+                    $tblAccount->getServiceTblConsumer()->getAcronym() . ' - ' . $tblAccount->getServiceTblConsumer()->getName(),
+                    'Benutzer: ' . $tblAccount->getUsername()
+                );
 
-            $FormInformation = array(
-                $tblAccount->getServiceTblConsumer()->getAcronym() . ' - ' . $tblAccount->getServiceTblConsumer()->getName(),
-                'Benutzer: ' . $tblAccount->getUsername()
-            );
+                $layout = new Layout(new LayoutGroup(new LayoutRow(array(
+                    new LayoutColumn(array(
+                        new Headline('Bitte geben Sie Ihre Zugangsdaten ein'),
+                        new Ruler(),
+                        new Listing($FormInformation),
+                        $this->getCookieMessage()
+                    ))
+                ))));
 
-            $layout = new Layout(new LayoutGroup(new LayoutRow(array(
-                new LayoutColumn(array(
-                    new Headline('Bitte geben Sie Ihre Zugangsdaten ein'),
-                    new Ruler(),
-                    new Listing($FormInformation),
-                    $this->getCookieMessage()
-                ))
-            ))));
+                $View->setContent($this->getIdentificationLayout($layout));
 
-            $View->setContent($this->getIdentificationLayout($layout));
-
-            return $View;
+                return $View;
+            }
         }
 
         $Headline = 'Allgemeine Geschäftsbedingungen';
@@ -667,9 +776,14 @@ class Frontend extends Extension implements IFrontendInterface
      */
     public function frontendDestroySession()
     {
-        $View = new Stage(new Off().' Abmelden', '', $this->getIdentificationEnvironment());
+        $Stage = new Stage(new Off().' Abmelden', '', $this->getIdentificationEnvironment());
 
-        $View->setContent(
+//        $tblAccount = Account::useService()->getAccountBySession();
+//        if($tblAccount->getId() == 3823 ){
+//            $phpSaml = new phpSaml();
+//            $phpSaml->getSLO();
+//        }
+        $Stage->setContent(
             $this->getIdentificationLayout(
                 new Headline('Abmelden', 'Bitte warten...').
                 Account::useService()->destroySession(
@@ -678,6 +792,28 @@ class Frontend extends Extension implements IFrontendInterface
             )
         );
 
-        return $View;
+        return $Stage;
+    }
+
+    /**
+     * Prepare if other sign out will come. now not in use.
+     * Route deprecated
+     * @return Stage
+     */
+    public function frontendSLO()
+    {
+
+        $Stage = new Stage(new Off().' Abmelden', '', $this->getIdentificationEnvironment());
+
+        $Stage->setContent(
+            $this->getIdentificationLayout(
+                new Headline('Abmelden', 'Bitte warten...').
+                Account::useService()->destroySession(
+                    new Redirect('/Platform/Gatekeeper/Authentication', Redirect::TIMEOUT_SUCCESS)
+                ) . $this->getCleanLocalStorage()
+            )
+        );
+
+        return $Stage;
     }
 }

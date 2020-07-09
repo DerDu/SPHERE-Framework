@@ -290,20 +290,13 @@ class SignOutCertificate extends AbstractDocument
                 ->styleAlignCenter()
                 , '40%')
         );
-        $StudentCall = 'Der Schüler/Die Schülerin';
-        if ($this->FieldValue['Gender'] == 'Männlich') {
-            $StudentCall = 'Der Schüler';
-        } elseif ($this->FieldValue['Gender'] == 'Weiblich') {
-            $StudentCall = 'Die Schülerin';
-        }
         $Slice->addElement((new Element())
-            ->setContent($StudentCall.' hat sich mit dieser Abmeldebescheinigung bei dem nun zuständigen Beruflichen
-                Schulzentrum anzumelden.')
+            ->setContent('Dieses Formular ist bei der Anmeldung in der aufnehmenden Schule/Berufsschule durch die Eltern/den Schüler vorzulegen.')
             ->stylePaddingTop('15px')
         );
         $Slice->addElement((new Element())
             ->setContent('Gemäß § 61 des Schulgesetzes für den Freistaat Sachsen ist die vorsätzliche oder fahrlässige
-                Verletzung der Berufsschulpflicht eine Ordnungswidrigkeit, die mit einer Geldbuße geahndet werden kann.')
+                Verletzung der Schulpflicht bzw. Berufsschulpflicht eine Ordnungswidrigkeit, die mit einer Geldbuße geahndet werden kann.')
             ->stylePaddingTop('15px')
         );
         $Slice->addElement((new Element())
@@ -383,7 +376,7 @@ class SignOutCertificate extends AbstractDocument
             $StudentCall = 'Die';
         }
         $Slice->addElement((new Element())
-            ->setContent($StudentCall.' Berufsschulpflichtige')
+            ->setContent($StudentCall.' Schulpflichtige/Berufsschulpflichtige')
             ->stylePaddingTop('20px')
         );
         $Slice->addSection((new Section())

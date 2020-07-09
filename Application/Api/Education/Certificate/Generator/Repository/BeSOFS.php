@@ -280,7 +280,7 @@ class BeSOFS extends Certificate
                                 beschlossen.
                                 ')
                     ->styleMarginTop('20px')
-                    ->styleMarginBottom('220px')
+                    ->styleMarginBottom('159px')
                 )
             )
             ->addSlice((new Slice())

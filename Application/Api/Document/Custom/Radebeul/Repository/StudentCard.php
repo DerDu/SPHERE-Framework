@@ -56,7 +56,7 @@ class StudentCard extends AbstractDocument
                             ->styleTextSize('23px')
                             , '60%'
                         )
-                        ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/RadebeulLogo.jpg',
+                        ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/EVSR.jpg',
                             '120px', '120px'))
                             ->stylePaddingTop('10px')
                             ->styleHeight('10px')

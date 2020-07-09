@@ -21,6 +21,7 @@ use SPHERE\Application\Education\Certificate\Prepare\Service\Entity\TblPrepareCe
 use SPHERE\Application\Education\Certificate\Prepare\Service\Entity\TblPrepareGrade;
 use SPHERE\Application\Education\Certificate\Prepare\Service\Entity\TblPrepareInformation;
 use SPHERE\Application\Education\Certificate\Prepare\Service\Entity\TblPrepareStudent;
+use SPHERE\Application\Education\ClassRegister\Absence\Absence;
 use SPHERE\Application\Education\Graduation\Evaluation\Evaluation;
 use SPHERE\Application\Education\Graduation\Evaluation\Service\Entity\TblTask;
 use SPHERE\Application\Education\Graduation\Evaluation\Service\Entity\TblTestType;
@@ -33,6 +34,7 @@ use SPHERE\Application\People\Meta\Student\Student;
 use SPHERE\Application\People\Person\Person;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
+use SPHERE\Application\Setting\Consumer\Consumer;
 use SPHERE\System\Database\Binding\AbstractData;
 
 /**
@@ -269,6 +271,26 @@ class Data extends AbstractData
                     TblPrepareStudent::ATTR_SERVICE_TBL_PERSON => $tblPerson->getId(),
                 )
             );
+        }
+    }
+
+    /**
+     * @param TblPerson $tblPerson
+     * @param TblCertificate|null $tblCertificate
+     *
+     * @return false|TblPrepareStudent[]
+     */
+    public function getPrepareStudentAllByPerson(TblPerson $tblPerson, TblCertificate $tblCertificate = null)
+    {
+        if ($tblCertificate) {
+            return $this->getForceEntityListBy(__METHOD__, $this->getEntityManager(), 'TblPrepareStudent', array(
+                TblPrepareStudent::ATTR_SERVICE_TBL_PERSON => $tblPerson->getId(),
+                TblPrepareStudent::ATTR_SERVICE_TBL_CERTIFICATE => $tblCertificate->getId()
+            ));
+        } else {
+            return $this->getForceEntityListBy(__METHOD__, $this->getEntityManager(), 'TblPrepareStudent', array(
+                TblPrepareStudent::ATTR_SERVICE_TBL_PERSON => $tblPerson->getId()
+            ));
         }
     }
 
@@ -735,6 +757,14 @@ class Data extends AbstractData
             }
         }
 
+        if (($tblSettingAbsence = Consumer::useService()->getSetting(
+            'Education', 'ClassRegister', 'Absence', 'UseClassRegisterForAbsence'))
+        ) {
+            $useClassRegisterForAbsence = $tblSettingAbsence->getValue();
+        } else {
+            $useClassRegisterForAbsence = false;
+        }
+
         if (($tblDivision = $tblPrepare->getServiceTblDivision())
             && ($tblPersonList = Division::useService()->getStudentAllByDivision($tblDivision))
         ) {
@@ -772,6 +802,20 @@ class Data extends AbstractData
                         $Entity->setApproved(true);
                         $Entity->setPrinted(false);
 
+                        // Fehlzeiten aus dem Klassenbuch übernehmen
+                        if ($useClassRegisterForAbsence) {
+                            $Entity->setExcusedDays(Absence::useService()->getExcusedDaysByPerson(
+                                $tblPerson,
+                                $tblDivision,
+                                new \DateTime($tblPrepare->getDate())
+                            ));
+                            $Entity->setUnexcusedDays(Absence::useService()->getUnexcusedDaysByPerson(
+                                $tblPerson,
+                                $tblDivision,
+                                new \DateTime($tblPrepare->getDate())
+                            ));
+                        }
+
                         $Manager->bulkSaveEntity($Entity);
                         Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(), $Protocol,
                             $Entity, true);
@@ -788,6 +832,20 @@ class Data extends AbstractData
                         $Entity->setServiceTblPerson($tblPerson);
                         $Entity->setApproved(true);
                         $Entity->setPrinted(false);
+
+                        // Fehlzeiten aus dem Klassenbuch übernehmen
+                        if ($useClassRegisterForAbsence) {
+                            $Entity->setExcusedDays(Absence::useService()->getExcusedDaysByPerson(
+                                $tblPerson,
+                                $tblDivision,
+                                new \DateTime($tblPrepare->getDate())
+                            ));
+                            $Entity->setUnexcusedDays(Absence::useService()->getUnexcusedDaysByPerson(
+                                $tblPerson,
+                                $tblDivision,
+                                new \DateTime($tblPrepare->getDate())
+                            ));
+                        }
 
                         $Manager->bulkSaveEntity($Entity);
                         Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(), $Entity, true);
@@ -886,6 +944,14 @@ class Data extends AbstractData
 
             $Manager = $this->getConnection()->getEntityManager();
 
+            if (($tblSettingAbsence = Consumer::useService()->getSetting(
+                'Education', 'ClassRegister', 'Absence', 'UseClassRegisterForAbsence'))
+            ) {
+                $useClassRegisterForAbsence = $tblSettingAbsence->getValue();
+            } else {
+                $useClassRegisterForAbsence = false;
+            }
+
             foreach ($tblPersonList as $tblPerson) {
                 if (($tblPrepareStudent = $this->getPrepareStudentBy($tblPrepare, $tblPerson))) {
                     // Update
@@ -895,6 +961,12 @@ class Data extends AbstractData
                     if (null !== $Entity) {
                         $Entity->setApproved(false);
                         $Entity->setPrinted(false);
+
+                        // Fehlzeiten zurücksetzen, bei automatischer Übernahme der Fehlzeiten
+                        if ($useClassRegisterForAbsence) {
+                            $Entity->setExcusedDays(null);
+                            $Entity->setUnexcusedDays(null);
+                        }
 
                         $Manager->bulkSaveEntity($Entity);
                         Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(), $Protocol,
@@ -935,6 +1007,14 @@ class Data extends AbstractData
             }
         }
 
+        if (($tblSettingAbsence = Consumer::useService()->getSetting(
+            'Education', 'ClassRegister', 'Absence', 'UseClassRegisterForAbsence'))
+        ) {
+            $useClassRegisterForAbsence = $tblSettingAbsence->getValue();
+        } else {
+            $useClassRegisterForAbsence = false;
+        }
+
         if ($tblTestType
             && ($tblDivision = $tblPrepare->getServiceTblDivision())
             && ($tblYear = $tblDivision->getServiceTblYear())
@@ -959,6 +1039,20 @@ class Data extends AbstractData
                 if (null !== $Entity) {
                     $Entity->setApproved(true);
                     $Entity->setPrinted(false);
+
+                    // Fehlzeiten aus dem Klassenbuch übernehmen
+                    if ($useClassRegisterForAbsence) {
+                        $Entity->setExcusedDays(Absence::useService()->getExcusedDaysByPerson(
+                            $tblPerson,
+                            $tblDivision,
+                            new \DateTime($tblPrepare->getDate())
+                        ));
+                        $Entity->setUnexcusedDays(Absence::useService()->getUnexcusedDaysByPerson(
+                            $tblPerson,
+                            $tblDivision,
+                            new \DateTime($tblPrepare->getDate())
+                        ));
+                    }
 
                     $Manager->bulkSaveEntity($Entity);
                     Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(), $Protocol,

@@ -177,7 +177,7 @@ class EssGsJOne extends Certificate
                 ->addSection((new Section())
                     ->addElementColumn((new Element())
                         ->setContent('{% if(Content.P' . $personId . '.Input.Transfer) %}
-                        {{ Content.P' . $personId . '.Input.Transfer }}
+                        {{ Content.P' . $personId . '.Input.Transfer }}.
                     {% else %}
                           &nbsp;
                     {% endif %}')
@@ -298,7 +298,7 @@ class EssGsJOne extends Certificate
                 ->styleMarginTop('3px')
             )
             ->addSlice((new Slice())
-                ->addElement((new Element\Image('/Common/Style/Resource/Logo/ESS_Grundschule_down.jpg', '700px'))
+                ->addElement((new Element\Image('/Common/Style/Resource/Logo/ESS_Grundschule_Down.jpg', '700px'))
                     ->stylePaddingTop('20px')
                 )
             );

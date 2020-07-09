@@ -58,7 +58,11 @@ class Data extends \SPHERE\Application\Education\Graduation\Gradebook\ScoreRule\
 
         $this->createGradeText('nicht erteilt', 'NOT_GRANTED');
         $this->createGradeText('teilgenommen', 'ATTENDED');
-        $this->createGradeText('Keine Benotung ', 'NO_GRADING');
+        if (($tblGradeText = $this->createGradeText('keine Benotung', 'NO_GRADING'))
+            && $tblGradeText->getName() == 'Keine Benotung '
+        ) {
+             $this->updateGradeText($tblGradeText, 'keine Benotung');
+        }
         $this->createGradeText('befreit', 'LIBERATED');
     }
 
@@ -954,6 +958,34 @@ class Data extends \SPHERE\Application\Education\Graduation\Gradebook\ScoreRule\
             $Entity->setComment($Comment);
             $Entity->setTrend($Trend);
             $Entity->setServiceTblPersonTeacher($tblPersonTeacher);
+
+            $Manager->saveEntity($Entity);
+            Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(), $Protocol, $Entity);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param TblGradeText $tblGradeText
+     * @param $Name
+     *
+     * @return bool
+     */
+    public function updateGradeText(
+        TblGradeText $tblGradeText,
+        $Name
+    ) {
+
+        $Manager = $this->getConnection()->getEntityManager();
+
+        /** @var TblGradeText $Entity */
+        $Entity = $Manager->getEntityById('TblGradeText', $tblGradeText->getId());
+        $Protocol = clone $Entity;
+        if (null !== $Entity) {
+            $Entity->setName($Name);
 
             $Manager->saveEntity($Entity);
             Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(), $Protocol, $Entity);

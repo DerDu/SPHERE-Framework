@@ -34,7 +34,7 @@ class MsAbgLernen extends Certificate
 
         $personId = $tblPerson ? $tblPerson->getId() : 0;
 
-        $Header = $this->getHead($this->isSample(), true, 'auto', '50px');
+        $Header = $this->getHead($this->isSample());
 
         // leere Seite
         $pageList[] = new Page();
@@ -164,17 +164,7 @@ class MsAbgLernen extends Certificate
                 )
             )
             ->addSlice($this->getSubjectLanes($personId,true, array(), '14px', false, false, false)->styleHeight('320px'))
-            ->addSlice((new Slice())
-                ->addElement((new Element())
-                ->setContent('Bemerkungen: Inklusive Unterrichtung¹:
-                    {% if(Content.P' . $personId . '.Input.Support is not empty) %}
-                        {{ Content.P' . $personId . '.Input.Support|nl2br }}
-                    {% else %}
-                        &nbsp;
-                    {% endif %}')
-                ->styleHeight('200px')
-                ->styleMarginTop('15px')
-            ))
+            ->addSlice($this->getSupportContent($personId, '200px', '15px', 'Bemerkungen: Inklusive Unterrichtung¹: '))
             ->addSlice($this->getDateLine($personId))
             ->addSlice($this->getSignPart($personId, true, '30px'))
             ->addSlice($this->getInfo('220px',

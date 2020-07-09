@@ -179,7 +179,7 @@ class E03
                 )
             );
 
-        for ($i = 0; $i < 7; $i++) {
+        for ($i = 0; $i < 12; $i++) {
             $section = new Section();
             $section
                 ->addElementColumn((new Element())

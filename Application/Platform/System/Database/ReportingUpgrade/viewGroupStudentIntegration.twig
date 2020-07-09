@@ -1,51 +1,56 @@
--- ViewGroupStudent
 SELECT
-vS.TblStudent_serviceTblPerson AS TblPerson_Id,
-vS.TblStudent_Id AS TblStudent_Id,
+    tS.serviceTblPerson AS TblPerson_Id,
+    tS.Id AS TblStudent_Id,
 
-(select distinct
-group_concat(
-concat(
-vSF.TblStudentFocusType_Name
-) separator ', \n'
-)
-from PeopleMeta_{{ ConsumerAcronym }}.viewStudentFocus vSF
-where vSF.TblStudent_Id =  vS.TblStudent_Id
-) TblStudentFocusType_NameList,
+    (select distinct
+        group_concat(
+            concat(
+                tSFT.Name
+            ) separator ', \n'
+        )
+    from PeopleMeta_{{ ConsumerAcronym }}.tblSupport tSU
+        LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblSupportFocus tSF ON tSF.tblSupport = tSU.Id
+        LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblSupportFocusType tSFT ON tSFT.Id = tSF.tblSupportFocusType
+    where tSU.serviceTblPerson = tS.serviceTblPerson
+        and tSU.EntityRemove IS NULL
+    ) TblStudentFocusType_NameList,
 
-(select
-vSF.TblStudentFocusType_Name
-from PeopleMeta_{{ ConsumerAcronym }}.viewStudentFocus vSF
-where vSF.TblStudent_Id =  vS.TblStudent_Id
-and vSF.TblStudentFocus_IsPrimary = 1
-limit 1
-) TblStudentFocusType_MainFocus,
+    (select
+        tSFT.Name
+    from PeopleMeta_{{ ConsumerAcronym }}.tblSupport tSU
+        LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblSupportFocus tSF ON tSF.tblSupport = tSU.Id
+        LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblSupportFocusType tSFT ON tSFT.Id = tSF.tblSupportFocusType
+    where tSU.serviceTblPerson = tS.serviceTblPerson
+        and tSU.EntityRemove IS NULL
+        and tSF.IsPrimary = 1
+        limit 1
+    ) TblStudentFocusType_MainFocus,
+    
+    (select
+        group_concat(
+            concat(
+                tSDT.Name
+            ) separator ', \n'
+        )
+    from PeopleMeta_{{ ConsumerAcronym }}.tblStudentDisorder tSD
+        LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblStudentDisorderType tSDT ON tSDT.Id = tSD.tblStudentDisorderType
+    where tSD.tblStudent = tS.Id
+        and tSD.EntityRemove IS NULL
+    ) TblStudentDisorderType_NameList,
+    
+    DATE_FORMAT( tSI.CoachingRequestDate, '%d.%m.%Y' ) AS TblStudentIntegration_CoachingRequestDate,
+    DATE_FORMAT( tSI.CoachingCounselDate, '%d.%m.%Y' ) AS TblStudentIntegration_CoachingCounselDate,
+    DATE_FORMAT( tSI.CoachingDecisionDate, '%d.%m.%Y' ) AS TblStudentIntegration_CoachingDecisionDate,
+    IF (tSI.CoachingRequired, 'Ja', 'Nein') AS TblStudentIntegration_CoachingRequired,
+    tSI.CoachingTime AS TblStudentIntegration_CoachingTime,
+    tSI.CoachingRemark AS TblStudentIntegration_CoachingRemark,
+    
+    concat(
+        tP.FirstName,
+        ' ',
+        tP.LastName
+    ) as TblPerson_Coach
 
-(select distinct
-group_concat(
-concat(
-vSD.TblStudentDisorderType_Name
-) separator ', \n'
-)
-from PeopleMeta_{{ ConsumerAcronym }}.viewStudentDisorder vSD
-where vSD.TblStudent_Id =  vS.TblStudent_Id
-) TblStudentDisorderType_NameList,
-
-DATE_FORMAT( viewStudentIntegration.TblStudentIntegration_CoachingRequestDate, '%d.%m.%Y' ) AS TblStudentIntegration_CoachingRequestDate,
-DATE_FORMAT( viewStudentIntegration.TblStudentIntegration_CoachingCounselDate, '%d.%m.%Y' ) AS TblStudentIntegration_CoachingCounselDate,
-DATE_FORMAT( viewStudentIntegration.TblStudentIntegration_CoachingDecisionDate, '%d.%m.%Y' ) AS TblStudentIntegration_CoachingDecisionDate,
-IF (viewStudentIntegration.TblStudentIntegration_CoachingRequired, 'Ja', 'Nein') AS TblStudentIntegration_CoachingRequired,
-viewStudentIntegration.TblStudentIntegration_CoachingTime AS TblStudentIntegration_CoachingTime,
-viewStudentIntegration.TblStudentIntegration_CoachingRemark AS TblStudentIntegration_CoachingRemark,
--- viewPersonCoach.TblSalutation_Salutation AS TblSalutation_Salutation_Coach,
-
-concat(
-viewPersonCoach.TblPerson_FirstName,
-' ',
-viewPersonCoach.TblPerson_LastName
-) as TblPerson_Coach
-
-
-FROM PeopleMeta_{{ ConsumerAcronym }}.viewStudent vS
-LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.viewStudentIntegration ON vS.TblStudent_Id = viewStudentIntegration.TblStudent_Id
-LEFT JOIN PeoplePerson_{{ ConsumerAcronym }}.viewPerson viewPersonCoach ON viewStudentIntegration.TblStudentIntegration_serviceTblPerson = viewPersonCoach.TblPerson_Id
+FROM PeopleMeta_{{ ConsumerAcronym }}.tblStudent tS
+    LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblStudentIntegration tSI ON tSI.Id = tS.tblStudentIntegration
+    LEFT JOIN PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP ON tP.Id = tSI.serviceTblPerson

@@ -1131,7 +1131,7 @@ class Frontend extends Extension implements IFrontendInterface
                 $LayoutColumnCounterList[] = new LayoutColumn(new Panel('Bildungsgänge', $EducationCountString, Panel::PANEL_TYPE_INFO),3);
             }
             if (!empty($OrientationCountString)) {
-                $LayoutColumnCounterList[] = new LayoutColumn(new Panel('Neigungskurse', $OrientationCountString, Panel::PANEL_TYPE_INFO),3);
+                $LayoutColumnCounterList[] = new LayoutColumn(new Panel('Wahlbereiche', $OrientationCountString, Panel::PANEL_TYPE_INFO),3);
             }
             if (!empty($GroupCountString)) {
                 $LayoutColumnCounterList[] = new LayoutColumn(new Panel('Gruppen', $GroupCountString, Panel::PANEL_TYPE_INFO), 3);
@@ -1193,7 +1193,7 @@ class Frontend extends Extension implements IFrontendInterface
                                         'Address' => 'Adresse',
                                         'PhoneNumbers' => 'Telefonnummer',
                                         'Group'        => 'Schüler&shy;gruppe',
-                                        'OrientationAndFrench'  => 'NK/Profil/FR',
+                                        'OrientationAndFrench'  => 'WB/Profil/FR',
                                         'Education'    => 'Bildungsgang',
                                         'Elective'     => 'Wahlfach',
                                     ),

@@ -84,6 +84,8 @@ class Setup extends AbstractSetup
         $this->createColumn($Table, 'serviceTblType', self::FIELD_TYPE_BIGINT, true);
         $this->createColumn($Table, 'serviceTblDebtorPeriodType', self::FIELD_TYPE_BIGINT, true, 1);
         $this->createColumn($Table, 'tblBasketType', self::FIELD_TYPE_BIGINT, false, 1);
+        $this->createColumn($Table, 'FibuAccount', self::FIELD_TYPE_STRING);
+        $this->createColumn($Table, 'FibuToAccount', self::FIELD_TYPE_STRING);
         // Update vorhandener Daten deswegen ist kein Fremdschlüssel mehr möglich
 //        $this->getConnection()->addForeignKey($Table, $tblBasketType);
 

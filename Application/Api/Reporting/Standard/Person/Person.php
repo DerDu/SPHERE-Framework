@@ -267,16 +267,35 @@ class Person
      * @param null $Date
      * @param null $Type
      * @param string $DivisionName
+     * @param string $GroupName
      *
      * @return bool|string
      */
-    public function downloadAbsenceList($Date = null, $Type = null, $DivisionName = '')
+    public function downloadAbsenceList($Date = null, $Type = null, $DivisionName = '', $GroupName = '')
     {
 
-        $dateTime = new \DateTime($Date);
-        if (($fileLocation = ReportingPerson::useService()->createAbsenceListExcel($dateTime, $Type, $DivisionName))) {
+        // das Datum darf keine Uhrzeit enthalten
+        $dateTime = new \DateTime((new \DateTime($Date))->format('d.m.Y'));
+        if (($fileLocation = ReportingPerson::useService()->createAbsenceListExcel($dateTime, $Type, $DivisionName, $GroupName))) {
             return FileSystem::getDownload($fileLocation->getRealPath(),
                 "Fehlzeiten " . $dateTime->format("Y-m-d") . ".xlsx")->__toString();
+        }
+
+        return false;
+    }
+
+    /**
+     * @return string|bool
+     */
+    public function downloadClubList()
+    {
+
+        $PersonList = ReportingPerson::useService()->createClubList();
+        if ($PersonList) {
+            $fileLocation = ReportingPerson::useService()->createClubListExcel($PersonList);
+
+            return FileSystem::getDownload($fileLocation->getRealPath(),
+                "Fördervereinsmitgliedschaft ".date("Y-m-d H:i:s").".xlsx")->__toString();
         }
 
         return false;

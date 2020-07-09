@@ -1,6 +1,7 @@
 <?php
 namespace SPHERE\Application\Education\ClassRegister;
 
+use SPHERE\Application\Api\Education\ClassRegister\ApiSortDivision;
 use SPHERE\Application\Api\People\Meta\Agreement\ApiAgreementReadOnly;
 use SPHERE\Application\Api\People\Meta\MedicalRecord\MedicalRecordReadOnly;
 use SPHERE\Application\Api\People\Meta\Support\ApiSupportReadOnly;
@@ -22,6 +23,7 @@ use SPHERE\Common\Frontend\Icon\Repository\ChevronLeft;
 use SPHERE\Common\Frontend\Icon\Repository\Commodity;
 use SPHERE\Common\Frontend\Icon\Repository\Download;
 use SPHERE\Common\Frontend\Icon\Repository\Edit;
+use SPHERE\Common\Frontend\Icon\Repository\Exclamation;
 use SPHERE\Common\Frontend\Icon\Repository\EyeOpen;
 use SPHERE\Common\Frontend\Icon\Repository\ResizeVertical;
 use SPHERE\Common\Frontend\Icon\Repository\Select;
@@ -99,7 +101,6 @@ class ClassRegister implements IApplicationInterface
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
             __NAMESPACE__.'\Sort\Gender', __NAMESPACE__.'\Sort\Frontend::frontendSortDivisionGender')
         );
-
     }
 
     /**
@@ -369,8 +370,13 @@ class ClassRegister implements IApplicationInterface
                     } else {
                         $MedicalRecord = '';
                     }
-                    $Agreement = (new Standard('', ApiAgreementReadOnly::getEndpoint(), new EyeOpen()))
-                        ->ajaxPipelineOnClick(ApiAgreementReadOnly::pipelineOpenOverViewModal($tblPerson->getId()));
+                    if ($tblStudent
+                        && Student::useService()->getStudentAgreementAllByStudent($tblStudent)){
+                        $Agreement = (new Standard('', ApiAgreementReadOnly::getEndpoint(), new EyeOpen()))
+                            ->ajaxPipelineOnClick(ApiAgreementReadOnly::pipelineOpenOverViewModal($tblPerson->getId()));
+                    } else {
+                        $Agreement = '';
+                    }
 
                     $studentTable[] = array(
                         'Number'        => (count($studentTable) + 1),
@@ -411,19 +417,12 @@ class ClassRegister implements IApplicationInterface
             }
 
             if (!$isTeacher) {
-                $buttonList[] = new Standard(
-                    'Sortierung alphabetisch', '/Education/ClassRegister/Sort', new ResizeVertical(),
-                    array(
-                        'DivisionId' => $tblDivision->getId()
-                    )
-                );
-                $buttonList[] = new Standard(
-                    'Sortierung Geschlecht (alphabetisch)', '/Education/ClassRegister/Sort/Gender',
-                    new ResizeVertical(),
-                    array(
-                        'DivisionId' => $tblDivision->getId()
-                    )
-                );
+                $buttonList[] = (new Standard(
+                    'Sortierung alphabetisch', ApiSortDivision::getEndpoint(), new ResizeVertical()))
+                ->ajaxPipelineOnClick(ApiSortDivision::pipelineOpenSortModal($tblDivision->getId(), 'Sortierung alphabetisch'));
+                $buttonList[] = (new Standard(
+                    'Sortierung Geschlecht (alphabetisch)', ApiSortDivision::getEndpoint(), new ResizeVertical()))
+                ->ajaxPipelineOnClick(ApiSortDivision::pipelineOpenSortModal($tblDivision->getId(), 'Sortierung Geschlecht (alphabetisch)'));
             }
             $buttonList[] = new Standard(
                 'Fehlzeiten (Monatsansicht)', '/Education/ClassRegister/Absence/Month', new Calendar(), array(
@@ -455,10 +454,16 @@ class ClassRegister implements IApplicationInterface
 
             $Stage->setContent(
                 ApiSupportReadOnly::receiverOverViewModal()
+                .ApiSortDivision::receiverModal()
                 .MedicalRecordReadOnly::receiverOverViewModal()
                 .ApiAgreementReadOnly::receiverOverViewModal()
                 .new Layout(array(
                     new LayoutGroup(array(
+                        new LayoutRow(
+                            new LayoutColumn(
+                                new Danger('Die dauerhafte Speicherung des Excel-Exports ist datenschutzrechtlich nicht zulässig!', new Exclamation())
+                            )
+                        ),
                         new LayoutRow(array(
                             new LayoutColumn(array(
                                 new Panel(
@@ -483,7 +488,7 @@ class ClassRegister implements IApplicationInterface
                                     'MedicalRecord' => 'Krankenakte',
                                     'Agreement'     => 'Einverständnis',
                                     'Gender'        => 'Geschlecht',
-                                    'Address'       => 'Addresse',
+                                    'Address'       => 'Adresse',
                                     'Birthday'      => 'Geburtsdatum',
                                     'Course'        => 'Bildungsgang',
                                     'Absence'       => 'Fehlzeiten (E, U)',

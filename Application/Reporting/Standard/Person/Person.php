@@ -45,6 +45,9 @@ class Person extends AbstractModule implements IModuleInterface
         Main::getDisplay()->addModuleNavigation(
             new Link(new Link\Route(__NAMESPACE__.'/Absence'), new Link\Name('Fehlzeiten'))
         );
+        Main::getDisplay()->addModuleNavigation(
+            new Link(new Link\Route(__NAMESPACE__.'/Club'), new Link\Name('Fördervereinsmitgliedschaft'))
+        );
 
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
             __NAMESPACE__, __NAMESPACE__.'\Frontend::frontendPerson'
@@ -75,6 +78,9 @@ class Person extends AbstractModule implements IModuleInterface
         ));
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
             __NAMESPACE__.'/Absence', __NAMESPACE__.'\Frontend::frontendAbsence'
+        ));
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__.'/Club', __NAMESPACE__.'\Frontend::frontendClub'
         ));
     }
 

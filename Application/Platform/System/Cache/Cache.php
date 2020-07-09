@@ -107,6 +107,13 @@ class Cache extends Extension implements IModuleInterface
         $CacheStatus = array();
         /** @var AbstractHandler $Cache */
         foreach ($CacheStack as $Name => $Cache) {
+            if($Name === 'Twig'){
+                $CacheStatus[] = new LayoutGroup(new LayoutRow(
+                    new LayoutColumn(new Title(new Success(new Enable()).' '.$Name,
+                    new Danger('Deactivated summary for getStatus() '.substr(strrchr(get_class($Cache), '\\'), 1).''))
+                    )));
+                continue;
+            }
             $CacheStatus[] = new LayoutGroup(new LayoutRow(
                 new LayoutColumn(new Status(
                     $Cache->getStatus()

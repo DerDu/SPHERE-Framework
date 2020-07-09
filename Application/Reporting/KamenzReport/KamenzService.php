@@ -254,8 +254,8 @@ class KamenzService
             'ForeignLanguage4' => '4. FS',
             'Religion' => 'Religion',
             'Nationality' => 'Staatsangehörigkeit',
-            'HasMigrationBackground' => 'Migrationshintergrund',
-            'IsInPreparationDivisionForMigrants' => 'Besucht Vorbereitungsklasse für Migranten'
+            'HasMigrationBackground' => 'Herkunftssprache ist nicht oder nicht ausschließlich Deutsch',
+//            'IsInPreparationDivisionForMigrants' => 'Besucht Vorbereitungsklasse für Migranten'
         );
 
         if (($tblSchoolType->getName() == 'Mittelschule / Oberschule')) {

@@ -27,7 +27,8 @@ class Setup extends AbstractSetup
          * Table
          */
         $Schema = clone $this->getConnection()->getSchema();
-        $this->setTableConsumer($Schema);
+        $tblConsumer = $this->setTableConsumer($Schema);
+        $this->setTableConsumerLogin($Schema, $tblConsumer);
         /**
          * Migration & Protocol
          */
@@ -60,6 +61,23 @@ class Setup extends AbstractSetup
             $Table->addColumn('Name', 'string');
         }
         $this->createColumn($Table, 'Alias', self::FIELD_TYPE_STRING);
+
+        return $Table;
+    }
+
+    /**
+     * @param Schema $Schema
+     * @param Table  $tblConsumer
+     *
+     * @return Table
+     */
+    private function setTableConsumerLogin(Schema &$Schema, Table $tblConsumer)
+    {
+
+        $Table = $this->createTable($Schema, 'tblConsumerLogin');
+        $this->createColumn($Table, 'SystemName', self::FIELD_TYPE_STRING);
+        $this->createColumn($Table, 'IsSchoolSeparated', self::FIELD_TYPE_BOOLEAN, false, false);
+        $this->getConnection()->addForeignKey($Table, $tblConsumer);
 
         return $Table;
     }

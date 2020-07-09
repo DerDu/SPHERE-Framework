@@ -1,20 +1,27 @@
 SELECT
-    viewRelationshipToPerson.TblToPerson_Remark AS TblToPerson_Remark,
-    viewRelationshipToPerson.TblToPerson_serviceTblPersonFrom AS TblToPerson_serviceTblPersonFrom,
-    viewRelationshipToPerson.TblToPerson_serviceTblPersonTo AS TblToPerson_serviceTblPersonTo,
-    viewRelationshipToPerson.TblToPerson_Ranking AS TblToPerson_Ranking,
-    viewRelationshipToPerson.TblToPerson_IsSingleParent AS TblToPerson_IsSingleParent,
-    viewRelationshipToPerson.TblType_Name AS TblType_Name,
-    viewRelationshipToPerson.TblType_Description AS TblType_Description
-FROM
-    PeopleRelationship_{{ ConsumerAcronym }}.viewRelationshipToPerson
+    tTP.Remark AS TblToPerson_Remark,
+    tTP.serviceTblPersonFrom AS TblToPerson_serviceTblPersonFrom,
+    tTP.serviceTblPersonTo AS TblToPerson_serviceTblPersonTo,
+    tTP.Ranking AS TblToPerson_Ranking,
+    tTP.IsSingleParent AS TblToPerson_IsSingleParent,
+    tT.Name AS TblType_Name,
+    tT.Description AS TblType_Description
+
+FROM PeopleRelationship_{{ ConsumerAcronym }}.tblToPerson tTP
+	LEFT JOIN PeopleRelationship_{{ ConsumerAcronym }}.tblType tT ON tT.Id = tTP.tblType
+
+WHERE tTP.EntityRemove IS NULL
+
 UNION SELECT
-    viewRelationshipToPerson.TblToPerson_Remark AS TblToPerson_Remark,
-    viewRelationshipToPerson.TblToPerson_serviceTblPersonTo AS TblToPerson_serviceTblPersonTo,
-    viewRelationshipToPerson.TblToPerson_serviceTblPersonFrom AS TblToPerson_serviceTblPersonFrom,
-    viewRelationshipToPerson.TblToPerson_Ranking AS TblToPerson_Ranking,
-    viewRelationshipToPerson.TblToPerson_IsSingleParent AS TblToPerson_IsSingleParent,
-    viewRelationshipToPerson.TblType_Name AS TblType_Name,
-    viewRelationshipToPerson.TblType_Description AS TblType_Description
-FROM
-    PeopleRelationship_{{ ConsumerAcronym }}.viewRelationshipToPerson
+    tTP.Remark AS TblToPerson_Remark,
+    tTP.serviceTblPersonTo AS TblToPerson_serviceTblPersonTo,
+    tTP.serviceTblPersonFrom AS TblToPerson_serviceTblPersonFrom,
+    tTP.Ranking AS TblToPerson_Ranking,
+    tTP.IsSingleParent AS TblToPerson_IsSingleParent,
+    tT.Name AS TblType_Name,
+    tT.Description AS TblType_Description
+
+FROM PeopleRelationship_{{ ConsumerAcronym }}.tblToPerson tTP
+	LEFT JOIN PeopleRelationship_{{ ConsumerAcronym }}.tblType tT ON tT.Id = tTP.tblType
+
+WHERE tTP.EntityRemove IS NULL

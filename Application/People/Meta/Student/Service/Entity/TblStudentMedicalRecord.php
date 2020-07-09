@@ -1,10 +1,12 @@
 <?php
 namespace SPHERE\Application\People\Meta\Student\Service\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping\Cache;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
+use SPHERE\Application\People\Meta\Student\Student;
 use SPHERE\System\Database\Fitting\Element;
 
 /**
@@ -16,6 +18,7 @@ class TblStudentMedicalRecord extends Element
 {
 
     const ATTR_ATTENDING_DOCTOR = 'AttendingDoctor';
+    const ATTR_INSURANCE_STATE = 'InsuranceState';
 
     /**
      * @Column(type="text")
@@ -37,6 +40,18 @@ class TblStudentMedicalRecord extends Element
      * @Column(type="string")
      */
     protected $Insurance;
+    /**
+     * @Column(type="datetime")
+     */
+    protected $MasernDate;
+    /**
+     * @Column(type="string")
+     */
+    protected $MasernDocumentType;
+    /**
+     * @Column(type="string")
+     */
+    protected $MasernCreatorType;
 
     /**
      * @return string
@@ -93,21 +108,34 @@ class TblStudentMedicalRecord extends Element
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getInsuranceState()
+    {
+
+        $value = '';
+        if(($tblStudentInsuranceState = Student::useService()->getStudentInsuranceStateById($this->InsuranceState))){
+            $value = $tblStudentInsuranceState->getName();
+        }
+        return $value;
+    }
+
+    /**
+     * @return string
+     */
+    public function getInsuranceStateId()
     {
 
         return $this->InsuranceState;
     }
 
     /**
-     * @param int $InsuranceState
+     * @param int $tblStudentInsuranceStateId
      */
-    public function setInsuranceState($InsuranceState)
+    public function setInsuranceState($tblStudentInsuranceStateId = 0)
     {
 
-        $this->InsuranceState = $InsuranceState;
+        $this->InsuranceState = $tblStudentInsuranceStateId;
     }
 
     /**
@@ -129,32 +157,74 @@ class TblStudentMedicalRecord extends Element
     }
 
     /**
-     * @return string
+     * @return false|string
      */
-    public function getDisplayInsuranceState()
+    public function getMasernDate()
     {
 
-        $result = '';
-        switch ($this->getInsuranceState()) {
-            case 1:  $result = 'Pflicht'; break;
-            case 2:  $result = 'Freiwillig'; break;
-            case 3:  $result = 'Privat'; break;
-            case 4:  $result =' Familie Vater'; break;
-            case 5:  $result = 'Familie Mutter'; break;
+        if (null === $this->MasernDate) {
+            return false;
         }
-
-        return $result;
+        /** @var DateTime MasernDate */
+        $MasernDate = $this->MasernDate;
+        if ($MasernDate instanceof DateTime) {
+            return $MasernDate->format('d.m.Y');
+        } else {
+            return (string)$MasernDate;
+        }
     }
 
-    public static function getInsuranceStateArray()
+    /**
+     * @param null|DateTime $MasernDate
+     */
+    public function setMasernDate(DateTime $MasernDate = null)
     {
-        return array(
-            0 => '',
-            1 => 'Pflicht',
-            2 => 'Freiwillig',
-            3 => 'Privat',
-            4 => 'Familie Vater',
-            5 => 'Familie Mutter',
-        );
+
+        $this->MasernDate = $MasernDate;
     }
+
+    /**
+     * @return TblStudentMasernInfo|false
+     */
+    public function getMasernDocumentType()
+    {
+
+        if (null === $this->MasernDocumentType) {
+            return false;
+        } else {
+            return Student::useService()->getStudentMasernInfoById($this->MasernDocumentType);
+        }
+    }
+
+    /**
+     * @param TblStudentMasernInfo|null $MasernDocumentType
+     */
+    public function setMasernDocumentType(TblStudentMasernInfo $MasernDocumentType = null)
+    {
+
+        $this->MasernDocumentType = ( null === $MasernDocumentType ? null : $MasernDocumentType->getId() );
+    }
+
+    /**
+     * @return TblStudentMasernInfo|false
+     */
+    public function getMasernCreatorType()
+    {
+
+        if (null === $this->MasernCreatorType) {
+            return false;
+        } else {
+            return Student::useService()->getStudentMasernInfoById($this->MasernCreatorType);
+        }
+    }
+
+    /**
+     * @param TblStudentMasernInfo|null $MasernCreatorType
+     */
+    public function setMasernCreatorType(TblStudentMasernInfo $MasernCreatorType = null)
+    {
+
+        $this->MasernCreatorType = ( null === $MasernCreatorType ? null : $MasernCreatorType->getId() );
+    }
+
 }

@@ -2,6 +2,7 @@
 namespace SPHERE\Application\Document\Custom;
 
 use SPHERE\Application\Document\Custom\Lebenswelt\Lebenswelt;
+use SPHERE\Application\Document\Custom\Limbach\Limbach;
 use SPHERE\Application\Document\Custom\Radebeul\Radebeul;
 use SPHERE\Application\Document\Custom\Zwickau\Zwickau;
 use SPHERE\Application\IApplicationInterface;
@@ -23,14 +24,17 @@ class Custom implements IApplicationInterface
 
         $consumerAcronym = ( Consumer::useService()->getConsumerBySession() ? Consumer::useService()->getConsumerBySession()->getAcronym() : '' );
         // Lebenswelt
-        if ($consumerAcronym === 'LWSZ' || $consumerAcronym === 'DEMO') {
+        if ($consumerAcronym === 'LWSZ') {
             Lebenswelt::registerModule();
         }
-        if ($consumerAcronym === 'EVSR' || $consumerAcronym === 'DEMO') {
+        if ($consumerAcronym === 'EVSR') {
             Radebeul::registerModule();
         }
-        if ($consumerAcronym === 'CMS' || $consumerAcronym === 'DEMO') {
+        if ($consumerAcronym === 'CMS') {
             Zwickau::registerModule();
+        }
+        if ($consumerAcronym === 'FELS') { // local test  || $consumerAcronym === 'REF'
+            Limbach::registerModule();
         }
 
         Main::getDisplay()->addApplicationNavigation(

@@ -145,7 +145,10 @@ class StudentSelect extends Extension implements IApiInterface
                 && ($tblDivisionList = DivisionApplication::useService()->getDivisionByYear($tblDivision->getServiceTblYear()))
             ) {
                 foreach ($tblDivisionList as $tblSingleDivision) {
-                    if (($tblDivisionStudentList = DivisionApplication::useService()->getStudentAllByDivision($tblSingleDivision))) {
+                    if (($tblSingleLevel = $tblSingleDivision->getTblLevel())
+                        && !$tblSingleLevel->getIsChecked()
+                        && ($tblDivisionStudentList = DivisionApplication::useService()->getStudentAllByDivision($tblSingleDivision))
+                    ) {
                         $tblStudentList = array_udiff($tblStudentList, $tblDivisionStudentList,
                             function (TblPerson $tblPersonA, TblPerson $tblPersonB) {
                                 return $tblPersonA->getId() - $tblPersonB->getId();

@@ -16,6 +16,10 @@ class TblSalutation extends Element
 {
 
     const ATTR_SALUTATION = 'Salutation';
+    const VALUE_MAN = 'Herr';
+    const VALUE_WOMAN = 'Frau';
+    const VALUE_STUDENT = 'Schüler';
+
     /**
      * @Column(type="string")
      */

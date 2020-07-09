@@ -9,36 +9,14 @@ use SPHERE\Application\Reporting\Individual\Service\Data;
 use SPHERE\Application\Reporting\Individual\Service\Entity\TblPreset;
 use SPHERE\Application\Reporting\Individual\Service\Entity\TblPresetSetting;
 use SPHERE\Application\Reporting\Individual\Service\Entity\TblWorkSpace;
-use SPHERE\Application\Reporting\Individual\Service\Setup;
-use SPHERE\System\Database\Binding\AbstractService;
 
 /**
  * Class Service
  *
  * @package SPHERE\Application\Reporting\Individual
  */
-class Service extends AbstractService
+class Service extends ServiceView
 {
-
-    /**
-     * @param bool $doSimulation
-     * @param bool $withData
-     * @param bool $UTF8
-     *
-     * @return string
-     */
-    public function setupService($doSimulation, $withData, $UTF8)
-    {
-
-        $Protocol= '';
-        if(!$withData){
-            $Protocol = (new Setup($this->getStructure()))->setupDatabaseSchema($doSimulation, $UTF8);
-        }
-        if (!$doSimulation && $withData) {
-            (new Data($this->getBinding()))->setupDatabaseContent();
-        }
-        return $Protocol;
-    }
 
     /**
      * @param $Id
@@ -292,13 +270,5 @@ class Service extends AbstractService
         }
 
         return (new Data($this->getBinding()))->removePreset($tblPreset);
-    }
-
-    /**
-     * @return false|Service\Entity\ViewStudent[]|\SPHERE\System\Database\Fitting\Element[]
-     */
-    public function getView()
-    {
-        return (new Data($this->getBinding()))->getView();
     }
 }

@@ -1,29 +1,44 @@
+-- wird nicht benutzt
+
 SELECT
-    viewPerson.TblPerson_Id AS TblPerson_Id,
-    viewDivisionTeacher.TblDivisionTeacher_Description AS TblDivisionTeacher_Description,
-    viewDivisionTeacher.TblLevel_Name AS TblLevel_Name,
-    viewDivisionTeacher.TblLevel_Description AS TblLevel_Description,
-    viewDivisionTeacher.TblLevel_IsChecked AS TblLevel_IsChecked,
-    viewDivisionTeacher.TblDivision_Name AS TblDivision_Name,
-    viewDivisionTeacher.TblDivision_Description AS TblDivision_Description,
-    viewSchoolType.TblType_Name AS TblType_Name,
-    viewSchoolType.TblType_Description AS TblType_Description,
-    viewYearPeriod.TblYear_Year AS TblYear_Year,
-    viewYearPeriod.TblYear_Description AS TblYear_Description,
-    viewYearPeriod.TblPeriod_Name AS TblPeriod_Name,
-    viewYearPeriod.TblPeriod_Description AS TblPeriod_Description,
-    viewYearPeriod.TblPeriod_FromDate AS TblPeriod_FromDate,
-    viewYearPeriod.TblPeriod_ToDate AS TblPeriod_ToDate,
-    viewDivisionSubject.TblSubjectGroup_Name AS TblSubjectGroup_Name,
-    viewDivisionSubject.TblSubjectGroup_Description AS TblSubjectGroup_Description,
-    viewDivisionSubject.TblSubjectGroup_IsAdvancedCourse AS TblSubjectGroup_IsAdvancedCourse,
-    viewSubject.TblSubject_Acronym AS TblSubject_Acronym,
-    viewSubject.TblSubject_Name AS TblSubject_Name,
-    viewSubject.TblSubject_Description AS TblSubject_Description
+
+-- PersonId to match with all View's // tblDivisionTeacher
+    tDT.serviceTblPerson AS TblPerson_Id,
+    tDT.Description AS TblDivisionTeacher_Description,
+-- tblLevel
+    tL.Name AS TblLevel_Name,
+    tL.Description AS TblLevel_Description,
+    tL.IsChecked AS TblLevel_IsChecked,
+-- tblDivision
+    tD.Name AS TblDivision_Name,
+    tD.Description AS TblDivision_Description,
+-- tblType
+    tT.Name AS TblType_Name,
+    tT.Description AS TblType_Description,
+-- tblYear
+    (CASE WHEN (ISNULL(tY.Year) OR (tY.Year = '')) THEN tY.Name ELSE tY.Year END) AS TblYear_Year,
+    tY.Description AS TblYear_Description
+    -- rest erstmal auskommentiert, da es ohne zusammenhang wenig Sinn ergibt
+--     viewYearPeriod.TblPeriod_Name AS TblPeriod_Name,
+--     viewYearPeriod.TblPeriod_Description AS TblPeriod_Description,
+--     viewYearPeriod.TblPeriod_FromDate AS TblPeriod_FromDate,
+--     viewYearPeriod.TblPeriod_ToDate AS TblPeriod_ToDate,
+--     viewDivisionSubject.TblSubjectGroup_Name AS TblSubjectGroup_Name,
+--     viewDivisionSubject.TblSubjectGroup_Description AS TblSubjectGroup_Description,
+--     viewDivisionSubject.TblSubjectGroup_IsAdvancedCourse AS TblSubjectGroup_IsAdvancedCourse,
+--     viewSubject.TblSubject_Acronym AS TblSubject_Acronym,
+--     viewSubject.TblSubject_Name AS TblSubject_Name,
+--     viewSubject.TblSubject_Description AS TblSubject_Description
 FROM
-    (((((PeoplePerson_{{ ConsumerAcronym }}.viewPerson
-    LEFT JOIN EducationLessonDivision_{{ ConsumerAcronym }}.viewDivisionTeacher ON ((viewPerson.TblPerson_Id = viewDivisionTeacher.TblDivisionTeacher_serviceTblPerson)))
-    LEFT JOIN EducationSchoolType_{{ ConsumerAcronym }}.viewSchoolType ON ((viewDivisionTeacher.TblLevel_serviceTblType = viewSchoolType.TblType_Id)))
-    LEFT JOIN EducationLessonTerm_{{ ConsumerAcronym }}.viewYearPeriod ON ((viewDivisionTeacher.TblDivision_serviceTblYear = viewYearPeriod.TblYearPeriod_tblYear)))
-    LEFT JOIN EducationLessonDivision_{{ ConsumerAcronym }}.viewDivisionSubject ON ((viewDivisionTeacher.TblDivision_Id = viewDivisionSubject.TblDivisionSubject_tblDivision)))
-    LEFT JOIN EducationLessonSubject_{{ ConsumerAcronym }}.viewSubject ON ((viewDivisionSubject.TblDivisionSubject_serviceTblSubject = viewSubject.TblSubject_Id)))
+    EducationLessonDivision_{{ ConsumerAcronym }}.tblDivisionTeacher tDT
+    -- TblPesron verknüpft um Personen zu entfernen, die eventuell schon gelöscht sind
+    LEFT JOIN PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP ON tP.Id = tDT.serviceTblPerson
+		AND tP.EntityRemove IS NULL
+    LEFT JOIN EducationLessonDivision_{{ ConsumerAcronym }}.tblDivision tD ON tD.Id = tDT.tblDivision
+		AND tD.EntityRemove IS NULL
+	LEFT JOIN EducationLessonDivision_{{ ConsumerAcronym }}.tblLevel tL ON tL.Id = tD.tblLevel
+		AND tL.EntityRemove IS NULL
+	LEFT JOIN EducationSchoolType_{{ ConsumerAcronym }}.tblType tT ON tT.Id = tL.serviceTblType
+	LEFT JOIN EducationLessonTerm_{{ ConsumerAcronym }}.tblYear tY ON tY.Id = tD.serviceTblYear
+
+WHERE tDT.EntityRemove IS NULL

@@ -235,6 +235,15 @@ class Service extends AbstractService
     }
 
     /**
+     * @return bool|ViewPeopleMetaCommon[]
+     */
+    public function getViewPeopleMetaCommonAll()
+    {
+
+        return (new Data($this->getBinding()))->getViewPeopleMetaCommonAll();
+    }
+
+    /**
      * @param TblCommon $tblCommon
      * @param string $Remark
      *
@@ -260,6 +269,25 @@ class Service extends AbstractService
         $Gender
     ) {
         return (new Data($this->getBinding()))->updateCommonBirthDates( $tblCommonBirthDates, $Birthday, $Birthplace, $Gender );
+    }
+
+    /**
+     * @param TblCommonInformation $tblCommonInformation
+     * @param string               $Nationality
+     * @param string               $Denomination
+     * @param int                  $IsAssistance
+     * @param string               $AssistanceActivity
+     *
+     * @return bool
+     */
+    public function updateCommonInformation(
+        TblCommonInformation $tblCommonInformation,
+        $Nationality,
+        $Denomination,
+        $IsAssistance,
+        $AssistanceActivity
+    ) {
+        return (new Data($this->getBinding()))->updateCommonInformation($tblCommonInformation, $Nationality, $Denomination, $IsAssistance, $AssistanceActivity);
     }
 
     /**

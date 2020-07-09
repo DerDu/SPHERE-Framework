@@ -32,11 +32,12 @@ class ReportingUpgrade
      * @var array $TemplateList array( 'viewNameInDatabase' => 'TemplateFileName.sql' )
      */
     private $TemplateList = array(
+        'viewPeopleGroupMember' => 'viewPeopleGroupMember.twig',
         'viewContactAddress' => 'viewContactAddress.twig',
         'viewContactMail' => 'viewContactMail.twig',
         'viewContactPhone' => 'viewContactPhone.twig',
         'viewEducationStudent' => 'viewEducationStudent.twig',
-        'viewEducationTeacher' => 'viewEducationTeacher.twig',
+//        'viewEducationTeacher' => 'viewEducationTeacher.twig',    // wird aktuell nicht benutzt
         'viewGroup' => 'viewGroup.twig',
         'viewGroupClub' => 'viewGroupClub.twig',
         'viewGroupCustody' => 'viewGroupCustody.twig',
@@ -47,6 +48,7 @@ class ReportingUpgrade
 //        'viewGroupStudentIntegration' => 'viewGroupStudentIntegration.twig',
         'viewGroupStudentSubject' => 'viewGroupStudentSubject.twig',
         'viewGroupTeacher' => 'viewGroupTeacher.twig',
+        'viewPeopleMetaCommon' => 'viewPeopleMetaCommon.twig',
         'viewPerson' => 'viewPerson.twig',
         'viewPersonContact' => 'viewPersonContact.twig',
         'viewRelationshipToPerson' => 'viewRelationshipToPerson.twig',

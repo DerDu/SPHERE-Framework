@@ -29,35 +29,7 @@ class CheHjInfoGs extends Certificate
 
         $personId = $tblPerson ? $tblPerson->getId() : 0;
 
-        if ($this->isSample()) {
-            $Header = (new Slice())
-                ->addSection((new Section())
-//                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/ChemnitzLogo.jpg',
-//                        '60px', '60px'))
-//                        , '25%')
-                    ->addElementColumn((new Element()), '25%')
-                    ->addElementColumn((new Element\Sample())
-                        ->styleTextSize('30px')
-                    )
-                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
-                        '165px', '50px'))
-                        ->styleMarginTop('4px')
-                        ->styleAlignRight()
-                        , '25%')
-                );
-        } else {
-            $Header = (new Slice())
-                ->addSection((new Section())
-//                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/ChemnitzLogo.jpg',
-//                        '60px', '60px'))
-//                        , '25%')
-                    ->addElementColumn((new Element()), '25%')
-                    ->addElementColumn((new Element()))
-                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
-                        '165px', '50px'))
-                        , '25%')
-                );
-        }
+        $Header = $this->getHead($this->isSample());
 
         return (new Page())
             ->addSlice(
@@ -118,7 +90,7 @@ class CheHjInfoGs extends Certificate
                         ->styleAlignCenter()
                         ->styleTextSize(self::TEXT_SIZE)
                         , '15%')
-                )->styleMarginTop('55px')
+                )->styleMarginTop('35px')
             )
             ->addSlice((new Slice())
                 ->addSection((new Section())
@@ -149,7 +121,10 @@ class CheHjInfoGs extends Certificate
                     ->styleTextSize(self::TEXT_SIZE)
                 )
             )
-            ->addSlice($this->getSubjectLanesCustomForChemnitz($personId, true, array(), self::TEXT_SIZE, false))
+            ->addSlice(
+                $this->getSubjectLanesCustomForChemnitz($personId, true, array(), self::TEXT_SIZE, false)
+                ->styleHeight('152px')
+            )
             ->addSlice((new Slice())
                 ->addElement((new Element())
                     ->setContent('&nbsp;')
@@ -216,7 +191,7 @@ class CheHjInfoGs extends Certificate
                                 {% else %}
                                     &nbsp;
                                 {% endif %}')
-                        ->styleHeight('180px')
+                        ->styleHeight('121px')
                         ->styleTextSize(self::TEXT_SIZE)
                     )
                 )
@@ -243,7 +218,6 @@ class CheHjInfoGs extends Certificate
                         , '70%')
                 )
                 ->styleMarginTop('28px')
-//                    ->styleMarginTop('77px')
             )
             ->addSlice((new Slice())
                 ->addSection((new Section())
@@ -284,7 +258,7 @@ class CheHjInfoGs extends Certificate
                         ->styleAlignCenter()
                         , '30%')
                 )
-                ->styleMarginTop('20px')
+                ->styleMarginTop('30px')
             )
             ->addSlice((new Slice())
                 ->addSection((new Section())
@@ -319,26 +293,6 @@ class CheHjInfoGs extends Certificate
                         ->styleTextSize('9.5px')
                     )
                 )->styleMarginTop('5px')
-
             );
     }
-
-//    private function setRemarkBackgroundLines($LineCount = 5, $LineHeight = '16.2px')
-//    {
-//        $sliceArray = array();
-//        for ($i = 0; $i < $LineCount; $i++) {
-//            $slice = new Slice();
-//            $slice
-//                ->addSection((new Section())
-//                    ->addElementColumn((new Element())
-//                        ->setContent('&nbsp;')
-//                        ->styleBorderBottom()
-//                        ->styleHeight($LineHeight)
-//                    )
-//                );
-//            $sliceArray[] = $slice;
-//        }
-//
-//        return $sliceArray;
-//    }
 }

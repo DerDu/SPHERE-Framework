@@ -5,3 +5,7 @@
 
 /Common/Style/Font/CallunaSans-Bold.ttf
 /Common/Style/Font/CallunaSans-Italic.ttf
+
+/Common/Style/Resource/Logo/*.jpg
+/Common/Style/Resource/Logo/*.gif
+/Common/Style/Resource/Logo/*.png

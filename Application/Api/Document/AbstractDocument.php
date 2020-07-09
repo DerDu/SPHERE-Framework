@@ -10,6 +10,8 @@ use SPHERE\Application\Document\Generator\Repository\Element;
 use SPHERE\Application\Document\Generator\Repository\Frame;
 use SPHERE\Application\Document\Generator\Repository\Section;
 use SPHERE\Application\Document\Generator\Repository\Slice;
+use SPHERE\Application\Education\Certificate\Generator\Generator;
+use SPHERE\Application\Education\Certificate\Prepare\Prepare;
 use SPHERE\Application\People\Meta\Common\Common;
 use SPHERE\Application\People\Meta\Student\Student;
 use SPHERE\Application\People\Person\Person;
@@ -193,8 +195,8 @@ abstract class AbstractDocument
     private function allocateStudent(&$Data)
     {
 
-        if ($this->getTblPerson()) {
-            if (($tblDivisionList = Student::useService()->getCurrentDivisionListByPerson($this->getTblPerson()))) {
+        if (($tblPerson = $this->getTblPerson())) {
+            if (($tblDivisionList = Student::useService()->getCurrentDivisionListByPerson($tblPerson))) {
                 foreach ($tblDivisionList as $tblDivision) {
                     if (!$tblDivision->getTblLevel()->getIsChecked()) {
                         $Data['Student']['Division']['Name'] = $tblDivision->getDisplayName();
@@ -203,7 +205,7 @@ abstract class AbstractDocument
                 }
             }
 
-            if (($tblStudent = Student::useService()->getStudentByPerson($this->getTblPerson()))) {
+            if (($tblStudent = Student::useService()->getStudentByPerson($tblPerson))) {
 
                 $Data['Student']['Identifier'] = $tblStudent->getIdentifierComplete();
 
@@ -228,6 +230,26 @@ abstract class AbstractDocument
                     }
                 }
 
+                // Bildungsempfehlung für Oberschule/Gymnasium
+                if (($tblCertificate = Generator::useService()->getCertificateByCertificateClassName('BeGs'))
+                    && ($tblPrepareStudentList = Prepare::useService()->getPrepareStudentAllByPerson($tblPerson, $tblCertificate ))
+                ) {
+                    foreach ($tblPrepareStudentList as $tblPrepareStudent) {
+                        if ($tblPrepareStudent->isPrinted()
+                            && ($tblPrepare = $tblPrepareStudent->getTblPrepareCertificate())
+                            && ($tblPrepareInformation = Prepare::useService()->getPrepareInformationBy($tblPrepare, $tblPerson, 'SchoolType'))
+                        ) {
+                            if (strpos($tblPrepareInformation->getValue(), 'Oberschule') !== false) {
+                                $Data['Student']['School']['Education']['Recommendation']['OS'] = 'X';
+                            } else {
+                                $Data['Student']['School']['Education']['Recommendation']['GYM'] = 'X';
+                            }
+
+                            break;
+                        }
+                    }
+                }
+
                 if (( $AttendanceDate = $tblStudent->getSchoolAttendanceStartDate())) {
                     $Data['Student']['School']['Attendance']['Date'] = $AttendanceDate;
                     $Year = ( new \DateTime($AttendanceDate) )->format('Y');
@@ -245,7 +267,7 @@ abstract class AbstractDocument
                             $Data['Student']['School']['Type'] = $tblTransfer->getServiceTblType()->getName();
                         }
 
-                        if (($tblCompany = $tblTransfer->getServiceTblCompany())) {
+                        if (($tblCompany = Student::useService()->getCurrentSchoolByPerson($tblPerson))) {
                             if (($tblAddress = $tblCompany->fetchMainAddress())) {
                                 $Data['Document']['PlaceDate'] = $tblAddress->getTblCity()->getName() . ', '
                                     . date('d.m.Y');
@@ -346,7 +368,7 @@ abstract class AbstractDocument
                     if (($tblTransfer = Student::useService()->getStudentTransferByType($tblStudent,
                         $tblTransferType))
                     ) {
-                        $tblCompany = $tblTransfer->getServiceTblCompany();
+                        $tblCompany = Student::useService()->getCurrentSchoolByPerson($tblPerson);
                         $tblSchoolType = $tblTransfer->getServiceTblType();
                         if ($tblCompany && $tblSchoolType) {
                             $tblSchool = School::useService()->getSchoolByCompanyAndType($tblCompany, $tblSchoolType);
@@ -599,9 +621,11 @@ abstract class AbstractDocument
 
             $phoneNumberList = $this->setPhoneNumbersByTypeName($tblPerson, 'Privat');
             $phone = '';
-            // es passen nur 2 Telefonnummern in das Feld
+            // es passen nur 3 Telefonnummern in das Feld
             if (!empty($phoneNumberList)) {
-                $phone = $phoneNumberList[0].( isset( $phoneNumberList[1] ) ? '<br>'. $phoneNumberList[1] : '' );
+                $phone = $phoneNumberList[0]
+                    . ( isset( $phoneNumberList[1] ) ? '<br>'. $phoneNumberList[1] : '' )
+                    . ( isset( $phoneNumberList[2] ) ? '<br>'. $phoneNumberList[2] : '' );
 
             }
             $Data['Person']['Contact']['Phone']['Number'] = $phone;
@@ -632,7 +656,7 @@ abstract class AbstractDocument
         }
 
         // Telefonnummern der Sorgeberechtigten mit Anzeigen
-        if (empty($phoneNumberList) || count($phoneNumberList) < 2) {
+        if (empty($phoneNumberList) || count($phoneNumberList) < 3) {
             if (($tblRelationshipType = Relationship::useService()->getTypeByName('Sorgeberechtigt'))
                 && ($tblRelationshipList = Relationship::useService()->getPersonRelationshipAllByPerson($tblPerson,
                     $tblRelationshipType))
@@ -678,6 +702,16 @@ abstract class AbstractDocument
     }
 
     /**
+     * @param $phoneNumber
+     *
+     * @return false|int
+     */
+    private function filterPhoneNumber($phoneNumber)
+    {
+        return preg_replace('![^0-9/\s-+]+!', '', $phoneNumber);
+    }
+
+    /**
      * @param TblPerson $tblPerson
      * @param TblType   $tblType
      * @param array     $phoneNumberList
@@ -688,13 +722,13 @@ abstract class AbstractDocument
             foreach ($tblPhoneToPersonList as $tblPhoneToPerson) {
                 if (($tblPhone = $tblPhoneToPerson->getTblPhone())) {
                     if($IsRemark){
-                        $phoneNumberList[] = $tblPhone->getNumber().
+                        $phoneNumberList[] = $this->filterPhoneNumber($tblPhone->getNumber()) .
                             ($tblPhoneToPerson->getRemark()
                                 ? ' ('. $tblPhoneToPerson->getRemark().')'
                                 : ''
                             );
                     } else {
-                        $phoneNumberList[] = $tblPhone->getNumber();
+                        $phoneNumberList[] = $this->filterPhoneNumber($tblPhone->getNumber());
                     }
                 }
             }
@@ -713,9 +747,11 @@ abstract class AbstractDocument
 
             $phoneNumberList = $this->setPhoneNumbersByTypeName($tblPerson, 'Notfall');
             $phone = '';
-            // es passen nur 2 Telefonnummern in das Feld
+            // es passen nur 3 Telefonnummern in das Feld
             if (!empty($phoneNumberList)) {
-                $phone = $phoneNumberList[0].( isset( $phoneNumberList[1] ) ? '<br>'. $phoneNumberList[1] : '' );
+                $phone = $phoneNumberList[0]
+                    . ( isset( $phoneNumberList[1] ) ? '<br>'. $phoneNumberList[1] : '' )
+                    . ( isset( $phoneNumberList[2] ) ? '<br>'. $phoneNumberList[2] : '' );
 
                 $Data['Person']['Contact']['Phone']['Radebeul']['EmergencyNumber'] = implode('; ', $phoneNumberList);
             }

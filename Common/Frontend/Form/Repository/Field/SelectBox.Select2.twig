@@ -26,7 +26,7 @@
     executeScript(function () {
         Client.Use('ModSelect2', function () {
             var guiSelect = jQuery('select[name="{{ ElementName }}"]');
-            guiSelect.find('option[value="{{ ElementValue }}"]').attr('selected', 'selected');
+            {#guiSelect.find('option[value="{{ ElementValue }}"]').attr('selected', 'selected');#}
             guiSelect.ModSelect2({{ ElementConfiguration }});
             guiSelect.on('change keyup blur', function () {
                 if( guiSelect.val() == 0 ) {
@@ -35,9 +35,17 @@
                     guiSelect.next().find('span.select2-selection__rendered').css('color','');
                 }
             });
-            if( guiSelect.val() == 0 ) {
-                guiSelect.next().find('span.select2-selection__rendered').css('color','silver');
-            }
+
+            setTimeout(function(){
+                {% if( ElementValue ) %}
+                    guiSelect.val('{{ ElementValue }}'); // Select the option with a value of 'ElementValue'
+                {% else %}
+                    guiSelect.val('0');
+                    guiSelect.next().find('span.select2-selection__rendered').css('color','silver');
+                {% endif %}
+                guiSelect.trigger('change'); // Notify any JS components that the value changed
+            },1);
+
             guiSelect.next().find('span.select2-selection__arrow b').css('border-top-color','silver');
 
 // TODO: on demand option Tab-Open
@@ -53,5 +61,42 @@
                 }, 10);
             });
         });
+        {% if( AjaxEventChange is not empty or AjaxEventKeyUp is not empty ) %}
+            Client.Use('ModAlways', function()
+            {
+                Client.Use('ModAjax', function()
+                {
+                    {% if( AjaxEventChange is not empty ) %}
+                    jQuery('select[name="{{ ElementName }}"]').on('change',function(Event){
+                        Event.preventDefault();
+                        {{ AjaxEventChange }}
+                    });
+                    {% endif %}
+                    {% if( AjaxEventKeyUp is not empty ) %}
+                    jQuery('select[name="{{ ElementName }}"]').on('keyup',function(Event){
+                        // Exclude Keys
+                        var KeyCode = Event.which;
+                        // Code 9 = TAB
+                        // Code 37,38,39,40 = LEFT,UP,RIGHT,DOWN Arrow
+                        if(
+                            KeyCode === 9
+                            || KeyCode === 37
+                            || KeyCode === 38
+                            || KeyCode === 39
+                            || KeyCode === 40
+                        ) {
+                            return;
+                        }
+
+                        typewatch(function ()
+                        {
+                            Event.preventDefault();
+                            {{ AjaxEventKeyUp }}
+                        }, 500);
+                    });
+                    {% endif %}
+                });
+            });
+        {% endif %}
     });
 </script>

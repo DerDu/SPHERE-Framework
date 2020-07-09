@@ -26,7 +26,7 @@ class MsHjInfoFsLernen extends Certificate
 
         $personId = $tblPerson ? $tblPerson->getId() : 0;
 
-        $Header = $this->getHead($this->isSample(), true, 'auto', '50px');
+        $Header = $this->getHead($this->isSample());
 
         return (new Page())
             ->addSlice(
@@ -43,15 +43,16 @@ class MsHjInfoFsLernen extends Certificate
                     ->styleMarginTop('8px')
                 )
             )
-            ->addSlice($this->getGradeLanes($personId))
+            ->addSlice($this->getGradeLanesSmall($personId))
             ->addSlice((new Slice())
                 ->addElement((new Element())
                     ->setContent('Leistungen in den einzelnen Fächern:')
                     ->styleMarginTop('15px')
+                    ->styleMarginBottom('5px')
                     ->styleTextBold()
                 )
             )
-            ->addSlice($this->getSubjectLanes(
+            ->addSlice($this->getSubjectLanesSmall(
                 $personId,
                 true,
                 array(),
@@ -59,9 +60,9 @@ class MsHjInfoFsLernen extends Certificate
                 false,
                 false,
                 true
-            )->styleHeight('290px'))
+            )->styleHeight('220px'))
             ->addSlice($this->getDescriptionHead($personId, true))
-            ->addSlice($this->getDescriptionContent($personId, '100px', '15px'))
+            ->addSlice($this->getDescriptionContent($personId, '118px', '15px'))
             ->addSlice($this->getDateLine($personId))
             ->addSlice($this->getSignPart($personId, false))
             ->addSlice($this->getParentSign())

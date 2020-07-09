@@ -147,7 +147,7 @@ class EssGsHjThree extends EssStyle
                 ->stylePaddingTop('15px')
             )
             ->addSlice((new Slice())
-                ->addElement((new Element\Image('/Common/Style/Resource/Logo/ESS_Grundschule_down.jpg', '700px'))
+                ->addElement((new Element\Image('/Common/Style/Resource/Logo/ESS_Grundschule_Down.jpg', '700px'))
                     ->styleAlignCenter()
                     ->stylePaddingTop('25px')
                     ->stylePaddingBottom('25px')

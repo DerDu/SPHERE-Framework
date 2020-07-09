@@ -731,7 +731,7 @@ class Creator extends Extension
                     && ($tblCertificate = $tblPrepareStudent->getServiceTblCertificate())
                 ) {
                     $isApproved = $tblPrepareStudent->isApproved();
-                    // bei automatischer Freigabe --> freigeben + kopieren der Zensuren
+                    // bei automatischer Freigabe --> freigeben + kopieren der Zensuren und Fehlzeiten (optional)
                     if (!$isApproved && $isAutomaticallyApproved) {
                         Prepare::useService()->updatePrepareStudentSetApproved($tblPrepareStudent);
                         $tblPrepareStudent = Prepare::useService()->getPrepareStudentBy($tblPrepare, $tblPerson, true);

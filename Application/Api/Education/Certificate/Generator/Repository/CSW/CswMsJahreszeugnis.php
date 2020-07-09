@@ -43,47 +43,14 @@ class CswMsJahreszeugnis extends Certificate
     {
 
         $personId = $tblPerson ? $tblPerson->getId() : 0;
-        $pictureHeight = '90px';
-
-        if ($this->isSample()) {
-            $Header = (new Slice())
-                ->addSection((new Section())
-                    ->addElementColumn((new Element())
-                        , '25%'
-                    )
-                    ->addElementColumn((new Element\Sample())
-                        ->styleTextSize('30px')
-                    )
-                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/CSW_Logo_EOK_100x100.jpg',
-                        'auto', $pictureHeight))->styleAlignRight()
-                        , '25%')
-                );
-        } else {
-            $Header = (new Slice())
-                ->addSection((new Section())
-                    ->addElementColumn((new Element()), '75%')
-                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/CSW_Logo_EOK_100x100.jpg',
-                        'auto', $pictureHeight))->styleAlignRight()
-                        , '25%')
-                );
-        }
-        $Header->styleHeight('50px');
 
         return (new Page())
-            ->addSlice(
-                $Header
-            )
-            ->addSlice(CswMsHalbjahresinformation::getIndividualSchoolLine($personId))
-            ->addSlice($this->getCertificateHead('Jahreszeugnis'))
+            ->addSlice(CswMsStyle::getHeader($this->isSample()))
+            ->addSlice(CswMsStyle::getIndividualSchoolLine($personId))
+            ->addSlice($this->getCertificateHead('Jahreszeugnis der Oberschule'))
             ->addSlice($this->getDivisionAndYear($personId, '20px'))
             ->addSlice($this->getStudentName($personId))
-            ->addSlice((new Slice())
-                ->addElement((new Element())
-                    ->setContent('nahm am Unterricht der Schulart Mittelschule teil.')
-                    ->styleTextSize('12px')
-                    ->styleMarginTop('8px')
-                )
-            )
+            ->addSlice($this->getCourse($personId, '8px', '12px'))
             ->addSlice($this->getGradeLanes($personId))
             ->addSlice((new Slice())
                 ->addSection((new Section())

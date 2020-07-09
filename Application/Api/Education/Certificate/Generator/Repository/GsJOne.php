@@ -26,7 +26,7 @@ class GsJOne extends Certificate
 
         $personId = $tblPerson ? $tblPerson->getId() : 0;
 
-        $Header = $this->getHead($this->isSample(), true, 'auto', '50px');
+        $Header = $this->getHead($this->isSample());
 
         return (new Page())
                 ->addSlice(
@@ -36,7 +36,7 @@ class GsJOne extends Certificate
                 ->addSlice($this->getCertificateHead('Jahreszeugnis der Grundschule'))
                 ->addSlice($this->getDivisionAndYear($personId))
                 ->addSlice($this->getStudentName($personId))
-                ->addSlice($this->getDescriptionContent($personId, '600px', '20px'))
+                ->addSlice($this->getDescriptionContent($personId, '530px', '20px'))
                 ->addSlice((new Slice())
                     ->addSection((new Section())
                         ->addElementColumn((new Element())

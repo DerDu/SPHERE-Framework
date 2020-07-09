@@ -1,35 +1,57 @@
 SELECT
-vP.TblPerson_Id AS TblPerson_Id,
-vP.TblPerson_Title AS TblPerson_Title,
-vP.TblPerson_FirstName AS TblPerson_FirstName,
-vP.TblPerson_LastName AS TblPerson_LastName,
-vP.TblPerson_SecondName AS TblPerson_SecondName,
-vP.TblPerson_CallName AS TblPerson_CallName,
-vP.TblPerson_BirthName AS TblPerson_BirthName,
-vP.TblSalutation_Salutation AS TblSalutation_Salutation,
-vP.EntityCreate AS EntityCreate,
-vP.EntityUpdate AS EntityUpdate,
-vP.EntityRemove AS EntityRemove,
-vMC.TblCommon_Remark AS TblCommon_Remark,
-DATE_FORMAT( vMC.TblCommonBirthDates_Birthday, '%d.%m.%Y' ) AS TblCommonBirthDates_Birthday,
-vMC.TblCommonBirthDates_Birthplace AS TblCommonBirthDates_Birthplace,
-vMC.TblCommonGender_Name AS TblCommonGender_Name,
-vMC.TblCommonInformation_Nationality AS TblCommonInformation_Nationality,
-vMC.TblCommonInformation_Denomination AS TblCommonInformation_Denomination,
-vMC.TblCommonInformation_AssistanceActivity AS TblCommonInformation_AssistanceActivity,
-IF (vMC.TblCommonInformation_IsAssistance, 'Ja', 'Nein') AS TblCommonInformation_IsAssistance,
-(select
-    group_concat(
-        concat(tG.Name)
-        separator ', '
-    )
-    from PeopleGroup_{{ ConsumerAcronym }}.tblMember tM
-    LEFT JOIN PeopleGroup_{{ ConsumerAcronym }}.tblGroup tG ON tG.Id = tM.tblGroup
-    where tM.serviceTblPerson = vP.TblPerson_Id
-    and tG.Name != 'Alle'
-) TblGroup_GroupList
 
-FROM
-PeoplePerson_{{ ConsumerAcronym }}.viewPerson vP
-LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.viewPeopleMetaCommon vMC ON vP.TblPerson_Id = vMC.TblCommon_serviceTblPerson
--- 	LEFT JOIN SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA ON vP.TblPerson_Id = vCA.TblPerson_Id
+-- PersonId to match with all View's // TblPerson
+    tP.Id AS TblPerson_Id,
+    tP.Title AS TblPerson_Title,
+    tP.FirstName AS TblPerson_FirstName,
+    tP.LastName AS TblPerson_LastName,
+    tP.SecondName AS TblPerson_SecondName,
+    tP.CallName AS TblPerson_CallName,
+    tP.BirthName AS TblPerson_BirthName,
+    concat(
+        tP.FirstName, ' ',
+        tP.SecondName,
+        IF(tP.SecondName = '', '', ' '),
+        tP.LastName
+    ) as TblPerson_FirstLastName,
+    concat(
+        tP.LastName, ' ',
+        tP.FirstName,
+        IF(tP.SecondName = '', '', ' '),
+        tP.SecondName
+    ) as TblPerson_LastFirstName,
+    tP.EntityRemove AS TblPerson_EntityRemove,
+-- tblType
+    tS.Salutation AS TblSalutation_Salutation,
+-- tblCommon
+    tC.Remark AS TblCommon_Remark,
+-- tblCommonBirthDates
+    DATE_FORMAT( tCBD.Birthday, '%d.%m.%Y' ) AS TblCommonBirthDates_Birthday,
+    tCBD.Birthplace AS TblCommonBirthDates_Birthplace,
+-- tblCommonGender
+    tCG.Name AS TblCommonGender_Name,
+-- tblCommonInformation
+    tCI.Nationality AS TblCommonInformation_Nationality,
+    tCI.Denomination AS TblCommonInformation_Denomination,
+    tCI.AssistanceActivity AS TblCommonInformation_AssistanceActivity,
+    IF (tCI.IsAssistance, 'Ja', 'Nein') AS TblCommonInformation_IsAssistance,
+-- tblGroup
+    (select
+        group_concat(
+            concat(tG.Name)
+            separator ', '
+        )
+    from PeopleGroup_{{ ConsumerAcronym }}.tblMember tM
+        LEFT JOIN PeopleGroup_{{ ConsumerAcronym }}.tblGroup tG ON tG.Id = tM.tblGroup
+	where tM.serviceTblPerson = tP.Id
+        and tG.Name != 'Alle'
+    ) TblGroup_GroupList
+
+FROM PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP
+    LEFT JOIN PeoplePerson_{{ ConsumerAcronym }}.tblSalutation tS ON tS.Id = tP.tblSalutation
+    LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblCommon tC ON tC.serviceTblPerson = tP.Id
+    LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblCommonBirthDates tCBD ON tCBD.Id = tC.tblCommonBirthDates
+    LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblCommonGender tCG ON tCG.Id = tCBD.tblCommonGender
+    LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblCommonInformation tCI ON tCI.Id = tC.tblCommonInformation
+
+WHERE tP.EntityRemove IS NULL

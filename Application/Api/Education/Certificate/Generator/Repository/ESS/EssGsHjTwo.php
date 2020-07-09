@@ -146,7 +146,7 @@ class EssGsHjTwo extends Certificate
                 )
             )
             ->addSlice((new Slice())
-                ->addElement((new Element\Image('/Common/Style/Resource/Logo/ESS_Grundschule_down.jpg', '700px'))
+                ->addElement((new Element\Image('/Common/Style/Resource/Logo/ESS_Grundschule_Down.jpg', '700px'))
                     ->styleAlignCenter()
                     ->stylePaddingTop('2px')
                     ->stylePaddingBottom('27px')

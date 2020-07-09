@@ -27,7 +27,7 @@ class Document implements IModuleInterface
          * Register Navigation
          */
         Main::getDisplay()->addModuleNavigation(
-            new Link(new Link\Route(__NAMESPACE__), new Link\Name('Belegdruck'),
+            new Link(new Link\Route(__NAMESPACE__), new Link\Name('Bescheinigung'),
                 new Link\Icon(new \SPHERE\Common\Frontend\Icon\Repository\Document()))
         );
 

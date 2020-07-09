@@ -69,7 +69,7 @@ class GymAbgSekII extends Certificate
 
         $personId = $tblPerson ? $tblPerson->getId() : 0;
 
-        $Header = $this->getHead($this->isSample(), true, 'auto', '50px');
+        $Header = $this->getHead($this->isSample());
 
         $pageList[] = (new Page());
 
@@ -1015,22 +1015,14 @@ class GymAbgSekII extends Certificate
         $name = '&nbsp;';
         $address = '&nbsp;';
         // get company name
-        if (($tblPerson = Person::useService()->getPersonById($personId))) {
-            if (($tblStudent = Student::useService()->getStudentByPerson($tblPerson))) {
-                if (($tblTransferType = Student::useService()->getStudentTransferTypeByIdentifier('PROCESS'))) {
-                    $tblStudentTransfer = Student::useService()->getStudentTransferByType($tblStudent,
-                        $tblTransferType);
-                    if ($tblStudentTransfer) {
-                        if (($tblCompany = $tblStudentTransfer->getServiceTblCompany())) {
-                            $name = $isSchoolExtendedNameDisplayed ? $tblCompany->getName() .
-                                ($separator ? ' ' . $separator . ' ' : ' ') . $tblCompany->getExtendedName() : $tblCompany->getName();
+        if (($tblPerson = Person::useService()->getPersonById($personId))
+            && ($tblCompany = Student::useService()->getCurrentSchoolByPerson($tblPerson, $this->getTblDivision() ? $this->getTblDivision() : null))
+        ) {
+            $name = $isSchoolExtendedNameDisplayed ? $tblCompany->getName() .
+                ($separator ? ' ' . $separator . ' ' : ' ') . $tblCompany->getExtendedName() : $tblCompany->getName();
 
-                            if (($mainAddress = $tblCompany->fetchMainAddress())) {
-                                $address = $mainAddress->getGuiString();
-                            }
-                        }
-                    }
-                }
+            if (($mainAddress = $tblCompany->fetchMainAddress())) {
+                $address = $mainAddress->getGuiString();
             }
         }
 

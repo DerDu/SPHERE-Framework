@@ -200,4 +200,7 @@ class ViewPeopleMetaCommon extends AbstractView
         }
         return $this->TblCommonInformation_IsAssistance ? 'Ja' : 'Nein';
     }
+
+    /** @return string */
+    public function getBirthplace() { return $this->TblCommonBirthDates_Birthplace; }
 }

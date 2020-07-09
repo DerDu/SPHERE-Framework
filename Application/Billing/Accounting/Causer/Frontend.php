@@ -470,8 +470,8 @@ class Frontend extends Extension implements IFrontendInterface
                     $Reference = 'Mandatsreferenznummer: ';
                     $Debtor = 'Bezahler: ';
                     $PeriodPayType = 'Zahlungszeitraum: ';
-                    $FromDate = 'Gültig ab: ';
-                    $ToDate = 'Gültig bis: ';
+                    $FromDate = 'Beitragspflicht ab: ';
+                    $ToDate = 'Beitragspflicht bis: ';
 
                     if(($tblDebtorPeriodType = $tblDebtorSelection->getTblDebtorPeriodType())){
                         $PeriodPayType .= new Bold($tblDebtorPeriodType->getName());

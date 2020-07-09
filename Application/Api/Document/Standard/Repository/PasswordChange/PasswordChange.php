@@ -14,6 +14,7 @@ use SPHERE\Application\People\Relationship\Relationship;
 use SPHERE\Application\Setting\Authorization\Account\Account as AccountAuthorization;
 use SPHERE\Application\Setting\Consumer\Consumer;
 use SPHERE\Application\Setting\User\Account\Account;
+use SPHERE\Application\Setting\User\Account\Service\Entity\TblUserAccount;
 
 class PasswordChange extends AbstractDocument
 {
@@ -144,8 +145,11 @@ class PasswordChange extends AbstractDocument
         $this->FieldValue['Password'] = $Password = Account::useService()->generatePassword();
         // remove tblAccount
         if ($tblAccount && $Password) {
-            AccountAuthorization::useService()->changePassword($Password, $tblAccount);
-            Account::useService()->changePassword($tblAccount, $Password);
+            if(($tblUserAccount = Account::useService()->getUserAccountByAccount($tblAccount))){
+                AccountAuthorization::useService()->changePassword($Password, $tblAccount);
+                Account::useService()->changePassword($tblUserAccount, $Password);
+                Account::useService()->changeUpdateDate($tblUserAccount, TblUserAccount::VALUE_UPDATE_TYPE_RENEW);
+            }
         };
 
         return $this;

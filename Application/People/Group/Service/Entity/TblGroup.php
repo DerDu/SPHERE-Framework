@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
 use SPHERE\Application\People\Group\Group;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
+use SPHERE\Common\Frontend\Text\Repository\Muted;
 use SPHERE\System\Database\Fitting\Element;
 
 /**
@@ -19,6 +20,7 @@ class TblGroup extends Element
 
     const ATTR_NAME = 'Name';
     const ATTR_IS_LOCKED = 'IsLocked';
+    const ATTR_IS_CORE_GROUP = 'IsCoreGroup';
     const ATTR_META_TABLE = 'MetaTable';
 
     const META_TABLE_COMMON = 'COMMON';
@@ -52,6 +54,10 @@ class TblGroup extends Element
      * @Column(type="string")
      */
     protected $MetaTable;
+    /**
+     * @Column(type="boolean")
+     */
+    protected $IsCoreGroup;
 
     /**
      * @param $Name
@@ -65,9 +71,11 @@ class TblGroup extends Element
     /**
      * @return string
      */
-    public function getDescription()
+    public function getDescription($isShowCoreInfo = false)
     {
-
+        if($isShowCoreInfo && $this->isCoreGroup()){
+            return $this->Description.new Muted(' (Stammgruppe)');
+        }
         return $this->Description;
     }
 
@@ -159,5 +167,23 @@ class TblGroup extends Element
     {
 
         return Group::useService()->getTudors($this);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCoreGroup()
+    {
+
+        return (bool)$this->IsCoreGroup;
+    }
+
+    /**
+     * @param bool $IsCoreGroup
+     */
+    public function setCoreGroup($IsCoreGroup)
+    {
+
+        $this->IsCoreGroup = (bool)$IsCoreGroup;
     }
 }

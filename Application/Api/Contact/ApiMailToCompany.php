@@ -407,12 +407,13 @@ class ApiMailToCompany extends Extension implements IApiInterface
             return new Danger('Die Institution wurde nicht gefunden', new Exclamation());
         }
 
-        if (($form = Mail::useService()->checkFormMailToCompany($tblCompany, $Address, $Type))) {
+        $mailAddress = str_replace(' ', '', $Address);
+        if (($form = Mail::useService()->checkFormMailToCompany($tblCompany, $mailAddress, $Type))) {
             // display Errors on form
             return $this->getMailToCompanyModal($form, $tblCompany);
         }
 
-        if (Mail::useService()->createMailToCompany($tblCompany, $Address, $Type)) {
+        if (Mail::useService()->createMailToCompany($tblCompany, $mailAddress, $Type)) {
             return new Success('Die E-Mail Adresse wurde erfolgreich gespeichert.')
                 . self::pipelineLoadMailToCompanyContent($CompanyId)
                 . self::pipelineClose();
@@ -440,12 +441,13 @@ class ApiMailToCompany extends Extension implements IApiInterface
             return new Danger('Die E-Mail Adresse wurde nicht gefunden', new Exclamation());
         }
 
-        if (($form = Mail::useService()->checkFormMailToCompany($tblCompany, $Address, $Type, $tblToCompany))) {
+        $mailAddress = str_replace(' ', '', $Address);
+        if (($form = Mail::useService()->checkFormMailToCompany($tblCompany, $mailAddress, $Type, $tblToCompany))) {
             // display Errors on form
             return $this->getMailToCompanyModal($form, $tblCompany, $ToCompanyId);
         }
 
-        if (Mail::useService()->updateMailToCompany($tblToCompany, $Address, $Type)) {
+        if (Mail::useService()->updateMailToCompany($tblToCompany, $mailAddress, $Type)) {
             return new Success('Die E-Mail Adresse wurde erfolgreich gespeichert.')
                 . self::pipelineLoadMailToCompanyContent($CompanyId)
                 . self::pipelineClose();

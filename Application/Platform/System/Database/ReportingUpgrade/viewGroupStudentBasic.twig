@@ -1,10 +1,13 @@
 SELECT
-vS.TblStudent_serviceTblPerson AS TblPerson_Id,
-vS.TblStudent_Id AS TblStudent_Id,
 
-vS.TblStudent_Identifier AS TblStudent_Identifier,
-DATE_FORMAT( vS.TblStudent_SchoolAttendanceStartDate, '%d.%m.%Y' ) AS TblStudent_SchoolAttendanceStartDate,
-IF (vS.TblStudent_HasMigrationBackground, 'Ja', 'Nein') AS TblStudent_HasMigrationBackground,
-IF (vS.TblStudent_IsInPreparationDivisionForMigrants, 'Ja', 'Nein') AS TblStudent_IsInPreparationDivisionForMigrants
+-- PersonId to match with all View's // tblStudent
+    tS.serviceTblPerson AS TblPerson_Id,
+    tS.Id AS TblStudent_Id,
+    tS.Identifier AS TblStudent_Identifier,
+    DATE_FORMAT( tS.SchoolAttendanceStartDate, '%d.%m.%Y' ) AS TblStudent_SchoolAttendanceStartDate,
+    IF (tS.HasMigrationBackground, 'Ja', 'Nein') AS TblStudent_HasMigrationBackground,
+    IF (tS.IsInPreparationDivisionForMigrants, 'Ja', 'Nein') AS TblStudent_IsInPreparationDivisionForMigrants
 
-FROM PeopleMeta_{{ ConsumerAcronym }}.viewStudent vS
+FROM PeopleMeta_{{ ConsumerAcronym }}.tblStudent tS
+
+WHERE tS.EntityRemove is Null

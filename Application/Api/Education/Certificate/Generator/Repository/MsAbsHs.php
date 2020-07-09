@@ -69,7 +69,7 @@ class MsAbsHs extends Certificate
                                                 ')
                         ->styleBorderBottom()
                     )
-                )->styleMarginTop('50px')
+                )->styleMarginTop('60px')
             )
             ->addSlice((new Slice())
                 ->addSection((new Section())
@@ -104,14 +104,17 @@ class MsAbsHs extends Certificate
                         ->setContent('wohnhaft in')
                         , '22%')
                     ->addElementColumn((new Element())
-                        ->setContent('
+                        ->setContent('{% if(Content.P' . $personId . '.Person.Address.City.Name) %}
                                 {{ Content.P' . $personId . '.Person.Address.Street.Name }}
                                 {{ Content.P' . $personId . '.Person.Address.Street.Number }},
                                 {{ Content.P' . $personId . '.Person.Address.City.Code }}
                                 {{ Content.P' . $personId . '.Person.Address.City.Name }}
-                            ')
+                                {% else %}
+                                      &nbsp;
+                                {% endif %}')
                         ->styleBorderBottom()
-                    )
+                        , '78%')
+//                        )
                 )->styleMarginTop('10px')
             )
             ->addSliceArray(MsAbsRs::getSchoolPart($personId))
@@ -133,7 +136,7 @@ class MsAbsHs extends Certificate
                     ->styleAlignLeft()
                 )
                 ->styleAlignCenter()
-                ->styleMarginTop('20%')
+                ->styleMarginTop('22%')
             )
             ->addSlice(MsAbsRs::getPictureForDiploma($showPictureOnSecondPage))
         ;
@@ -162,7 +165,7 @@ class MsAbsHs extends Certificate
                         ->styleBorderBottom()
                         ->styleAlignCenter()
                     )
-                )->styleMarginTop('50px')
+                )->styleMarginTop('60px')
             )
             ->addSlice((new Slice())
                 ->addElement((new Element())

@@ -9,7 +9,7 @@
             theme: "bootstrap",
             containerCssClass: ':all:',
             selectOnBlur: true,
-            selectOnClose: true
+            selectOnClose: false
         }, options);
 
         this.select2(settings);

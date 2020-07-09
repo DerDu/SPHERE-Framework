@@ -300,7 +300,7 @@ class Frontend extends Extension implements IFrontendInterface
                     }
                 }
                 $Address = Person::useService()->getPersonById( $ViewArray[ViewPerson::TBL_PERSON_ID] )->fetchMainAddress();
-                $ViewArray['DTAddress'] = ( $Address ? $Address->getGuiTwoRowString() : '');
+                $ViewArray['DTAddress'] = ( $Address ? $Address->getGuiTwoRowString(false) : '');
                 $ViewArray['DTOption'] = new \SPHERE\Common\Frontend\Link\Repository\Primary(
                     'Ansprechpartner hinzufügen',$this->getRequest()->getPathInfo(), new PlusSign(), array(
                     'Id'            => $Id,

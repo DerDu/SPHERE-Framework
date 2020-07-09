@@ -421,24 +421,46 @@ class Service extends AbstractService
      * @param $ZipCode
      * @return bool|TblPerson
      */
-    public function  existsPerson($FirstName, $LastName, $ZipCode)
+    public function existsPerson($FirstName, $LastName, $ZipCode)
     {
 
-        $exists = false;
-
-        if (( $persons = (new Data($this->getBinding()))->getPersonAllByFirstNameAndLastName($FirstName, $LastName) )
+        if (( $tblPersonList = (new Data($this->getBinding()))->getPersonAllByFirstNameAndLastName($FirstName, $LastName) )
         ) {
-            foreach ($persons as $person) {
-                if (( $addresses = Address::useService()->getAddressAllByPerson($person, true) )) {
-                    if ($addresses[0]->getTblAddress()->getTblCity()->getCode() == $ZipCode) {
-                        $exists = $person;
-                        break;
+            if($ZipCode === ''){
+                return current($tblPersonList);
+            }
+
+            foreach ($tblPersonList as $tblPerson) {
+                if (( $tblAddress = Address::useService()->getAddressByPerson($tblPerson, true) )) {
+                    if ($tblAddress->getTblCity()->getCode() == $ZipCode) {
+                        return $tblPerson;
                     }
                 }
             }
         }
+        return false;
+    }
 
-        return $exists;
+    /**
+     * @param $firstName
+     * @param $lastName
+     *
+     * @return bool|TblPerson[]
+     */
+    public function getPersonAllByFirstNameAndLastName($firstName, $lastName)
+    {
+        return (new Data($this->getBinding()))->getPersonAllByFirstNameAndLastName($firstName, $lastName);
+    }
+
+    /**
+     * @param string $firstName
+     * @param string $lastName
+     *
+     * @return false|TblPerson[]
+     */
+    public function getPersonListLikeFirstNameAndLastName($firstName, $lastName)
+    {
+        return (new Data($this->getBinding()))->getPersonListLikeFirstNameAndLastName($firstName, $lastName);
     }
 
     /**

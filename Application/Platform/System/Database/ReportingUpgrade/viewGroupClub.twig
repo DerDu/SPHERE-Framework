@@ -1,9 +1,12 @@
 SELECT
-    viewPerson.TblPerson_Id AS TblPerson_Id,
-    viewPeopleMetaClub.TblClub_Identifier AS TblClub_Identifier,
-    DATE_FORMAT( viewPeopleMetaClub.TblClub_EntryDate, '%d.%m.%Y' ) AS TblClub_EntryDate,
-    DATE_FORMAT( viewPeopleMetaClub.TblClub_ExitDate, '%d.%m.%Y' ) AS TblClub_ExitDate,
-    viewPeopleMetaClub.TblClub_Remark AS TblClub_Remark
-FROM
-    (PeoplePerson_{{ ConsumerAcronym }}.viewPerson
-    LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.viewPeopleMetaClub ON ((viewPerson.TblPerson_Id = viewPeopleMetaClub.TblClub_serviceTblPerson)))
+
+-- PersonId to match with all View's // tblClub
+    tC.serviceTblPerson AS TblPerson_Id,
+    tC.Identifier AS TblClub_Identifier,
+    DATE_FORMAT( tC.EntryDate, '%d.%m.%Y' ) AS TblClub_EntryDate,
+    DATE_FORMAT( tC.ExitDate, '%d.%m.%Y' ) AS TblClub_ExitDate,
+    tC.Remark AS TblClub_Remark
+
+FROM PeopleMeta_{{ ConsumerAcronym }}.tblClub tC
+
+WHERE tC.EntityRemove IS NULL

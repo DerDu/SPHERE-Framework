@@ -116,6 +116,20 @@ class Service extends AbstractService
     }
 
     /**
+     * @return bool|string
+     */
+    public function getMandantAcronym()
+    {
+
+        if(($tblAccount = $this->getAccountBySession())){
+            if(($tblConsumer = $tblAccount->getServiceTblConsumer())){
+                return $tblConsumer->getAcronym();
+            }
+        }
+        return false;
+    }
+
+    /**
      * @param string $Username
      *
      * @return bool|TblAccount
@@ -716,6 +730,7 @@ class Service extends AbstractService
     }
 
     /**
+     * @deprecated -> no person change from account
      * @param TblAccount $tblAccount
      * @param TblPerson $tblPerson
      *
@@ -742,13 +757,48 @@ class Service extends AbstractService
      * @param TblPerson $tblPerson
      * @param bool      $isForce
      *
-     * @return bool|TblAccount[]
+     * @return false|TblAccount[]
      */
     public function getAccountAllByPerson(TblPerson $tblPerson, $isForce = false)
     {
 
         $tblConsumer = Consumer::useService()->getConsumerBySession();
         return (new Data($this->getBinding()))->getAccountAllByPerson($tblPerson, $tblConsumer, $isForce);
+    }
+
+    /**
+     * @param TblPerson $tblPerson
+     *
+     * @return bool|TblAccount[]
+     */
+    public function getAccountListByActiveConumser()
+    {
+
+        $tblConsumer = Consumer::useService()->getConsumerBySession();
+        return (new Data($this->getBinding()))->getAccountListByConumser($tblConsumer);
+    }
+
+    /**
+     * @param TblIdentification $tblIdentification
+     *
+     * @return TblAccount[]|bool
+     */
+    public function getAccountListByIdentification(TblIdentification $tblIdentification)
+    {
+
+        $returnList = array();
+        if(($tblAccountList = $this->getAccountListByActiveConumser())){
+            foreach($tblAccountList as $tblAccount){
+
+                if(($tblIdentificationSet = $tblAccount->getServiceTblIdentification())){
+                    if($tblIdentificationSet->getId() == $tblIdentification->getId()){
+                        $returnList[] = $tblAccount;
+                    }
+                }
+            }
+        }
+
+        return (!empty($returnList) ? $returnList : false);
     }
 
     /**
@@ -905,11 +955,33 @@ class Service extends AbstractService
     }
 
     /**
+     * @param $UserAlias
+     *
+     * @return false|TblAccount[]
+     */
+    public function getAccountAllByUserAlias($UserAlias)
+    {
+
+        return (new Data($this->getBinding()))->getAccountAllByUserAlias($UserAlias);
+    }
+
+    /**
      * @return int
      */
     public function countSessionAll()
     {
 
         return (new Data($this->getBinding()))->countSessionAll();
+    }
+
+    /**
+     * @param TblAccount $tblAccount
+     * @param string     $userAlias
+     *
+     * @return bool
+     */
+    public function changeUserAlias(TblAccount $tblAccount, $userAlias)
+    {
+        return (new Data($this->getBinding()))->changeUserAlias($tblAccount, $userAlias);
     }
 }

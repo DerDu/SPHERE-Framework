@@ -458,13 +458,21 @@ class TblInvoiceItemDebtor extends Element
     }
 
     /**
+     * @param string $Sign
+     * @param bool   $IsPointToComma
+     *
      * @return string
-     * single ItemPrice with " €"
      */
-    public function getPriceString()
+    public function getPriceString($Sign = '€', $IsPointToComma = false)
     {
 
-        return number_format($this->Value, 2).' €';
+
+        if($IsPointToComma){
+            $Value = number_format($this->Value, 2, ',', '').' '.$Sign;
+        } else {
+            $Value = number_format($this->Value, 2, '.', '').' '.$Sign;
+        }
+        return $Value;
     }
 
     /**

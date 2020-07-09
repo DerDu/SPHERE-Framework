@@ -806,8 +806,7 @@ class License implements IClusterInterface, IApplicationInterface, IModuleInterf
                         new LayoutColumn(new Headline('How to Apply These Terms to Your New Programs')),
                         new LayoutColumn(new Paragraph(
                             'Schulsoftware-Professional: '
-                            .new Link('Version-Control-System - Source-Code',
-                                'https://github.com/DerDu/SPHERE-Framework')
+                            .new Link('Source-Code', '/Manual/Request')
                         )),
                         new LayoutColumn(array(
                             new Paragraph('

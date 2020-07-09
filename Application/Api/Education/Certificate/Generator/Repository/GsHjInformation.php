@@ -26,7 +26,7 @@ class GsHjInformation extends Certificate
 
         $personId = $tblPerson ? $tblPerson->getId() : 0;
 
-        $Header = $this->getHead($this->isSample(), true, 'auto', '50px');
+        $Header = $this->getHead($this->isSample());
 
         return (new Page())
             ->addSlice(
@@ -36,16 +36,17 @@ class GsHjInformation extends Certificate
             ->addSlice($this->getCertificateHead('Halbjahresinformation der Grundschule'))
             ->addSlice($this->getDivisionAndYear($personId, '20px', '1. Schulhalbjahr'))
             ->addSlice($this->getStudentName($personId))
-            ->addSlice($this->getGradeLanes($personId))
+            ->addSlice($this->getGradeLanesSmall($personId))
             ->addSlice((new Slice())
                 ->addElement((new Element())
                     ->setContent('Leistungen in den einzelnen Fächern:')
                     ->styleMarginTop('15px')
+                    ->styleMarginBottom('5px')
                     ->styleTextBold()
                 )
             )
-            ->addSlice($this->getSubjectLanes($personId)
-                ->styleHeight('165px'))
+            ->addSlice($this->getSubjectLanesSmall($personId)
+                ->styleHeight('126px'))
             ->addSlice($this->getDescriptionHead($personId, true))
             ->addSlice($this->getDescriptionContent($personId, '200px', '5px'))
             ->addSlice($this->getDateLine($personId))

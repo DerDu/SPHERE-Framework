@@ -1,6 +1,7 @@
 <?php
 namespace SPHERE\Application\Setting\User\Account\Service;
 
+use DateTime;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\TblAccount;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
@@ -85,11 +86,11 @@ class Data extends AbstractData
     }
 
     /**
-     * @param \DateTime $dateTime
+     * @param DateTime $dateTime
      *
      * @return false|TblUserAccount[]
      */
-    public function getUserAccountByTime(\DateTime $dateTime)
+    public function getUserAccountByTime(DateTime $dateTime)
     {
 
         return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblUserAccount',
@@ -99,12 +100,12 @@ class Data extends AbstractData
     }
 
     /**
-     * @param \DateTime $groupByTime
-     * @param \DateTime $exportDate
+     * @param DateTime $groupByTime
+     * @param DateTime $exportDate
      *
      * @return false|TblUserAccount[]
      */
-    public function getUserAccountByLastExport(\DateTime $groupByTime, \DateTime $exportDate)
+    public function getUserAccountByLastExport(DateTime $groupByTime, DateTime $exportDate)
     {
 
         return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblUserAccount',
@@ -115,12 +116,12 @@ class Data extends AbstractData
     }
 
     /**
-     * @param \DateTime $dateTime
+     * @param DateTime $dateTime
      * @param int       $groupCount
      *
      * @return false|TblUserAccount[]
      */
-    public function getUserAccountByTimeAndCount(\DateTime $dateTime, $groupCount)
+    public function getUserAccountByTimeAndCount(DateTime $dateTime, $groupCount)
     {
 
         return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblUserAccount',
@@ -147,20 +148,22 @@ class Data extends AbstractData
     /**
      * @param TblAccount $tblAccount
      * @param TblPerson  $tblPerson
-     * @param \DateTime  $TimeStamp
+     * @param DateTime  $TimeStamp
      * @param string     $userPassword
      * @param string     $Type STUDENT|CUSTODY
      * @param int        $GroupByCount
+     * @param TblAccount $tblAccountSession
      *
      * @return TblUserAccount
      */
     public function createUserAccount(
         TblAccount $tblAccount,
         TblPerson $tblPerson,
-        \DateTime $TimeStamp,
+        DateTime $TimeStamp,
         $userPassword,
-        $Type = 'STUDENT',
-        $GroupByCount
+        $Type,
+        $GroupByCount,
+        TblAccount $tblAccountSession
     ) {
 
         $Manager = $this->getConnection()->getEntityManager();
@@ -181,6 +184,8 @@ class Data extends AbstractData
             $Entity->setLastDownloadAccount('');
             $Entity->setGroupByTime($TimeStamp);
             $Entity->setGroupByCount($GroupByCount);
+            $Entity->setAccountCreator($tblAccountSession->getUsername());
+            $Entity->setAccountUpdater('');
             $Manager->saveEntity($Entity);
             Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(), $Entity);
             return $Entity;
@@ -190,7 +195,7 @@ class Data extends AbstractData
 
     /**
      * @param TblUserAccount[] $tblUserAccountList
-     * @param \DateTime        $ExportDate
+     * @param DateTime        $ExportDate
      * @param string           $UserName
      *
      * @return bool
@@ -242,13 +247,35 @@ class Data extends AbstractData
     }
 
     /**
+     * @param TblUserAccount $tblUserAccount
+     * @param                $UserName
+     * @param                $Type
+     *
+     * @return bool
+     */
+    public function changeUpdateDate(TblUserAccount $tblUserAccount, $UserName, $Type)
+    {
+
+        $Manager = $this->getConnection()->getEntityManager();
+        /** @var TblUserAccount $Entity */
+        $Entity = $Manager->getEntityById('TblUserAccount', $tblUserAccount->getId());
+        $Protocol = clone $Entity;
+        $DateTime = new DateTime();
+        if (null !== $Entity) {
+            $Entity->setAccountUpdater($UserName);
+            $Entity->setUpdateDate($DateTime);
+            $Entity->setUpdateType($Type);
+            $Manager->saveEntity($Entity);
+            Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(), $Protocol, $Entity);
+        }
+        return true;
+    }
+
+    /**
      * @param string $tblUserAccount
      * @param string $Password
      *
      * @return bool
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
      */
     public function updateUserAccountChangePassword(TblUserAccount $tblUserAccount, $Password)
     {

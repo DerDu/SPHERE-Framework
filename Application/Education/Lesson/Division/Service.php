@@ -1,6 +1,9 @@
 <?php
 namespace SPHERE\Application\Education\Lesson\Division;
 
+use SPHERE\Application\Corporation\Company\Company;
+use SPHERE\Application\Corporation\Company\Service\Entity\TblCompany;
+use SPHERE\Application\Education\Diary\Diary;
 use SPHERE\Application\Education\Graduation\Evaluation\Evaluation;
 use SPHERE\Application\Education\Graduation\Gradebook\Gradebook;
 use SPHERE\Application\Education\Lesson\Division\Filter\Filter;
@@ -29,6 +32,7 @@ use SPHERE\Application\Education\School\Type\Type;
 use SPHERE\Application\People\Group\Group;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Setting\Consumer\Consumer;
+use SPHERE\Application\Setting\Consumer\School\School;
 use SPHERE\Common\Frontend\Form\IFormInterface;
 use SPHERE\Common\Frontend\Message\Repository\Danger;
 use SPHERE\Common\Frontend\Message\Repository\Success;
@@ -155,6 +159,11 @@ class Service extends AbstractService
             $Error = true;
         }
 
+        if (!($tblCompany = Company::useService()->getCompanyById($Division['Company']))) {
+            $Form->setError('Division[Company]', 'Schule erforderlich! Bitte auswählen');
+            $Error = true;
+        }
+
         // Year
         if (!isset($Division['Year']) || empty($Division['Year'])) {
             $Form->setError('Division[Year]', 'Jahr erforderlich! Bitte zuerst einpflegen');
@@ -169,13 +178,8 @@ class Service extends AbstractService
             $Error = true;
         }
 
-        // Group
-        if (isset($Division['Name']) && empty($Division['Name']) && isset($Level['Check'])) {
-            $Form->setError('Division[Name]', 'Bitte geben Sie eine Klassengruppe an');
-            $Error = true;
-        }
         // Level
-        if (!isset($Level['Check']) && isset($Level['Name'])) {
+        if (isset($Level['Name'])) {
             if (is_numeric($Level['Name'])) {
                 $position = strpos($Level['Name'], '0');
                 if ($position === 0) {
@@ -188,28 +192,11 @@ class Service extends AbstractService
             }
         }
 
-        // Level
-        if (!$Error) {
-            $tblLevel = null;
-            if (!isset($Level['Check'])) {
-                if (isset($Level['Name']) && empty($Level['Name'])) {
-                    $Form->setError('Level[Name]', 'Bitte geben Sie eine Klassenstufe für die Schulart an <br/>');
-                    $Error = true;
-                } else {
-                    $tblType = Type::useService()->getTypeById($Level['Type']);
-                    $tblLevel = (new Data($this->getBinding()))->createLevel($tblType, $Level['Name']);
-                }
-            } else {
-                if ($tblType = Type::useService()->getTypeById($Level['Type'])) {
-                    $tblLevel = (new Data($this->getBinding()))->createLevel($tblType, '', '', $Level['Check']);
-                }
-            }
-        } else {
-            return $Form;
-        }
-
         // Create
         if (!$Error) {
+            // Level
+            $tblType = Type::useService()->getTypeById($Level['Type']);
+            $tblLevel = (new Data($this->getBinding()))->createLevel($tblType, $Level['Name']);
 
             if ($this->checkDivisionExists($tblYear, $Division['Name'], $tblLevel)
             ) {
@@ -217,7 +204,7 @@ class Service extends AbstractService
             } else {
 
                 (new Data($this->getBinding()))->createDivision(
-                    $tblYear, $tblLevel, $Division['Name'], $Division['Description']
+                    $tblYear, $tblLevel, $Division['Name'], $Division['Description'], $tblCompany ? $tblCompany : null
                 );
                 return new Success('Die Klassengruppe wurde erfolgreich hinzugefügt')
                 . new Redirect($this->getRequest()->getUrl(), Redirect::TIMEOUT_SUCCESS);
@@ -482,13 +469,14 @@ class Service extends AbstractService
      * @param TblLevel $tblLevel
      * @param string $Name
      * @param string $Description
+     * @param TblCompany|null $tblCompany
      *
      * @return null|TblDivision
      */
-    public function insertDivision(TblYear $tblYear, TblLevel $tblLevel, $Name, $Description = '')
+    public function insertDivision(TblYear $tblYear, TblLevel $tblLevel, $Name, $Description = '', TblCompany $tblCompany = null)
     {
 
-        return (new Data($this->getBinding()))->createDivision($tblYear, $tblLevel, $Name, $Description);
+        return (new Data($this->getBinding()))->createDivision($tblYear, $tblLevel, $Name, $Description, $tblCompany);
     }
 
     /**
@@ -1138,6 +1126,12 @@ class Service extends AbstractService
 
         $Error = false;
 
+        // School
+        if (!($tblCompany = Company::useService()->getCompanyById($Division['Company']))) {
+            $Form->setError('Division[Company]', 'Schule erforderlich! Bitte auswählen');
+            $Error = true;
+        }
+
         // auch leere Strings sollen gespeichert werden können
 //        if (isset($Division['Name']) && empty($Division['Name'])
 //        ) {
@@ -1159,7 +1153,7 @@ class Service extends AbstractService
 //                $tblYear = Term::useService()->getYearById($Division['Year']);
 //                $tblLevel = $this->getLevelById($Division['Level']);
                 if ((new Data($this->getBinding()))->updateDivision(
-                    $tblDivision, trim($Division['Name']), $Division['Description']
+                    $tblDivision, trim($Division['Name']), $Division['Description'], $tblCompany ? $tblCompany : null
                 )
                 ) {
                     return new Success('Die Klasse wurde erfolgreich geändert')
@@ -1830,18 +1824,19 @@ class Service extends AbstractService
 
     /**
      * @param IFormInterface $Form
-     * @param                $tblDivision
+     * @param TblDivision    $tblDivision
      * @param                $Level
      * @param                $Division
+     * @param bool           $CopyDiary
      *
      * @return IFormInterface|string
      */
-    public
-    function copyDivision(
+    public function copyDivision(
         IFormInterface $Form,
         TblDivision $tblDivision,
         $Level,
-        $Division
+        $Division,
+        $CopyDiary = false
     ) {
 
         /**
@@ -1852,6 +1847,12 @@ class Service extends AbstractService
         }
 
         $Error = false;
+
+        // School
+        if (!($tblCompany = Company::useService()->getCompanyById($Division['Company']))) {
+            $Form->setError('Division[Company]', 'Schule erforderlich! Bitte auswählen');
+            $Error = true;
+        }
 
         // Year
         if (!isset($Division['Year']) || empty($Division['Year'])) {
@@ -1867,14 +1868,8 @@ class Service extends AbstractService
             $Error = true;
         }
 
-        // Group
-        if (isset($Division['Name']) && empty($Division['Name']) && isset($Level['Check'])) {
-            $Form->setError('Division[Name]', 'Bitte geben Sie eine Klassengruppe an');
-            $Error = true;
-        }
-
         // Level
-        if (!isset($Level['Check']) && isset($Level['Name'])) {
+        if (isset($Level['Name'])) {
             if (is_numeric($Level['Name'])) {
                 $position = strpos($Level['Name'], '0');
                 if ($position === 0) {
@@ -1885,26 +1880,15 @@ class Service extends AbstractService
                 $Form->setError('Level[Name]', 'Bitte geben Sie eine Zahl ein');
                 $Error = true;
             }
+        } else {
+            $Form->setError('Level[Name]', 'Bitte geben Sie eine Klassenstufe für die Schulart an');
+            $Error = true;
         }
 
         // Level
         if (!$Error) {
-            $tblLevel = null;
-            if (!isset($Level['Check'])) {
-                if (isset($Level['Name']) && empty($Level['Name'])) {
-                    $Form->setError('Level[Name]', 'Bitte geben Sie eine Klassenstufe für die Schulart an <br/>');
-                    $Error = true;
-                } else {
-                    $tblType = Type::useService()->getTypeById($Level['Type']);
-                    $tblLevel = (new Data($this->getBinding()))->createLevel($tblType, $Level['Name']);
-                }
-            } else {
-                if ($tblType = Type::useService()->getTypeById($Level['Type'])) {
-                    $tblLevel = (new Data($this->getBinding()))->createLevel($tblType, '', '', $Level['Check']);
-                }
-            }
-        } else {
-            return $Form;
+            $tblType = Type::useService()->getTypeById($Level['Type']);
+            $tblLevel = (new Data($this->getBinding()))->createLevel($tblType, $Level['Name']);
         }
 
         // Create
@@ -1916,8 +1900,12 @@ class Service extends AbstractService
             } else {
 
                 $tblDivisionCopy = (new Data($this->getBinding()))->createDivision(
-                    $tblYear, $tblLevel, $Division['Name'], $Division['Description']
+                    $tblYear, $tblLevel, $Division['Name'], $Division['Description'], $tblCompany ? $tblCompany : null
                 );
+
+                if ($tblDivisionCopy && $CopyDiary) {
+                    Diary::useService()->addDiaryDivision($tblDivisionCopy, $tblDivision);
+                }
 
                 if ($tblDivision->getTblLevel()->getServiceTblType() && $tblLevel->getServiceTblType()
                     && $tblDivision->getTblLevel()->getServiceTblType()->getId() !== $tblLevel->getServiceTblType()->getId()
@@ -2830,5 +2818,34 @@ class Service extends AbstractService
     {
 
         return (new Data($this->getBinding()))->getDivisionTeacherAllByDivision($tblDivision);
+    }
+
+    /**
+     * @return array|bool|TblCompany[]
+     */
+    public function getSchoolListForDivision()
+    {
+        $tblCompanyAllSchool = \SPHERE\Application\Corporation\Group\Group::useService()->getCompanyAllByGroup(
+            \SPHERE\Application\Corporation\Group\Group::useService()->getGroupByMetaTable('SCHOOL')
+        );
+        $tblCompanyAllOwn = array();
+
+        // Normaler Inhalt
+        $tblSchoolList = School::useService()->getSchoolAll();
+        if ($tblSchoolList) {
+            foreach ($tblSchoolList as $tblSchool) {
+                if ($tblSchool->getServiceTblCompany()) {
+                    $tblCompanyAllOwn[] = $tblSchool->getServiceTblCompany();
+                }
+            }
+        }
+
+        if (empty($tblCompanyAllOwn)) {
+            $resultList = $tblCompanyAllSchool;
+        } else {
+            $resultList = $tblCompanyAllOwn;
+        }
+
+        return $resultList;
     }
 }

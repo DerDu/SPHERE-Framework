@@ -1,6 +1,7 @@
 <?php
 namespace SPHERE\Application\Reporting\Standard\Person;
 
+use DateTime;
 use SPHERE\Application\Api\Reporting\Standard\ApiStandard;
 use SPHERE\Application\Education\Lesson\Division\Division;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
@@ -857,8 +858,8 @@ class Frontend extends Extension implements IFrontendInterface
                             new LayoutColumn(
                                 new Panel('Gruppe:',
                                     $tblGroup->getName().
-                                    (!empty($tblGroup->getDescription()) ? '<br/>' . $tblGroup->getDescription() : '').
-                                    (!empty($tblGroup->getRemark()) ? '<br/>' . $tblGroup->getRemark() : ''),
+                                    ($tblGroup->getDescription(true) ? '<br/>' . $tblGroup->getDescription(true) : '').
+                                    ($tblGroup->getRemark() ? '<br/>' . $tblGroup->getRemark() : ''),
                                     Panel::PANEL_TYPE_SUCCESS), 12
                             )
                         )
@@ -979,7 +980,7 @@ class Frontend extends Extension implements IFrontendInterface
                                 'Birthplace'   => 'Geburtsort',
                                 'Address'      => 'Adresse',
                                 'Phone'        => new ToolTip('Telefon '.new Info(),
-                                    'p=Privat; g=Geschäftlich; n=Notfall; f=Fax; Bev.=Bevollmächtigt'),
+                                    'p=Privat; g=Geschäftlich; n=Notfall; f=Fax; Bev.=Bevollmächtigt; V=Vormund'),
                                 'Mail'         => 'E-Mail',
 
                             ),
@@ -1514,7 +1515,7 @@ class Frontend extends Extension implements IFrontendInterface
 
         if ($Data == null) {
             $global = $this->getGlobal();
-            $global->POST['Data']['Date'] = (new \DateTime('now'))->format('d.m.Y');
+            $global->POST['Data']['Date'] = (new DateTime('now'))->format('d.m.Y');
             $global->savePost();
         }
 
@@ -1525,6 +1526,7 @@ class Frontend extends Extension implements IFrontendInterface
         $datePicker = new DatePicker('Data[Date]', '', 'Datum', new Calendar());
         $typeSelectBox = new SelectBox('Data[Type]', 'Schulart', array('Name' => Type::useService()->getTypeAll()));
         $divisionTextField = new TextField('Data[DivisionName]', '', 'Klasse');
+        $groupTextField = new TextField('Data[GroupName]', '', 'oder Gruppe');
         $button = (new Primary('Filtern', '', new Filter()))->ajaxPipelineOnClick(ApiStandard::pipelineCreateAbsenceContent($receiverContent));
 
         $stage->setContent(
@@ -1535,18 +1537,21 @@ class Frontend extends Extension implements IFrontendInterface
                         new Layout (new LayoutGroup(array(
                             new LayoutRow(array(
                                 new LayoutColumn(
-                                    $datePicker, 4
+                                    $datePicker, 3
                                 ),
                                 new LayoutColumn(
-                                    $typeSelectBox, 4
+                                    $typeSelectBox, 3
                                 ),
                                 new LayoutColumn(
-                                    $divisionTextField, 4
+                                    $divisionTextField, 3
+                                ),
+                                new LayoutColumn(
+                                    $groupTextField, 3
                                 ),
                             )),
                             new LayoutRow(array(
                                 new LayoutColumn(
-                                    $button, 4
+                                    $button
                                 ),
                             ))
                         ))),
@@ -1558,5 +1563,61 @@ class Frontend extends Extension implements IFrontendInterface
         );
 
         return $stage;
+    }
+
+    /**
+     * @return Stage
+     */
+    public function frontendClub()
+    {
+
+        $Stage = new Stage('Auswertung', 'Fördervereinsmitgliedschaft');
+        $PersonList = Person::useService()->createClubList();
+        if ($PersonList) {
+            $Stage->addButton(
+                new Primary('Herunterladen',
+                    '/Api/Reporting/Standard/Person/ClubList/Download', new Download())
+            );
+            $Stage->setMessage(new Danger('Die dauerhafte Speicherung des Excel-Exports
+                    ist datenschutzrechtlich nicht zulässig!', new Exclamation()));
+        }
+
+        $Stage->setContent(
+            new Layout(
+                new LayoutGroup(
+                    new LayoutRow(
+                        new LayoutColumn(
+                            new TableData($PersonList, null,
+                                array(
+                                    'Number'                => 'Mitgliedsnummer',
+                                    'Title'                 => 'Titel',
+                                    'LastName'              => 'Sorgeberechtigt Name',
+                                    'FirstName'             => 'Sorgeberechtigt Vorname',
+                                    'StudentLastName'       => 'Schüler / Interessent Name',
+                                    'StudentFirstName'      => 'Schüler / Interessent Vorname',
+                                    'Type'                  => 'Typ',
+                                    'Year'                  => 'Schuljahr',
+                                    'activeDivision'        => 'Klasse',
+                                    'individualPersonGroup' => 'Personengruppen',
+                                ),
+                                array(
+                                    'order' => array(
+                                        array(0, 'asc'),
+                                        array(2, 'asc')
+                                    ),
+                                    "pageLength" => -1,
+                                    "responsive" => false,
+                                    'columnDefs' => array(
+                                        array('type' => Consumer::useService()->getGermanSortBySetting(), 'targets' => array(2, 3, 5, 6)),
+                                    ),
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        );
+
+        return $Stage;
     }
 }

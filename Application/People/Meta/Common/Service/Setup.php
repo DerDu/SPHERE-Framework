@@ -117,10 +117,10 @@ class Setup extends AbstractSetup
 
         if( $this->hasColumn( $Table, 'Gender' ) && !$this->hasColumn( $Table, $tblCommonGender->getName() ) ) {
             $this->createColumn($Table, 'Gender', self::FIELD_TYPE_INTEGER, true);
-        } else {
-            if ($this->hasColumn($Table, 'Gender') && $this->hasColumn($Table, $tblCommonGender->getName())) {
-                $this->getConnection()->deadProtocol('tblCommonBirthDates.Gender');
-            }
+//        } else {
+//            if ($this->hasColumn($Table, 'Gender') && $this->hasColumn($Table, $tblCommonGender->getName())) {
+//                $this->getConnection()->deadProtocol('tblCommonBirthDates.Gender');
+//            }
         }
         $this->createForeignKey( $Table, $tblCommonGender, true );
 

@@ -159,7 +159,7 @@ class EssGsJTwo extends Certificate
                 )
             )
             ->addSlice((new Slice())
-                ->addElement((new Element\Image('/Common/Style/Resource/Logo/ESS_Grundschule_down.jpg', '700px'))
+                ->addElement((new Element\Image('/Common/Style/Resource/Logo/ESS_Grundschule_Down.jpg', '700px'))
                     ->styleAlignCenter()
                     ->stylePaddingTop('2px')
                     ->stylePaddingBottom('27px')
@@ -201,7 +201,7 @@ class EssGsJTwo extends Certificate
                     )
                     ->addElementColumn((new Element())
                         ->setContent('{% if(Content.P' . $personId . '.Input.Transfer) %}
-                            {{ Content.P' . $personId . '.Input.Transfer }}
+                            {{ Content.P' . $personId . '.Input.Transfer }}.
                         {% else %}
                               &nbsp;
                         {% endif %}')

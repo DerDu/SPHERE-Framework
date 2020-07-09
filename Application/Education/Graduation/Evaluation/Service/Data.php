@@ -301,9 +301,8 @@ class Data extends AbstractData
             ->setParameter(1, '%TASK%');
 
         $query = $queryBuilder->getQuery();
-        $result = $query->getResult();
 
-        return $result;
+        return $query->getResult();
     }
 
     /**
@@ -319,9 +318,8 @@ class Data extends AbstractData
             ->setParameter(1, '%TASK%');
 
         $query = $queryBuilder->getQuery();
-        $result = $query->getResult();
 
-        return $result;
+        return $query->getResult();
     }
 
     /**
@@ -1084,6 +1082,4 @@ class Data extends AbstractData
                 ? $tblDivisionSubject->getTblSubjectGroup() : null
         )) ? true : false;
     }
-
-
 }

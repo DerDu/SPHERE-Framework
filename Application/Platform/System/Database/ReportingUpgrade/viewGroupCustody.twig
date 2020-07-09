@@ -1,6 +1,11 @@
 SELECT
-    vPMC.TblCustody_serviceTblPerson AS TblPerson_Id,
-    vPMC.TblCustody_Occupation AS TblCustody_Occupation,
-    vPMC.TblCustody_Employment AS TblCustody_Employment,
-    vPMC.TblCustody_Remark AS TblCustody_Remark
-FROM PeopleMeta_{{ ConsumerAcronym }}.viewPeopleMetaCustody vPMC
+
+-- PersonId to match with all View's // tblCustody
+    tC.serviceTblPerson AS TblPerson_Id,
+    tC.Occupation AS TblCustody_Occupation,
+    tC.Employment AS TblCustody_Employment,
+    tC.Remark AS TblCustody_Remark
+
+FROM PeopleMeta_{{ ConsumerAcronym }}.tblCustody tC
+
+WHERE tC.EntityRemove IS NULL

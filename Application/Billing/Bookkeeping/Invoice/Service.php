@@ -9,6 +9,7 @@ use SPHERE\Application\Api\Billing\Invoice\ApiInvoiceIsPaid;
 use SPHERE\Application\Billing\Accounting\Debtor\Debtor;
 use SPHERE\Application\Billing\Bookkeeping\Basket\Basket;
 use SPHERE\Application\Billing\Bookkeeping\Basket\Service\Entity\TblBasket;
+use SPHERE\Application\Billing\Bookkeeping\Basket\Service\Entity\TblBasketType;
 use SPHERE\Application\Billing\Bookkeeping\Basket\Service\Entity\TblBasketVerification;
 use SPHERE\Application\Billing\Bookkeeping\Invoice\Service\Data;
 use SPHERE\Application\Billing\Bookkeeping\Invoice\Service\Entity\TblInvoice;
@@ -75,17 +76,20 @@ class Service extends AbstractService
     }
 
     /**
-     * @param $Year
+     * @param TblPerson $tblPerson
+     * @param string    $Year
+     * @param string    $Month
      *
      * @return bool|TblInvoice[]
      */
-    public function getInvoiceAllByYear($Year = '')
+    public function getInvoiceAllByPersonCauserAndTime(TblPerson $tblPerson, $Year = '', $Month = '')
     {
 
-        return (new Data($this->getBinding()))->getInvoiceAllByYear($Year);
+        return (new Data($this->getBinding()))->getInvoiceAllByPersonCauserAndTime($tblPerson, $Year, $Month);
     }
 
     /**
+     * @param TblBasket $tblBasket
      * @param TblPerson $tblPerson
      * @param TblItem   $tblItem
      * @param string    $Year
@@ -94,21 +98,35 @@ class Service extends AbstractService
      * @return TblInvoice[]|bool
      */
     public function getInvoiceByPersonCauserAndItemAndYearAndMonth(
+        TblBasket $tblBasket,
         TblPerson $tblPerson,
         TblItem $tblItem,
         $Year,
         $Month
     ){
         $isInvoice = false;
-        if(($tblInvoiceList = $this->getInvoiceAllByPersonCauser($tblPerson))){
+        // Abrechnung als Default
+        $BasketTypeId = 1;
+        if(($tblBasketType = $tblBasket->getTblBasketType())){
+            $BasketTypeId = $tblBasketType->getId();
+        }
+        if(($tblInvoiceList = $this->getInvoiceAllByPersonCauserAndTime($tblPerson, $Year, $Month))){
             foreach($tblInvoiceList as $tblInvoice) {
-                if($tblInvoice->getYear() == $Year && $tblInvoice->getMonth() == $Month){
-                    if(($tblInvoiceItemDebtorList = Invoice::useService()->getInvoiceItemDebtorByInvoice($tblInvoice))){
-                        foreach($tblInvoiceItemDebtorList as $tblInvoiceItemDebtor) {
-                            if(($tblInvoiceItem = $tblInvoiceItemDebtor->getServiceTblItem())){
-                                if($tblInvoiceItem->getId() == $tblItem->getId()){
-                                    $isInvoice = true;
-                                }
+                // wird der gleiche Abrechnungstyp gesucht?
+                $IsSameType = false;
+                if(($tempTblBasket = $tblInvoice->getServiceTblBasket())){
+                    if(($tempTblBasketType = $tempTblBasket->getTblBasketType())){
+                        if($BasketTypeId == $tempTblBasketType->getId()){
+                            $IsSameType = true;
+                        }
+                    }
+                }
+                // Doppelte Invoice mit gleichem Abrechnungstyp
+                if($IsSameType && ($tblInvoiceItemDebtorList = Invoice::useService()->getInvoiceItemDebtorByInvoice($tblInvoice))){
+                    foreach($tblInvoiceItemDebtorList as $tblInvoiceItemDebtor) {
+                        if(($tblInvoiceItem = $tblInvoiceItemDebtor->getServiceTblItem())){
+                            if($tblInvoiceItem->getId() == $tblItem->getId()){
+                                $isInvoice = true;
                             }
                         }
                     }
@@ -362,7 +380,7 @@ class Service extends AbstractService
         // erste Durchsicht, entfernnen vorhandener Rechnungen (gleiche Rechnungen im Abrechnungszeitraum
         // entfernen aller DebtorSelection zu welchen es schon in der aktuellen Rechnungsphase Rechnungen gibt
         array_walk($tblBasketVerificationList,
-            function(TblBasketVerification &$tblBasketVerification) use ($Month, $Year){
+            function(TblBasketVerification &$tblBasketVerification) use ($Month, $Year, $tblBasket){
                 $tblPerson = $tblBasketVerification->getServiceTblPersonCauser();
                 $tblItem = $tblBasketVerification->getServiceTblItem();
 
@@ -373,7 +391,7 @@ class Service extends AbstractService
                     // entfernen der Beiträge mit Anzahl 0
                     $tblBasketVerification = false;
                 } elseif($tblPerson && $tblItem) { // Entfernen aller Beiträge
-                    if(Invoice::useService()->getInvoiceByPersonCauserAndItemAndYearAndMonth($tblPerson, $tblItem,
+                    if(Invoice::useService()->getInvoiceByPersonCauserAndItemAndYearAndMonth($tblBasket, $tblPerson, $tblItem,
                         $Year, $Month)){
                         // Entfernen des Beitrag's aus der Abrechnung
                         Basket::useService()->destroyBasketVerification($tblBasketVerification);
@@ -446,7 +464,8 @@ class Service extends AbstractService
             &$InvoiceItemDebtorList,
             $Month,
             $Year,
-            $DebtorInvoiceList
+            $DebtorInvoiceList,
+            $tblBasket
         ){
             $i++;
             $tblPersonCauser = $tblBasketVerification->getServiceTblPersonCauser();
@@ -514,6 +533,22 @@ class Service extends AbstractService
             $InvoiceItemDebtorList[$GroupString][$i]['serviceTblBankReference'] = $tblBankReference;
             $InvoiceItemDebtorList[$GroupString][$i]['serviceTblBankAccount'] = $tblBankAccount;
             $InvoiceItemDebtorList[$GroupString][$i]['serviceTblPaymentType'] = $tblPaymentType;
+
+            // Gutschriften erhalten keine offene Posten
+            if($tblBasket->getTblBasketType()->getName() == TblBasketType::IDENT_GUTSCHRIFT){
+                $isPaid = true;
+            } else {
+                // Alles was nicht Sepa ist wird als offener Posten hinterlegt
+                // (Erwarteter Zahlungseingang muss nach erhalt im Programm bestätigt weden, damit dies nicht untergeht)
+                if($tblPaymentType && $tblPaymentType->getName() == 'SEPA-Lastschrift'){
+                    $isPaid = true;
+                } else {
+                    $isPaid = false;
+                }
+            }
+
+
+            $InvoiceItemDebtorList[$GroupString][$i]['IsPaid'] = $isPaid;
         });
 
         // create
@@ -567,10 +602,10 @@ class Service extends AbstractService
                         $item['CauserIdent'] = $tblStudent->getIdentifierComplete();
                     }
                 }
-                $item['BasketTyp'] = '';
+                $item['BasketType'] = '';
                 if(($tblBasket = $tblInvoice->getServiceTblBasket())){
                     if(($tblBasketType = $tblBasket->getTblBasketType())){
-                        $item['BasketTyp'] = $tblBasketType->getName();
+                        $item['BasketType'] = $tblBasketType->getName();
                     }
                 }
 
@@ -612,8 +647,8 @@ class Service extends AbstractService
 
 //                        $item['Option'] = '';
                         // convert to Frontend
-                        $item['ItemPrice'] = str_replace('.',',', number_format($item['ItemPrice'], 2) . ($IsFrontend ? ' €' : ''));
-                        $item['ItemSumPrice'] = str_replace('.',',', number_format($item['ItemSumPrice'], 2) . ($IsFrontend ? ' €' : ''));
+                        $item['ItemPrice'] = str_replace('.',',', number_format($item['ItemPrice'], 2) . ($IsFrontend ? '&nbsp;€' : ''));
+                        $item['ItemSumPrice'] = str_replace('.',',', number_format($item['ItemSumPrice'], 2) . ($IsFrontend ? '&nbsp;€' : ''));
                         array_push($TableContent, $item);
                     }
                 }
@@ -684,7 +719,7 @@ class Service extends AbstractService
                 $export->setValue($export->getCell($column++, $row), $result['ItemQuantity']);
                 $export->setValue($export->getCell($column++, $row), $result['ItemPrice']);
                 $export->setValue($export->getCell($column++, $row), $result['ItemSumPrice']);
-                $export->setValue($export->getCell($column, $row), $result['BasketTyp']);
+                $export->setValue($export->getCell($column, $row), $result['BasketType']);
             }
 
             $export->saveFile(new FileParameter($fileLocation->getFileLocation()));
@@ -726,10 +761,10 @@ class Service extends AbstractService
                 }
                 $item['DebtorPerson'] = '';
                 $item['DebtorNumber'] = '';
-                $item['BasketTyp'] = '';
+                $item['BasketType'] = '';
                 if(($tblBasket = $tblInvoice->getServiceTblBasket())){
                     if(($tblBasketType = $tblBasket->getTblBasketType())){
-                        $item['BasketTyp'] = $tblBasketType->getName();
+                        $item['BasketType'] = $tblBasketType->getName();
                     }
                 }
                 if(($tblInvoiceItemDebtorList = Invoice::useService()->getInvoiceItemDebtorByInvoice($tblInvoice))){
@@ -748,7 +783,7 @@ class Service extends AbstractService
                         $price = $tblInvoiceItemDebtor->getQuantity() * $tblInvoiceItemDebtor->getValue();
                         $ItemPrice += $price;
                         $ItemList[] = $tblInvoiceItemDebtor->getName() . ': '
-                            . str_replace('.',',', number_format($price, 2)) . ' €';
+                            . str_replace('.',',', number_format($price, 2)) . '&nbsp;€';
                         $itemsForExcel[] = array(
                             'Name' => $tblInvoiceItemDebtor->getName(),
                             'DisplayPrice' => str_replace('.',',', number_format($price, 2)),
@@ -846,7 +881,7 @@ class Service extends AbstractService
                 $export->setValue($export->getCell($column++, $row), $result['BillTime']);
                 $export->setValue($export->getCell($column++, $row), $result['InvoiceNumber']);
                 $export->setValue($export->getCell($column++, $row), $result['PaymentType']);
-                $export->setValue($export->getCell($column++, $row), $result['BasketTyp']);
+                $export->setValue($export->getCell($column++, $row), $result['BasketType']);
                 $export->setValue($export->getCell($column++, $row), $result['DisplaySumPrice']);
 
                 $sum['Total'] += $result['SumPrice'];
@@ -896,6 +931,9 @@ class Service extends AbstractService
                 $item['ItemQuantity'] = $tblInvoiceItemDebtor->getQuantity();
                 $item['ItemPrice'] = $tblInvoiceItemDebtor->getPriceString();
                 $item['ItemSumPrice'] = $tblInvoiceItemDebtor->getSummaryPrice();
+                $item['PaymentType'] = ($tblInvoiceItemDebtor->getServiceTblPaymentType()
+                    ? $tblInvoiceItemDebtor->getServiceTblPaymentType()->getName()
+                    : 'Zahlungsart nicht gefunden');
                 $item['InvoiceNumber'] = '';
                 $item['CauserPerson'] = '';
                 $item['Time'] = '';
@@ -937,6 +975,8 @@ class Service extends AbstractService
                 $CheckBox = $CheckBox.'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.(new External('', '/Api/Document/Standard/BillingDocumentWarning/Create',
                     new Download(), array('Data' => array('InvoiceItemDebtorId' => $tblInvoiceItemDebtor->getId()))
                         , 'Download Mahnung', External::STYLE_BUTTON_PRIMARY));
+                // no line break
+                $CheckBox = '<div style="width: 100px">'.$CheckBox.'</div>';
 
                 $item['IsPaid'] = ApiInvoiceIsPaid::receiverIsPaid($CheckBox,
                     $tblInvoiceItemDebtor->getId());

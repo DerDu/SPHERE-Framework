@@ -504,7 +504,7 @@ class Service extends ServiceScoreRule
                 $tblPersonTeacher = $tblPersonAllByAccount[0];
             }
         }
-
+        $tblPersonTeacher = $tblPersonTeacher ? $tblPersonTeacher : null;
         if (!empty($Grade)) {
             foreach ($Grade as $personId => $value) {
                 $tblPerson = Person::useService()->getPersonById($personId);
@@ -540,7 +540,7 @@ class Service extends ServiceScoreRule
                             $hasCreatedGrade = true;
                             (new Data($this->getBinding()))->createGrade(
                                 $tblPerson,
-                                $tblPersonTeacher ? $tblPersonTeacher : null,
+                                $tblPersonTeacher,
                                 $tblTestByPerson->getServiceTblDivision(),
                                 $tblTestByPerson->getServiceTblSubject(),
                                 $tblTestByPerson->getServiceTblSubjectGroup() ? $tblTestByPerson->getServiceTblSubjectGroup() : null,
@@ -560,7 +560,7 @@ class Service extends ServiceScoreRule
                             $hasCreatedGrade = true;
                             (new Data($this->getBinding()))->createGrade(
                                 $tblPerson,
-                                $tblPersonTeacher ? $tblPersonTeacher : null,
+                                $tblPersonTeacher,
                                 $tblTestByPerson->getServiceTblDivision(),
                                 $tblTestByPerson->getServiceTblSubject(),
                                 $tblTestByPerson->getServiceTblSubjectGroup() ? $tblTestByPerson->getServiceTblSubjectGroup() : null,
@@ -580,7 +580,7 @@ class Service extends ServiceScoreRule
                             $hasCreatedGrade = true;
                             (new Data($this->getBinding()))->createGrade(
                                 $tblPerson,
-                                $tblPersonTeacher ? $tblPersonTeacher : null,
+                                $tblPersonTeacher,
                                 $tblTestByPerson->getServiceTblDivision(),
                                 $tblTestByPerson->getServiceTblSubject(),
                                 $tblTestByPerson->getServiceTblSubjectGroup() ? $tblTestByPerson->getServiceTblSubjectGroup() : null,
@@ -732,7 +732,7 @@ class Service extends ServiceScoreRule
     ) {
 
         // bei übergebener Notenliste diese verwenden
-        if (!$tblGradeList) {
+        if ($tblGradeList === false) {
             $tblGradeList = $this->getGradesByStudent(
                 $tblPerson, $tblDivision, $tblSubject, $tblTestType, $tblPeriod, $tblSubjectGroup
             );

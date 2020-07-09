@@ -164,7 +164,7 @@ class Frontend implements IFrontendInterface
                 new FormRow(array(
                     new FormColumn(array(
                         new Panel('Neuer Hardware-Schlüssel', array(
-                            new PasswordField('CredentialKey', 'YubiKey', 'YubiKey'),
+                            (new PasswordField('CredentialKey', 'YubiKey', 'YubiKey'))->setAutoFocus(),
                         ), Panel::PANEL_TYPE_INFO)
                     )),
                 )),

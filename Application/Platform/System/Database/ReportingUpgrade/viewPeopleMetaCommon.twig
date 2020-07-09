@@ -1,0 +1,24 @@
+SELECT
+
+-- PersonId to match with all View's // TblCommon
+    tC.serviceTblPerson as TblPerson_Id,
+    tC.Id AS TblCommon_Id,
+    tC.serviceTblPerson AS TblCommon_serviceTblPerson,
+    tC.Remark AS TblCommon_Remark,
+-- TblCommonBirthDates
+    tCBD.Birthday AS TblCommonBirthDates_Birthday,
+    tCBD.Birthplace AS TblCommonBirthDates_Birthplace,
+-- TblCommonGender
+    tCG.Name AS TblCommonGender_Name,
+-- TblCommonInformation
+    tCI.Nationality AS TblCommonInformation_Nationality,
+    tCI.Denomination AS TblCommonInformation_Denomination,
+    tCI.AssistanceActivity AS TblCommonInformation_AssistanceActivity,
+    tCI.IsAssistance AS TblCommonInformation_IsAssistance
+
+FROM PeopleMeta_{{ ConsumerAcronym }}.tblCommon tC
+    LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblCommonBirthDates tCBD ON tCBD.Id = tC.tblCommonBirthDates
+    LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblCommonGender tCG ON tCG.Id = tCBD.tblCommonGender
+    LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblCommonInformation tCI ON tCI.Id = tC.tblCommonInformation
+
+WHERE tC.EntityRemove is NULL

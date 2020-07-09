@@ -1,17 +1,33 @@
 SELECT
-    vATP.TblToPerson_serviceTblPerson AS TblPerson_Id,
-    vATP.TblToPerson_Remark AS TblToPerson_Remark,
-    vATP.TblType_Name AS TblType_Name,
-    vATP.TblType_Description AS TblType_Description,
-    vATP.TblAddress_StreetName AS TblAddress_StreetName,
-    vATP.TblAddress_StreetNumber AS TblAddress_StreetNumber,
-    vATP.TblAddress_PostOfficeBox AS TblAddress_PostOfficeBox,
-    vATP.TblAddress_County AS TblAddress_County,
-    vATP.TblAddress_Nation AS TblAddress_Nation,
-    vATP.TblCity_Code AS TblCity_Code,
-    vATP.TblCity_Name AS TblCity_Name,
-    vATP.TblCity_District AS TblCity_District,
-    vATP.TblState_Name AS TblState_Name
-FROM ContactAddress_{{ ConsumerAcronym }}.viewAddressToPerson vATP
---     (PeoplePerson_{{ ConsumerAcronym }}.viewPerson vP
---     LEFT JOIN ContactAddress_{{ ConsumerAcronym }}.viewAddressToPerson vATP ON ((vATP.TblToPerson_serviceTblPerson = vP.TblPerson_Id)))
+
+-- PersonId to match with all View's // tblToPerson
+    -- EntityManager requiere Id, EntityCreate, EntityUpdate, EntityRemove
+    tTP.Id AS Id,
+    tTP.EntityCreate AS EntityCreate,
+    tTP.EntityUpdate AS EntityUpdate,
+    tTP.EntityRemove AS EntityRemove,
+    tTP.serviceTblPerson AS TblPerson_Id,
+    tTP.Remark AS TblToPerson_Remark,
+-- tblType
+    tT.Name AS TblType_Name,
+    tT.Description AS TblType_Description,
+-- tblAddress
+    tA.StreetName AS TblAddress_StreetName,
+    tA.StreetNumber AS TblAddress_StreetNumber,
+    tA.PostOfficeBox AS TblAddress_PostOfficeBox,
+    tA.County AS TblAddress_County,
+    tA.Nation AS TblAddress_Nation,
+-- tblCity
+    tC.Code AS TblCity_Code,
+    tC.Name AS TblCity_Name,
+    tC.District AS TblCity_District,
+-- tblState
+    tS.Name AS TblState_Name
+
+FROM ContactAddress_{{ ConsumerAcronym }}.tblToPerson tTP
+    LEFT JOIN ContactAddress_{{ ConsumerAcronym }}.tblAddress tA ON tA.Id = tTP.tblAddress
+    LEFT JOIN ContactAddress_{{ ConsumerAcronym }}.tblType tT ON tT.Id = tTP.tblType
+    LEFT JOIN ContactAddress_{{ ConsumerAcronym }}.tblCity tC ON tC.Id = tA.tblCity
+    LEFT JOIN ContactAddress_{{ ConsumerAcronym }}.tblState tS ON tS.Id = tA.tblState
+
+WHERE tTP.EntityRemove IS NULL

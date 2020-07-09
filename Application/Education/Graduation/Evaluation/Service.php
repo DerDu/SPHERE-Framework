@@ -733,62 +733,6 @@ class Service extends AbstractService
                 array('Id' => $tblTask->getId()));
     }
 
-    public function addBehaviorGradeTypeToDivisionAndTask(
-        TblTask $tblTask,
-        TblDivision $tblDivision,
-        TblGradeType $tblGradeType
-    ) {
-
-        $tblDivisionSubjectAll = Division::useService()->getDivisionSubjectByDivision(
-            $tblDivision
-        );
-
-        if ($tblDivisionSubjectAll) {
-            foreach ($tblDivisionSubjectAll as $tblDivisionSubject) {
-                if ($tblDivisionSubject->getTblSubjectGroup()) {
-                    if (!$this->existsTestByTaskAndGradeType(
-                        $tblTask, $tblDivision, $tblDivisionSubject->getServiceTblSubject(), $tblGradeType,
-                        $tblDivisionSubject->getTblSubjectGroup()
-                    )
-                    ) {
-                        (new Data($this->getBinding()))->createTest(
-                            $tblDivision,
-                            $tblDivisionSubject->getServiceTblSubject(),
-                            $tblDivisionSubject->getTblSubjectGroup(),
-                            null,
-                            $tblGradeType,
-                            $tblTask->getTblTestType(),
-                            $tblTask,
-                            '',
-                            $tblTask->getDate()
-                        );
-                    }
-                } else {
-                    if (!Division::useService()->getDivisionSubjectAllWhereSubjectGroupByDivisionAndSubject(
-                        $tblDivision, $tblDivisionSubject->getServiceTblSubject()
-                    )
-                    ) {
-                        if (!$this->existsTestByTaskAndGradeType(
-                            $tblTask, $tblDivision, $tblDivisionSubject->getServiceTblSubject(), $tblGradeType)
-                        ) {
-                            (new Data($this->getBinding()))->createTest(
-                                $tblDivision,
-                                $tblDivisionSubject->getServiceTblSubject(),
-                                null,
-                                null,
-                                $tblGradeType,
-                                $tblTask->getTblTestType(),
-                                $tblTask,
-                                '',
-                                $tblTask->getDate()
-                            );
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     /**
      * @param TblTask $tblTask
      * @param TblDivision $tblDivision
@@ -866,63 +810,23 @@ class Service extends AbstractService
 
     /**
      * @param TblTask $tblTask
-     * @param TblDivision $tblDivision
+     * @param TblDivisionSubject $tblDivisionSubject
+     *
+     * @return TblTest
      */
-    public function addDivisionToAppointedDateTask(
-        TblTask $tblTask,
-        TblDivision $tblDivision
-    ) {
-
-        $tblDivisionSubjectAll = Division::useService()->getDivisionSubjectByDivision(
-            $tblDivision
+    public function createTestToAppointedDateTask(TblTask $tblTask, TblDivisionSubject $tblDivisionSubject)
+    {
+        return (new Data($this->getBinding()))->createTest(
+            $tblDivisionSubject->getTblDivision(),
+            $tblDivisionSubject->getServiceTblSubject(),
+            $tblDivisionSubject->getTblSubjectGroup() ? $tblDivisionSubject->getTblSubjectGroup() : null,
+            null,
+            null,
+            $tblTask->getTblTestType(),
+            $tblTask,
+            '',
+            $tblTask->getDate()
         );
-
-        if ($tblDivisionSubjectAll) {
-            foreach ($tblDivisionSubjectAll as $tblDivisionSubject) {
-                if ($tblDivisionSubject->getServiceTblSubject()) {
-                    if ($tblTask->getTblTestType()->getId() == $this->getTestTypeByIdentifier('APPOINTED_DATE_TASK')) {
-                        if ($tblDivisionSubject->getTblSubjectGroup()) {
-                            if (!$this->existsTestByTask($tblTask, $tblDivision,
-                                $tblDivisionSubject->getServiceTblSubject(), $tblDivisionSubject->getTblSubjectGroup())
-                            ) {
-                                (new Data($this->getBinding()))->createTest(
-                                    $tblDivision,
-                                    $tblDivisionSubject->getServiceTblSubject(),
-                                    $tblDivisionSubject->getTblSubjectGroup(),
-                                    null,
-                                    null,
-                                    $tblTask->getTblTestType(),
-                                    $tblTask,
-                                    '',
-                                    $tblTask->getDate()
-                                );
-                            }
-                        } else {
-                            if (!Division::useService()->getDivisionSubjectAllWhereSubjectGroupByDivisionAndSubject(
-                                $tblDivision, $tblDivisionSubject->getServiceTblSubject()
-                            )
-                            ) {
-                                if (!$this->existsTestByTask($tblTask, $tblDivision,
-                                    $tblDivisionSubject->getServiceTblSubject())
-                                ) {
-                                    (new Data($this->getBinding()))->createTest(
-                                        $tblDivision,
-                                        $tblDivisionSubject->getServiceTblSubject(),
-                                        null,
-                                        null,
-                                        null,
-                                        $tblTask->getTblTestType(),
-                                        $tblTask,
-                                        '',
-                                        $tblTask->getDate()
-                                    );
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 
     /**

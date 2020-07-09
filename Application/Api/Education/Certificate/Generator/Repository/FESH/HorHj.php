@@ -58,7 +58,7 @@ class HorHj extends Certificate
                     )
                 )
                 ->addSection((new Section())
-                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/Hormersdorf_logo.jpg', '155px',
+                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/FESH.jpg', '155px',
                         '90px'))
                         ->styleAlignCenter()
                         , '25%')

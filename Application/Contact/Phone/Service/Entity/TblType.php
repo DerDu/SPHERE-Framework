@@ -18,6 +18,14 @@ class TblType extends Element
     const ATTR_NAME = 'Name';
     const ATTR_DESCRIPTION = 'Description';
 
+    const VALUE_NAME_PRIVATE = 'Privat';
+    const VALUE_NAME_BUSINESS = 'Geschäftlich';
+    const VALUE_NAME_EMERCENCY = 'Notfall';
+    const VALUE_NAME_FAX = 'Fax';
+
+    const VALUE_DESCRIPTION_PHONE = 'Festnetz';
+    const VALUE_DESCRIPTION_MOBILE = 'Mobil';
+
     /**
      * @Column(type="string")
      */

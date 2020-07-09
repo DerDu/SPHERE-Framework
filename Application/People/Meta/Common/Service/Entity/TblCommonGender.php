@@ -16,6 +16,8 @@ class TblCommonGender extends Element
 {
 
     const ATTR_NAME = 'Name';
+    const VALUE_MALE = 1;
+    const VALUE_FEMALE = 2;
 
     /**
      * @Column(type="string")

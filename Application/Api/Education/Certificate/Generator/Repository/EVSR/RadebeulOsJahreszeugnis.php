@@ -108,7 +108,7 @@ class RadebeulOsJahreszeugnis extends Certificate
                         )
                     )
                 )
-                ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/RadebeulLogo.jpg',
+                ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/EVSR.jpg',
                     '80px', '80px'))
                     ->styleMarginTop('30px')
                     ->styleAlignCenter()
@@ -234,7 +234,7 @@ class RadebeulOsJahreszeugnis extends Certificate
             '8px',
             28,
             self::FONT_FAMILY,
-            '265px'
+            '205px'
         );
 
         $sliceArray[] = self::getOrientation($personId);
@@ -259,7 +259,7 @@ class RadebeulOsJahreszeugnis extends Certificate
                     ->styleLineHeight(self::LINE_HEIGHT)
                     ->styleTextColor(self::TEXT_COLOR_BLUE)
                     ->styleMarginTop('0px')
-                    ->styleHeight($hasTransfer ? '25px' : '55px'))
+                    ->styleHeight($hasTransfer ? '85px' : '115px'))
             );
 
         if ($hasTransfer) {
@@ -269,7 +269,7 @@ class RadebeulOsJahreszeugnis extends Certificate
                         , '22%')
                     ->addElementColumn(self::getBodyElement(
                         '{% if(Content.P' . $personId . '.Input.Transfer) %}
-                            {{ Content.P' . $personId . '.Input.Transfer }}
+                            {{ Content.P' . $personId . '.Input.Transfer }}.
                         {% else %}
                               &nbsp;
                         {% endif %}'

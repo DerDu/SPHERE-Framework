@@ -11,9 +11,11 @@ namespace SPHERE\Application\Api\Education\Graduation\Evaluation;
 use SPHERE\Application\Api\ApiTrait;
 use SPHERE\Application\Api\Dispatcher;
 use SPHERE\Application\Education\Graduation\Evaluation\Evaluation;
+use SPHERE\Application\Education\Graduation\Evaluation\Frontend;
 use SPHERE\Application\Education\Graduation\Evaluation\Service\Entity\TblTest;
 use SPHERE\Application\Education\Graduation\Gradebook\Gradebook;
 use SPHERE\Application\Education\Graduation\Gradebook\MinimumGradeCount\SelectBoxItem;
+use SPHERE\Application\Education\Graduation\Gradebook\Service\Entity\TblGradeText;
 use SPHERE\Application\Education\Lesson\Division\Division;
 use SPHERE\Application\Education\Lesson\Term\Term;
 use SPHERE\Application\Education\School\Type\Type;
@@ -23,10 +25,26 @@ use SPHERE\Common\Frontend\Ajax\Emitter\ServerEmitter;
 use SPHERE\Common\Frontend\Ajax\Pipeline;
 use SPHERE\Common\Frontend\Ajax\Receiver\AbstractReceiver;
 use SPHERE\Common\Frontend\Ajax\Receiver\BlockReceiver;
+use SPHERE\Common\Frontend\Ajax\Receiver\ModalReceiver;
+use SPHERE\Common\Frontend\Ajax\Template\CloseModal;
+use SPHERE\Common\Frontend\Form\Repository\Button\Close;
+use SPHERE\Common\Frontend\Form\Repository\Field\SelectBox;
+use SPHERE\Common\Frontend\Form\Structure\Form;
+use SPHERE\Common\Frontend\Form\Structure\FormColumn;
+use SPHERE\Common\Frontend\Form\Structure\FormGroup;
+use SPHERE\Common\Frontend\Form\Structure\FormRow;
 use SPHERE\Common\Frontend\Icon\Repository\Exclamation;
+use SPHERE\Common\Frontend\Layout\Repository\Panel;
+use SPHERE\Common\Frontend\Layout\Repository\Title;
+use SPHERE\Common\Frontend\Layout\Repository\Well;
 use SPHERE\Common\Frontend\Layout\Structure\Layout;
+use SPHERE\Common\Frontend\Layout\Structure\LayoutColumn;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutGroup;
+use SPHERE\Common\Frontend\Layout\Structure\LayoutRow;
+use SPHERE\Common\Frontend\Link\Repository\Primary;
+use SPHERE\Common\Frontend\Message\Repository\Danger;
 use SPHERE\Common\Frontend\Message\Repository\Warning;
+use SPHERE\Common\Frontend\Text\Repository\Small;
 use SPHERE\System\Extension\Extension;
 use SPHERE\System\Extension\Repository\Sorter\DateTimeSorter;
 
@@ -50,18 +68,42 @@ class ApiEvaluation extends Extension implements IApiInterface
         $Dispatcher = new Dispatcher(__CLASS__);
         $Dispatcher->registerMethod('loadTestPlanning');
 
+        $Dispatcher->registerMethod('openGradeTextModal');
+        $Dispatcher->registerMethod('setGradeText');
+        $Dispatcher->registerMethod('changeGradeText');
+
         return $Dispatcher->callMethod($Method);
     }
 
     /**
      * @param string $Content
+     * @param string $Identifier
      *
      * @return BlockReceiver
      */
-    public static function receiverContent($Content = '')
+    public static function receiverContent($Content = '', $Identifier = '')
+    {
+        return (new BlockReceiver($Content))->setIdentifier($Identifier);
+    }
+
+    /**
+     * @return ModalReceiver
+     */
+    public static function receiverModal()
     {
 
-        return new BlockReceiver($Content);
+        return (new ModalReceiver(null, new Close()))->setIdentifier('ModalReceiver');
+    }
+
+    /**
+     * @return Pipeline
+     */
+    public static function pipelineClose()
+    {
+        $Pipeline = new Pipeline();
+        $Pipeline->appendEmitter((new CloseModal(self::receiverModal()))->getEmitter());
+
+        return $Pipeline;
     }
 
     /**
@@ -89,6 +131,69 @@ class ApiEvaluation extends Extension implements IApiInterface
         $FieldPipeline->setLoadingMessage('Leistungsüberprüfungen werden aktualisiert');
 
         return $FieldPipeline;
+    }
+
+    /**
+     * @param $TestId
+     *
+     * @return Pipeline
+     */
+    public static function pipelineOpenGradeTextModal($TestId)
+    {
+        $Pipeline = new Pipeline(false);
+        $ModalEmitter = new ServerEmitter(self::receiverModal(), self::getEndpoint());
+        $ModalEmitter->setGetPayload(array(
+            self::API_TARGET => 'openGradeTextModal',
+        ));
+        $ModalEmitter->setPostPayload(array(
+            'TestId' => $TestId
+        ));
+        $Pipeline->appendEmitter($ModalEmitter);
+
+        return $Pipeline;
+    }
+
+    /**
+     * @param int $TestId
+     *
+     * @return Pipeline
+     */
+    public static function pipelineSetGradeText($TestId)
+    {
+        $pipeline = new Pipeline(false);
+
+        $emitter = new ServerEmitter(self::receiverModal(), self::getEndpoint());
+        $emitter->setGetPayload(array(
+            self::API_TARGET => 'setGradeText',
+        ));
+        $emitter->setPostPayload(array(
+            'TestId' => $TestId
+        ));
+        $pipeline->appendEmitter($emitter);
+
+        return $pipeline;
+    }
+
+    /**
+     * @param $gradeTextId
+     * @param $personId
+     *
+     * @return Pipeline
+     */
+    public static function pipelineChangeGradeText($gradeTextId, $personId)
+    {
+        $Pipeline = new Pipeline(false);
+        $ModalEmitter = new ServerEmitter(self::receiverContent('', 'ChangeGradeText_' . $personId), self::getEndpoint());
+        $ModalEmitter->setGetPayload(array(
+            self::API_TARGET => 'changeGradeText',
+        ));
+        $ModalEmitter->setPostPayload(array(
+            'GradeTextId' => $gradeTextId,
+            'PersonId' => $personId
+        ));
+        $Pipeline->appendEmitter($ModalEmitter);
+
+        return $Pipeline;
     }
 
     /**
@@ -191,5 +296,112 @@ class ApiEvaluation extends Extension implements IApiInterface
         }
 
         return new Warning('Keine Leistungsüberprüfungen gefunden', new Exclamation());
+    }
+
+    /**
+     * @param $TestId
+     *
+     * @return String
+     */
+    public function openGradeTextModal($TestId)
+    {
+        $panel = '';
+        if (($tblTest = Evaluation::useService()->getTestById($TestId))
+            && ($tblDivision = $tblTest->getServiceTblDivision())
+            && ($tblSubject = $tblTest->getServiceTblSubject())
+        ) {
+            $panel = new Panel(
+                'Fach-Klasse',
+                'Klasse ' . $tblDivision->getDisplayName() . ' - ' .
+                $tblSubject->getName() .
+                ($tblTest->getServiceTblSubjectGroup()
+                    ? new Small(' (Gruppe: ' . $tblTest->getServiceTblSubjectGroup()->getName() . ')')
+                    : ''
+                ),
+                Panel::PANEL_TYPE_INFO
+            );
+        }
+
+        return
+            new Title('Stichtagsnote - Zeugnistext der gesamten Fach-Klasse auswählen')
+            . $panel
+            . '<br>'
+            . new Warning(
+                'Es werden alle Zeugnistexte auf den gewählten Wert vorausgefüllt. Die Daten müssen anschließend noch gespeichert werden.',
+                new Exclamation()
+            )
+            . new Well(new Form(new FormGroup(array(
+                new FormRow(
+                    new FormColumn(
+                        new SelectBox(
+                            'GradeText',
+                            '&nbsp;&nbsp;Zeugnistext&nbsp;&nbsp;',
+                            array(TblGradeText::ATTR_NAME => Gradebook::useService()->getGradeTextAll())
+                        )
+                    )
+                ),
+                new FormRow(
+                    new FormColumn(
+                        new Layout(new LayoutGroup(new LayoutRow(new LayoutColumn('<br>'))))
+                    )
+                ),
+                new FormRow(
+                    new FormColumn(
+                        (new Primary('Übernehmen', self::getEndpoint()))->ajaxPipelineOnClick(self::pipelineSetGradeText($TestId))
+                    )
+                )
+            ))));
+    }
+
+    /**
+     * @param $TestId
+     *
+     * @return Danger|string
+     */
+    public function setGradeText($TestId)
+    {
+        if (!($tblTest = Evaluation::useService()->getTestById($TestId))) {
+            return new Danger('Leistungsüberprüfung nicht gefunden', new Exclamation());
+        }
+
+        $Global = $this->getGlobal();
+        $gradeTextId = $Global->POST['GradeText'];
+
+        if (($tblDivision = $tblTest->getServiceTblDivision())
+            && ($tblSubject = $tblTest->getServiceTblSubject())
+            && ($tblDivisionSubject = Division::useService()->getDivisionSubjectByDivisionAndSubjectAndSubjectGroup(
+                $tblDivision,
+                $tblSubject,
+                $tblTest->getServiceTblSubjectGroup() ? $tblTest->getServiceTblSubjectGroup() : null
+            ))
+        ) {
+            if ($tblDivisionSubject->getTblSubjectGroup()) {
+                $tblStudentAll = Division::useService()->getStudentByDivisionSubject($tblDivisionSubject, true);
+            } else {
+                $tblStudentAll = Division::useService()->getStudentAllByDivision($tblDivisionSubject->getTblDivision(), true);
+            }
+
+            $result = '';
+            if ($tblStudentAll) {
+                foreach ($tblStudentAll as $tblPerson) {
+                   $result .= self::pipelineChangeGradeText($gradeTextId, $tblPerson->getId());
+                }
+            }
+
+            return $result . self::pipelineClose();
+        }
+
+        return self::pipelineClose();
+    }
+
+    /**
+     * @param $GradeTextId
+     * @param $PersonId
+     *
+     * @return SelectBox
+     */
+    public function changeGradeText($GradeTextId, $PersonId)
+    {
+        return (new Frontend())->getGradeTextSelectBox($PersonId, $GradeTextId);
     }
 }

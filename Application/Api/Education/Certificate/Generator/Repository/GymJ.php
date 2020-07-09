@@ -38,7 +38,7 @@ class GymJ extends Certificate
 
         $personId = $tblPerson ? $tblPerson->getId() : 0;
 
-        $Header = $this->getHead($this->isSample(), true, 'auto', '50px');
+        $Header = $this->getHead($this->isSample());
 
         return (new Page())
             ->addSlice(
@@ -48,31 +48,20 @@ class GymJ extends Certificate
             ->addSlice($this->getCertificateHead('Jahreszeugnis des Gymnasiums'))
             ->addSlice($this->getDivisionAndYear($personId))
             ->addSlice($this->getStudentName($personId))
-            ->addSlice($this->getGradeLanes($personId, '14px', false, '0px'))
-            ->addSlice((new Slice())
-                ->addSection((new Section())
-                    ->addElementColumn((new Element())
-                        ->setContent('Einschätzung: {% if(Content.P' . $personId . '.Input.Rating is not empty) %}
-                                    {{ Content.P' . $personId . '.Input.Rating|nl2br }}
-                                {% else %}
-                                    ---
-                                {% endif %}')
-                        ->styleHeight('35px')
-                    )
-                )
-                ->styleMarginTop('5px')
-            )
+            ->addSlice($this->getGradeLanesSmall($personId, '14px', false, '5px'))
+            ->addSlice($this->getRatingContent($personId, '35px', '5px'))
             ->addSlice((new Slice())
                 ->addElement((new Element())
                     ->setContent('Leistungen in den einzelnen Fächern:')
                     ->styleMarginTop('5px')
+                    ->styleMarginBottom('5px')
                     ->styleTextBold()
                 )
             )
-            ->addSlice($this->getSubjectLanes($personId, true, array('Lane' => 1, 'Rank' => 3))
-                ->styleHeight('270px')
+            ->addSlice($this->getSubjectLanesSmall($personId, true, array('Lane' => 1, 'Rank' => 3))
+                ->styleHeight('220px')
             )
-            ->addSlice($this->getProfileStandardNew($personId))
+            ->addSlice($this->getProfileStandardNew($personId, '14px', false, true))
             ->addSlice((new Slice())
                 ->addSection((new Section())
                     ->addElementColumn((new Element())

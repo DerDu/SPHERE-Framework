@@ -71,7 +71,7 @@ class People implements IClusterInterface
                     new Layout(new LayoutGroup(new LayoutRow(array(
                             new LayoutColumn(
                                 $tblGroup->getName()
-                                . new Muted(new Small('<br/>' . $tblGroup->getDescription()))
+                                . new Muted(new Small('<br/>' . $tblGroup->getDescription(true)))
                                 , 5),
                             new LayoutColumn(
                                 $countContent
@@ -88,14 +88,8 @@ class People implements IClusterInterface
                 if ($tblGroup->isLocked()) {
                     $tblGroupLockedList[] = $content;
                     if ($tblGroup->getMetaTable() == 'STUDENT') {
-                        $countContent = array();
-                        if (($tblYearList = Term::useService()->getYearAllFutureYears(0))) {
-                            foreach ($tblYearList as $tblYear) {
-                                $countContent[$tblYear->getId()] = new Muted(new Small(
-                                    Division::useService()->getStudentCountByYear($tblYear)
-                                    . ' Mitglieder im Schuljahr ' . $tblYear->getDisplayName() . ' '));
-                            }
-                        }
+
+                        $countContent = self::getStudentCountByType();
                         $countContent = new Listing($countContent);
 
                         $content =
@@ -125,6 +119,57 @@ class People implements IClusterInterface
                 new LayoutColumn(
                     new Panel('Personen in individuellen Gruppen', $tblGroupCustomList), 6) : null
         ))));
+    }
+
+    /**
+     * @return array
+     */
+    private static function getStudentCountByType()
+    {
+        $tblYearList = Term::useService()->getYearByNow();
+        $StudentCountBySchoolType = array();
+        // Schüler nach Schulart zählen
+        if (!empty( $tblYearList )) {
+            foreach ($tblYearList as $tblYear) {
+                $TblDivisionList = Division::useService()->getDivisionByYear($tblYear);
+                if ($TblDivisionList) {
+                    foreach ($TblDivisionList as $tblDivision) {
+                        // SSW-834 jahrgangsübergreifende nicht mitzählen, ansonsten werden Schüler doppelt gezählt
+                        if (($tblLevel = $tblDivision->getTblLevel())
+                            && ($tblLevel->getIsChecked())
+                        ) {
+                            continue;
+                        }
+
+                        $schoolType = $tblDivision->getTypeName();
+                        $personCount = Division::useService()->countDivisionStudentAllByDivision($tblDivision);
+                        if (isset($StudentCountBySchoolType[$schoolType])) {
+                            $StudentCountBySchoolType[$schoolType] += $personCount;
+                        } else {
+                            $StudentCountBySchoolType[$schoolType] = $personCount;
+                        }
+                    }
+                }
+            }
+        }
+
+        $tblStudentCounterBySchoolType = array();
+        // Alle Schüler im Schuljahr (Summiert)
+        if (($tblYearList = Term::useService()->getYearByNow())) {
+            foreach ($tblYearList as $tblYear) {
+                $tblStudentCounterBySchoolType[] = new Muted(new Small(
+                    Division::useService()->getStudentCountByYear($tblYear)
+                    . ' Mitglieder im Schuljahr ' . $tblYear->getDisplayName() . ' '));
+            }
+        }
+        // Anhängen der Schulartzählung
+        if (!empty($StudentCountBySchoolType)) {
+            foreach ($StudentCountBySchoolType as $SchoolType => $Counter) {
+                $tblStudentCounterBySchoolType[] = new Muted(new Small($SchoolType . ': ' . $Counter));
+            }
+        }
+
+        return $tblStudentCounterBySchoolType; //(!empty($tblStudentCounterBySchoolType) ? implode(new Container(), $tblStudentCounterBySchoolType) : '');
     }
 
     /**

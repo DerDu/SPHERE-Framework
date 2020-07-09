@@ -181,13 +181,8 @@ class FrontendStudent extends FrontendReadOnly
                     self::getLayoutColumnValue($identifier),
                     self::getLayoutColumnLabel('Schulpflichtbeginn'),
                     self::getLayoutColumnValue($schoolAttendanceStartDate),
-                    self::getLayoutColumnLabel('Migrationshintergrund'),
+                    self::getLayoutColumnLabel('Herkunftssprache ist nicht oder nicht ausschließlich Deutsch'),
                     self::getLayoutColumnValue($hasMigrationBackground)
-                )),
-                new LayoutRow(array(
-                    self::getLayoutColumnEmpty(8),
-                    self::getLayoutColumnLabel('Vorbereitungsklasse'),
-                    self::getLayoutColumnValue($isInPreparationDivisionForMigrants)
                 )),
             )));
 
@@ -371,17 +366,12 @@ class FrontendStudent extends FrontendReadOnly
                         ), Panel::PANEL_TYPE_INFO)
                         , 4),
                     new FormColumn(
-                        new Panel('Migration', array(
+                        new Panel('Kamenz-Statistik', array(
                             new CheckBox(
                                 'Meta[Student][HasMigrationBackground]',
-                                'Migrationshintergrund',
+                                'Herkunftssprache ist nicht oder nicht ausschließlich Deutsch',
                                 1
                             ),
-                            new CheckBox(
-                                'Meta[Student][IsInPreparationDivisionForMigrants]',
-                                'Besucht Vorbereitungsklasse für Migranten',
-                                1
-                            )
                         ), Panel::PANEL_TYPE_INFO)
                         , 4),
                 )),

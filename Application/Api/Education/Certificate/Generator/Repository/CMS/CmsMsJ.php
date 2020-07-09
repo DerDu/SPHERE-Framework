@@ -91,18 +91,10 @@ class CmsMsJ extends CmsStyle
                     )
                 )
                 ->addElement((new Element())
-                    ->styleMarginTop('10px')
-                )
-                ->addSection((new Section())
-                    ->addSliceColumn(
-                        self::getCMSOrientationStandard($personId)
-                    )
-                )
-                ->addElement((new Element())
-                    ->styleMarginTop('10px')
+                    ->styleMarginTop('30px')
                 )
                 ->addSectionList(
-                    self::getCMSRemark($personId, '20px', true)
+                    self::getCMSRemark($personId, '80px', true)
                 )
                 ->addSection(
                     self::getCMSMissing($personId)

@@ -70,6 +70,8 @@ abstract class Student extends AbstractService
      * @param null $tblStudentBaptism
      * @param null $tblStudentIntegration
      * @param string $SchoolAttendanceStartDate
+     * @param bool $HasMigrationBackground
+     * @param bool $IsInPreparationDivisionForMigrants
      *
      * @return bool|TblStudent
      */
@@ -82,7 +84,9 @@ abstract class Student extends AbstractService
         $tblStudentLocker = null,
         $tblStudentBaptism = null,
         $tblStudentIntegration = null,
-        $SchoolAttendanceStartDate = ''
+        $SchoolAttendanceStartDate = '',
+        $HasMigrationBackground = false,
+        $IsInPreparationDivisionForMigrants = false
     ) {
 
         $tblStudent = $this->getStudentByPerson($tblPerson);
@@ -98,7 +102,9 @@ abstract class Student extends AbstractService
                 $tblStudentLocker,
                 $tblStudentBaptism,
                 $tblStudentIntegration,
-                $SchoolAttendanceStartDate
+                $SchoolAttendanceStartDate,
+                $HasMigrationBackground,
+                $IsInPreparationDivisionForMigrants
             );
         } else {
             $tblStudent = (new Data($this->getBinding()))->createStudent(
@@ -111,7 +117,9 @@ abstract class Student extends AbstractService
                 $tblStudentLocker,
                 $tblStudentBaptism,
                 $tblStudentIntegration,
-                $SchoolAttendanceStartDate
+                $SchoolAttendanceStartDate,
+                $HasMigrationBackground,
+                $IsInPreparationDivisionForMigrants
             );
         }
 
@@ -178,6 +186,16 @@ abstract class Student extends AbstractService
     {
 
         return (new Data($this->getBinding()))->getStudentSchoolEnrollmentTypeById($Id);
+    }
+
+    /**
+     * @param $Identifier
+     *
+     * @return false|TblStudentSchoolEnrollmentType
+     */
+    public function getStudentSchoolEnrollmentTypeByIdentifier($Identifier)
+    {
+        return (new Data($this->getBinding()))->getStudentSchoolEnrollmentTypeByIdentifier($Identifier);
     }
 
     /**

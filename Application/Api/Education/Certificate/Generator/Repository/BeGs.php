@@ -463,7 +463,7 @@ class BeGs extends Certificate
                         , '30%')
                     ->addElementColumn((new Element())
                         , '70%')
-                )->styleMarginTop('50px')
+                )->styleMarginTop('47px')
                 ->addSection((new Section())
                     ->addElementColumn((new Element())
                         ->setContent(

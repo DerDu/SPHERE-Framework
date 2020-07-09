@@ -259,6 +259,10 @@ class GradebookOverview extends AbstractDocument
                                                 }
                                             } else {
                                                 $maxGradesPerPeriodCount[$tblPeriod->getId()] = 0;
+                                                // Fächer ohne Zensuren auch mit anzeigen
+                                                $data[$tblDivisionSubject->getServiceTblSubject()->getAcronym()][$tblPeriod->getId()] = array(
+                                                    'Average' => ''
+                                                );
                                             }
                                         }
 
@@ -284,6 +288,9 @@ class GradebookOverview extends AbstractDocument
                                             }
                                             $data[$tblDivisionSubject->getServiceTblSubject()->getAcronym()]
                                             ['Total']['Average'] = $average;
+                                        } else {
+                                            // Fächer ohne Zensuren auch mit anzeigen
+                                            $data[$tblDivisionSubject->getServiceTblSubject()->getAcronym()]['Total']['Average'] = '';
                                         }
                                     }
                                 }
@@ -414,7 +421,9 @@ class GradebookOverview extends AbstractDocument
                                             ->styleTextSize('10px')
                                             ->styleBorderTop()
                                             ->styleBorderRight()
+                                            ->styleBorderLeft($count == 0 ? '1px' : '0px')
                                             , $widthGradeString);
+                                    $count++;
                                 }
                             }
 

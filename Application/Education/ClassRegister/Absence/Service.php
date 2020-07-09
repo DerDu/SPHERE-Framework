@@ -16,6 +16,7 @@ use SPHERE\Application\Education\Lesson\Division\Division;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
 use SPHERE\Application\Education\Lesson\Term\Term;
 use SPHERE\Application\Education\School\Type\Service\Entity\TblType;
+use SPHERE\Application\People\Group\Group;
 use SPHERE\Application\People\Person\Person;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Common\Frontend\Form\IFormInterface;
@@ -540,13 +541,16 @@ class Service extends AbstractService
      * @param \DateTime $dateTime
      * @param TblType|null $tblType
      * @param array $divisionList
+     * @param array $groupList
      *
      * @return array
      */
-    public function getAbsenceAllByDay(\DateTime $dateTime, TblType $tblType = null, $divisionList = array())
+    public function getAbsenceAllByDay(\DateTime $dateTime, TblType $tblType = null, $divisionList = array(), $groupList = array())
     {
         $resultList = array();
         $tblAbsenceList = array();
+        $isGroup = false;
+        $groupPersonList = array();
         if (!empty($divisionList)
             && ($tblDivisionAll = Division::useService()->getDivisionAll())
         ) {
@@ -555,7 +559,18 @@ class Service extends AbstractService
                     $tblAbsenceList = array_merge($tblAbsenceList, $tblAbsenceDivisionList);
                 }
             }
-
+        } elseif (!empty($groupList)) {
+            $isGroup = true;
+            foreach ($groupList as $tblGroup) {
+                if (($tblPersonList = Group::useService()->getPersonAllByGroup($tblGroup))) {
+                    foreach ($tblPersonList as $tblPerson) {
+                        $groupPersonList[$tblPerson->getId()] = $tblGroup->getName();
+                        if (($tblAbsencePersonList = $this->getAbsenceAllByPerson($tblPerson))) {
+                            $tblAbsenceList = array_merge($tblAbsenceList, $tblAbsencePersonList);
+                        }
+                    }
+                }
+            }
         } else {
             $tblAbsenceList = $this->getAbsenceAll();
         }
@@ -583,6 +598,7 @@ class Service extends AbstractService
                         $resultList[] = array(
                             'Type' => $tblTypeItem->getName(),
                             'Division' => $tblDivision->getDisplayName(),
+                            'Group' => $isGroup && isset($groupPersonList[$tblPerson->getId()]) ? $groupPersonList[$tblPerson->getId()] : '',
                             'Person' => $tblPerson->getLastFirstName(),
                             'DateSpan' => $tblAbsence->getDateSpan(),
                             'Status' => $tblAbsence->getStatusDisplayName(),
@@ -595,13 +611,19 @@ class Service extends AbstractService
 
         // Liste sortieren
         if (!empty($resultList)) {
-            $type = $division = $person = array();
+            $type = $division = $group = $person = array();
             foreach ($resultList as $key => $row) {
                 $type[$key] = strtoupper($row['Type']);
                 $division[$key] = strtoupper($row['Division']);
+                $group[$key] = strtoupper($row['Group']);
                 $person[$key] = strtoupper($row['Person']);
             }
-            array_multisort($type, SORT_ASC, $division, SORT_NATURAL, $person, SORT_ASC, $resultList);
+
+            if ($isGroup) {
+                array_multisort($type, SORT_ASC, $group, SORT_NATURAL, $person, SORT_ASC, $resultList);
+            } else {
+                array_multisort($type, SORT_ASC, $division, SORT_NATURAL, $person, SORT_ASC, $resultList);
+            }
         }
 
         return $resultList;

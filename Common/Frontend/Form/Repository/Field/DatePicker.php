@@ -17,16 +17,18 @@ class DatePicker extends AbstractField implements IFieldInterface
     private $Label = '';
 
     /**
-     * @param string $Name
-     * @param null|string $Placeholder
-     * @param null|string $Label
+     * @param string         $Name
+     * @param null|string    $Placeholder
+     * @param null|string    $Label
      * @param IIconInterface $Icon
+     * @param null|array     $Option
      */
     public function __construct(
         $Name,
         $Placeholder = '',
         $Label = '',
-        IIconInterface $Icon = null
+        IIconInterface $Icon = null,
+        $Option = null
     ) {
 
         $this->Name = $Name;
@@ -39,6 +41,9 @@ class DatePicker extends AbstractField implements IFieldInterface
             $this->Template->setVariable('ElementIcon', $Icon);
         }
         $this->setPostValue($this->Template, $Name, 'ElementValue');
+        if (is_array($Option)) {
+            $this->Template->setVariable('ElementOption', json_encode($Option));
+        }
     }
 
     /**

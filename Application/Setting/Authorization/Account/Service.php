@@ -15,6 +15,7 @@ use SPHERE\Common\Frontend\Form\Structure\FormRow;
 use SPHERE\Common\Frontend\Message\Repository\Danger;
 use SPHERE\Common\Frontend\Message\Repository\Success;
 use SPHERE\Common\Window\Redirect;
+use SPHERE\Common\Window\Stage;
 
 /**
  * Class Service
@@ -153,7 +154,7 @@ class Service extends \SPHERE\Application\Platform\Gatekeeper\Authorization\Acco
      *
      * @return IFormInterface|string
      */
-    public function changeAccount(IFormInterface $Form, TblAccount $tblAccount, $Account)
+    public function changeAccountForm(IFormInterface $Form, TblAccount $tblAccount, $Account)
     {
 
         if (null === $Account) {
@@ -188,15 +189,22 @@ class Service extends \SPHERE\Application\Platform\Gatekeeper\Authorization\Acco
             $Error = true;
         }
 
-        if (!isset( $Account['User'] )) {
-            $Form->prependGridGroup(
-                new FormGroup(new FormRow(new FormColumn(new Danger('Bitte wählen Sie einen Besitzer des Kontos aus (Person wählen)'))))
-            );
-            $Error = true;
-        }
+//        if (!isset( $Account['User'] )) {
+//            $Form->prependGridGroup(
+//                new FormGroup(new FormRow(new FormColumn(new Danger('Bitte wählen Sie einen Besitzer des Kontos aus (Person wählen)'))))
+//            );
+//            $Error = true;
+//        }
 
         if (!$Error) {
             if ($tblAccount) {
+                // entfernen aller Rechte nur, wenn ein Token entfernt wird
+                if($tblAccount->getServiceTblToken()){
+                    if($Account['Token'] === '0'){
+                        return Account::useFrontend()->frontendConfirmChange($tblAccount->getId(), $Account);
+                    }
+                }
+
                 // Edit Token
                 GatekeeperAccount::useService()->changeToken($tblToken, $tblAccount);
 
@@ -208,17 +216,18 @@ class Service extends \SPHERE\Application\Platform\Gatekeeper\Authorization\Acco
 //                $tblIdentification = GatekeeperAccount::useService()->getIdentificationById($Account['Identification']);
 //                GatekeeperAccount::useService()->addAccountAuthentication($tblAccount, $tblIdentification);
 
-                // Edit User
-                $tblPersonList = GatekeeperAccount::useService()->getPersonAllByAccount($tblAccount);
-                if ($tblPersonList) {
-                    foreach ($tblPersonList as $tblPersonRemove) {
-                        GatekeeperAccount::useService()->removeAccountPerson($tblAccount, $tblPersonRemove);
-                    }
-                }
-                $tblPerson = Person::useService()->getPersonById($Account['User']);
-                if ($tblPerson) {
-                    GatekeeperAccount::useService()->addAccountPerson($tblAccount, $tblPerson);
-                }
+                // remove with SSW-927 no changes allowed
+//                // Edit User
+//                $tblPersonList = GatekeeperAccount::useService()->getPersonAllByAccount($tblAccount);
+//                if ($tblPersonList) {
+//                    foreach ($tblPersonList as $tblPersonRemove) {
+//                        GatekeeperAccount::useService()->removeAccountPerson($tblAccount, $tblPersonRemove);
+//                    }
+//                }
+//                $tblPerson = Person::useService()->getPersonById($Account['User']);
+//                if ($tblPerson) {
+//                    GatekeeperAccount::useService()->addAccountPerson($tblAccount, $tblPerson);
+//                }
 
                 // Edit Access
                 $tblAccessList = GatekeeperAccount::useService()->getAuthorizationAllByAccount($tblAccount);
@@ -262,5 +271,107 @@ class Service extends \SPHERE\Application\Platform\Gatekeeper\Authorization\Acco
         }
 
         return $Form;
+    }
+
+    /**
+     * @param int   $tblAccountId
+     * @param array $Account
+     *
+     * @return IFormInterface|string
+     */
+    public function changeAccount($tblAccountId, $Account)
+    {
+
+        $tblAccount = Account::useService()->getAccountById($tblAccountId);
+
+        $Error = false;
+        $Password = trim($Account['Password']);
+        $PasswordSafety = trim($Account['PasswordSafety']);
+
+        if (!isset( $Account['Token'] ) || !( $tblToken = GatekeeperToken::useService()->getTokenById((int)$Account['Token']) )) {
+            $tblToken = null;
+        }
+
+        if (!empty( $Password )) {
+            if (!strlen($Password) >= self::MINIMAL_PASSWORD_LENGTH) {
+                $Error = true;
+            }
+        }
+        if (!empty( $Password ) && empty( $PasswordSafety )) {
+            $Error = true;
+        }
+        if (!empty( $Password ) && $Password != $PasswordSafety) {
+            $Error = true;
+        }
+
+        if (!isset( $Account['User'] )) {
+            $Error = true;
+        }
+
+        $Stage = new Stage('Benutzerkonto', 'Bearbeiten');
+        if (!$Error) {
+
+            // Edit Token
+            GatekeeperAccount::useService()->changeToken($tblToken, $tblAccount);
+
+            $tblIdentification = $tblAccount->getServiceTblIdentification();
+            // there is no reason to delete/change the Identification (Support Account without Identification Error)
+//                // Edit Identification (Authentication)
+//                GatekeeperAccount::useService()->removeAccountAuthentication($tblAccount,
+//                    $tblAccount->getServiceTblIdentification());
+//                $tblIdentification = GatekeeperAccount::useService()->getIdentificationById($Account['Identification']);
+//                GatekeeperAccount::useService()->addAccountAuthentication($tblAccount, $tblIdentification);
+
+            // Edit User
+            $tblPersonList = GatekeeperAccount::useService()->getPersonAllByAccount($tblAccount);
+            if ($tblPersonList) {
+                foreach ($tblPersonList as $tblPersonRemove) {
+                    GatekeeperAccount::useService()->removeAccountPerson($tblAccount, $tblPersonRemove);
+                }
+            }
+            $tblPerson = Person::useService()->getPersonById($Account['User']);
+            if ($tblPerson) {
+                GatekeeperAccount::useService()->addAccountPerson($tblAccount, $tblPerson);
+            }
+
+            // Edit Access
+            $tblAccessList = GatekeeperAccount::useService()->getAuthorizationAllByAccount($tblAccount);
+            if ($tblAccessList) {
+                foreach ($tblAccessList as $tblAccessRemove) {
+                    GatekeeperAccount::useService()->removeAccountAuthorization($tblAccount,
+                        $tblAccessRemove->getServiceTblRole());
+                }
+            }
+            if (isset( $Account['Role'] )) {
+                foreach ((array)$Account['Role'] as $Role) {
+                    $tblRole = GatekeeperAccess::useService()->getRoleById($Role);
+                    if(
+                        $tblIdentification->getName() == TblIdentification::NAME_CREDENTIAL
+                        && !$tblRole->isSecure()
+                    ) {
+                        GatekeeperAccount::useService()->addAccountAuthorization($tblAccount, $tblRole);
+                    } else if (
+                        !$tblRole->isSecure()
+                        || (
+                            $tblIdentification->getName() != TblIdentification::NAME_CREDENTIAL
+                            && $tblToken
+                        )
+                    ) {
+                        GatekeeperAccount::useService()->addAccountAuthorization($tblAccount, $tblRole);
+                    }
+                }
+            }
+
+            // Edit Password
+            if (!empty( $Password )) {
+                GatekeeperAccount::useService()->changePassword($Password, $tblAccount);
+            }
+
+            return $Stage->setContent(new Success('Das Benutzerkonto wurde geändert')
+                .new Redirect('/Setting/Authorization/Account', Redirect::TIMEOUT_SUCCESS));
+        }
+
+        return $Stage->setContent(new Danger('Das Benutzerkonto konnte nicht geändert werden')
+            .new Redirect('/Setting/Authorization/Account/Edit', Redirect::TIMEOUT_ERROR, array('Id' => $tblAccount->getId())));
     }
 }

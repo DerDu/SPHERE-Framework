@@ -35,7 +35,7 @@ class ViewStudentCustody extends AbstractView
     const TBL_ADDRESS_STREET_NAME_S1 = 'TblAddress_StreetName_S1';
     const TBL_ADDRESS_STREET_NUMBER_S1 = 'TblAddress_StreetNumber_S1';
     const TBL_CITY_CODE_S1 = 'TblCity_Code_S1';
-    const TBL_CITY_CITY_S1 = 'TblCity_City_S1';
+    const TBL_CITY_NAME_S1 = 'TblCity_Name_S1';
     const TBL_CITY_DISTRICT_S1 = 'TblCity_District_S1';
     const TBL_ADDRESS_COUNTY_S1 = 'TblAddress_County_S1';
     const TBL_ADDRESS_STATE_S1 = 'TblState_Name_S1';
@@ -58,7 +58,7 @@ class ViewStudentCustody extends AbstractView
     const TBL_ADDRESS_STREET_NAME_S2 = 'TblAddress_StreetName_S2';
     const TBL_ADDRESS_STREET_NUMBER_S2 = 'TblAddress_StreetNumber_S2';
     const TBL_CITY_CODE_S2 = 'TblCity_Code_S2';
-    const TBL_CITY_CITY_S2 = 'TblCity_City_S2';
+    const TBL_CITY_NAME_S2 = 'TblCity_Name_S2';
     const TBL_CITY_DISTRICT_S2 = 'TblCity_District_S2';
     const TBL_ADDRESS_COUNTY_S2 = 'TblAddress_County_S2';
     const TBL_ADDRESS_STATE_S2 = 'TblState_Name_S2';
@@ -81,7 +81,7 @@ class ViewStudentCustody extends AbstractView
     const TBL_ADDRESS_STREET_NAME_S3 = 'TblAddress_StreetName_S3';
     const TBL_ADDRESS_STREET_NUMBER_S3 = 'TblAddress_StreetNumber_S3';
     const TBL_CITY_CODE_S3 = 'TblCity_Code_S3';
-    const TBL_CITY_CITY_S3 = 'TblCity_City_S3';
+    const TBL_CITY_NAME_S3 = 'TblCity_Name_S3';
     const TBL_CITY_DISTRICT_S3 = 'TblCity_District_S3';
     const TBL_ADDRESS_COUNTY_S3 = 'TblAddress_County_S3';
     const TBL_ADDRESS_STATE_S3 = 'TblState_Name_S3';
@@ -152,7 +152,7 @@ class ViewStudentCustody extends AbstractView
     /**
      * @Column(type="string")
      */
-    protected $TblCity_City_S1;
+    protected $TblCity_Name_S1;
     /**
      * @Column(type="string")
      */
@@ -237,7 +237,7 @@ class ViewStudentCustody extends AbstractView
     /**
      * @Column(type="string")
      */
-    protected $TblCity_City_S2;
+    protected $TblCity_Name_S2;
     /**
      * @Column(type="string")
      */
@@ -322,7 +322,7 @@ class ViewStudentCustody extends AbstractView
     /**
      * @Column(type="string")
      */
-    protected $TblCity_City_S3;
+    protected $TblCity_Name_S3;
     /**
      * @Column(type="string")
      */
@@ -380,7 +380,7 @@ class ViewStudentCustody extends AbstractView
         $this->setNameDefinition(self::TBL_ADDRESS_STREET_NAME_S1, 'S1: Straße');
         $this->setNameDefinition(self::TBL_ADDRESS_STREET_NUMBER_S1, 'S1: Hausnummer');
         $this->setNameDefinition(self::TBL_CITY_CODE_S1, 'S1: PLZ');
-        $this->setNameDefinition(self::TBL_CITY_CITY_S1, 'S1: Ort');
+        $this->setNameDefinition(self::TBL_CITY_NAME_S1, 'S1: Ort');
         $this->setNameDefinition(self::TBL_CITY_DISTRICT_S1, 'S1: Ortsteil');
         $this->setNameDefinition(self::TBL_ADDRESS_COUNTY_S1, 'S1: Landkreis');
         $this->setNameDefinition(self::TBL_ADDRESS_STATE_S1, 'S1: Bundesland');
@@ -402,7 +402,7 @@ class ViewStudentCustody extends AbstractView
         $this->setNameDefinition(self::TBL_ADDRESS_STREET_NAME_S2, 'S2: Straße');
         $this->setNameDefinition(self::TBL_ADDRESS_STREET_NUMBER_S2, 'S2: Hausnummer');
         $this->setNameDefinition(self::TBL_CITY_CODE_S2, 'S2: PLZ');
-        $this->setNameDefinition(self::TBL_CITY_CITY_S2, 'S2: Ort');
+        $this->setNameDefinition(self::TBL_CITY_NAME_S2, 'S2: Ort');
         $this->setNameDefinition(self::TBL_CITY_DISTRICT_S2, 'S2: Ortsteil');
         $this->setNameDefinition(self::TBL_ADDRESS_COUNTY_S2, 'S2: Landkreis');
         $this->setNameDefinition(self::TBL_ADDRESS_STATE_S2, 'S2: Bundesland');
@@ -424,7 +424,7 @@ class ViewStudentCustody extends AbstractView
         $this->setNameDefinition(self::TBL_ADDRESS_STREET_NAME_S3, 'S3: Straße');
         $this->setNameDefinition(self::TBL_ADDRESS_STREET_NUMBER_S3, 'S3: Hausnummer');
         $this->setNameDefinition(self::TBL_CITY_CODE_S3, 'S3: PLZ');
-        $this->setNameDefinition(self::TBL_CITY_CITY_S3, 'S3: Ort');
+        $this->setNameDefinition(self::TBL_CITY_NAME_S3, 'S3: Ort');
         $this->setNameDefinition(self::TBL_CITY_DISTRICT_S3, 'S3: Ortsteil');
         $this->setNameDefinition(self::TBL_ADDRESS_COUNTY_S3, 'S3: Landkreis');
         $this->setNameDefinition(self::TBL_ADDRESS_STATE_S3, 'S3: Bundesland');
@@ -449,7 +449,7 @@ class ViewStudentCustody extends AbstractView
             self::TBL_ADDRESS_STREET_NAME_S1,
             self::TBL_ADDRESS_STREET_NUMBER_S1,
             self::TBL_CITY_CODE_S1,
-            self::TBL_CITY_CITY_S1,
+            self::TBL_CITY_NAME_S1,
             self::TBL_CITY_DISTRICT_S1,
             self::TBL_ADDRESS_COUNTY_S1,
             self::TBL_ADDRESS_STATE_S1,
@@ -472,7 +472,7 @@ class ViewStudentCustody extends AbstractView
             self::TBL_ADDRESS_STREET_NAME_S2,
             self::TBL_ADDRESS_STREET_NUMBER_S2,
             self::TBL_CITY_CODE_S2,
-            self::TBL_CITY_CITY_S2,
+            self::TBL_CITY_NAME_S2,
             self::TBL_CITY_DISTRICT_S2,
             self::TBL_ADDRESS_COUNTY_S2,
             self::TBL_ADDRESS_STATE_S2,
@@ -495,7 +495,7 @@ class ViewStudentCustody extends AbstractView
             self::TBL_ADDRESS_STREET_NAME_S3,
             self::TBL_ADDRESS_STREET_NUMBER_S3,
             self::TBL_CITY_CODE_S3,
-            self::TBL_CITY_CITY_S3,
+            self::TBL_CITY_NAME_S3,
             self::TBL_CITY_DISTRICT_S3,
             self::TBL_ADDRESS_COUNTY_S3,
             self::TBL_ADDRESS_STATE_S3,
@@ -519,7 +519,7 @@ class ViewStudentCustody extends AbstractView
         $this->setDisableDefinition(self::TBL_ADDRESS_STREET_NAME_S1);
         $this->setDisableDefinition(self::TBL_ADDRESS_STREET_NUMBER_S1);
         $this->setDisableDefinition(self::TBL_CITY_CODE_S1);
-        $this->setDisableDefinition(self::TBL_CITY_CITY_S1);
+        $this->setDisableDefinition(self::TBL_CITY_NAME_S1);
         $this->setDisableDefinition(self::TBL_CITY_DISTRICT_S1);
         $this->setDisableDefinition(self::TBL_ADDRESS_COUNTY_S1);
         $this->setDisableDefinition(self::TBL_ADDRESS_STATE_S1);
@@ -540,7 +540,7 @@ class ViewStudentCustody extends AbstractView
         $this->setDisableDefinition(self::TBL_ADDRESS_STREET_NAME_S2);
         $this->setDisableDefinition(self::TBL_ADDRESS_STREET_NUMBER_S2);
         $this->setDisableDefinition(self::TBL_CITY_CODE_S2);
-        $this->setDisableDefinition(self::TBL_CITY_CITY_S2);
+        $this->setDisableDefinition(self::TBL_CITY_NAME_S2);
         $this->setDisableDefinition(self::TBL_CITY_DISTRICT_S2);
         $this->setDisableDefinition(self::TBL_ADDRESS_COUNTY_S2);
         $this->setDisableDefinition(self::TBL_ADDRESS_STATE_S2);
@@ -561,7 +561,7 @@ class ViewStudentCustody extends AbstractView
         $this->setDisableDefinition(self::TBL_ADDRESS_STREET_NAME_S3);
         $this->setDisableDefinition(self::TBL_ADDRESS_STREET_NUMBER_S3);
         $this->setDisableDefinition(self::TBL_CITY_CODE_S3);
-        $this->setDisableDefinition(self::TBL_CITY_CITY_S3);
+        $this->setDisableDefinition(self::TBL_CITY_NAME_S3);
         $this->setDisableDefinition(self::TBL_CITY_DISTRICT_S3);
         $this->setDisableDefinition(self::TBL_ADDRESS_COUNTY_S3);
         $this->setDisableDefinition(self::TBL_ADDRESS_STATE_S3);

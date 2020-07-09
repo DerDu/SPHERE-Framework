@@ -9,6 +9,7 @@ use SPHERE\Application\Api\Reporting\SerialLetter\ApiSerialLetter;
 use SPHERE\Application\Api\Reporting\SerialLetter\SerialLetter;
 use SPHERE\Application\Api\Reporting\Standard\ApiStandard;
 use SPHERE\Application\Api\Reporting\Standard\Standard;
+use SPHERE\Application\Api\Reporting\Univention\Univention;
 use SPHERE\Application\IApplicationInterface;
 
 /**
@@ -31,5 +32,6 @@ class Reporting implements IApplicationInterface
         ApiIndividual::registerApi();
         ApiIndividual::registerModule();
         DeclarationBasis::registerModule();
+        Univention::registerModule();
     }
 }

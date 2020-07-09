@@ -1,6 +1,7 @@
 <?php
 namespace SPHERE\Application\Setting\User\Account\Service\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping\Cache;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -21,6 +22,11 @@ class TblUserAccount extends Element
 
     const VALUE_TYPE_STUDENT = 'STUDENT';
     const VALUE_TYPE_CUSTODY = 'CUSTODY';
+
+    // Passwort zurücksetzen
+    const VALUE_UPDATE_TYPE_RESET = 1;
+    // Passwort neu generieren
+    const VALUE_UPDATE_TYPE_RENEW = 2;
 
     const ATTR_SERVICE_TBL_ACCOUNT = 'serviceTblAccount';
     const ATTR_SERVICE_TBL_PERSON = 'serviceTblPerson';
@@ -68,6 +74,22 @@ class TblUserAccount extends Element
      * @Column(type="integer")
      */
     protected $GroupByCount;
+    /**
+     * @Column(type="string")
+     */
+    protected $AccountCreator;
+    /**
+     * @Column(type="string")
+     */
+    protected $AccountUpdater;
+    /**
+     * @Column(type="datetime")
+     */
+    protected $UpdateDate;
+    /**
+     * @Column(type="integer")
+     */
+    protected $UpdateType;
 
     /**
      * @return false|TblPerson
@@ -170,9 +192,9 @@ class TblUserAccount extends Element
      */
     public function getExportDate()
     {
-        /** @var \DateTime $ExportDate */
+        /** @var DateTime $ExportDate */
         $ExportDate = $this->ExportDate;
-        if ($ExportDate instanceof \DateTime) {
+        if ($ExportDate instanceof DateTime) {
             return $ExportDate->format('d.m.Y H:i:s');
         }
         return false;
@@ -205,19 +227,19 @@ class TblUserAccount extends Element
     /**
      * @return bool|string
      */
-    public function getGroupByTime()
+    public function getGroupByTime($format = 'd.m.Y H:i:s')
     {
 
-        /** @var \DateTime $GroupByTime */
+        /** @var DateTime $GroupByTime */
         $GroupByTime = $this->GroupByTime;
-        if ($GroupByTime instanceof \DateTime) {
-            return $GroupByTime->format('d.m.Y H:i:s');
+        if ($GroupByTime instanceof DateTime) {
+            return $GroupByTime->format($format);
         }
         return false;
     }
 
     /**
-     * @param \DateTime $DateTime
+     * @param DateTime $DateTime
      */
     public function setGroupByTime($DateTime)
     {
@@ -239,5 +261,76 @@ class TblUserAccount extends Element
     public function setGroupByCount($GroupByCount)
     {
         $this->GroupByCount = $GroupByCount;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAccountCreator()
+    {
+        return $this->AccountCreator;
+    }
+
+    /**
+     * @param string $AccountCreator
+     */
+    public function setAccountCreator($AccountCreator = '')
+    {
+        $this->AccountCreator = $AccountCreator;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAccountUpdater()
+    {
+        return $this->AccountUpdater;
+    }
+
+    /**
+     * @param string $AccountUpdater
+     */
+    public function setAccountUpdater($AccountUpdater = '')
+    {
+        $this->AccountUpdater = $AccountUpdater;
+    }
+
+    /**
+     * @return bool|string
+     */
+    public function getUpdateDate($format = 'd.m.Y H:i:s')
+    {
+
+        /** @var DateTime $UpdateDate */
+        $UpdateDate = $this->UpdateDate;
+        if ($UpdateDate instanceof DateTime) {
+            return $UpdateDate->format($format);
+        }
+        return false;
+    }
+
+    /**
+     * @param null|DateTime
+     */
+    public function setUpdateDate($UpdateDate = null)
+    {
+
+        $this->UpdateDate = $UpdateDate;
+    }
+
+    /**
+     * @return null|int
+     */
+    public function getUpdateType()
+    {
+        return $this->UpdateType;
+    }
+
+    /**
+     * @param null|int $UpdateType
+     */
+    public function setUpdateType($UpdateType = null)
+    {
+        $this->UpdateType = $UpdateType;
     }
 }

@@ -104,9 +104,9 @@ class ViewStudent extends AbstractView
     {
 
         $this->setNameDefinition(self::TBL_STUDENT_IDENTIFIER, 'Schüler: Schülernummer');
-        $this->setNameDefinition(self::TBL_STUDENT_SCHOOL_ATTENDANCE_START_DATE, 'Schüler: Schulpflicht beginn');
-        $this->setNameDefinition(self::TBL_STUDENT_HAS_MIGRATION_BACKGROUND, 'Schüler: Migrationshintergrund');
-        $this->setNameDefinition(self::TBL_STUDENT_IS_IN_PREPARATION_DIVISION_FOR_MIGRANTS, 'Schüler: Besucht Vorbereitungsklasse für Migranten');
+        $this->setNameDefinition(self::TBL_STUDENT_SCHOOL_ATTENDANCE_START_DATE, 'Schüler: Schulpflichtbeginn');
+        $this->setNameDefinition(self::TBL_STUDENT_HAS_MIGRATION_BACKGROUND, 'Schüler: Herkunftssprache ist nicht oder nicht ausschließlich Deutsch');
+//        $this->setNameDefinition(self::TBL_STUDENT_IS_IN_PREPARATION_DIVISION_FOR_MIGRANTS, 'Schüler: Besucht Vorbereitungsklasse für Migranten');
     }
 
     /**

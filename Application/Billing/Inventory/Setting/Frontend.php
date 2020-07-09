@@ -303,29 +303,35 @@ class Frontend extends Extension implements IFrontendInterface
                                 : ' '.new Info()), 'Diese Vorgabe wird für alle Beitragsarten als Standardwert verwendet. 
                                 Individuelle Einstellungen können an der Beitragsart vorgenommen werden.'));
                         break;
+                    case TblSetting::IDENT_FIBU_ACCOUNT_AS_DEBTOR:
+                        $Listing[8] ='&nbsp;FiBu-Konto ist die Debitor-Nr.: &nbsp;'
+                            .new Bold($tblSetting->getValue()
+                                ? new SuccessText(new Check())
+                                : new Unchecked());
+                        break;
                     case TblSetting::IDENT_FIBU_TO_ACCOUNT:
-                        $Listing[8] ='&nbsp;FiBu-Gegenkonto: &nbsp;'
+                        $Listing[9] ='&nbsp;FiBu-Gegenkonto: &nbsp;'
                             .new Bold(new ToolTip(($tblSetting->getValue()
                                 ? new SuccessText($tblSetting->getValue().' '.new Info())
                                 : ' '.new Info()), 'Diese Vorgabe wird für alle Beitragsarten als Standardwert verwendet.
                                  Individuelle Einstellungen können an der Beitragsart vorgenommen werden.'));
                         break;
                     case TblSetting::IDENT_KOST_1:
-                        $Listing[9] ='&nbsp;Kostenstelle 1: &nbsp;'
+                        $Listing[10] ='&nbsp;Kostenstelle 1: &nbsp;'
                             .new Bold(new ToolTip(($tblSetting->getValue()
                                 ? new SuccessText($tblSetting->getValue().' '.new Info())
                                 : ' '.new Info()), 'Diese Vorgabe wird für alle Beitragsarten als Standardwert verwendet.
                                  Individuelle Einstellungen können an der Beitragsart vorgenommen werden.'));
                         break;
                     case TblSetting::IDENT_KOST_2:
-                        $Listing[10] ='&nbsp;Kostenstelle 2: &nbsp;'
+                        $Listing[11] ='&nbsp;Kostenstelle 2: &nbsp;'
                             .new Bold(new ToolTip(($tblSetting->getValue()
                                 ? new SuccessText($tblSetting->getValue().' '.new Info())
                                 : ' '.new Info()), 'Diese Vorgabe wird für alle Beitragsarten als Standardwert verwendet.
                                  Individuelle Einstellungen können an der Beitragsart vorgenommen werden.'));
                         break;
                     case TblSetting::IDENT_BU_KEY:
-                        $Listing[11] ='&nbsp;BU-Schlüssel: &nbsp;'
+                        $Listing[12] ='&nbsp;BU-Schlüssel: &nbsp;'
                             .new Bold(new ToolTip(($tblSetting->getValue()
                                 ? new SuccessText($tblSetting->getValue().' '.new Info())
                                 : ' '.new Info()), 'Diese Vorgabe wird für alle Beitragsarten als Standardwert verwendet.
@@ -402,6 +408,8 @@ class Frontend extends Extension implements IFrontendInterface
                                     new LayoutColumn('[BVN] Beitragsverursacher Name', 4),
                                     new LayoutColumn('[BVV] Beitragsverursacher Vorname', 4),
                                     new LayoutColumn('[BA] Beitragsart', 4),
+                                    new LayoutColumn('[BAEP] Beitragsart mit Einzelpreis', 4),
+                                    new LayoutColumn('[DEB] Debitoren-Nr.', 4),
                                     new LayoutColumn('[BAM] Abrechnungszeitraum (Jahr+Monat)', 4),
                                 )))),
                             ), Panel::PANEL_TYPE_INFO)),
@@ -464,6 +472,8 @@ class Frontend extends Extension implements IFrontendInterface
                                     new LayoutColumn('[BVN] Beitragsverursacher Name', 4),
                                     new LayoutColumn('[BVV] Beitragsverursacher Vorname', 4),
                                     new LayoutColumn('[BA] Beitragsart', 4),
+                                    new LayoutColumn('[BAEP] Beitragsart mit Einzelpreis', 4),
+                                    new LayoutColumn('[DEB] Debitoren-Nr.', 4),
                                     new LayoutColumn('[BAM] Abrechnungszeitraum (Jahr+Monat)', 4),
                                 )))),
                             ), Panel::PANEL_TYPE_INFO)),
@@ -476,28 +486,32 @@ class Frontend extends Extension implements IFrontendInterface
                                  Individuelle Einstellungen können an der Beitragsart vorgenommen werden.')
                         , null, '99999999');
                 break;
+                case TblSetting::IDENT_FIBU_ACCOUNT_AS_DEBTOR:
+                    $_POST['Setting'][TblSetting::IDENT_FIBU_ACCOUNT_AS_DEBTOR] = $tblSetting->getValue();
+                    $elementList[8] = new CheckBox('Setting['.TblSetting::IDENT_FIBU_ACCOUNT_AS_DEBTOR.']', 'FiBu-Konto ist die Debitor-Nr.', true);
+                break;
                 case TblSetting::IDENT_FIBU_TO_ACCOUNT:
                     $_POST['Setting'][TblSetting::IDENT_FIBU_TO_ACCOUNT] = $tblSetting->getValue();
-                    $elementList[8] = new TextField('Setting['.TblSetting::IDENT_FIBU_TO_ACCOUNT.']', '', 'Fibu-Gegenkonto '
+                    $elementList[9] = new TextField('Setting['.TblSetting::IDENT_FIBU_TO_ACCOUNT.']', '', 'Fibu-Gegenkonto '
                         .new ToolTip(new Info(), 'Diese Vorgabe wird für alle Beitragsarten als Standardwert verwendet.
                                  Individuelle Einstellungen können an der Beitragsart vorgenommen werden.')
                         , null, '99999999');
                 break;
                 case TblSetting::IDENT_KOST_1:
                     $_POST['Setting'][TblSetting::IDENT_KOST_1] = $tblSetting->getValue();
-                    $elementList[9] = new NumberField('Setting['.TblSetting::IDENT_KOST_1.']', '', 'Kostenstelle 1 '
+                    $elementList[10] = new NumberField('Setting['.TblSetting::IDENT_KOST_1.']', '', 'Kostenstelle 1 '
                         .new ToolTip(new Info(), 'Diese Vorgabe wird für alle Beitragsarten als Standardwert verwendet.
                                  Individuelle Einstellungen können an der Beitragsart vorgenommen werden.'));
                 break;
                 case TblSetting::IDENT_KOST_2:
                     $_POST['Setting'][TblSetting::IDENT_KOST_2] = $tblSetting->getValue();
-                    $elementList[10] = new NumberField('Setting['.TblSetting::IDENT_KOST_2.']', '', 'Kostenstelle 2 '
+                    $elementList[11] = new NumberField('Setting['.TblSetting::IDENT_KOST_2.']', '', 'Kostenstelle 2 '
                         .new ToolTip(new Info(), 'Diese Vorgabe wird für alle Beitragsarten als Standardwert verwendet.
                                  Individuelle Einstellungen können an der Beitragsart vorgenommen werden.'));
                 break;
                 case TblSetting::IDENT_BU_KEY:
                     $_POST['Setting'][TblSetting::IDENT_BU_KEY] = $tblSetting->getValue();
-                    $elementList[11] = new NumberField('Setting['.TblSetting::IDENT_BU_KEY.']', '', 'BU-Schlüssel '
+                    $elementList[12] = new NumberField('Setting['.TblSetting::IDENT_BU_KEY.']', '', 'BU-Schlüssel '
                         .new ToolTip(new Info(), 'Diese Vorgabe wird für alle Beitragsarten als Standardwert verwendet.
                                  Individuelle Einstellungen können an der Beitragsart vorgenommen werden.'));
                 break;

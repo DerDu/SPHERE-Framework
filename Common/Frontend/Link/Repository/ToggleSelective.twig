@@ -1,0 +1,60 @@
+{% if( Disabled is empty ) %}
+    <a id="{{ ElementHash }}" href="#" class="btn btn-default {{ ElementType }}" data-toggle="tooltip" data-container="body"
+       title="{{ ElementToolTip }}">{{ ElementIcon }} {{ ElementName }}</a>
+    <script language=javascript>
+        //noinspection JSUnresolvedFunction
+        executeScript(function()
+        {
+            Client.Use("ModAlways", function()
+            {
+
+                var toggleTargets = function()
+                {
+                    let isCheck;
+                    isCheck = false;
+                    let isActive = '{{ isActive }}';
+                    if(isActive !== ''){
+                        (isActive === '1'
+                        ? isCheck = true
+                        : isCheck = false
+                        );
+
+                        {% for ToggleTarget in ElementToggleTarget %}
+                        jQuery('[name="{{ ToggleTarget }}"]:eq(0)').prop('checked', function(i, v)
+                        {
+                            v = isCheck;
+                            return v;
+                        });
+                        {% endfor %}
+
+                    } else {
+                        {% for ToggleTarget in ElementToggleTarget %}
+                        jQuery('[name="{{ ToggleTarget }}"]:eq(0)').prop('checked', function(i, v)
+                        {
+                            if(v === false ){
+                                isCheck = true
+                            }
+                        });
+                        {% endfor %}
+
+                        {% for ToggleTarget in ElementToggleTarget %}
+                        jQuery('[name="{{ ToggleTarget }}"]:eq(0)').prop('checked', function(i, v)
+                        {
+                            v = isCheck;
+                            return v;
+                        });
+                        {% endfor %}
+                    }
+                };
+                jQuery('#{{ ElementHash }}').on('click', function(Event)
+                {
+                    Event.preventDefault();
+                    toggleTargets();
+                });
+            });
+        });
+    </script>
+{% else %}
+    <a href="#" class="btn btn-default {{ ElementType }}" data-toggle="tooltip" data-container="body"
+       title="{{ ElementToolTip }}" disabled>{{ ElementIcon }} {{ ElementName }}</a>
+{% endif %}

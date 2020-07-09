@@ -1,0 +1,16 @@
+SELECT
+
+-- PersonId to match with all View's // tblMember
+    tM.serviceTblPerson as TblPerson_Id,
+-- TblGroup
+    tG.Id as TblGroup_Id,
+    tG.Name as TblGroup_Name,
+    tG.Description as TblGroup_Description,
+    tG.Remark as TblGroup_Remark,
+    tG.IsLocked as TblGroup_IsLocked,
+    tG.MetaTable as TblGroup_MetaTable
+
+FROM PeopleGroup_{{ ConsumerAcronym }}.tblGroup tG
+    LEFT JOIN PeopleGroup_{{ ConsumerAcronym }}.tblMember tM ON tM.tblGroup = tG.Id
+
+WHERE tM.EntityRemove IS NULL

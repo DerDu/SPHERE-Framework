@@ -85,7 +85,7 @@ class Frontend extends Extension implements IFrontendInterface
             array_walk($tblGroupAll, function (TblGroup &$tblGroup) {
 
                 $Content = array(
-                    ($tblGroup->getDescription() ? new Small(new Muted($tblGroup->getDescription())) : false),
+                    ($tblGroup->getDescription(true) ? new Small(new Muted($tblGroup->getDescription(true))) : false),
                     ($tblGroup->getRemark() ? nl2br($tblGroup->getRemark()) : false),
                 );
                 $Content = array_filter($Content);
@@ -177,7 +177,8 @@ class Frontend extends Extension implements IFrontendInterface
                     new FormColumn(
                         new Panel('Gruppe', array(
                             new TextField('Group[Name]', 'Name', 'Name'),
-                            new TextField('Group[Description]', 'Beschreibung', 'Beschreibung')
+                            new TextField('Group[Description]', 'Beschreibung', 'Beschreibung'),
+                            new CheckBox('Group[IsCoreGroup]', 'Stammgruppe', 1)
                         ), Panel::PANEL_TYPE_INFO)
                         , 4),
                     new FormColumn(
@@ -210,6 +211,7 @@ class Frontend extends Extension implements IFrontendInterface
                 $Global->POST['Group']['Name'] = $tblGroup->getName();
                 $Global->POST['Group']['Description'] = $tblGroup->getDescription();
                 $Global->POST['Group']['Remark'] = $tblGroup->getRemark();
+                $Global->POST['Group']['IsCoreGroup'] = $tblGroup->isCoreGroup();
                 $Global->savePost();
             }
 
@@ -219,8 +221,8 @@ class Frontend extends Extension implements IFrontendInterface
                         new LayoutRow(
                             new LayoutColumn(
                                 new Panel('Gruppe', new Bold($tblGroup->getName()) .
-                                    ($tblGroup->getDescription() !== '' ? '&nbsp;&nbsp;'
-                                        . new Muted(new Small(new Small($tblGroup->getDescription()))) : ''),
+                                    ($tblGroup->getDescription(true) !== '' ? '&nbsp;&nbsp;'
+                                        . new Muted(new Small(new Small($tblGroup->getDescription(true)))) : ''),
                                     Panel::PANEL_TYPE_INFO),
                                 12
                             )
@@ -279,7 +281,7 @@ class Frontend extends Extension implements IFrontendInterface
                 $Stage->setContent(
                     new Layout(new LayoutGroup(new LayoutRow(new LayoutColumn(
                         new Panel(new Question() . ' Diese Gruppe wirklich löschen?', array(
-                            $tblGroup->getName() . ' ' . $tblGroup->getDescription(),
+                            $tblGroup->getName() . ' ' . $tblGroup->getDescription(true),
                             new Muted(new Small($tblGroup->getRemark()))
                         ),
                             Panel::PANEL_TYPE_DANGER,
@@ -508,7 +510,7 @@ class Frontend extends Extension implements IFrontendInterface
                         new LayoutColumn(
                             new Panel(
                                 'Gruppe',
-                                $tblGroup->getName() . ' ' . new Small(new Muted($tblGroup->getDescription())),
+                                $tblGroup->getName() . ' ' . new Small(new Muted($tblGroup->getDescription(true))),
                                 Panel::PANEL_TYPE_INFO
                             ), 12
                         ),

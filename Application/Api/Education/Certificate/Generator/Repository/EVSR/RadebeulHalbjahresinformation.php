@@ -144,7 +144,7 @@ class RadebeulHalbjahresinformation extends Certificate
 //                            )
 //                        )
 //                    )
-//                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/RadebeulLogo.jpg',
+//                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/EVSR.jpg',
 //                        '80px', '80px'))
 //                        ->styleAlignCenter()
 //                        , '10%')

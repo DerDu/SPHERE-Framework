@@ -5,16 +5,17 @@ namespace SPHERE\Application\Reporting\Standard\Company;
 use MOC\V\Component\Document\Component\Bridge\Repository\PhpExcel;
 use MOC\V\Component\Document\Component\Parameter\Repository\FileParameter;
 use MOC\V\Component\Document\Document;
+use MOC\V\Component\Document\Exception\DocumentTypeException;
+use MOC\V\Core\FileSystem\Component\Exception\Repository\TypeFileException;
 use SPHERE\Application\Contact\Address\Address;
 use SPHERE\Application\Contact\Mail\Mail;
 use SPHERE\Application\Contact\Phone\Phone;
 use SPHERE\Application\Corporation\Company\Service\Entity\TblCompany;
 use SPHERE\Application\Corporation\Group\Service\Entity\TblGroup;
 use SPHERE\Application\Corporation\Search\Group\Group;
+use SPHERE\Application\Document\Storage\FilePointer;
 use SPHERE\Application\Document\Storage\Storage;
 use SPHERE\Application\People\Relationship\Relationship;
-use SPHERE\Common\Frontend\Form\IFormInterface;
-use SPHERE\Common\Window\Redirect;
 use SPHERE\System\Extension\Extension;
 use SPHERE\System\Extension\Repository\Sorter\StringGermanOrderSorter;
 
@@ -25,34 +26,6 @@ use SPHERE\System\Extension\Repository\Sorter\StringGermanOrderSorter;
  */
 class Service extends Extension
 {
-
-    /**
-     * @param IFormInterface|null $Stage
-     * @param null                $Select
-     * @param                     $Redirect
-     *
-     * @return IFormInterface|Redirect
-     */
-    public function getGroup(IFormInterface $Stage = null, $Select = null, $Redirect)
-    {
-
-        /**
-         * Skip to Frontend
-         */
-        if (null === $Select) {
-            return $Stage;
-        }
-
-        $tblGroup = Group::useService()->getGroupById($Select['Group']);
-        if ($tblGroup){
-            return new Redirect($Redirect, Redirect::TIMEOUT_SUCCESS, array(
-                'GroupId' => $tblGroup->getId(),
-            ));
-        } else {
-            $Stage->setError('Select[Group]', 'Bitte wählen Sie eine Gruppe aus');
-            return $Stage;
-        }
-    }
 
     /**
      * @param TblGroup $tblGroup
@@ -148,8 +121,9 @@ class Service extends Extension
     /**
      * @param $companyList
      *
-     * @return bool|\SPHERE\Application\Document\Storage\FilePointer
-     * @throws \MOC\V\Component\Document\Exception\DocumentTypeException
+     * @return bool|FilePointer
+     * @throws TypeFileException
+     * @throws DocumentTypeException
      */
     public function createGroupListExcel($companyList)
     {

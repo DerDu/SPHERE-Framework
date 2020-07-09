@@ -195,13 +195,14 @@ class Data extends AbstractData
 
     /**
      * @param TblPerson $tblPerson
-     * @param TblMail   $tblMail
-     * @param TblType   $tblType
-     * @param string    $Remark
+     * @param TblMail $tblMail
+     * @param TblType $tblType
+     * @param string $Remark
+     * @param bool $IsAccountUserAlias
      *
      * @return TblToPerson
      */
-    public function addMailToPerson(TblPerson $tblPerson, TblMail $tblMail, TblType $tblType, $Remark)
+    public function addMailToPerson(TblPerson $tblPerson, TblMail $tblMail, TblType $tblType, $Remark, $IsAccountUserAlias = false)
     {
 
         $Manager = $this->getConnection()->getEntityManager();
@@ -217,6 +218,7 @@ class Data extends AbstractData
             $Entity->setTblMail($tblMail);
             $Entity->setTblType($tblType);
             $Entity->setRemark($Remark);
+            $Entity->setIsAccountUserAlias($IsAccountUserAlias);
             $Manager->saveEntity($Entity);
             Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(), $Entity);
         }
@@ -314,6 +316,59 @@ class Data extends AbstractData
             Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(), $Protocol, $Entity);
             return true;
         }
+        return false;
+    }
+
+    /**
+     * @param TblToPerson $tblToPerson
+     * @param TblMail $tblMail
+     * @param TblType $tblType
+     * @param $Remark
+     * @param bool $IsAccountUserAlias
+     *
+     * @return false|TblToPerson
+     */
+    public function updateMailToPerson(TblToPerson $tblToPerson, TblMail $tblMail, TblType $tblType, $Remark, $IsAccountUserAlias = false)
+    {
+        $Manager = $this->getConnection()->getEntityManager();
+        /** @var TblToPerson $Entity */
+        $Entity = $Manager->getEntityById('TblToPerson', $tblToPerson->getId());
+        $Protocol = clone $Entity;
+        if (null !== $Entity) {
+            $Entity->setTblMail($tblMail);
+            $Entity->setTblType($tblType);
+            $Entity->setRemark($Remark);
+            $Entity->setIsAccountUserAlias($IsAccountUserAlias);
+
+            $Manager->saveEntity($Entity);
+            Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(), $Protocol, $Entity);
+
+            return $Entity;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param TblToPerson $tblToPerson
+     * @param bool $IsAccountUserAlias
+     *
+     * @return false|TblToPerson
+     */
+    public function updateMailToPersonAlias(TblToPerson $tblToPerson, $IsAccountUserAlias = false)
+    {
+        $Manager = $this->getConnection()->getEntityManager();
+        /** @var TblToPerson $Entity */
+        $Entity = $Manager->getEntityById('TblToPerson', $tblToPerson->getId());
+        $Protocol = clone $Entity;
+        if (null !== $Entity) {
+            $Entity->setIsAccountUserAlias($IsAccountUserAlias);
+            $Manager->saveEntity($Entity);
+            Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(), $Protocol, $Entity);
+
+            return $Entity;
+        }
+
         return false;
     }
 }

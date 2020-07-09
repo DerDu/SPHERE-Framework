@@ -773,6 +773,12 @@ class Service extends AbstractService
         ));
     }
 
+    public function getListObjectListContentByList(TblList $tblList)
+    {
+
+        return (new Data($this->getBinding()))->getListObjectListContentByList($tblList);
+    }
+
     /**
      * @param TblList $tblList
      *
@@ -782,6 +788,18 @@ class Service extends AbstractService
     {
 
         return (new Data($this->getBinding()))->getListObjectElementListByList($tblList);
+    }
+
+    /**
+     * @param TblList $tblList
+     * @param int     $ObjectId
+     *
+     * @return bool|TblListObjectElementList[]
+     */
+    public function getListObjectElementListByListAndObjectId(TblList $tblList, $ObjectId)
+    {
+
+        return (new Data($this->getBinding()))->getListObjectElementListByListAndObjectId($tblList, $ObjectId);
     }
 
     /**

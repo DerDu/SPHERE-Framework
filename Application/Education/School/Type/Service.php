@@ -64,4 +64,43 @@ class Service extends AbstractService
 
         return (new Data($this->getBinding()))->getTypeByName($Name);
     }
+
+    /**
+     * @param TblType $tblType
+     *
+     * @return string
+     */
+    public function getSchoolTypeString(TblType $tblType){
+        $Short = '';
+        switch ($tblType->getName()){
+            case 'Berufliches Gymnasium':
+                $Short = 'BGYM';
+                break;
+            case 'Berufsfachschule':
+                $Short = 'BFS';
+                break;
+            case 'Berufsschule':
+                $Short = 'BS';
+                break;
+            case 'Fachoberschule':
+                $Short = 'FOS';
+                break;
+            case 'Fachschule':
+                $Short = 'FS';
+                break;
+            case 'Grundschule':
+                $Short = 'GS';
+                break;
+            case 'Gymnasium':
+                $Short = 'GYM';
+                break;
+            case 'Mittelschule / Oberschule':
+                $Short = 'OS';
+                break;
+            case 'allgemein bildende Förderschule':
+                $Short = 'ABFS';
+                break;
+        }
+        return $Short;
+    }
 }

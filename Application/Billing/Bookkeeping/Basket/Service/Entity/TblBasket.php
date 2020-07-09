@@ -11,6 +11,8 @@ use SPHERE\Application\Billing\Accounting\Creditor\Service\Entity\TblCreditor;
 use SPHERE\Application\Billing\Accounting\Debtor\Debtor;
 use SPHERE\Application\Billing\Accounting\Debtor\Service\Entity\TblDebtorPeriodType;
 use SPHERE\Application\Billing\Bookkeeping\Basket\Basket;
+use SPHERE\Application\Billing\Inventory\Setting\Service\Entity\TblSetting;
+use SPHERE\Application\Billing\Inventory\Setting\Setting;
 use SPHERE\Application\Education\Lesson\Division\Division;
 use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
 use SPHERE\Application\Education\School\Type\Service\Entity\TblType;
@@ -34,6 +36,8 @@ class TblBasket extends Element
     const ATTR_SERVICE_TBL_CREDITOR = 'serviceTblCreditor';
     const ATTR_SERVICE_TBL_DIVISION = 'serviceTblDivision';
     const ATTR_SERVICE_TBL_TYPE = 'serviceTblType';
+    const ATTR_FIBU_ACCOUNT = 'FibuAccount';
+    const ATTR_FIBU_TO_ACCOUNT = 'FibuToAccount';
 
     /**
      * @Column(type="string")
@@ -103,6 +107,14 @@ class TblBasket extends Element
      * @Column(type="bigint")
      */
     protected $serviceTblDebtorPeriodType;
+    /**
+     * @Column(type="string")
+     */
+    protected $FibuAccount;
+    /**
+     * @Column(type="string")
+     */
+    protected $FibuToAccount;
 
     /**
      * @return string
@@ -343,7 +355,7 @@ class TblBasket extends Element
     }
 
     /**
-     * @return bool|TblBasket
+     * @return bool|TblBasketType
      */
     public function getTblBasketType()
     {
@@ -525,6 +537,50 @@ class TblBasket extends Element
     {
 
         $this->serviceTblDebtorPeriodType = ($serviceTblDebtorPeriodType ? $serviceTblDebtorPeriodType->getId() : null);
+    }
+
+    /**
+     * @param bool $probablyStandard
+     *
+     * @return string
+     */
+    public function getFibuAccount($probablyStandard = true)
+    {
+        if( !$this->FibuAccount && $probablyStandard){
+            if(($tblSettingFibuAccount = Setting::useService()->getSettingByIdentifier(TblSetting::IDENT_FIBU_ACCOUNT))){
+                return $tblSettingFibuAccount->getValue();
+            }
+        }
+        return $this->FibuAccount;
+    }
+
+    /**
+     * @param string $FibuAccount
+     */
+    public function setFibuAccount($FibuAccount)
+    {
+        $this->FibuAccount = $FibuAccount;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFibuToAccount($probablyStandard = true)
+    {
+        if( !$this->FibuToAccount && $probablyStandard){
+            if(($tblSettingFibuToAccount = Setting::useService()->getSettingByIdentifier(TblSetting::IDENT_FIBU_TO_ACCOUNT))){
+                return $tblSettingFibuToAccount->getValue();
+            }
+        }
+        return $this->FibuToAccount;
+    }
+
+    /**
+     * @param string $FibuToAccount
+     */
+    public function setFibuToAccount($FibuToAccount)
+    {
+        $this->FibuToAccount = $FibuToAccount;
     }
 
 }

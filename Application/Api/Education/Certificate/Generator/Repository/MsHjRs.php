@@ -26,50 +26,51 @@ class MsHjRs extends Certificate
 
         $personId = $tblPerson ? $tblPerson->getId() : 0;
 
-        $Header = $this->getHead($this->isSample(), true, 'auto', '50px');
+        $Header = $this->getHead($this->isSample());
 
         return (new Page())
-                ->addSlice(
-                    $Header
+            ->addSlice(
+                $Header
+            )
+            ->addSlice($this->getSchoolName($personId))
+            ->addSlice($this->getCertificateHead('Halbjahreszeugnis der Oberschule'))
+            ->addSlice($this->getDivisionAndYear($personId, '20px', '1. Schulhalbjahr'))
+            ->addSlice($this->getStudentName($personId))
+            ->addSlice((new Slice())
+                ->addElement((new Element())
+                    ->setContent('nahm am Unterricht mit dem Ziel des Realschulabschlusses teil.')
+                    ->styleTextSize('12px')
                 )
-                ->addSlice($this->getSchoolName($personId))
-                ->addSlice($this->getCertificateHead('Halbjahreszeugnis der Oberschule'))
-                ->addSlice($this->getDivisionAndYear($personId, '20px', '1. Schulhalbjahr'))
-                ->addSlice($this->getStudentName($personId))
-                ->addSlice((new Slice())
-                    ->addElement((new Element())
-                        ->setContent('nahm am Unterricht mit dem Ziel des Realschulabschlusses teil.')
-                        ->styleTextSize('12px')
-                    )
-                    ->styleMarginTop('8px')
+                ->styleMarginTop('8px')
+            )
+            ->addSlice($this->getGradeLanesSmall($personId))
+            ->addSlice((new Slice())
+                ->addElement((new Element())
+                    ->setContent('Leistungen in den einzelnen Fächern:')
+                    ->styleMarginTop('15px')
+                    ->styleMarginBottom('5px')
+                    ->styleTextBold()
                 )
-                ->addSlice($this->getGradeLanes($personId))
-                ->addSlice((new Slice())
-                    ->addElement((new Element())
-                        ->setContent('Leistungen in den einzelnen Fächern:')
-                        ->styleMarginTop('15px')
-                        ->styleTextBold()
-                    )
-                )
-                ->addSlice($this->getSubjectLanes(
-                    $personId,
-                    true,
-                    array(),
-                    '14px',
-                    false,
-                    false,
-                    true
-                )->styleHeight('290px'))
+            )
+            ->addSlice($this->getSubjectLanesSmall(
+                $personId,
+                true,
+                array(),
+                '14px',
+                false,
+                false,
+                true
+            )->styleHeight('220px'))
 //                ->addSlice($this->getOrientationStandard($personId))
-                ->addSlice($this->getDescriptionHead($personId, true))
-                ->addSlice($this->getDescriptionContent($personId, '100px', '15px'))
-                ->addSlice($this->getDateLine($personId))
-                ->addSlice($this->getSignPart($personId))
-                ->addSlice($this->getParentSign())
-                ->addSlice($this->getInfo('45px',
-                    'Notenerläuterung:',
-                    '1 = sehr gut; 2 = gut; 3 = befriedigend; 4 = ausreichend; 5 = mangelhaft; 6 = ungenügend 
-                    (6 = ungenügend nur bei der Bewertung der Leistungen)')
+            ->addSlice($this->getDescriptionHead($personId, true))
+            ->addSlice($this->getDescriptionContent($personId, '118px', '15px'))
+            ->addSlice($this->getDateLine($personId))
+            ->addSlice($this->getSignPart($personId))
+            ->addSlice($this->getParentSign())
+            ->addSlice($this->getInfo('45px',
+                'Notenerläuterung:',
+                '1 = sehr gut; 2 = gut; 3 = befriedigend; 4 = ausreichend; 5 = mangelhaft; 6 = ungenügend 
+                (6 = ungenügend nur bei der Bewertung der Leistungen)')
         );
     }
 }

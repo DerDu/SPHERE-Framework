@@ -14,6 +14,7 @@ use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Setting\Consumer\Consumer;
 use SPHERE\Common\Frontend\Form\IFormInterface;
 use SPHERE\Common\Frontend\Icon\Repository\Ban;
+use SPHERE\Common\Frontend\Icon\Repository\Success as SuccessIcon;
 use SPHERE\Common\Frontend\Message\Repository\Danger;
 use SPHERE\Common\Frontend\Message\Repository\Success;
 use SPHERE\Common\Window\Redirect;
@@ -89,6 +90,17 @@ class Service extends AbstractService
     {
 
         return ( new Data($this->getBinding()) )->getMemberByPersonAndGroup($tblPerson, $tblGroup, ( $IsForced ? $IsForced : null ));
+    }
+
+    /**
+     * @param bool $isCoreGroup
+     *
+     * @return false|TblGroup[]
+     */
+    public function getGroupListByIsCoreGroup($isCoreGroup = true)
+    {
+
+        return ( new Data($this->getBinding()) )->getGroupListByIsCoreGroup($isCoreGroup);
     }
 
     /**
@@ -204,12 +216,13 @@ class Service extends AbstractService
         }
 
         if (!$Error) {
-            if ((new Data($this->getBinding()))->createGroup(
-                $Group['Name'], $Group['Description'], $Group['Remark']
-            )
-            ) {
-                return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success()
-                    .' Die Gruppe wurde erfolgreich erstellt').new Redirect('/People/Group',
+            $isCoreGroup = false;
+            if(isset($Group['IsCoreGroup'])){
+                $isCoreGroup = true;
+            }
+            if ((new Data($this->getBinding()))
+                ->createGroup($Group['Name'], $Group['Description'], $Group['Remark'], false, '', $isCoreGroup)) {
+                return new Success(new SuccessIcon().' Die Gruppe wurde erfolgreich erstellt').new Redirect('/People/Group',
                     Redirect::TIMEOUT_SUCCESS);
             } else {
                 return new Danger(new Ban().' Die Gruppe konnte nicht erstellt werden').new Redirect('/People/Group',
@@ -232,15 +245,16 @@ class Service extends AbstractService
     }
 
     /**
-     * @param $Name
+     * @param string $Name
+     * @param string $Description
      *
      * @return bool|TblGroup
      */
-    public function createGroupFromImport($Name)
+    public function createGroupFromImport($Name, $Description = '')
     {
 
         if (!($tblGroup = $this->getGroupByName($Name))) {
-            return (new Data($this->getBinding()))->createGroup($Name, '', '');
+            return (new Data($this->getBinding()))->createGroup($Name, $Description, '');
         } else {
             return $tblGroup;
         }
@@ -288,11 +302,15 @@ class Service extends AbstractService
         }
 
         if (!$Error) {
+            $isCoreGroup = false;
+            if(isset($Group['IsCoreGroup'])){
+                $isCoreGroup = true;
+            }
             if ((new Data($this->getBinding()))->updateGroup(
-                $tblGroup, $Group['Name'], $Group['Description'], $Group['Remark']
+                $tblGroup, $Group['Name'], $Group['Description'], $Group['Remark'], $isCoreGroup
             )
             ) {
-                return new Success(new \SPHERE\Common\Frontend\Icon\Repository\Success().' Die Änderungen wurden erfolgreich gespeichert')
+                return new Success(new SuccessIcon().' Die Änderungen wurden erfolgreich gespeichert')
                 .new Redirect('/People/Group', Redirect::TIMEOUT_SUCCESS);
             } else {
                 return new Danger(new Ban().' Die Änderungen konnte nicht gespeichert werden')
@@ -559,7 +577,7 @@ class Service extends AbstractService
             $this->addPersonListToGroup($tblGroup, $DataAddPerson);
         }
 
-        return new Success('Daten erfolgreich gespeichert', new \SPHERE\Common\Frontend\Icon\Repository\Success())
+        return new Success('Daten erfolgreich gespeichert', new SuccessIcon())
         .new Redirect('/People/Group/Person/Add', Redirect::TIMEOUT_SUCCESS, array(
             'Id'               => $tblGroup->getId(),
             'FilterGroupId'    => $tblFilterGroup ? $tblFilterGroup->getId() : null,
@@ -625,7 +643,7 @@ class Service extends AbstractService
         }
 
         return new Success('Die verfügbaren Personen werden gefiltert.',
-            new \SPHERE\Common\Frontend\Icon\Repository\Success())
+            new SuccessIcon())
         .new Redirect('/People/Group/Person/Add', Redirect::TIMEOUT_SUCCESS, array(
             'Id'               => $tblGroup->getId(),
             'FilterGroupId'    => $tblFilterGroup ? $tblFilterGroup->getId() : null,
@@ -777,5 +795,15 @@ class Service extends AbstractService
         }
 
         return $list;
+    }
+
+    /**
+     * @param string $Name
+     *
+     * @return false|TblGroup[]
+     */
+    public function getGroupListLike($Name)
+    {
+        return (new Data($this->getBinding()))->getGroupListLike($Name);
     }
 }

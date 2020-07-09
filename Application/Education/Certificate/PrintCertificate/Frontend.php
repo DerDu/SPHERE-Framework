@@ -398,6 +398,14 @@ class Frontend extends Extension implements IFrontendInterface
             $backRoute = '/Education/Certificate/DivisionTeacherPrintCertificate';
         }
 
+        $message = new Warning(
+            'Bitte drucken Sie die finalen Zeugnisse nicht direkt aus dem Browser heraus, 
+                            sondern speichern Sie die PDF-Datei auf Ihrem PC und öffnen diese anschließend im 
+                            Adobe Acrobat Reader oder einem vergleichbaren PDF-Reader. <br/> Beim Druck der Zeugnisse 
+                            über den Adobe Acrobat Reader verwenden Sie in den Druckeinstellungen, die Option 
+                            „Seite anpassen und Optionen“ und den Punkt „Tatsächliche Größe“. Bei anderen PDF-Reader 
+                            schauen Sie bitte ebenfalls nach einer vergleichbaren Option.', new Exclamation());
+
         if ($IsLeave) {
             if (($tblDivision = Division::useService()->getDivisionById($DivisionId))) {
 
@@ -432,6 +440,7 @@ class Frontend extends Extension implements IFrontendInterface
                             $tblDivision->getDisplayName(),
                             Panel::PANEL_TYPE_INFO
                         ),
+                        $message,
                         new Panel(
                             new Question() . ' Diese Zeugnisse wirklich drucken und revisionssicher abspeichern?',
                             $data,
@@ -505,6 +514,7 @@ class Frontend extends Extension implements IFrontendInterface
                             $tblDivision->getDisplayName(),
                             Panel::PANEL_TYPE_INFO
                         ),
+                        $message,
                         new Panel(
                             new Question() . ' Dieses Zeugnis wirklich drucken und revisionssicher abspeichern?',
                             $data,

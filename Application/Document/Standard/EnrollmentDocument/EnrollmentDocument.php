@@ -180,23 +180,17 @@ class EnrollmentDocument extends Extension implements IModuleInterface
             $tblStudent = Student::useService()->getStudentByPerson($tblPerson);
             if ($tblStudent) {
                 // Schuldaten der Schule des Schülers
-                $tblStudentTransferType = Student::useService()->getStudentTransferTypeByIdentifier('PROCESS');
-                $tblStudentTransfer = Student::useService()->getStudentTransferByType($tblStudent,
-                    $tblStudentTransferType);
-                if ($tblStudentTransfer) {
-                    $tblCompanySchool = $tblStudentTransfer->getServiceTblCompany();
-                    if ($tblCompanySchool) {
-                        $Global->POST['Data']['School'] = $tblCompanySchool->getName();
-                        $Global->POST['Data']['SchoolExtended'] = $tblCompanySchool->getExtendedName();
-                        $tblAddressSchool = Address::useService()->getAddressByCompany($tblCompanySchool);
-                        if ($tblAddressSchool) {
-                            $Global->POST['Data']['SchoolAddressStreet'] = $tblAddressSchool->getStreetName().' '.$tblAddressSchool->getStreetNumber();
-                            $tblCitySchool = $tblAddressSchool->getTblCity();
-                            if ($tblCitySchool) {
-                                $Global->POST['Data']['SchoolAddressDistrict'] = $tblCitySchool->getDistrict();
-                                $Global->POST['Data']['SchoolAddressCity'] = $tblCitySchool->getCode().' '.$tblCitySchool->getName();
-                                $Global->POST['Data']['Place'] = $tblCitySchool->getName();
-                            }
+                if (($tblCompanySchool = Student::useService()->getCurrentSchoolByPerson($tblPerson))) {
+                    $Global->POST['Data']['School'] = $tblCompanySchool->getName();
+                    $Global->POST['Data']['SchoolExtended'] = $tblCompanySchool->getExtendedName();
+                    $tblAddressSchool = Address::useService()->getAddressByCompany($tblCompanySchool);
+                    if ($tblAddressSchool) {
+                        $Global->POST['Data']['SchoolAddressStreet'] = $tblAddressSchool->getStreetName().' '.$tblAddressSchool->getStreetNumber();
+                        $tblCitySchool = $tblAddressSchool->getTblCity();
+                        if ($tblCitySchool) {
+                            $Global->POST['Data']['SchoolAddressDistrict'] = $tblCitySchool->getDistrict();
+                            $Global->POST['Data']['SchoolAddressCity'] = $tblCitySchool->getCode().' '.$tblCitySchool->getName();
+                            $Global->POST['Data']['Place'] = $tblCitySchool->getName();
                         }
                     }
                 }

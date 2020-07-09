@@ -719,6 +719,7 @@ class Frontend extends Extension implements IFrontendInterface
      * @param null $IsNotGradeType
      * @param null $Data
      * @param null $CertificateList
+     * @param null $Page
      *
      * @return Stage|string
      */
@@ -729,7 +730,8 @@ class Frontend extends Extension implements IFrontendInterface
         $GradeTypeId = null,
         $IsNotGradeType = null,
         $Data = null,
-        $CertificateList = null
+        $CertificateList = null,
+        $Page = null
     ) {
 
         $description = '';
@@ -864,6 +866,7 @@ class Frontend extends Extension implements IFrontendInterface
                         );
                     }
 
+                    list($informationPageList, $pageList) = Prepare::useService()->getCertificateInformationPages($tblPrepareList, $tblGroup);
                     $buttonList[] = new Standard('Sonstige Informationen',
                         '/Education/Certificate/Prepare/Prepare/Setting', null, array(
                             'PrepareId' => $tblPrepare->getId(),
@@ -872,6 +875,17 @@ class Frontend extends Extension implements IFrontendInterface
                             'IsNotGradeType' => true
                         )
                     );
+                    foreach ($pageList as $item) {
+                        $buttonList[] = new Standard('Sonstige Informationen (Seite ' . $item . ')',
+                            '/Education/Certificate/Prepare/Prepare/Setting', null, array(
+                                'PrepareId' => $tblPrepare->getId(),
+                                'GroupId' => $tblGroup ? $tblGroup->getId() : null,
+                                'Route' => $Route,
+                                'IsNotGradeType' => true,
+                                'Page' => $item
+                            )
+                        );
+                    }
 
                     $studentTable = array();
                     $columnTable = array(
@@ -1272,24 +1286,87 @@ class Frontend extends Extension implements IFrontendInterface
                         }
                     }
 
-                    $buttonList[] = new Standard(new Info(new Bold('Sonstige Informationen')),
-                        '/Education/Certificate/Prepare/Prepare/Setting', new Edit(), array(
-                            'PrepareId' => $tblPrepare->getId(),
-                            'GroupId' => $tblGroup ? $tblGroup->getId() : null,
-                            'Route' => $Route,
-                            'IsNotGradeType' => true
-                        )
-                    );
+                    // Aufteilung der Sonstigen Informationen auf mehrere Seiten
+                    list($informationPageList, $pageList) = Prepare::useService()->getCertificateInformationPages($tblPrepareList, $tblGroup);
+
+                    if ($Page == null) {
+                        $buttonList[] = new Standard(new Info(new Bold('Sonstige Informationen')),
+                            '/Education/Certificate/Prepare/Prepare/Setting', new Edit(), array(
+                                'PrepareId' => $tblPrepare->getId(),
+                                'GroupId' => $tblGroup ? $tblGroup->getId() : null,
+                                'Route' => $Route,
+                                'IsNotGradeType' => true
+                            )
+                        );
+                    } else {
+                        $buttonList[] = new Standard('Sonstige Informationen',
+                            '/Education/Certificate/Prepare/Prepare/Setting', null, array(
+                                'PrepareId' => $tblPrepare->getId(),
+                                'GroupId' => $tblGroup ? $tblGroup->getId() : null,
+                                'Route' => $Route,
+                                'IsNotGradeType' => true
+                            )
+                        );
+                    }
+
+                    $nextPage = null;
+                    $isCurrentPage = $Page == null;
+                    foreach ($pageList as $item) {
+                        if ($Page == $item) {
+                            $buttonList[] = new Standard(new Info(new Bold('Sonstige Informationen (Seite ' . $item . ')')),
+                                '/Education/Certificate/Prepare/Prepare/Setting', new Edit(), array(
+                                    'PrepareId' => $tblPrepare->getId(),
+                                    'GroupId' => $tblGroup ? $tblGroup->getId() : null,
+                                    'Route' => $Route,
+                                    'IsNotGradeType' => true,
+                                    'Page' => $item
+                                )
+                            );
+                            $isCurrentPage = true;
+                        } else {
+                            $buttonList[] = new Standard('Sonstige Informationen (Seite ' . $item . ')',
+                                '/Education/Certificate/Prepare/Prepare/Setting', null, array(
+                                    'PrepareId' => $tblPrepare->getId(),
+                                    'GroupId' => $tblGroup ? $tblGroup->getId() : null,
+                                    'Route' => $Route,
+                                    'IsNotGradeType' => true,
+                                    'Page' => $item
+                                )
+                            );
+
+                            if ($isCurrentPage) {
+                                $nextPage = $item;
+                                $isCurrentPage = false;
+                            }
+                        }
+                    }
+
+                    if (($tblSettingAbsence = ConsumerSetting::useService()->getSetting(
+                        'Education', 'ClassRegister', 'Absence', 'UseClassRegisterForAbsence'))
+                    ) {
+                        $useClassRegisterForAbsence = $tblSettingAbsence->getValue();
+                    } else {
+                        $useClassRegisterForAbsence = false;
+                    }
 
                     $studentTable = array();
-                    $columnTable = array(
-                        'Number' => '#',
-                        'Name' => 'Name',
-                        'IntegrationButton' => 'Integration',
-                        'Course' => 'Bildungsgang',
-                        'ExcusedDays' => 'E-FZ', //'ent&shy;schuld&shy;igte FZ',
-                        'UnexcusedDays' => 'U-FZ' // 'unent&shy;schuld&shy;igte FZ'
-                    );
+                    if ($Page == null) {
+                        $columnTable = array(
+                            'Number' => '#',
+                            'Name' => 'Name',
+                            'IntegrationButton' => 'Integration',
+                            'Course' => 'Bildungsgang',
+                            'ExcusedDays' => 'E-FZ', //'ent&shy;schuld&shy;igte FZ',
+                            'UnexcusedDays' => 'U-FZ' // 'unent&shy;schuld&shy;igte FZ'
+                        );
+                    } else {
+                        $columnTable = array(
+                            'Number' => '#',
+                            'Name' => 'Name',
+                            'IntegrationButton' => 'Integration',
+                            'Course' => 'Bildungsgang'
+                        );
+                    }
 
                     foreach ($tblPrepareList as $tblPrepareItem) {
                         if (($tblDivisionItem = $tblPrepareItem->getServiceTblDivision())
@@ -1320,7 +1397,7 @@ class Frontend extends Extension implements IFrontendInterface
                                     $tblPrepareStudent = Prepare::useService()->getPrepareStudentBy($tblPrepareItem,
                                         $tblPerson);
 
-                                    if ($Data === null && $tblPrepareStudent) {
+                                    if ($Data === null && $tblPrepareStudent && $Page == null) {
                                         $Global = $this->getGlobal();
                                         /*
                                          * Fehlzeiten
@@ -1353,23 +1430,32 @@ class Frontend extends Extension implements IFrontendInterface
                                         $Global->savePost();
                                     }
 
-                                    if ($tblPrepareStudent && $tblPrepareStudent->isApproved()) {
-                                        $studentTable[$tblPerson->getId()]['ExcusedDays'] =
-                                            (new NumberField('Data[' . $tblPrepareStudent->getId() . '][ExcusedDays]', '',
-                                                ''))->setDisabled();
-                                        $studentTable[$tblPerson->getId()]['UnexcusedDays'] =
-                                            (new NumberField('Data[' . $tblPrepareStudent->getId() . '][UnexcusedDays]', '',
-                                                ''))->setDisabled();
-                                    } elseif ($tblPrepareStudent && $tblPrepareStudent->getServiceTblCertificate()) {
-                                        $studentTable[$tblPerson->getId()]['ExcusedDays'] =
-                                            new NumberField('Data[' . $tblPrepareStudent->getId() . '][ExcusedDays]', '', '');
-                                        $studentTable[$tblPerson->getId()]['UnexcusedDays'] =
-                                            new NumberField('Data[' . $tblPrepareStudent->getId() . '][UnexcusedDays]', '', '');
-                                    } else {
-                                        // keine Zeugnisvorlage ausgewählt
-                                        $studentTable[$tblPerson->getId()]['ExcusedDays'] = '';
-                                        $studentTable[$tblPerson->getId()]['UnexcusedDays'] = '';
+                                    if ($Page == null) {
+                                        if ($useClassRegisterForAbsence && $tblPrepareStudent
+                                            || ($tblPrepareStudent && $tblPrepareStudent->isApproved())
+                                        ) {
+                                            $studentTable[$tblPerson->getId()]['ExcusedDays'] =
+                                                (new NumberField('Data[' . $tblPrepareStudent->getId() . '][ExcusedDays]',
+                                                    '',
+                                                    ''))->setDisabled();
+                                            $studentTable[$tblPerson->getId()]['UnexcusedDays'] =
+                                                (new NumberField('Data[' . $tblPrepareStudent->getId() . '][UnexcusedDays]',
+                                                    '',
+                                                    ''))->setDisabled();
+                                        } elseif ($tblPrepareStudent && $tblPrepareStudent->getServiceTblCertificate()) {
+                                            $studentTable[$tblPerson->getId()]['ExcusedDays'] =
+                                                new NumberField('Data[' . $tblPrepareStudent->getId() . '][ExcusedDays]',
+                                                    '', '');
+                                            $studentTable[$tblPerson->getId()]['UnexcusedDays'] =
+                                                new NumberField('Data[' . $tblPrepareStudent->getId() . '][UnexcusedDays]',
+                                                    '', '');
+                                        } else {
+                                            // keine Zeugnisvorlage ausgewählt
+                                            $studentTable[$tblPerson->getId()]['ExcusedDays'] = '';
+                                            $studentTable[$tblPerson->getId()]['UnexcusedDays'] = '';
+                                        }
                                     }
+
                                     // Integration ReadOnlyButton
                                     if(Student::useService()->getIsSupportByPerson($tblPerson)) {
                                         $studentTable[$tblPerson->getId()]['IntegrationButton'] = (new Standard('', ApiSupportReadOnly::getEndpoint(), new EyeOpen()))
@@ -1381,9 +1467,16 @@ class Frontend extends Extension implements IFrontendInterface
                                     /*
                                      * Sonstige Informationen der Zeugnisvorlage
                                      */
-                                    $this->getTemplateInformation($tblPrepareItem, $tblPerson, $studentTable, $columnTable,
+                                    $this->getTemplateInformation(
+                                        $tblPrepareItem,
+                                        $tblPerson,
+                                        $studentTable,
+                                        $columnTable,
                                         $Data,
-                                        $CertificateList);
+                                        $CertificateList,
+                                        $Page,
+                                        $informationPageList
+                                    );
 
                                     // leere Elemente auffühlen (sonst steht die Spaltennummer drin)
                                     foreach ($columnTable as $columnKey => $columnName) {
@@ -1471,7 +1564,7 @@ class Frontend extends Extension implements IFrontendInterface
                                     new LayoutColumn(array(
                                         ApiSupportReadOnly::receiverOverViewModal(),
                                         Prepare::useService()->updatePrepareInformationList($form, $tblPrepare,
-                                            $tblGroup ? $tblGroup : null, $Route, $Data, $CertificateList)
+                                            $tblGroup ? $tblGroup : null, $Route, $Data, $CertificateList, $nextPage)
                                     ))
                                 ))
                             ))
@@ -1500,6 +1593,8 @@ class Frontend extends Extension implements IFrontendInterface
      * @param array $columnTable
      * @param array|null $Data
      * @param array|null $CertificateList
+     * @param null|integer $Page
+     * @param null|array $informationPageList
      */
     private function getTemplateInformation(
         TblPrepareCertificate $tblPrepareCertificate,
@@ -1507,7 +1602,9 @@ class Frontend extends Extension implements IFrontendInterface
         &$studentTable,
         &$columnTable,
         &$Data,
-        &$CertificateList
+        &$CertificateList,
+        $Page = null,
+        $informationPageList = null
     ) {
 
         $tblPrepareStudent = Prepare::useService()->getPrepareStudentBy($tblPrepareCertificate, $tblPerson);
@@ -1549,7 +1646,7 @@ class Frontend extends Extension implements IFrontendInterface
                                     $isTeamSet = true;
                                 }
 
-                                if ($tblPrepareInformation->getField() == 'Remark') {
+                                if ($tblPrepareInformation->getField() == 'Remark' || $tblPrepareInformation->getField() == 'RemarkWithoutTeam') {
                                     $hasRemarkText = true;
                                 }
 
@@ -1651,7 +1748,111 @@ class Frontend extends Extension implements IFrontendInterface
                             }
                         }
 
+                        // GTA setzen, werden in der Schülerakte als Arbeitsgemeinschaften gepflegt
+                        if (($tblStudent = $tblPerson->getStudent())
+                            && ($tblSubjectType = Student::useService()->getStudentSubjectTypeByIdentifier('TEAM'))
+                            && ($tblStudentSubjectList = Student::useService()->getStudentSubjectAllByStudentAndSubjectType(
+                                $tblStudent, $tblSubjectType
+                            ))
+                        ) {
+                            $tempList = array();
+                            foreach ($tblStudentSubjectList as $tblStudentSubject) {
+                                if ($tblStudentSubject->getServiceTblSubject()) {
+                                    $tempList[] = $tblStudentSubject->getServiceTblSubject()->getName();
+                                }
+                            }
+
+                            $textGTA = $tblPerson->getFirstSecondName() . ' besuchte in diesem Schuljahr ';
+
+                            switch (count($tempList)) {
+                                case 1: $textGTA .= 'das GTA ' . $tempList[0] . '.';
+                                    break;
+                                case 2: $textGTA .= 'die GTA ' . $tempList[0]
+                                    . ' und ' . $tempList[1] . '.';
+                                    break;
+                                case 3: $textGTA .= 'die GTA ' . $tempList[0]
+                                    . ', ' . $tempList[1]
+                                    . ' und ' . $tempList[2] . '.';
+                                    break;
+                                case 4: $textGTA .= 'die GTA ' . $tempList[0]
+                                    . ', ' . $tempList[1]
+                                    . ', ' . $tempList[2]
+                                    . ' und ' . $tempList[3] . '.';
+                                    break;
+                                case 5: $textGTA .= 'die GTA ' . $tempList[0]
+                                    . ', ' . $tempList[1]
+                                    . ', ' . $tempList[2]
+                                    . ', ' . $tempList[3]
+                                    . ' und ' . $tempList[4] . '.';
+                                    break;
+                            }
+
+                            $Global->POST['Data'][$tblPrepareStudent->getId()]['GTA'] = $textGTA;
+                        }
+
+                        $isSupportForPrimarySchool = false;
+                        // Seelitz Förderbedarf-Satz in die Bemerkung vorsetzen
+                        if (!$hasRemarkText
+                            && ($tblConsumer = Consumer::useService()->getConsumerBySession())
+                            && $tblConsumer->getAcronym() ==  'ESRL'//'REF' für Lokale Test's
+                        ) {
+                           $isSupportForPrimarySchool = true;
+                        // staatliche und pseudostaatliche Grundschulzeugnisse Förderbedarf-Satz in die Bemerkung vorsetzen
+                        } elseif (!$hasRemarkText
+                            && ($Certificate->getCertificateEntity()->getCertificate() == 'GsHjInformation'
+                                || $Certificate->getCertificateEntity()->getCertificate() == 'GsHjOneInfo'
+                                || $Certificate->getCertificateEntity()->getCertificate() == 'GsJa'
+                                || $Certificate->getCertificateEntity()->getCertificate() == 'GsJOne'
+
+                                || $Certificate->getCertificateEntity()->getCertificate() == 'ESZC\CheHjInfoGs'
+                                || $Certificate->getCertificateEntity()->getCertificate() == 'ESZC\CheHjInfoGsOne'
+                                || $Certificate->getCertificateEntity()->getCertificate() == 'ESZC\CheJGs'
+                                || $Certificate->getCertificateEntity()->getCertificate() == 'ESZC\CheJGsOne'
+                            )
+                        ) {
+                            $isSupportForPrimarySchool = true;
+                        } elseif (!$hasRemarkText
+                            && ($Certificate->getCertificateEntity()->getCertificate() == 'ESBD\EsbdGsHjInformation'
+                                || $Certificate->getCertificateEntity()->getCertificate() == 'ESBD\EsbdGsHjOneInfo'
+                                || $Certificate->getCertificateEntity()->getCertificate() == 'ESBD\EsbdGsJa'
+                                || $Certificate->getCertificateEntity()->getCertificate() == 'ESBD\EsbdGsJOne'
+                            )
+                        ) {
+                            $isSupportForPrimarySchool = true;
+                        }
+
+                        if ($isSupportForPrimarySchool) {
+                            $textSupport = '';
+                            if (($tblSupport = Student::useService()->getSupportForReportingByPerson($tblPerson))
+                                && ($tblPrimaryFocus = Student::useService()->getPrimaryFocusBySupport($tblSupport))
+                            ) {
+                                if ($tblPrimaryFocus->getName() == 'Lernen') {
+                                    $textSupport = $tblPerson->getFirstSecondName() . ' ' . $tblPerson->getLastName()
+                                        . ' wurde inklusiv nach den Lehrplänen der Schule mit dem Förderschwerpunkt Lernen unterrichtet.';
+                                }
+                                if ($tblPrimaryFocus->getName() == 'Geistige Entwicklung') {
+                                    $textSupport = $tblPerson->getFirstSecondName() . ' ' . $tblPerson->getLastName()
+                                        . ' wurde inklusiv nach den Lehrplänen der Schule mit dem Förderschwerpunkt geistige Entwicklung unterrichtet.';
+                                }
+                            }
+
+                            // Seelitz
+                            $Global->POST['Data'][$tblPrepareStudent->getId()]['RemarkWithoutTeam'] = $textSupport;
+                            // staatliche GS-Zeugnisse
+                            $Global->POST['Data'][$tblPrepareStudent->getId()]['Remark'] = $textSupport;
+                        }
+
                         $Global->savePost();
+                    }
+
+                    // bei der Aufteilung der sonstigen Informationen auf mehrere Seite müssen, diese auf der 1. Seite ignoriert werden
+                    $ignoreInformationOnFirstPage = array();
+                    if ($Page == null && isset($informationPageList[$tblCertificate->getId()])) {
+                        foreach($informationPageList[$tblCertificate->getId()] as $pageList) {
+                            foreach ($pageList as $pageItem) {
+                                $ignoreInformationOnFirstPage[$pageItem] = $pageItem;
+                            }
+                        }
                     }
 
                     // Create Form, Additional Information from Template
@@ -1669,7 +1870,10 @@ class Frontend extends Extension implements IFrontendInterface
                                 $tblPerson,
                                 $tblPrepareStudent,
                                 $tblCertificate,
-                                &$hasTeamExtra
+                                &$hasTeamExtra,
+                                $Page,
+                                $ignoreInformationOnFirstPage,
+                                $informationPageList
                             ) {
 
                                 $PlaceholderList = explode('.', $Placeholder);
@@ -1686,15 +1890,25 @@ class Frontend extends Extension implements IFrontendInterface
                                 $PlaceholderName = str_replace('.P' . $tblPerson->getId(), '', $Placeholder);
 
                                 $Type = array_shift($Identifier);
-                                if (!method_exists($Certificate, 'get' . $Type)) {
+                                $key = str_replace('Content.Input.', '', $PlaceholderName);
+
+                                // Entscheidung ob das Field auf der aktuelle Seite der sonstige Informationen angezeigt wird
+                                $addField = true;
+                                if ($Page == null) {
+                                    if (isset($ignoreInformationOnFirstPage[$key])) {
+                                        $addField = false;
+                                    }
+                                } else {
+                                    $addField = isset($informationPageList[$tblCertificate->getId()][$Page][$key]);
+                                }
+
+                                if ($addField && !method_exists($Certificate, 'get' . $Type)) {
                                     if (isset($FormField[$PlaceholderName])) {
                                         if (isset($FormLabel[$PlaceholderName])) {
                                             $Label = $FormLabel[$PlaceholderName];
                                         } else {
                                             $Label = $PlaceholderName;
                                         }
-
-                                        $key = str_replace('Content.Input.', '', $PlaceholderName);
 
                                         if ($key == 'TeamExtra' /*|| isset($columnTable['TeamExtra'])*/) {
                                             $hasTeamExtra = true;
@@ -1776,23 +1990,25 @@ class Frontend extends Extension implements IFrontendInterface
                             });
                     }
 
-                    // für Förderzeugnisse Lernen extra Spalte Inklusive Unterrichtung
-                    $isSupportLearningCertificate = false;
-                    if (strpos($tblCertificate->getCertificate(), 'FsLernen') !== false) {
-                        $isSupportLearningCertificate = true;
-                    }
-
-                    if ($isSupportLearningCertificate && $tblPrepareStudent) {
-                        if (!isset($columnTable['Support'])) {
-                            $columnTable['Support'] = 'Inklusive Unterrichtung';
+                    if ($Page == null) {
+                        // für Förderzeugnisse Lernen extra Spalte Inklusive Unterrichtung
+                        $isSupportLearningCertificate = false;
+                        if (strpos($tblCertificate->getCertificate(), 'FsLernen') !== false) {
+                            $isSupportLearningCertificate = true;
                         }
 
-                        $textArea = new TextArea('Data[' . $tblPrepareStudent->getId() . '][Support]', '', '');
-                        if ($tblPrepareStudent->isApproved()) {
-                            $textArea->setDisabled();
-                        }
+                        if ($isSupportLearningCertificate && $tblPrepareStudent) {
+                            if (!isset($columnTable['Support'])) {
+                                $columnTable['Support'] = 'Inklusive Unterrichtung';
+                            }
 
-                        $studentTable[$tblPerson->getId()]['Support'] = $textArea;
+                            $textArea = new TextArea('Data[' . $tblPrepareStudent->getId() . '][Support]', '', '');
+                            if ($tblPrepareStudent->isApproved()) {
+                                $textArea->setDisabled();
+                            }
+
+                            $studentTable[$tblPerson->getId()]['Support'] = $textArea;
+                        }
                     }
                 }
             }
@@ -2006,7 +2222,8 @@ class Frontend extends Extension implements IFrontendInterface
                                         if (($tblGradeItem = Gradebook::useService()->getGradeByTestAndStudent($tblTest,
                                                 $tblPerson))
                                             && $tblTest->getServiceTblSubject()
-                                            && $tblGradeItem->getGrade() !== null && $tblGradeItem->getGrade() !== ''
+                                            && (($tblGradeItem->getGrade() !== null && $tblGradeItem->getGrade() !== '')
+                                                || $tblGradeItem->getTblGradeText() != null)
                                         ) {
                                             $countSubjectGrades++;
                                         }
@@ -2501,6 +2718,7 @@ class Frontend extends Extension implements IFrontendInterface
                     ) {
                         // Alle Klassen ermitteln in denen der Schüler im Schuljahr Unterricht hat
                         foreach ($tblDivisionStudentAll as $tblPerson) {
+                            $studentList[$tblPerson->getId()]['Name'] = $tblPerson->getLastFirstName();
                             if (!$tblGroup || Group::useService()->existsGroupPerson($tblGroup, $tblPerson)) {
                                 if (($tblYear = $tblDivision->getServiceTblYear())
                                     && ($tblPersonDivisionList = Student::useService()->getDivisionListByPersonAndYear($tblPerson,
@@ -2664,8 +2882,6 @@ class Frontend extends Extension implements IFrontendInterface
         TblSubjectGroup $tblSubjectGroup = null,
         TblPrepareCertificate $tblPrepare = null
     ) {
-        $studentList[$tblPerson->getId()]['Name'] =
-            $tblPerson->getLastFirstName();
         $tblGrade = Gradebook::useService()->getGradeByTestAndStudent($tblTest,
             $tblPerson);
 
@@ -2944,7 +3160,7 @@ class Frontend extends Extension implements IFrontendInterface
                                 !empty($personList)
                                     ? new Well(Prepare::useService()->updatePrepareSetSigner($form,
                                     $tblPrepare, $tblGroup ? $tblGroup : null, $Data, $Route))
-                                    : new Warning('Für diese Klasse sind keine Klassenlehrer/Mentoren/Tudoren vorhanden.')
+                                    : new Warning('Für diese Klasse sind keine Klassenlehrer/Mentoren/Tutoren vorhanden.')
                             )),
                         ))
                     ))
@@ -4292,9 +4508,6 @@ class Frontend extends Extension implements IFrontendInterface
         TblSubject $tblSubject,
         $studentList
     ) {
-
-        $studentList[$tblPerson->getId()]['Name'] = $tblPerson->getLastFirstName();
-
         if (($tblPrepareAdditionalGradeType = Prepare::useService()->getPrepareAdditionalGradeTypeByIdentifier('EN'))
             && ($tblPrepareAdditionalGrade = Prepare::useService()->getPrepareAdditionalGradeBy(
                 $tblPrepare,
@@ -4795,6 +5008,11 @@ class Frontend extends Extension implements IFrontendInterface
                         if (($tblDivisionItem = $tblDivisionSubject->getTblDivision())
                             && ($tblSubjectItem = $tblDivisionSubject->getServiceTblSubject())
                         ) {
+                            // Fächer ohne Benotung überspringen
+                            if (!$tblDivisionSubject->getHasGrading()) {
+                                continue;
+                            }
+
                             $tblSubjectGroup = $tblDivisionSubject->getTblSubjectGroup();
                             $gradeList = array();
                             $average = '';

@@ -66,8 +66,17 @@ class Service extends Extension
                     ->validateMaxSize('5M')
                     ->doUpload();
             } catch (\Exception $Exception) {
-
-                $Form->setError('Attachment', new Listing(json_decode($Exception->getMessage())));
+                $ArrayExeption = json_decode($Exception->getMessage());
+                foreach($ArrayExeption as &$ExeptionMessage){
+                    switch ($ExeptionMessage){
+                        case 'The uploaded file exceeds the upload_max_filesize directive in php.ini':
+                            $ExeptionMessage = 'Der Anhang überschreitet die maximale Größe von '.ini_get('upload_max_filesize').'B';
+                            break;
+                        case 'The uploaded file was not sent with a POST request':
+                            $ExeptionMessage = 'Das Ticket konnte nicht erstellt werden';
+                    }
+                }
+                $Form->setError('Attachment', new Listing($ArrayExeption));
                 $Error = true;
             }
         }
@@ -120,6 +129,88 @@ class Service extends Extension
             }
             return new Success('Das Ticket wurde erfolgreich erstellt')
             .new Redirect('/Manual/Support', Redirect::TIMEOUT_SUCCESS);
+        }
+
+        return $Form;
+    }
+
+    /**
+     * @param IFormInterface|null $Form
+     * @param null|array          $Request
+     *
+     * @return IFormInterface|string
+     */
+    public function createRequest(IFormInterface $Form = null, $Request = null)
+    {
+
+        /**
+         * Skip to Frontend
+         */
+        if (null === $Request) {
+            return $Form;
+        }
+
+        $Error = false;
+
+        if (isset( $Request['Mail'] ) && empty( $Request['Mail'] )) {
+            $Form->setError('Request[Mail]', 'Bitte geben Sie Ihre Email-Adresse an');
+            $Error = true;
+        } elseif (isset( $Request['Mail'] )) {
+            $Request['Mail'] = $this->validateMailAddress($Request['Mail']);
+            if (!$Request['Mail']) {
+                $Form->setError('Request[Mail]', 'Bitte geben Sie eine gültige Email-Adresse an');
+                $Error = true;
+            }
+        }
+        if (isset( $Request['Body'] ) && empty( $Request['Body'] )) {
+            $Form->setError('Request[Body]', 'Bitte geben Sie einen Inhalt an');
+            $Error = true;
+        }
+
+        if (!$Error) {
+
+            try {
+                $mailAddress = $Request['Mail'];
+
+                $subject = utf8_decode('Cource-Code Anfrage');
+
+                $body = '';
+                if (($tblAccount = Account::useService()->getAccountBySession())) {
+                    $body .= 'Account-Id: ' . $tblAccount->getId() . '<br/>';
+                    $body .= 'Account-Benutzername: ' . htmlentities($tblAccount->getUsername()) . '<br/>';
+                    if (($tblPersonAllByAccount = Account::useService()->getPersonAllByAccount($tblAccount))) {
+                        $tblPerson = $tblPersonAllByAccount[0];
+                        if ($tblPerson) {
+                            $body .= 'Person-Name: ' . htmlentities($tblPerson->getFullName()) . '<br/>';
+                        }
+                    }
+                }
+                $body .= 'Absender-Mailadresse: ' . $mailAddress . '<br/><br/>';
+                $body .= 'Inhalt der Nachricht: ' . '<br/>'
+                    . nl2br(htmlentities($Request['Body']));
+                if (!empty( $Request['CallBackNumber'] )) {
+                    $body .= '<br/><br/>' . htmlentities('Rückrufnummer: ') . $Request['CallBackNumber'];
+                }
+
+                /** @var YouTrackMail $Config */
+                $Config = (new \SPHERE\System\Support\Support(new YouTrackMail()))->getSupport();
+                /** @var EdenPhpSmtp $Mail */
+                $Mail = Mail::getSmtpMail()->connectServer(
+                    $Config->getHost(), $Config->getUsername(), $Config->getPassword(), 465, true
+                );
+                $Mail->setMailSubject($subject);
+                $Mail->setMailBody($body);
+                $Mail->addRecipientTO($Config->getMail());
+                $Mail->setReplyHeader($mailAddress);
+                $Mail->sendMail();
+                $Mail->disconnectServer();
+            } catch (\Exception $Exception) {
+                return new Danger('Die Anfrage konnte leider nicht erstellt werden')
+                .new Error( $Exception->getCode(), $Exception->getMessage(), false )
+                .new Redirect('/Document/License', Redirect::TIMEOUT_ERROR);
+            }
+            return new Success('Die Anfrage wurde erfolgreich erstellt')
+            .new Redirect('/Document/License', Redirect::TIMEOUT_SUCCESS);
         }
 
         return $Form;

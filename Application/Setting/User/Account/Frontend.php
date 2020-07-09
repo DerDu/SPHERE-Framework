@@ -1,6 +1,7 @@
 <?php
 namespace SPHERE\Application\Setting\User\Account;
 
+use DateTime;
 use SPHERE\Application\Api\Contact\ApiContactAddress;
 use SPHERE\Application\Api\Setting\UserAccount\ApiUserAccount;
 use SPHERE\Application\Contact\Address\Address;
@@ -72,6 +73,7 @@ use SPHERE\Common\Frontend\Table\Structure\TableData;
 use SPHERE\Common\Frontend\Text\Repository\Bold;
 use SPHERE\Common\Frontend\Text\Repository\Muted;
 use SPHERE\Common\Frontend\Text\Repository\Small;
+use SPHERE\Common\Frontend\Text\Repository\ToolTip;
 use SPHERE\Common\Frontend\Text\Repository\Warning;
 use SPHERE\Common\Window\Redirect;
 use SPHERE\Common\Window\Stage;
@@ -435,7 +437,6 @@ class Frontend extends Extension implements IFrontendInterface
 
                 // ignor Person with existing Accounts (By Person)
                 if ($tblPerson && !AccountAuthorization::useService()->getAccountAllByPerson($tblPerson)) {
-                    /** @noinspection PhpUndefinedFieldInspection */
                     $DataPerson['Name'] = false;
                     $DataPerson['Check'] = '';
                     $DataPerson['Course'] = '';
@@ -784,8 +785,6 @@ class Frontend extends Extension implements IFrontendInterface
                         foreach ($tblToPersonList as $tblToPerson) {
                             $tblPerson = $tblToPerson->getServiceTblPersonFrom();
                             if ($tblToPerson->getTblType() && $tblToPerson->getTblType()->getId() == $tblType->getId()){
-
-                                /** @noinspection PhpUndefinedFieldInspection */
                                 $DataPerson['Name'] = false;
                                 $DataPerson['Check'] = '';
                                 $DataPerson['Type'] = $tblType->getName();
@@ -843,8 +842,13 @@ class Frontend extends Extension implements IFrontendInterface
                 $Item['UserName'] = new Warning(new WarningIcon().' Keine Accountnamen hinterlegt');
                 $Item['Address'] = '';
                 $Item['PersonListCustody'] = '';
+                $Item['Division'] = new Muted('-NA-');
                 $Item['PersonListStudent'] = '';
-                $Item['GroupByTime'] = $tblUserAccount->getGroupByTime();
+                $Item['GroupByTime'] = ($tblUserAccount->getAccountCreator()
+                        ? ''.$tblUserAccount->getAccountCreator().' - '
+                        : new Muted('-NA-  ')
+                    ).$tblUserAccount->getGroupByTime('d.m.Y');
+                $Item['LastUpdate'] = '';
                 $Item['Option'] =
                     new Standard('', '/Setting/User/Account/Password/Generation', new Mail(),
                         array(
@@ -874,6 +878,9 @@ class Frontend extends Extension implements IFrontendInterface
                         $Item['Salutation'] = $tblPerson->getSalutation();
                     }
                     $Item['Name'] = $tblPerson->getLastFirstName();
+                    if(($tblDivision =  Student::useService()->getCurrentDivisionByPerson($tblPerson))){
+                        $Item['Division'] = $tblDivision->getDisplayName();
+                    }
 
                     $CustodyList = array();
                     $tblRelationshipList = Relationship::useService()->getPersonRelationshipAllByPerson($tblPerson);
@@ -892,6 +899,30 @@ class Frontend extends Extension implements IFrontendInterface
                         $Item['PersonListCustody'] = implode($CustodyList);
                     }
                 }
+
+
+                if($tblUserAccount->getUpdateDate()){
+                    $UpdateTypeString = '';
+                    $UpdateTypeAcronym = '';
+                    $UpdateType = $tblUserAccount->getUpdateType();
+                    if($UpdateType == TblUserAccount::VALUE_UPDATE_TYPE_RESET){
+                        $UpdateTypeAcronym = 'Z';
+                        $UpdateTypeString = 'Zurückgesetzt';
+                    } elseif($UpdateType == TblUserAccount::VALUE_UPDATE_TYPE_RENEW){
+                        $UpdateTypeAcronym = 'G';
+                        $UpdateTypeString = 'Neu Generiert';
+                    }
+
+                    $Updater = new Muted('-NA- ');
+                    if($tblUserAccount->getAccountUpdater()){
+                        $Updater = $tblUserAccount->getAccountUpdater();
+                    }
+                    $updateTime = $tblUserAccount->getUpdateDate('d.m.Y');
+                    $Item['LastUpdate'] = new ToolTip($UpdateTypeAcronym.' '.$Updater.' '.$updateTime, $UpdateTypeString);
+                }
+
+                $Item['Option'] = '<div style="width: 155px">'.$Item['Option'].'</div>';
+
                 array_push($TableContent, $Item);
             });
         }
@@ -912,11 +943,16 @@ class Frontend extends Extension implements IFrontendInterface
                                         'UserName'          => 'Account',
                                         'Address'           => 'Adresse',
                                         'PersonListCustody' => 'Sorgeberechtigte',
-                                        'GroupByTime'       => 'Erstellung am',
+                                        'Division'          => 'aktuelle Klasse',
+                                        'GroupByTime'       => new ToolTip('Erstellung '.new InfoIcon(),'Benutzer - Datum'),
+                                        'LastUpdate'        => new ToolTip('Passwort bearbeitet '.new InfoIcon(), 'Art - Benutzer - Datum'),
                                         'Option'            => ''
                                     ), array(
                                         'order'      => array(array(1, 'asc')),
-                                        'columnDefs' => array(array('type' => Consumer::useService()->getGermanSortBySetting(), 'targets' => 1))
+                                        'columnDefs' => array(
+                                            array('type' => Consumer::useService()->getGermanSortBySetting(), 'targets' => 1),
+                                            array('width' => '142px', 'orderable' => false, 'targets' => -1)
+                                        )
                                     )
                                 )
                                 : new WarningMessage('Keine Benutzerzugänge vorhanden.')
@@ -951,7 +987,11 @@ class Frontend extends Extension implements IFrontendInterface
                 $Item['Address'] = '';
                 $Item['PersonListCustody'] = '';
                 $Item['PersonListStudent'] = '';
-                $Item['GroupByTime'] = $tblUserAccount->getGroupByTime();
+                $Item['GroupByTime'] = ($tblUserAccount->getAccountCreator()
+                        ? ''.$tblUserAccount->getAccountCreator().' - '
+                        : new Muted('-NA-  ')
+                    ).$tblUserAccount->getGroupByTime('d.m.Y');
+                $Item['LastUpdate'] = '';
                 $Item['Option'] =
                     new Standard('', '/Setting/User/Account/Password/Generation', new Mail(),
                         array(
@@ -1001,6 +1041,29 @@ class Frontend extends Extension implements IFrontendInterface
                         $Item['PersonListStudent'] = implode($StudentList);
                     }
                 }
+
+                if($tblUserAccount->getUpdateDate()){
+                    $UpdateTypeString = '';
+                    $UpdateTypeAcronym = '';
+                    $UpdateType = $tblUserAccount->getUpdateType();
+                    if($UpdateType == TblUserAccount::VALUE_UPDATE_TYPE_RESET){
+                        $UpdateTypeAcronym = 'Z';
+                        $UpdateTypeString = 'Zurückgesetzt';
+                    } elseif($UpdateType == TblUserAccount::VALUE_UPDATE_TYPE_RENEW){
+                        $UpdateTypeAcronym = 'G';
+                        $UpdateTypeString = 'Neu Generiert';
+                    }
+
+                    $Updater = new Muted('-NA- ');
+                    if($tblUserAccount->getAccountUpdater()){
+                        $Updater = $tblUserAccount->getAccountUpdater();
+                    }
+                    $updateTime = $tblUserAccount->getUpdateDate('d.m.Y');
+                    $Item['LastUpdate'] = new ToolTip($UpdateTypeAcronym.' '.$Updater.' '.$updateTime, $UpdateTypeString);
+                }
+
+                $Item['Option'] = '<div style="width: 155px">'.$Item['Option'].'</div>';
+
                 array_push($TableContent, $Item);
             });
         }
@@ -1021,11 +1084,15 @@ class Frontend extends Extension implements IFrontendInterface
                                         'UserName'          => 'Account',
                                         'Address'           => 'Adresse',
                                         'PersonListStudent' => 'Sorgeberechtigt für',
-                                        'GroupByTime'       => 'Erstellung am',
+                                        'GroupByTime'       => new ToolTip('Erstellung '.new InfoIcon(),'Benutzer - Datum'),
+                                        'LastUpdate'        => new ToolTip('Passwort bearbeitet '.new InfoIcon(), 'Art - Benutzer - Datum'),
                                         'Option'            => ''
                                     ), array(
                                         'order'      => array(array(1, 'asc')),
-                                        'columnDefs' => array(array('type' => Consumer::useService()->getGermanSortBySetting(), 'targets' => 1))
+                                        'columnDefs' => array(
+                                            array('type' => Consumer::useService()->getGermanSortBySetting(), 'targets' => 1),
+                                            array('width' => '142px', 'orderable' => false, 'targets' => -1)
+                                        )
                                     )
                                 )
                                 : new WarningMessage('Keine Benutzerzugänge vorhanden.')
@@ -1088,7 +1155,7 @@ class Frontend extends Extension implements IFrontendInterface
                         $item['ExportInfo'] = '';
                         if($LastDownload){
                             //ToDO better performance with Querybuilder
-                            $tblLastUserAccountList = Account::useService()->getUserAccountByLastExport(new \DateTime($GroupByTime), new \DateTime($LastDownload));
+                            $tblLastUserAccountList = Account::useService()->getUserAccountByLastExport(new DateTime($GroupByTime), new DateTime($LastDownload));
                             if($tblLastUserAccountList && ($tblLastUserAccount = $tblLastUserAccountList[0])){
                                 $item['ExportInfo'] = $tblLastUserAccount->getLastDownloadAccount()
                                     .' ('.$tblLastUserAccount->getExportDate().')';
@@ -1339,7 +1406,7 @@ class Frontend extends Extension implements IFrontendInterface
             $Global->POST['Data']['Mail'] = $CompanyMail;
             $Global->POST['Data']['Web'] = $CompanyWeb;
             // Signer
-            $Global->POST['Data']['Date'] = (new \DateTime())->format('d.m.Y');
+            $Global->POST['Data']['Date'] = (new DateTime())->format('d.m.Y');
             $Global->POST['Data']['Place'] = $CompanyCity;
             $Global->savePost();
         }
@@ -1479,6 +1546,7 @@ class Frontend extends Extension implements IFrontendInterface
                     if (AccountAuthorization::useService()->resetPassword($Password, $tblAccount)) {
                         $IsChanged = true;
                     }
+                    Account::useService()->changeUpdateDate($tblUserAccount, TblUserAccount::VALUE_UPDATE_TYPE_RESET);
                 }
 
                 $Stage->setContent(
@@ -1624,7 +1692,7 @@ class Frontend extends Extension implements IFrontendInterface
     {
         $Stage = new Stage('Benutzer', 'Klartext Passwörter');
         if ($GroupByTime) {
-            $GroupByTime = new \DateTime($GroupByTime);
+            $GroupByTime = new DateTime($GroupByTime);
             $tblUserAccountList = Account::useService()->getUserAccountByTime($GroupByTime);
             if (!$tblUserAccountList) {
                 return $Stage.new DangerMessage('Export nicht gefunden', new Ban())

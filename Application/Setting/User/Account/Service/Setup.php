@@ -48,39 +48,23 @@ class Setup extends AbstractSetup
     private function setTableUserAccount(Schema &$Schema)
     {
 
-        $Table = $this->getConnection()->createTable($Schema, 'tblUserAccount');
-        if (!$this->getConnection()->hasColumn('tblUserAccount', 'serviceTblAccount')) {
-            $Table->addColumn('serviceTblAccount', 'bigint');
-        }
-        if (!$this->getConnection()->hasColumn('tblUserAccount', 'serviceTblPerson')) {
-            $Table->addColumn('serviceTblPerson', 'bigint');
-        }
-        $this->getConnection()->removeIndex($Table, array('serviceTblPerson'));
+        $Table = $this->createTable($Schema, 'tblUserAccount');
+        $this->createColumn($Table, 'serviceTblAccount', self::FIELD_TYPE_BIGINT);
+        $this->createColumn($Table, 'serviceTblPerson', self::FIELD_TYPE_BIGINT);
         if (!$this->getConnection()->hasIndex($Table, array('serviceTblPerson', Element::ENTITY_REMOVE))) {
             $Table->addIndex(array('serviceTblPerson', Element::ENTITY_REMOVE));
         }
-        if (!$this->getConnection()->hasColumn('tblUserAccount', 'Type')) {
-            $Table->addColumn('Type', 'string');
-        }
-        if (!$this->getConnection()->hasColumn('tblUserAccount', 'UserPassword')) {
-            $Table->addColumn('UserPassword', 'string');
-        }
-        if (!$this->getConnection()->hasColumn('tblUserAccount', 'AccountPassword')) {
-            $Table->addColumn('AccountPassword', 'string');
-        }
-        if (!$this->getConnection()->hasColumn('tblUserAccount', 'ExportDate')) {
-            $Table->addColumn('ExportDate', 'datetime', array('notnull' => false));
-        }
-        if (!$this->getConnection()->hasColumn('tblUserAccount', 'LastDownloadAccount')) {
-            $Table->addColumn('LastDownloadAccount', 'string');
-        }
-        if (!$this->getConnection()->hasColumn('tblUserAccount', 'GroupByTime')) {
-            $Table->addColumn('GroupByTime', 'datetime');
-        }
-        if (!$this->getConnection()->hasColumn('tblUserAccount', 'GroupByCount')) {
-            $Table->addColumn('GroupByCount', 'integer', array('notnull' => false));
-        }
-        $this->getConnection()->getSchema()->getTableNames();
+        $this->createColumn($Table, 'Type', self::FIELD_TYPE_STRING);
+        $this->createColumn($Table, 'UserPassword', self::FIELD_TYPE_STRING);
+        $this->createColumn($Table, 'AccountPassword', self::FIELD_TYPE_STRING);
+        $this->createColumn($Table, 'ExportDate', self::FIELD_TYPE_DATETIME, true);
+        $this->createColumn($Table, 'LastDownloadAccount', self::FIELD_TYPE_STRING);
+        $this->createColumn($Table, 'GroupByTime', self::FIELD_TYPE_DATETIME);
+        $this->createColumn($Table, 'GroupByCount', self::FIELD_TYPE_INTEGER, true);
+        $this->createColumn($Table, 'AccountCreator', self::FIELD_TYPE_STRING, false, '');
+        $this->createColumn($Table, 'AccountUpdater', self::FIELD_TYPE_STRING, false, '');
+        $this->createColumn($Table, 'UpdateDate', self::FIELD_TYPE_DATETIME, true);
+        $this->createColumn($Table, 'UpdateType', self::FIELD_TYPE_INTEGER, true);
 
         return $Table;
     }

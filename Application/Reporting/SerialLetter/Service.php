@@ -10,6 +10,7 @@ use SPHERE\Application\Contact\Address\Service\Entity\TblToPerson;
 use SPHERE\Application\Corporation\Company\Company;
 use SPHERE\Application\Corporation\Company\Service\Entity\TblCompany;
 use SPHERE\Application\Document\Storage\Storage;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentTransferType;
 use SPHERE\Application\People\Meta\Student\Student;
 use SPHERE\Application\People\Person\Person;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
@@ -919,8 +920,16 @@ class Service extends AbstractService
                                         $AddressList[$tblPerson->getId().$tblAddress->getId()]['Division'] =
                                             Student::useService()->getDisplayCurrentDivisionListByPerson($tblPerson, '');
                                         $tblStudent = Student::useService()->getStudentByPerson($tblPerson);
+
+                                        $AddressList[$tblPerson->getId().$tblAddress->getId()]['SchoolCourse'] = '';
                                         if ($tblStudent) {
                                             $AddressList[$tblPerson->getId().$tblAddress->getId()]['StudentNumber'] = $tblStudent->getIdentifierComplete();
+                                            $tblStudentTransferType = Student::useService()->getStudentTransferTypeByIdentifier(TblStudentTransferType::PROCESS);
+                                            if(($tblStudentTransfer = Student::useService()->getStudentTransferByType($tblStudent, $tblStudentTransferType))){
+                                                if($tblStudentTransfer->getServiceTblCourse()){
+                                                    $AddressList[$tblPerson->getId().$tblAddress->getId()]['SchoolCourse'] = $tblStudentTransfer->getServiceTblCourse()->getName();
+                                                }
+                                            }
                                         } else {
                                             $AddressList[$tblPerson->getId().$tblAddress->getId()]['StudentNumber'] = '';
                                         }
@@ -1095,11 +1104,12 @@ class Service extends AbstractService
                                 'StreetNumber'      => ( isset($Address['StreetNumber']) ? $Address['StreetNumber'] : '' ),
                                 'Code'              => ( isset($Address['Code']) ? $Address['Code'] : '' ),
                                 'City'              => ( isset($Address['City']) ? $Address['City'] : '' ),
-                                'Salutation'          => ( isset($Address['Salutation']) ? $Address['Salutation'] : '' ),
-                                'FirstName'           => ( isset($Address['FirstName']) ? $Address['FirstName'] : '' ),
-                                'LastName'            => ( isset($Address['LastName']) ? $Address['LastName'] : '' ),
-                                'StudentNumber'       => ( isset($Address['StudentNumber']) ? $Address['StudentNumber'] : '' ),
-                                'Division'            => ( isset($Address['Division']) ? $Address['Division'] : '' ),
+                                'Salutation'        => ( isset($Address['Salutation']) ? $Address['Salutation'] : '' ),
+                                'FirstName'         => ( isset($Address['FirstName']) ? $Address['FirstName'] : '' ),
+                                'LastName'          => ( isset($Address['LastName']) ? $Address['LastName'] : '' ),
+                                'StudentNumber'     => ( isset($Address['StudentNumber']) ? $Address['StudentNumber'] : '' ),
+                                'Division'          => ( isset($Address['Division']) ? $Address['Division'] : '' ),
+                                'SchoolCourse'      => ( isset($Address['SchoolCourse']) ? $Address['SchoolCourse'] : '' ),
                             );
                         }
                     }
@@ -1136,7 +1146,8 @@ class Service extends AbstractService
             $export->setValue($export->getCell($column++, $row), "Person_Vorname");
             $export->setValue($export->getCell($column++, $row), "Person_Nachname");
             $export->setValue($export->getCell($column++, $row), "Person_Schüler-Nr.");
-            $export->setValue($export->getCell($column, $row), "Person_Aktuelle Klasse(n)");
+            $export->setValue($export->getCell($column++, $row), "Person_Aktuelle Klasse(n)");
+            $export->setValue($export->getCell($column, $row), "Bildungsgang");
 
             $row = 1;
             /** @var TblAddressPerson $tblAddressPerson */
@@ -1174,7 +1185,8 @@ class Service extends AbstractService
                 $export->setValue($export->getCell($column++, $row), $Export['FirstName']);
                 $export->setValue($export->getCell($column++, $row), $Export['LastName']);
                 $export->setValue($export->getCell($column++, $row), $Export['StudentNumber']);
-                $export->setValue($export->getCell($column, $row), $Export['Division']);
+                $export->setValue($export->getCell($column++, $row), $Export['Division']);
+                $export->setValue($export->getCell($column, $row), $Export['SchoolCourse']);
 
                 $row++;
             }

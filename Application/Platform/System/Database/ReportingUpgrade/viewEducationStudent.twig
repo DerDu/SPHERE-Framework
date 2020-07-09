@@ -1,19 +1,32 @@
 SELECT distinct
-    vDS.TblDivisionStudent_serviceTblPerson AS TblPerson_Id,
-    vDS.TblLevel_Id AS TblLevel_Id,
-    vDS.TblLevel_Name AS TblLevel_Name,
-    vDS.TblLevel_Description AS TblLevel_Description,
-    vDS.TblLevel_IsChecked AS TblLevel_IsChecked,
-    vDS.TblDivision_Name AS TblDivision_Name,
-    vDS.TblDivision_Description AS TblDivision_Description,
-    concat(vDS.TblLevel_Name, TblDivision_Name) as TblDivision_Display,
-    vST.TblType_Name AS TblType_Name,
-    vST.TblType_Description AS TblType_Description,
-    (CASE WHEN (ISNULL(vYP.TblYear_Year) OR (vYP.TblYear_Year = '')) THEN vYP.TblYear_Name ELSE vYP.TblYear_Year END) AS TblYear_Year,
-    vYP.TblYear_Description AS TblYear_Description
-    FROM EducationLessonDivision_{{ ConsumerAcronym }}.viewDivisionStudent vDS
-        LEFT JOIN EducationSchoolType_{{ ConsumerAcronym }}.viewSchoolType vST ON vST.TblType_Id = vDS.TblLevel_serviceTblType
-        LEFT JOIN EducationLessonTerm_{{ ConsumerAcronym }}.viewYearPeriod vYP ON vYP.TblYearPeriod_tblYear = vDS.TblDivision_serviceTblYear
-    WHERE
-        vDS.TblDivisionStudent_LeaveDate is null
-        or (vDS.TblDivisionStudent_LeaveDate is not null and CURRENT_TIMESTAMP() <= vDS.TblDivisionStudent_LeaveDate)
+
+-- PersonId to match with all View's // tblDivisionStudent
+    tDS.serviceTblPerson AS TblPerson_Id,
+-- tblLevel
+    tL.Id AS TblLevel_Id,
+    tL.Name AS TblLevel_Name,
+    tL.Description AS TblLevel_Description,
+    tL.IsChecked AS TblLevel_IsChecked,
+-- tblDivision
+    tD.Name AS TblDivision_Name,
+    tD.Description AS TblDivision_Description,
+    concat(tL.Name, tD.Name) as TblDivision_Display,
+-- tblType
+    tT.Name AS TblType_Name,
+    tT.Description AS TblType_Description,
+-- tblYear
+    (CASE WHEN (ISNULL(tY.Year) OR (tY.Year = '')) THEN tY.Name ELSE tY.Year END) AS TblYear_Year,
+    tY.Description AS TblYear_Description
+
+FROM EducationLessonDivision_{{ ConsumerAcronym }}.tblDivisionStudent tDS
+	LEFT JOIN EducationLessonDivision_{{ ConsumerAcronym }}.tblDivision tD ON tD.Id = tDS.tblDivision
+		AND tD.EntityRemove IS NULL
+	LEFT JOIN EducationLessonDivision_{{ ConsumerAcronym }}.tblLevel tL ON tL.Id = tD.tblLevel
+		AND tL.EntityRemove IS NULL
+	LEFT JOIN EducationSchoolType_{{ ConsumerAcronym }}.tblType tT ON tT.Id = tL.serviceTblType
+	LEFT JOIN EducationLessonTerm_{{ ConsumerAcronym }}.tblYear tY ON tY.Id = tD.serviceTblYear
+-- 	LEFT JOIN EducationLessonTerm_{{ ConsumerAcronym }}.tblYearPeriod tYP ON tYP.tblYear = tY.Id
+-- 	LEFT JOIN EducationLessonTerm_{{ ConsumerAcronym }}.tblPeriod tP ON tP.Id = tYP.tblPeriod
+WHERE tDS.EntityRemove IS NULL and
+	(tDS.LeaveDate is null
+	or (tDS.LeaveDate is not null and CURRENT_TIMESTAMP() <= tDS.LeaveDate))

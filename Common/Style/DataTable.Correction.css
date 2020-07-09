@@ -68,7 +68,7 @@ table.dataTable td.reorder {
   cursor: ns-resize;
 }
 
-table.dataTable th {
+table.dataTable > thead > tr > th {
     background: linear-gradient(90deg, rgba(150, 150, 150, 0.2) 70%, transparent 100%)
 }
 
@@ -123,7 +123,7 @@ table.dataTable thead .sorting_desc_disabled:after {
     color: #eee;
 }
 
-table.dataTable thead > tr > th {
+table.dataTable > thead > tr > th {
     padding-right: 30px;
 }
 
@@ -132,7 +132,7 @@ table.dataTable th:active {
 }
 
 /* Condensed */
-table.dataTable.table-condensed thead > tr > th {
+table.dataTable.table-condensed > thead > tr > th {
     padding-right: 20px;
 }
 

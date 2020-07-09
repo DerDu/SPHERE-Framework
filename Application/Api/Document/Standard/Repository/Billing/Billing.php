@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Kauschke
- * Date: 13.03.2019
- * Time: 13:05
- */
-
 namespace SPHERE\Application\Api\Document\Standard\Repository\Billing;
 
 use SPHERE\Application\Billing\Bookkeeping\Invoice\Invoice;
@@ -18,8 +11,10 @@ use SPHERE\Application\Document\Generator\Repository\Frame;
 use SPHERE\Application\Document\Generator\Repository\Page;
 use SPHERE\Application\Document\Generator\Repository\Section;
 use SPHERE\Application\Document\Generator\Repository\Slice;
+use SPHERE\Application\People\Meta\Student\Student;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Setting\Consumer\Consumer;
+use SPHERE\Library\NumberToWord\NumberToWord;
 
 /**
  * Class Billing
@@ -94,52 +89,39 @@ class Billing
     }
 
     /**
-     * @param $Text
-     * @param $ItemName
-     * @param $Year
-     * @param $TotalPrice
-     * @param $DebtorSalutation
-     * @param $DebtorFirstName
-     * @param $DebtorLastName
-     * @param $CauserSalutation
-     * @param $CauserFirstName
-     * @param $CauserLastName
-     * @param $Birthday
-     * @param $From
-     * @param $To
-     * @param $Date
-     * @param $Location
-     * @param $CompanyName
-     * @param $CompanyExtendedName
-     * @param $CompanyAddress
+     * @param string $Text
+     * @param string $ItemName
+     * @param string $Year
+     * @param string $TotalPrice
+     * @param string $DebtorSalutation
+     * @param string $DebtorFirstName
+     * @param string $DebtorLastName
+     * @param string $CauserSalutation
+     * @param string $CauserFirstName
+     * @param string $CauserLastName
+     * @param string $Birthday
+     * @param string $From
+     * @param string $To
+     * @param string $Date
+     * @param string $Location
+     * @param string $CompanyName
+     * @param string $CompanyExtendedName
+     * @param string $CompanyAddress
+     * @param string $StudentIdentifier
      *
      * @return string
      */
-    private function setPlaceholders(
-        $Text,
-        $ItemName,
-        $Year,
-        $TotalPrice,
-        $DebtorSalutation,
-        $DebtorFirstName,
-        $DebtorLastName,
-        $CauserSalutation,
-        $CauserFirstName,
-        $CauserLastName,
-        $Birthday,
-        $From,
-        $To,
-        $Date,
-        $Location,
-        $CompanyName,
-        $CompanyExtendedName,
-        $CompanyAddress
-    ) {
+    private function setPlaceholders($Text, $ItemName, $Year, $TotalPrice, $DebtorSalutation, $DebtorFirstName,
+        $DebtorLastName, $CauserSalutation, $CauserFirstName, $CauserLastName, $Birthday, $From, $To, $Date, $Location,
+        $CompanyName, $CompanyExtendedName, $CompanyAddress, $StudentIdentifier)
+    {
         $Text = str_replace('[Jahr]', $Year, $Text);
         $Text = str_replace('[Zeitraum von]', $From, $Text);
         $Text = str_replace('[Zeitraum bis]', $To, $Text);
         $Text = str_replace('[Beitragsart]', $ItemName, $Text);
         $Text = str_replace('[Beitragssumme]', $TotalPrice, $Text);
+        $TotalPrice2Word = NumberToWord::float2Text($TotalPrice, true);
+        $Text = str_replace('[Beitragssumme als Wort]', $TotalPrice2Word, $Text);
         $Text = str_replace('[Beitragszahler Anrede]', $DebtorSalutation, $Text);
         $Text = str_replace('[Beitragszahler Vorname]', $DebtorFirstName, $Text);
         $Text = str_replace('[Beitragszahler Nachname]', $DebtorLastName, $Text);
@@ -147,6 +129,7 @@ class Billing
         $Text = str_replace('[Beitragsverursacher Vorname]', $CauserFirstName, $Text);
         $Text = str_replace('[Beitragsverursacher Nachname]', $CauserLastName, $Text);
         $Text = str_replace('[Beitragsverursacher Geburtstag]', $Birthday, $Text);
+        $Text = str_replace('[Schülernummer]', $StudentIdentifier, $Text);
         $Text = str_replace('[Datum]', $Date, $Text);
         $Text = str_replace('[Ort]', $Location, $Text);
         $Text = str_replace('[Trägername]', $CompanyName, $Text);
@@ -196,6 +179,10 @@ class Billing
                 $Birthday = $tblCommonBirthDates->getBirthday();
             }
         }
+        $StudentIdentifier = '';
+        if(($tblStudent = Student::useService()->getStudentByPerson($tblPersonCauser))){
+            $StudentIdentifier = $tblStudent->getIdentifier();
+        }
 
         // Umgang mit nicht gefüllten Werten
         $ItemName = $this->setEmptyString($ItemName);
@@ -209,47 +196,13 @@ class Billing
 
 
 
-        $Subject = $this->setPlaceholders(
-            $Subject,
-            $ItemName,
-            $Year,
-            $TotalPrice,
-            $DebtorSalutation,
-            $DebtorFirstName,
-            $DebtorLastName,
-            $CauserSalutation,
-            $CauserFirstName,
-            $CauserLastName,
-            $Birthday,
-            $From,
-            $To,
-            $Date,
-            $Location,
-            $CompanyName,
-            $CompanyExtendedName,
-            $CompanyAddress
-        );
+        $Subject = $this->setPlaceholders($Subject, $ItemName, $Year, $TotalPrice, $DebtorSalutation, $DebtorFirstName,
+            $DebtorLastName, $CauserSalutation, $CauserFirstName, $CauserLastName, $Birthday, $From, $To, $Date,
+            $Location, $CompanyName, $CompanyExtendedName, $CompanyAddress, $StudentIdentifier);
 
-        $Content = $this->setPlaceholders(
-            $Content,
-            $ItemName,
-            $Year,
-            $TotalPrice,
-            $DebtorSalutation,
-            $DebtorFirstName,
-            $DebtorLastName,
-            $CauserSalutation,
-            $CauserFirstName,
-            $CauserLastName,
-            $Birthday,
-            $From,
-            $To,
-            $Date,
-            $Location,
-            $CompanyName,
-            $CompanyExtendedName,
-            $CompanyAddress
-        );
+        $Content = $this->setPlaceholders($Content, $ItemName, $Year, $TotalPrice, $DebtorSalutation, $DebtorFirstName,
+            $DebtorLastName, $CauserSalutation, $CauserFirstName, $CauserLastName, $Birthday, $From, $To, $Date,
+            $Location, $CompanyName, $CompanyExtendedName, $CompanyAddress, $StudentIdentifier);
 
         return (new Page())
             ->addSlice($this->getHeaderSlice('150px'))

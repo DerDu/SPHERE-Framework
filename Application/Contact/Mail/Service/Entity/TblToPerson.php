@@ -21,6 +21,7 @@ class TblToPerson extends Element
     const ATT_TBL_TYPE = 'tblType';
     const ATT_TBL_MAIL = 'tblMail';
     const SERVICE_TBL_PERSON = 'serviceTblPerson';
+    const ATT_IS_ACCOUNT_USER_ALIAS = 'IsAccountUserAlias';
 
     /**
      * @Column(type="text")
@@ -38,6 +39,11 @@ class TblToPerson extends Element
      * @Column(type="bigint")
      */
     protected $tblMail;
+
+    /**
+     * @Column(type="boolean")
+     */
+    protected $IsAccountUserAlias;
 
     /**
      * @return bool|TblPerson
@@ -121,5 +127,21 @@ class TblToPerson extends Element
     {
 
         $this->tblMail = ( null === $tblMail ? null : $tblMail->getId() );
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isAccountUserAlias()
+    {
+        return $this->IsAccountUserAlias;
+    }
+
+    /**
+     * @param boolean $IsAccountUserAlias
+     */
+    public function setIsAccountUserAlias($IsAccountUserAlias)
+    {
+        $this->IsAccountUserAlias = $IsAccountUserAlias;
     }
 }

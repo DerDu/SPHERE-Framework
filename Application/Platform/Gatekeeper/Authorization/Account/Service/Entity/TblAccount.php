@@ -24,6 +24,8 @@ class TblAccount extends Element
     const ATTR_PASSWORD = 'Password';
     const SERVICE_TBL_CONSUMER = 'serviceTblConsumer';
     const SERVICE_TBL_TOKEN = 'serviceTblToken';
+    const ATTR_USER_ALIAS = 'UserAlias';
+
     /**
      * @Column(type="string")
      */
@@ -40,6 +42,11 @@ class TblAccount extends Element
      * @Column(type="bigint")
      */
     protected $serviceTblConsumer;
+
+    /**
+     * @Column(type="string")
+     */
+    protected $UserAlias;
 
     /**
      * @param string $Username
@@ -142,5 +149,21 @@ class TblAccount extends Element
         } else {
             return false;
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getUserAlias()
+    {
+        return $this->UserAlias;
+    }
+
+    /**
+     * @param string $UserAlias
+     */
+    public function setUserAlias($UserAlias)
+    {
+        $this->UserAlias = $UserAlias;
     }
 }

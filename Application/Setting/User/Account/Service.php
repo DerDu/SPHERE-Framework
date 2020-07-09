@@ -1,6 +1,7 @@
 <?php
 namespace SPHERE\Application\Setting\User\Account;
 
+use DateTime;
 use MOC\V\Component\Document\Component\Bridge\Repository\PhpExcel;
 use MOC\V\Component\Document\Component\Exception\Repository\TypeFileException;
 use MOC\V\Component\Document\Component\Parameter\Repository\FileParameter;
@@ -119,34 +120,34 @@ class Service extends AbstractService
     }
 
     /**
-     * @param \DateTime $dateTime
+     * @param DateTime $dateTime
      *
      * @return false|TblUserAccount[]
      */
-    public function getUserAccountByTime(\DateTime $dateTime)
+    public function getUserAccountByTime(DateTime $dateTime)
     {
 
         return (new Data($this->getBinding()))->getUserAccountByTime($dateTime);
     }
 
     /**
-     * @param \DateTime $groupByTime
-     * @param \DateTime $exportDate
+     * @param DateTime $groupByTime
+     * @param DateTime $exportDate
      *
      * @return false|TblUserAccount[]
      */
-    public function getUserAccountByLastExport(\DateTime $groupByTime, \DateTime $exportDate)
+    public function getUserAccountByLastExport(DateTime $groupByTime, DateTime $exportDate)
     {
 
         return (new Data($this->getBinding()))->getUserAccountByLastExport($groupByTime, $exportDate);
     }
 
     /**
-     * @param \DateTime $dateTime
+     * @param DateTime $dateTime
      *
      * @return false|array(TblUserAccount[])
      */
-    public function getUserAccountByTimeGroupLimitList(\DateTime $dateTime)
+    public function getUserAccountByTimeGroupLimitList(DateTime $dateTime)
     {
 
         $tblUserAccountList = (new Data($this->getBinding()))->getUserAccountByTime($dateTime);
@@ -161,12 +162,12 @@ class Service extends AbstractService
     }
 
     /**
-     * @param \DateTime $dateTime
+     * @param DateTime $dateTime
      * @param int       $groupCount
      *
      * @return false|TblUserAccount[]
      */
-    public function getUserAccountByTimeAndCount(\DateTime $dateTime, $groupCount)
+    public function getUserAccountByTimeAndCount(DateTime $dateTime, $groupCount)
     {
 
         return (new Data($this->getBinding()))->getUserAccountByTimeAndCount($dateTime, $groupCount);
@@ -265,7 +266,7 @@ class Service extends AbstractService
             )))),
             new Layout(new LayoutGroup(new LayoutRow(array(
                 new LayoutColumn('Datum: ', 4),
-                new LayoutColumn(($Data['Date'] ? $Data['Date'] : (new \DateTime())->format('d.m.Y')), 8),
+                new LayoutColumn(($Data['Date'] ? $Data['Date'] : (new DateTime())->format('d.m.Y')), 8),
             )))),
         ));
 
@@ -531,7 +532,7 @@ class Service extends AbstractService
     /**
      * @param TblUserAccount[] $tblUserAccountList
      *
-     * @return bool|\DateTime
+     * @return bool|DateTime
      */
     public function getLastExport($tblUserAccountList)
     {
@@ -725,15 +726,17 @@ class Service extends AbstractService
     {
 
 //        $IsMissingAddress = false;
-        $TimeStamp = new \DateTime('now');
+        $TimeStamp = new DateTime('now');
 
         $successCount = 0;
-        $addressMissCount = 0;
         $accountExistCount = 0;
+        $accountError = 0;
 
         $GroupByCount = 1;
         $CountAccount = 0;
 
+        $tblAccountSession = \SPHERE\Application\Setting\Authorization\Account\Account::useService()->getAccountBySession();
+        $result = array();
         foreach ($PersonIdArray as $PersonId) {
             if ($CountAccount % 30 == 0
                 && $CountAccount != 0) {
@@ -748,8 +751,9 @@ class Service extends AbstractService
                 // ignore Person without Main Address
                 $tblAddress = $tblPerson->fetchMainAddress();
                 if (!$tblAddress) {
-//                    $IsMissingAddress = true;
-                    $addressMissCount++;
+                    $result[$tblPerson->getId()] = 'Person '.$tblPerson->getLastFirstName().
+                        ': Hauptadresse fehlt';
+                    $accountError++;
                     continue;
                 }
                 // ignore without Consumer
@@ -757,7 +761,11 @@ class Service extends AbstractService
                 if ($tblConsumer == '') {
                     continue;
                 }
-                $name = $this->generateUserName($tblPerson, $tblConsumer);
+                $name = $this->generateUserName($tblPerson, $tblConsumer, $AccountType, $result);
+                if(!$name){
+                    $accountError++;
+                    continue;
+                }
                 $password = $this->generatePassword(8, 0, 2, 1);
                 if (($tblAccountList = AccountGatekeeper::useService()->getAccountAllByPerson($tblPerson, true))) {
                     $IsUserExist = false;
@@ -801,17 +809,17 @@ class Service extends AbstractService
                         $Type = TblUserAccount::VALUE_TYPE_STUDENT;
                     }
                     // add tblUserAccount
-                    if($this->createUserAccount($tblAccount, $tblPerson, $TimeStamp, $password, $Type, $GroupByCount)){
+                    if($this->createUserAccount($tblAccount, $tblPerson, $TimeStamp, $password, $Type, $GroupByCount, $tblAccountSession)){
                         $CountAccount++;
                     }
                 }
             }
         }
-        $result = array();
+
         $result['Time'] = $TimeStamp->format('d.m.Y H:i:s');
-        $result['AddressMissCount'] = $addressMissCount;
         $result['AccountExistCount'] = $accountExistCount;
         $result['SuccessCount'] = $successCount;
+        $result['AccountError'] = $accountError;
         return $result;
 //        return new Layout(
 //            new LayoutGroup(
@@ -896,20 +904,22 @@ class Service extends AbstractService
     /**
      * @param TblAccount $tblAccount
      * @param TblPerson  $tblPerson
-     * @param \DateTime  $TimeStamp
+     * @param DateTime  $TimeStamp
      * @param string     $userPassword
      * @param string     $Type STUDENT|CUSTODY
      * @param int        $GroupByCount
+     * @param TblAccount $tblAccountSession
      *
      * @return false|TblUserAccount
      */
     public function createUserAccount(
         TblAccount $tblAccount,
         TblPerson $tblPerson,
-        \DateTime $TimeStamp,
+        DateTime $TimeStamp,
         $userPassword,
         $Type,
-        $GroupByCount
+        $GroupByCount,
+        TblAccount $tblAccountSession
     ) {
 
         return ( new Data($this->getBinding()) )->createUserAccount(
@@ -918,54 +928,94 @@ class Service extends AbstractService
             $TimeStamp,
             $userPassword,
             $Type,
-            $GroupByCount);
+            $GroupByCount,
+            $tblAccountSession);
     }
 
     /**
      * @param TblPerson|null   $tblPerson
      * @param TblConsumer|null $tblConsumer
+     * @param string           $AccountType
+     * @param array            $result
      *
-     * @return string
+     * @return string|bool
      */
-    public function generateUserName(TblPerson $tblPerson = null, TblConsumer $tblConsumer = null)
+    public function generateUserName(TblPerson $tblPerson = null, TblConsumer $tblConsumer = null, $AccountType = 'S', &$result = array())
     {
-        $UserName = '';
 
-        if ($tblConsumer) {
-            mb_internal_encoding("UTF-8");
+        mb_internal_encoding("UTF-8");
 
-            $FirstName = mb_substr($tblPerson->getFirstName(), 0, 2);
-            $LastName = mb_substr($tblPerson->getLastName(), 0, 2);
+        $FirstName = mb_substr($tblPerson->getFirstName(), 0, 2);
+        $LastName = mb_substr($tblPerson->getLastName(), 0, 2);
 
-            // cut string with UTF8 encoding
-
-            $UserName = $tblConsumer->getAcronym().'-'.$FirstName.$LastName;
+        if($AccountType == 'S'){
+            if (($tblCommon = Common::useService()->getCommonByPerson($tblPerson))){
+                if (($tblCommonBirthDates = $tblCommon->getTblCommonBirthDates())){
+                    $randNumber = $tblCommonBirthDates->getBirthday('d');
+                }
+            }
+            if(!isset($randNumber) || !$randNumber){
+                $result[$tblPerson->getId()] = 'Person '.$tblPerson->getLastFirstName().
+                    ': Geburtsdatum fehlt';
+                return false;
+            }
         }
+        // cut string with UTF8 encoding
+
+        $UserName = $tblConsumer->getAcronym().'-'.$FirstName.$LastName;
 
         // Rand 1 - 99 with leading 0 if number < 10
-        $randNumber = rand(1, 99);
+        if($AccountType == 'C'){
+            $randNumber = rand(32, 99);
+        }
+
         $randNumber = str_pad($randNumber, 2, '0', STR_PAD_LEFT);
 
         $UserNamePrepare = $UserName.$randNumber;
 
-//        $tblAccount = true;
-
-        // find existing UserName?
-        $tblAccount = AccountGatekeeper::useService()->getAccountByUsername($UserNamePrepare);
-        if ($tblAccount) {
-            while ($tblAccount) {
-                $randNumber = rand(1, 99);
-                $randNumber = str_pad($randNumber, 2, '0', STR_PAD_LEFT);
+        if($AccountType == 'C'){
+            // find existing UserName?
+            $tblAccount = AccountGatekeeper::useService()->getAccountByUsername($UserNamePrepare);
+            if (!$tblAccount) {
+                return $UserNamePrepare;
+            } else {
+                $i = 0;
+                while ($tblAccount && $i <= 100) {
+                    $i++;
+                    $randNumber = rand(32, 99);
+                    $randNumber = str_pad($randNumber, 2, '0', STR_PAD_LEFT);
+                    $UserNameMod = $UserName.$randNumber;
+                    $tblAccount = AccountGatekeeper::useService()->getAccountByUsername($UserNameMod);
+                    if (!$tblAccount) {
+                        return  $UserNameMod;
+                    }
+                }
+                // no free AccountName
+                $result[$tblPerson->getId()] = 'Person '.$tblPerson->getLastFirstName().
+                    ': kein freier Benutzeraccount '.$UserName.'XX';
+                return false;
+            }
+        } elseif($AccountType == 'S'){
+            $tblAccount = AccountGatekeeper::useService()->getAccountByUsername($UserNamePrepare);
+            if (!$tblAccount) {
+                $UserName = $UserNamePrepare;
+            } else {
+                // second try
+                $FirstName2 = mb_substr($tblPerson->getFirstName(), 0, 3);
+                $LastName2 = mb_substr($tblPerson->getLastName(), 0, 3);
+                $UserName = $tblConsumer->getAcronym().'-'.$FirstName2.$LastName2;
                 $UserNameMod = $UserName.$randNumber;
                 $tblAccount = AccountGatekeeper::useService()->getAccountByUsername($UserNameMod);
                 if (!$tblAccount) {
-                    $UserName = $UserNameMod;
+                    return $UserNameMod;
+                } else {
+                    $result[$tblPerson->getId()] = 'Person '.$tblPerson->getLastFirstName().
+                        ': Benutzeraccount '.$UserName.$randNumber.' existiert bereits';
+                    return false;
                 }
-
             }
-        } else {
-            $UserName = $UserNamePrepare;
         }
+
 
         return $UserName;
     }
@@ -978,7 +1028,7 @@ class Service extends AbstractService
     public function updateDownloadBulk($tblUserAccountList)
     {
 
-        $ExportDate = new \DateTime();
+        $ExportDate = new DateTime();
         $UserName = '';
         $tblAccount = AccountGatekeeper::useService()->getAccountBySession();
         if ($tblAccount) {
@@ -999,11 +1049,11 @@ class Service extends AbstractService
     }
 
     /**
-     * @param \DateTime $GroupByTime
+     * @param DateTime $GroupByTime
      *
      * @return bool
      */
-    public function clearPassword(\DateTime $GroupByTime)
+    public function clearPassword(DateTime $GroupByTime)
     {
 
         $tblUserAccountList = $this->getUserAccountByTime($GroupByTime);
@@ -1022,13 +1072,20 @@ class Service extends AbstractService
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Doctrine\ORM\TransactionRequiredException
      */
-    public function changePassword(TblAccount $tblAccount, $Password)
+    public function changePassword(TblUserAccount $tblUserAccount, $Password)
     {
 
-        $tblUserAccount = $this->getUserAccountByAccount($tblAccount);
-        if ($tblUserAccount) {
-            return (new Data($this->getBinding()))->updateUserAccountChangePassword($tblUserAccount, $Password);
+        return (new Data($this->getBinding()))->updateUserAccountChangePassword($tblUserAccount, $Password);
+    }
+
+    public function changeUpdateDate(TblUserAccount $tblUserAccount, $Type)
+    {
+
+        $UserName = '';
+        if(($tblAccount = \SPHERE\Application\Setting\Authorization\Account\Account::useService()->getAccountBySession())){
+            $UserName = $tblAccount->getUsername();
         }
-        return false;
+
+        return (new Data($this->getBinding()))->changeUpdateDate($tblUserAccount, $UserName, $Type);
     }
 }

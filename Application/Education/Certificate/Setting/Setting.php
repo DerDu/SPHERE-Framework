@@ -27,6 +27,12 @@ class Setting extends Extension implements IModuleInterface
             __NAMESPACE__.'\Approval', __NAMESPACE__.'\Frontend::frontendApproval'
         ));
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__.'\Implement', __NAMESPACE__.'\Frontend::frontendImplement'
+        ));
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            __NAMESPACE__.'\ImplementCertificate', __NAMESPACE__.'\Frontend::frontendImplementCertificate'
+        ));
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
             __NAMESPACE__, __NAMESPACE__.'\Frontend::frontendDashboard'
         ));
     }

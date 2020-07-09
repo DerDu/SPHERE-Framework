@@ -1111,7 +1111,6 @@ class Service extends Extension
             array_walk($tblPersonList, function (TblPerson $tblPerson) use (&$TableContent, $tblStudentGroup1, $tblStudentGroup2, $tblDivision, &$count) {
 
                 $Item['Number'] = $count++;
-                $Item['Orientation'] = '';
                 $Item['Education'] = '';
                 $Item['ExcelName'] = '';
                 $Item['Address'] = '';
@@ -1121,6 +1120,7 @@ class Service extends Extension
                 $Item['ExcelPhoneNumbers'] = '';
                 $Item['Orientation'] = '';
                 $Item['OrientationAndFrench'] = '';
+                $Item['Advanced'] = '';
                 $Item['Education'] = '';
                 $Item['Group'] = '';
                 $Item['Group1'] = false;
@@ -1331,14 +1331,21 @@ class Service extends Extension
                         $isSet = true;
                     }
                     // Neigungskurs
-                    if (!$isSet) {
-                        $tblStudentOrientation = Student::useService()->getStudentSubjectAllByStudentAndSubjectType(
-                            $tblStudent,
-                            Student::useService()->getStudentSubjectTypeByIdentifier('ORIENTATION')
-                        );
-                        if ($tblStudentOrientation && ($tblSubject = $tblStudentOrientation[0]->getServiceTblSubject())) {
+                    $tblStudentOrientation = Student::useService()->getStudentSubjectAllByStudentAndSubjectType(
+                        $tblStudent,
+                        Student::useService()->getStudentSubjectTypeByIdentifier('ORIENTATION')
+                    );
+                    if ($tblStudentOrientation && ($tblSubject = $tblStudentOrientation[0]->getServiceTblSubject())) {
+                        if (!$isSet) {
                             $Item['Orientation'] = $tblSubject->getAcronym();
 //                            $isSet = true;
+                        } else {
+                            if (($tblLevel = $tblDivision->getTblLevel())
+                                && (($tblType = $tblLevel->getServiceTblType()))
+                                && $tblType->getName() == 'Gymnasium'
+                            ) {
+                                $Item['Advanced'] = $tblSubject->getAcronym();
+                            }
                         }
                     }
 
@@ -1352,6 +1359,9 @@ class Service extends Extension
                         $Item['OrientationAndFrench'] = $Item['Orientation'];
                     }
 
+                    if ($Item['Advanced'] && $Item['OrientationAndFrench']) {
+                        $Item['OrientationAndFrench'] .= '<br/>' . $Item['Advanced'];
+                    }
 
                     // Vertiefungskurs // Erstmal deaktiviert (04.08.2016)
 //                    if (!$isSet) {
@@ -1539,7 +1549,7 @@ class Service extends Extension
             $export->setValue($export->getCell(2, 1), "Adresse");
             $export->setValue($export->getCell(3, 1), "Telefonnummer");
             $export->setValue($export->getCell(4, 1), "Gr");
-            $export->setValue($export->getCell(5, 1), "NK/P/FR");
+            $export->setValue($export->getCell(5, 1), "WB/P/FR");
             $export->setValue($export->getCell(6, 1), "BG");
             $export->setValue($export->getCell(7, 1), "WF");
             // Header bold
@@ -1600,6 +1610,8 @@ class Service extends Extension
                     && $tblType->getName() == 'Mittelschule / Oberschule'
                 ) {
                     $export->setValue($export->getCell(5, $Row+1), $PersonData['French']);
+                } elseif ($PersonData['Advanced']) {
+                    $export->setValue($export->getCell(5, $Row + 1), $PersonData['Advanced']);
                 }
 
                 $export->setValue($export->getCell(6, $Row), $PersonData['Education']);
@@ -1703,7 +1715,7 @@ class Service extends Extension
 
             if (!empty($orientationList)) {
                 $Row += 2;
-                $export->setValue($export->getCell(0, $Row), 'Neigungskurse/Profile');
+                $export->setValue($export->getCell(0, $Row), 'Wahlbereiche/Profile');
                 foreach ($orientationList as $orientation => $count) {
                     $Row++;
                     $export->setValue($export->getCell(0, $Row), $orientation . ':');

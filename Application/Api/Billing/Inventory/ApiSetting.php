@@ -256,6 +256,9 @@ class ApiSetting extends Extension implements IApiInterface
     public function changeSetting($Setting, $Category)
     {
 
+//        Debugger::screenDump($Setting);
+//        exit;
+
         switch($Category){
             case TblSetting::CATEGORY_REGULAR:
                 // aktuell leer
@@ -287,6 +290,8 @@ class ApiSetting extends Extension implements IApiInterface
                 Setting::useService()->createSetting(TblSetting::IDENT_DATEV_REMARK, $DatevRemark);
                 $FibuAccount = (isset($Setting[TblSetting::IDENT_FIBU_ACCOUNT]) ? $Setting[TblSetting::IDENT_FIBU_ACCOUNT] : '');
                 Setting::useService()->createSetting(TblSetting::IDENT_FIBU_ACCOUNT, $FibuAccount);
+                $FibuAccountAsDebtorNumber = (isset($Setting[TblSetting::IDENT_FIBU_ACCOUNT_AS_DEBTOR]) ? true : false);
+                Setting::useService()->createSetting(TblSetting::IDENT_FIBU_ACCOUNT_AS_DEBTOR, $FibuAccountAsDebtorNumber);
                 $FibuToAccount = (isset($Setting[TblSetting::IDENT_FIBU_TO_ACCOUNT]) ? $Setting[TblSetting::IDENT_FIBU_TO_ACCOUNT] : '');
                 Setting::useService()->createSetting(TblSetting::IDENT_FIBU_TO_ACCOUNT, $FibuToAccount);
                 $Kost1 = (isset($Setting[TblSetting::IDENT_KOST_1]) ? $Setting[TblSetting::IDENT_KOST_1] : '0');

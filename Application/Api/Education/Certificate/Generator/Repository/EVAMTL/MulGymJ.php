@@ -50,7 +50,7 @@ class MulGymJ extends Certificate
                         ->addElementColumn((new Element\Sample())
                             ->styleTextSize('30px')
                         )
-                        ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/EVAMTL_Gym_Logo.jpg',
+                        ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/EVAMTL.jpg',
                             'auto', '50px'))
                             , '35%')
                     );
@@ -58,7 +58,7 @@ class MulGymJ extends Certificate
             $Header = (new Slice())
                 ->addSection((new Section())
                     ->addElementColumn((new Element()), '65%')
-                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/EVAMTL_Gym_Logo.jpg',
+                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/EVAMTL.jpg',
                         'auto', '50px'))
                         , '35%')
                 );

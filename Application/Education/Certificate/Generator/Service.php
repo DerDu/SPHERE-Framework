@@ -4,11 +4,13 @@ namespace SPHERE\Application\Education\Certificate\Generator;
 use SPHERE\Application\Education\Certificate\Generator\Service\Data;
 use SPHERE\Application\Education\Certificate\Generator\Service\Entity\TblCertificate;
 use SPHERE\Application\Education\Certificate\Generator\Service\Entity\TblCertificateGrade;
+use SPHERE\Application\Education\Certificate\Generator\Service\Entity\TblCertificateInformation;
 use SPHERE\Application\Education\Certificate\Generator\Service\Entity\TblCertificateLevel;
 use SPHERE\Application\Education\Certificate\Generator\Service\Entity\TblCertificateReferenceForLanguages;
 use SPHERE\Application\Education\Certificate\Generator\Service\Entity\TblCertificateSubject;
 use SPHERE\Application\Education\Certificate\Generator\Service\Entity\TblCertificateType;
 use SPHERE\Application\Education\Certificate\Generator\Service\Setup;
+use SPHERE\Application\Education\Certificate\Setting\Setting;
 use SPHERE\Application\Education\Graduation\Gradebook\Gradebook;
 use SPHERE\Application\Education\Graduation\Gradebook\Service\Entity\TblGradeType;
 use SPHERE\Application\Education\Lesson\Division\Division;
@@ -267,6 +269,22 @@ class Service extends AbstractService
     }
 
     /**
+     * @param string $Type
+     *
+     * @return string
+     */
+    public function insertCertificate($Type = '')
+    {
+
+        if((new Data($this->getBinding()))->insertCertificate($Type)){
+            return new Success('Installation der Zeugnisvorlagen erfolgreich!').
+                new Redirect('/Education/Certificate/Setting/Implement', Redirect::TIMEOUT_SUCCESS);
+        }
+        return new Danger('Installation der Zeugnisvorlagen ist fehlgeschlagen').
+            new Redirect('/Education/Certificate/Setting/Implement', Redirect::TIMEOUT_ERROR);
+    }
+
+    /**
      * @param TblCertificate $tblCertificate
      * @param int $LaneIndex
      * @param int $LaneRanking
@@ -335,6 +353,22 @@ class Service extends AbstractService
         return (new Data($this->getBinding()))->getCertificateTypeAll();
     }
 
+
+
+    /**
+     * @param null|TblConsumer $tblConsumer
+     * @param TblCertificateType $tblCertificateType
+     *
+     * @return bool|Service\Entity\TblCertificate[]
+     */
+    public function getCertificateAllByConsumerAndCertificateType(
+        TblConsumer $tblConsumer = null,
+        TblCertificateType $tblCertificateType = null
+    ) {
+
+        return (new Data($this->getBinding()))->getCertificateAllByConsumerAndCertificateType($tblConsumer, $tblCertificateType);
+    }
+
     /**
      * @param null|TblConsumer $tblConsumer
      * @param TblCertificateType $tblCertificateType
@@ -364,7 +398,15 @@ class Service extends AbstractService
         TblType $tblSchoolType = null
     ) {
 
-        return (new Data($this->getBinding()))->getCertificateAllForAutoSelect($tblConsumer, $tblCertificateType, $tblSchoolType);
+        // SSW-939 - Noteninformation Zuweisung Vorlage
+        // für die Noteninformation ist keine Schulart angegeben, deswegen wird keine Vorlage gefunden
+        if ($tblCertificateType->getIdentifier() == 'GRADE_INFORMATION'
+            && ($tblCertificate = Setting::useService()->getCertificateByCertificateClassName('GradeInformation'))
+        ) {
+            return array(0 => $tblCertificate);
+        } else {
+            return (new Data($this->getBinding()))->getCertificateAllForAutoSelect($tblConsumer, $tblCertificateType, $tblSchoolType);
+        }
     }
 
 
@@ -411,27 +453,56 @@ class Service extends AbstractService
     {
 
         return array(
-            'Content.Input.Remark'             => 'TextArea',
-            'Content.Input.SecondRemark'       => 'TextArea',
-            'Content.Input.RemarkWithoutTeam'  => 'TextArea',
-            'Content.Input.Rating'             => 'TextArea',
-            'Content.Input.TechnicalRating'    => 'TextArea',
-            'Content.Input.Survey'             => 'TextArea',
-            'Content.Input.Deepening'          => 'TextField',
-            'Content.Input.SchoolType'         => 'SelectBox',
-            'Content.Input.Type'               => 'SelectBox',
-            'Content.Input.DateCertifcate'     => 'DatePicker',
-            'Content.Input.DateConference'     => 'DatePicker',
-            'Content.Input.DateConsulting'     => 'DatePicker',
-            'Content.Input.Transfer'           => 'SelectBox',
-            'Content.Input.IndividualTransfer' => 'TextField',
-            'Content.Input.TeamExtra'          => 'TextField',
-            'Content.Input.BellSubject'        => 'TextField',
-            'Content.Input.PerformanceGroup'   => 'TextField',
-            'Content.Input.Arrangement'        => 'TextArea',
-            'Content.Input.Support'        => 'TextArea',
-            'Content.Input.DivisionName' => 'TextField'
+            'Content.Input.Remark'              => 'TextArea',
+            'Content.Input.SecondRemark'        => 'TextArea',
+            'Content.Input.RemarkWithoutTeam'   => 'TextArea',
+            'Content.Input.Rating'              => 'TextArea',
+            'Content.Input.TechnicalRating'     => 'TextArea',
+            'Content.Input.Survey'              => 'TextArea',
+            'Content.Input.Deepening'           => 'TextField',
+            'Content.Input.SchoolType'          => 'SelectBox',
+            'Content.Input.Type'                => 'SelectBox',
+            'Content.Input.DateCertifcate'      => 'DatePicker',
+            'Content.Input.DateConference'      => 'DatePicker',
+            'Content.Input.DateConsulting'      => 'DatePicker',
+            'Content.Input.Transfer'            => 'SelectBox',
+            'Content.Input.IndividualTransfer'  => 'TextField',
+            'Content.Input.TeamExtra'           => 'TextField',
+            'Content.Input.GTA'                 => 'TextArea',
+            'Content.Input.BellSubject'         => 'TextField',
+            'Content.Input.PerformanceGroup'    => 'TextField',
+            'Content.Input.Arrangement'         => 'TextArea',
+            'Content.Input.Support'             => 'TextArea',
+            'Content.Input.DivisionName'        => 'TextField',
+            'Content.Input.StudentLetter'       => 'TextArea',
+            'Content.Input.DialoguesWithYou'    => 'TextArea',
+            'Content.Input.DialoguesWithParent' => 'TextArea',
+            'Content.Input.DialoguesWithUs'     => 'TextArea',
+            // Berufsfachschule
+            'Content.Input.BsDestination'       => 'TextField',
+            'Content.Input.Operation1'          => 'TextField',
+            'Content.Input.OperationTime1'      => 'TextField',
+            'Content.Input.Operation2'          => 'TextField',
+            'Content.Input.OperationTime2'      => 'TextField',
+            'Content.Input.Operation3'          => 'TextField',
+            'Content.Input.OperationTime3'      => 'TextField'
         );
+    }
+
+    /**
+     * @return array
+     */
+    public function getFormFieldKeyList()
+    {
+        $formFieldList = $this->getFormField();
+        $list = array();
+        foreach ($formFieldList as $key => $formField) {
+            $tempArray = explode('.', $key);
+            $tempValue = end($tempArray);
+            $list[$tempValue] = $tempValue;
+        }
+
+        return $list;
     }
 
     /**
@@ -441,26 +512,39 @@ class Service extends AbstractService
     {
 
         return array(
-            'Content.Input.Remark'             => 'Bemerkungen',
-            'Content.Input.SecondRemark'       => 'Bemerkung Seite 2',
-            'Content.Input.RemarkWithoutTeam'  => 'Bemerkungen',
-            'Content.Input.Rating'             => 'Einschätzung',
-            'Content.Input.TechnicalRating'    => 'Fachliche Einschätzung',
-            'Content.Input.Survey'             => 'Gutachten',
-            'Content.Input.Deepening'          => 'Vertiefungsrichtung',
-            'Content.Input.SchoolType'         => 'Ausbildung fortsetzen',
-            'Content.Input.Type'               => 'Bezieht sich auf',
-            'Content.Input.DateCertifcate'     => 'Datum des Zeugnisses',
-            'Content.Input.DateConference'     => 'Datum der Klassenkonferenz',
-            'Content.Input.DateConsulting'     => 'Datum der Bildungsberatung',
-            'Content.Input.Transfer'           => 'Versetzungsvermerk',
-            'Content.Input.IndividualTransfer' => 'Versetzungsvermerk',
-            'Content.Input.TeamExtra'          => 'Teilnahme an zusätzlichen schulischen Veranstaltungen',
-            'Content.Input.BellSubject'        => 'Thema BELL',
-            'Content.Input.PerformanceGroup'   => 'Leistungsgruppe',
-            'Content.Input.Arrangement'        => 'Besonderes Engagement',
-            'Content.Input.Support'        => 'Inklusive Unterrichtung',
-            'Content.Input.DivisionName' => 'Klasse'
+            'Content.Input.Remark'              => 'Bemerkungen',
+            'Content.Input.SecondRemark'        => 'Bemerkung Seite 2',
+            'Content.Input.RemarkWithoutTeam'   => 'Bemerkungen',
+            'Content.Input.Rating'              => 'Einschätzung',
+            'Content.Input.TechnicalRating'     => 'Fachliche Einschätzung',
+            'Content.Input.Survey'              => 'Gutachten',
+            'Content.Input.Deepening'           => 'Vertiefungsrichtung',
+            'Content.Input.SchoolType'          => 'Ausbildung fortsetzen',
+            'Content.Input.Type'                => 'Bezieht sich auf',
+            'Content.Input.DateCertifcate'      => 'Datum des Zeugnisses',
+            'Content.Input.DateConference'      => 'Datum der Klassenkonferenz',
+            'Content.Input.DateConsulting'      => 'Datum der Bildungsberatung',
+            'Content.Input.Transfer'            => 'Versetzungsvermerk',
+            'Content.Input.IndividualTransfer'  => 'Versetzungsvermerk',
+            'Content.Input.TeamExtra'           => 'Teilnahme an zusätzlichen schulischen Veranstaltungen',
+            'Content.Input.GTA'                 => 'GTA',
+            'Content.Input.BellSubject'         => 'Thema BELL',
+            'Content.Input.PerformanceGroup'    => 'Leistungsgruppe',
+            'Content.Input.Arrangement'         => 'Besonderes Engagement',
+            'Content.Input.Support'             => 'Inklusive Unterrichtung',
+            'Content.Input.DivisionName'        => 'Klasse',
+            'Content.Input.StudentLetter'       => 'Schülerbrief',
+            'Content.Input.DialoguesWithYou'    => 'Im Dialog mit dir',
+            'Content.Input.DialoguesWithParent' => 'Im Dialog mit deinen Eltern',
+            'Content.Input.DialoguesWithUs'     => 'Im Dialog mit uns',
+            // Berufsfachschule
+            'Content.Input.BsDestination'       => 'Berufsfachschule für ...',
+            'Content.Input.Operation1'          => 'Einsatzgebiet 1',
+            'Content.Input.OperationTime1'      => 'Einsatzgebiet Dauer in Wochen 1',
+            'Content.Input.Operation2'          => 'Einsatzgebiet 2',
+            'Content.Input.OperationTime2'      => 'Einsatzgebiet Dauer in Wochen 2',
+            'Content.Input.Operation3'          => 'Einsatzgebiet 3',
+            'Content.Input.OperationTime3'      => 'Einsatzgebiet Dauer in Wochen 3'
         );
     }
 
@@ -630,5 +714,29 @@ class Service extends AbstractService
         }
 
         return $reference;
+    }
+
+    /**
+     * @param TblCertificate $tblCertificate
+     * @param $fieldName
+     *
+     * @return false|TblCertificateInformation
+     */
+    public function getCertificateInformationByField(
+        TblCertificate $tblCertificate,
+        $fieldName
+    ) {
+        return (new Data($this->getBinding()))->getCertificateInformationByField($tblCertificate, $fieldName);
+    }
+
+    /**
+     * @param TblCertificate $tblCertificate
+     *
+     * @return false|TblCertificateInformation[]
+     */
+    public function getCertificateInformationListByCertificate(
+        TblCertificate $tblCertificate
+    ) {
+        return (new Data($this->getBinding()))->getCertificateInformationListByCertificate($tblCertificate);
     }
 }

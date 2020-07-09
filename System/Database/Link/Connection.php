@@ -4,6 +4,8 @@ namespace SPHERE\System\Database\Link;
 use MOC\V\Component\Database\Component\IBridgeInterface;
 use MOC\V\Component\Database\Database;
 use SPHERE\System\Database\ITypeInterface;
+use SPHERE\System\Debugger\DebuggerFactory;
+use SPHERE\System\Debugger\Logger\FileLogger;
 
 /**
  * Class Connection
@@ -77,6 +79,7 @@ class Connection
         try {
             $this->Connection = Database::getDatabase($Username, $Password, $Database, $Driver, $Host, $Port, $Timeout);
         } catch (\Exception $E) {
+            (new DebuggerFactory())->createLogger(new FileLogger())->addLog('Connection Catch: '.$E->getMessage());
             try {
                 Database::getDatabase($Username, $Password, null, $Driver, $Host, $Port, $Timeout)
                     ->getSchemaManager()->createDatabase($Database);

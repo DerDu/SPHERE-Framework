@@ -30,6 +30,13 @@ class Support implements IApplicationInterface, IModuleInterface
         Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
             __NAMESPACE__, 'Frontend::frontendSupport'
         ));
+
+//        Main::getDisplay()->addApplicationNavigation(
+//            new Link(new Link\Route('\Manual\Request'), new Link\Name('Anfrage'), new Link\Icon(new Comment()))
+//        );
+        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+            '\Manual\Request', __NAMESPACE__.'/Frontend::frontendRequest'
+        ));
     }
 
     /**

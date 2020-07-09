@@ -75,6 +75,10 @@ class Setup extends AbstractSetup
         if (!$this->getConnection()->hasColumn('tblAccount', 'serviceTblConsumer')) {
             $Table->addColumn('serviceTblConsumer', 'bigint', array('notnull' => false));
         }
+
+        $this->createColumn($Table, 'UserAlias', self::FIELD_TYPE_STRING, true);
+        $this->createIndex($Table, array('UserAlias'), true);
+
         return $Table;
     }
 

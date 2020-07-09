@@ -29,35 +29,7 @@ class CheHjInfoGsOne extends Certificate
 
         $personId = $tblPerson ? $tblPerson->getId() : 0;
 
-        if ($this->isSample()) {
-            $Header = (new Slice())
-                ->addSection((new Section())
-//                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/ChemnitzLogo.jpg',
-//                        '60px', '60px'))
-//                        , '25%')
-                    ->addElementColumn((new Element()), '25%')
-                    ->addElementColumn((new Element\Sample())
-                        ->styleTextSize('30px')
-                    )
-                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
-                        '165px', '50px'))
-                        ->styleMarginTop('4px')
-                        ->styleAlignRight()
-                        , '25%')
-                );
-        } else {
-            $Header = (new Slice())
-                ->addSection((new Section())
-//                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/ChemnitzLogo.jpg',
-//                        '60px', '60px'))
-//                        , '25%')
-                    ->addElementColumn((new Element()), '25%')
-                    ->addElementColumn((new Element()))
-                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
-                        '165px', '50px'))
-                        , '25%')
-                );
-        }
+        $Header = $this->getHead($this->isSample());
 
         return (new Page())
             ->addSlice(
@@ -150,7 +122,7 @@ class CheHjInfoGsOne extends Certificate
                     ->styleTextSize('11pt')
                 )
                 ->styleMarginTop('15px')
-                ->styleHeight('485px')
+                ->styleHeight('392px')
             )
             ->addSlice((new Slice())
                 ->addSection((new Section())

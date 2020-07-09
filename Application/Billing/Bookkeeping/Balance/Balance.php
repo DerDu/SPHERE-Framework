@@ -26,18 +26,18 @@ class Balance implements IModuleInterface
          * Register Navigation Application
          */
         Main::getDisplay()->addApplicationNavigation(
-            new Link(new Link\Route('/Billing/Balance'), new Link\Name('Belegdruck'),
+            new Link(new Link\Route('/Billing/Balance'), new Link\Name('Druck'),
                 new Link\Icon(new Listing()))
         );
         /**
          * Register Navigation Module
          */
         Main::getDisplay()->addModuleNavigation(
-            new Link(new Link\Route('/Billing/Balance/Excel'), new Link\Name('Belegdruck Serienbrief'),
+            new Link(new Link\Route('/Billing/Balance/Excel'), new Link\Name('Bescheinigung Serienbrief'),
                 new Link\Icon(new Listing()))
         );
         Main::getDisplay()->addModuleNavigation(
-            new Link(new Link\Route('/Billing/Balance/Pdf'), new Link\Name('Belegdruck PDF'),
+            new Link(new Link\Route('/Billing/Balance/Pdf'), new Link\Name('Bescheinigung PDF'),
                 new Link\Icon(new Listing()))
         );
 //        Main::getDisplay()->addApplicationNavigation(

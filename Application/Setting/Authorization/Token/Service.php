@@ -35,7 +35,7 @@ class Service extends \SPHERE\Application\Platform\Gatekeeper\Authorization\Toke
                 if (false === $this->getTokenByIdentifier(substr($CredentialKey, 0, 12))) {
                     (new Data($this->getBinding()))->createToken(substr($CredentialKey, 0, 12), $tblConsumer);
                     return new Success('Der YubiKey wurde hinzugefügt')
-                    .new Redirect('/Setting/Authorization/Token', 3);
+                    .new Redirect('/Setting/Authorization/Token', Redirect::TIMEOUT_SUCCESS);
                 } else {
                     $Form->setError('CredentialKey', 'Der von Ihnen angegebene YubiKey wurde bereits registriert');
                 }

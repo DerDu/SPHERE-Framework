@@ -64,7 +64,7 @@ class CosHjPri extends Certificate
                 (new Section())
                     ->addSliceColumn((new Slice())
                         ->addSection((new Section())
-                            ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/Coswig_logo_300dpi.jpg',
+                            ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/EVSC.jpg',
                                 '100px', '100px'))
                                 ->stylePaddingTop('12px')
                                 ->styleHeight('0px')
@@ -108,7 +108,7 @@ class CosHjPri extends Certificate
         } else {
             $Header = array(
                 (new Section())
-                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/Coswig_logo_300dpi.jpg',
+                    ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/EVSC.jpg',
                         '100px', '100px'))
                         ->stylePaddingTop('12px')
                         ->styleHeight('20px')

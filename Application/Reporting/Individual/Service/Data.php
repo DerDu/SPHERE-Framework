@@ -7,24 +7,14 @@ use SPHERE\Application\Platform\System\Protocol\Protocol;
 use SPHERE\Application\Reporting\Individual\Service\Entity\TblPreset;
 use SPHERE\Application\Reporting\Individual\Service\Entity\TblPresetSetting;
 use SPHERE\Application\Reporting\Individual\Service\Entity\TblWorkSpace;
-use SPHERE\Application\Reporting\Individual\Service\Entity\ViewStudent;
-use SPHERE\System\Database\Binding\AbstractData;
 
 /**
  * Class Data
  *
  * @package SPHERE\Application\Reporting\Individual\Service
  */
-class Data extends AbstractData
+class Data extends DataView
 {
-
-    /**
-     * @return void
-     */
-    public function setupDatabaseContent()
-    {
-        // TODO: Implement setupDatabaseContent() method.
-    }
 
     /**
      * @param $Id
@@ -388,14 +378,5 @@ class Data extends AbstractData
             return true;
         }
         return false;
-    }
-
-    /**
-     * @return false|\SPHERE\System\Database\Fitting\Element[]|ViewStudent[]
-     */
-    public function getView()
-    {
-
-        return $this->getCachedEntityList(__METHOD__, $this->getConnection()->getEntityManager(), 'ViewStudent');
     }
 }

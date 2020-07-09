@@ -6,6 +6,7 @@ use SPHERE\Application\Api\ApiTrait;
 use SPHERE\Application\Api\Dispatcher;
 use SPHERE\Application\Billing\Accounting\Causer\Causer;
 use SPHERE\Application\Billing\Accounting\Debtor\Debtor;
+use SPHERE\Application\Billing\Accounting\Debtor\Service\Entity\TblBankReference;
 use SPHERE\Application\Billing\Bookkeeping\Balance\Balance;
 use SPHERE\Application\Billing\Bookkeeping\Basket\Basket;
 use SPHERE\Application\Billing\Inventory\Item\Item;
@@ -440,24 +441,12 @@ class ApiDebtorSelection extends Extension implements IApiInterface
         if(!isset($_POST['DebtorSelection']['DebtorPeriodTypeId'])){
             $_POST['DebtorSelection']['DebtorPeriodTypeId'] = $tblDebtorPeriodTypeMonth->getId();
         }
-        // no BankAccount available
-        if(!isset($_POST['DebtorSelection']['BankAccount'])){
-            $_POST['DebtorSelection']['BankAccount'] = '-1';
-        }
 
-        $RadioBoxListBankAccount = self::getBankAccountRadioBoxList($PersonDebtorList);
 
         $tblBankReferenceList = Debtor::useService()->getBankReferenceByPerson($tblPerson);
-        if($tblBankReferenceList){
-            // Post first entry if PaymentType = SEPA-Lastschrift
-            if(isset($_POST['DebtorSelection']['PaymentType'])
-                && ($tblPaymentType = Balance::useService()->getPaymentTypeById($_POST['DebtorSelection']['PaymentType']))
-                && $tblPaymentType->getName() == 'SEPA-Lastschrift'){
-                if(!isset($_POST['DebtorSelection']['BankReference'])){
-                    $_POST['DebtorSelection']['BankReference'] = $tblBankReferenceList[0]->getId();
-                }
-            }
-        }
+        self::getBankAccountPost($PersonDebtorList, $tblBankReferenceList);
+        $RadioBoxListBankAccount = self::getBankAccountRadioBoxList($PersonDebtorList);
+
 
         return (new Form(
             new FormGroup(array(
@@ -472,7 +461,7 @@ class ApiDebtorSelection extends Extension implements IApiInterface
 //                        ->ajaxPipelineOnChange()
                         , 6),
                     new FormColumn(
-                        (new SelectBox('DebtorSelection[Debtor]', 'Bezahler',
+                        (new SelectBox('DebtorSelection[Debtor]', 'Beitragszahler',
                             $SelectBoxDebtorList, null, true, null))->setRequired()
                         //ToDO Change follow Content
 //                        ->ajaxPipelineOnChange()
@@ -495,8 +484,8 @@ class ApiDebtorSelection extends Extension implements IApiInterface
                 new FormRow(array(
                     new FormColumn(
                         array(
-                            (new DatePicker('DebtorSelection[FromDate]', '', 'Gültig ab'))->setRequired(),
-                            new DatePicker('DebtorSelection[ToDate]', '', 'Gültig bis')
+                            (new DatePicker('DebtorSelection[FromDate]', '', 'Beitragspflicht ab'))->setRequired(),
+                            new DatePicker('DebtorSelection[ToDate]', '', 'Beitragspflicht bis')
                         )
                         , 6
                     ),
@@ -537,22 +526,7 @@ class ApiDebtorSelection extends Extension implements IApiInterface
     private static function getDebtorNumberByPerson(TblPerson $tblPerson)
     {
 
-        $IsDebtorNumberNeed = false;
-        if($tblSetting = Setting::useService()->getSettingByIdentifier(TblSetting::IDENT_IS_DATEV)){
-            if($tblSetting->getValue() == 1){
-                $IsDebtorNumberNeed = true;
-            }
-        }
         $DeborNumber = '';
-        if($IsDebtorNumberNeed){
-            $DeborNumber = '(keine Debitoren-Nr.)';
-        }
-        // change warning if necessary to "not in PaymentGroup"
-        if(($tblGroup = Group::useService()->getGroupByMetaTable(TblGroup::META_TABLE_DEBTOR))){
-            if(!Group::useService()->getMemberByPersonAndGroup($tblPerson, $tblGroup)){
-                $DeborNumber = '(kein Bezahler)';
-            }
-        }
         if(($tblDebtorNumberList = Debtor::useService()->getDebtorNumberByPerson($tblPerson))){
             $DebtorNumberList = array();
             foreach($tblDebtorNumberList as $tblDebtorNumber) {
@@ -567,18 +541,56 @@ class ApiDebtorSelection extends Extension implements IApiInterface
     /**
      * @param TblPerson $tblPerson
      *
+     * @return string
+     */
+    private static function getDebtorMissingNumber(TblPerson $tblPerson)
+    {
+
+        $IsDebtorNumberNeed = false;
+        if($tblSetting = Setting::useService()->getSettingByIdentifier(TblSetting::IDENT_IS_DATEV)){
+            if($tblSetting->getValue() == 1){
+                $IsDebtorNumberNeed = true;
+            }
+        }
+        $DeborNumber = '';
+        if($IsDebtorNumberNeed){
+            $DeborNumber = '(keine Debitoren-Nr. hinterlegt)';
+        }
+
+        // noch nicht hinterlegte Beitagszahler erhalten keinen Warntext mehr
+        if(($tblGroup = Group::useService()->getGroupByMetaTable(TblGroup::META_TABLE_DEBTOR))){
+            if(!Group::useService()->getMemberByPersonAndGroup($tblPerson, $tblGroup)){
+                $DeborNumber = '';
+            }
+        }
+        return $DeborNumber;
+    }
+
+//    private static function
+
+    /**
+     * @param TblPerson $tblPerson
+     *
      * @return array array('SelectBoxDebtorList' => SelectBoxContent[]; 'PersonDebtorList' => TblPerson[])
      */
     public static function getSelectBoxDebtor(TblPerson $tblPerson)
     {
 
+        $SelectBoxFirstDebtorList = array('0' => 'Nicht ausgewählt');
+        $SelectBoxDebtorList = array();
         if(($tblRelationshipType = Relationship::useService()->getTypeByName('Beitragszahler'))){
             if(($tblRelationshipList = Relationship::useService()->getPersonRelationshipAllByPerson($tblPerson,
                 $tblRelationshipType))){
                 foreach($tblRelationshipList as $tblRelationship) {
                     if(($tblPersonRel = $tblRelationship->getServiceTblPersonFrom()) && $tblPersonRel->getId() !== $tblPerson->getId()){
                         $DeborNumber = self::getDebtorNumberByPerson($tblPersonRel);
-                        $SelectBoxDebtorList[$tblPersonRel->getId()] = $tblPersonRel->getLastFirstName().' '.$DeborNumber;
+                        if($DeborNumber){
+                            // Steht am Anfang, wenn es eine Debitorennummer gibt
+                            $SelectBoxFirstDebtorList[$tblPersonRel->getId()] = $tblPersonRel->getLastFirstName().' '.$DeborNumber;
+                        } else {
+                            $DeborNumber = self::getDebtorMissingNumber($tblPersonRel);
+                            $SelectBoxDebtorList[$tblPersonRel->getId()] = $tblPersonRel->getLastFirstName().' '.$DeborNumber;
+                        }
                         $PersonDebtorList[] = $tblPersonRel;
                     }
                 }
@@ -590,7 +602,12 @@ class ApiDebtorSelection extends Extension implements IApiInterface
                 foreach($tblRelationshipList as $tblRelationship) {
                     if(($tblPersonRel = $tblRelationship->getServiceTblPersonFrom()) && $tblPersonRel->getId() !== $tblPerson->getId()){
                         $DeborNumber = self::getDebtorNumberByPerson($tblPersonRel);
-                        $SelectBoxDebtorList[$tblPersonRel->getId()] = $tblPersonRel->getLastFirstName().' '.$DeborNumber;
+                        if($DeborNumber){
+                            $SelectBoxFirstDebtorList[$tblPersonRel->getId()] = $tblPersonRel->getLastFirstName().' '.$DeborNumber;
+                        } else {
+                            $DeborNumber = self::getDebtorMissingNumber($tblPersonRel);
+                            $SelectBoxDebtorList[$tblPersonRel->getId()] = $tblPersonRel->getLastFirstName().' '.$DeborNumber;
+                        }
                         $PersonDebtorList[] = $tblPersonRel;
                     }
                 }
@@ -602,7 +619,12 @@ class ApiDebtorSelection extends Extension implements IApiInterface
                 foreach($tblRelationshipList as $tblRelationship) {
                     if(($tblPersonRel = $tblRelationship->getServiceTblPersonFrom()) && $tblPersonRel->getId() !== $tblPerson->getId()){
                         $DeborNumber = self::getDebtorNumberByPerson($tblPersonRel);
-                        $SelectBoxDebtorList[$tblPersonRel->getId()] = $tblPersonRel->getLastFirstName().' '.$DeborNumber;
+                        if($DeborNumber){
+                            $SelectBoxFirstDebtorList[$tblPersonRel->getId()] = $tblPersonRel->getLastFirstName().' '.$DeborNumber;
+                        } else {
+                            $DeborNumber = self::getDebtorMissingNumber($tblPersonRel);
+                            $SelectBoxDebtorList[$tblPersonRel->getId()] = $tblPersonRel->getLastFirstName().' '.$DeborNumber;
+                        }
                         $PersonDebtorList[] = $tblPersonRel;
                     }
                 }
@@ -611,13 +633,79 @@ class ApiDebtorSelection extends Extension implements IApiInterface
         // Beitragsverursacher steht immer am Schluss
 
         $DeborNumber = self::getDebtorNumberByPerson($tblPerson);
+        if($DeborNumber){
+            $SelectBoxFirstDebtorList[$tblPerson->getId()] = $tblPerson->getLastFirstName().' '.$DeborNumber;
+        } else {
+            $DeborNumber = self::getDebtorMissingNumber($tblPerson);
+            $SelectBoxDebtorList[$tblPerson->getId()] = $tblPerson->getLastFirstName().' '.$DeborNumber;
+        }
+
+        if(count($SelectBoxFirstDebtorList) == 2 && !isset($_POST['DebtorSelection']['Debtor'])){
+            $keyList = array_keys($SelectBoxFirstDebtorList);
+            end($keyList);
+            $_POST['DebtorSelection']['Debtor'] = current($keyList);
+        }
+
+        // Array Sortierung
+        foreach($SelectBoxDebtorList as $PersonId => $SelectBoxDebtor){
+            $SelectBoxFirstDebtorList[$PersonId] = $SelectBoxDebtor;
+        }
             // $SelectBoxDebtorList => Personen, die zur Auswahl als Debitor stehen
-        $SelectBoxDebtorList[$tblPerson->getId()] = $tblPerson->getLastFirstName().' '.$DeborNumber;
+        $SelectBoxDebtorList = $SelectBoxFirstDebtorList;
             // $PersonDebtorList = Personen von denen Kontoinformationen geholt werden
         $PersonDebtorList[] = $tblPerson;
 
         return array('SelectBoxDebtorList' => $SelectBoxDebtorList,
                      'PersonDebtorList' => (isset($PersonDebtorList) ? $PersonDebtorList : false));
+    }
+
+    /**
+     * @param bool|TblPerson[] $PersonDebtorList
+     * @param bool|TblBankReference[] $tblBankReferenceList
+     */
+    public static function getBankAccountPost($PersonDebtorList, $tblBankReferenceList)
+    {
+
+        // no BankAccount available
+        if(!isset($_POST['DebtorSelection']['BankAccount'])){
+            $_POST['DebtorSelection']['BankAccount'] = '-1';
+        }
+
+        // füllung nur, wenn kein Zahlungstyp vorhanden ist (Neu)
+        if(!isset($_POST['DebtorSelection']['PaymentType'])){
+            $BankAccountCount = 0;
+            $BankAccountIdList = array();
+            // suchen möglicher Konten
+            if(!empty($PersonDebtorList)){
+                /** @var TblPerson $PersonDebtor */
+                foreach($PersonDebtorList as $PersonDebtor) {
+                    if(($tblBankAccountList = Debtor::useService()->getBankAccountAllByPerson($PersonDebtor))){
+                        $BankAccountCount += count($tblBankAccountList);
+                        foreach($tblBankAccountList as $tblBankAccount){
+                            $BankAccountIdList[] = $tblBankAccount->getId();
+                        }
+                    }
+                }
+            }
+
+            // bei vorhandenem Bankkonto wird Sepa-Lastschrift vorgeschlagen
+            if($BankAccountCount > 0){
+                $tblPaymentType = Balance::useService()->getPaymentTypeByName('SEPA-Lastschrift');
+                $_POST['DebtorSelection']['PaymentType'] = $tblPaymentType->getId();
+
+                // Wenn es nur ein Konto gibt, wird dieses als Standard vorausgewählt
+                if(!empty($BankAccountIdList) && count($BankAccountIdList) == 1){
+                    $_POST['DebtorSelection']['BankAccount'] = current($BankAccountIdList);
+
+                    // trage die Bankreferenz ein, wenn nur eine vorhanden ist und es genau ein Konto gibt
+                    if(!empty($tblBankReferenceList)){
+                        $_POST['DebtorSelection']['BankReference'] = current($tblBankReferenceList)->getId();
+                    }
+                }
+            }
+        }
+
+//        return $RadioBoxListBankAccount;
     }
 
     /**
@@ -702,7 +790,7 @@ class ApiDebtorSelection extends Extension implements IApiInterface
             }
         }
         if(isset($DebtorSelection['Debtor']) && empty($DebtorSelection['Debtor'])){
-            $form->setError('DebtorSelection[Debtor]', 'Bitte geben Sie einen Bezahler an');
+            $form->setError('DebtorSelection[Debtor]', 'Bitte geben Sie einen Beitragszahler an');
             $Error = true;
         }
         if(isset($DebtorSelection['FromDate']) && empty($DebtorSelection['FromDate'])){
@@ -803,10 +891,13 @@ class ApiDebtorSelection extends Extension implements IApiInterface
         if($DebtorSelection['Variant'] == '-1'){
             $ItemPrice = $DebtorSelection['Price'];
         }
-        if($tblPaymentType && $tblPaymentType->getName() != 'SEPA-Lastschrift'){
+        if($tblPaymentType && $tblPaymentType->getName() == 'Bar'){
             $tblBankAccount = false;
             $tblBankReference = false;
-        } else {
+        } elseif($tblPaymentType->getName() == 'SEPA-Überweisung') {
+            $tblBankAccount = Debtor::useService()->getBankAccountById($DebtorSelection['BankAccount']);
+            $tblBankReference = false;
+        } elseif($tblPaymentType->getName() == 'SEPA-Lastschrift') {
             $tblBankAccount = Debtor::useService()->getBankAccountById($DebtorSelection['BankAccount']);
             $tblBankReference = Debtor::useService()->getBankReferenceById($DebtorSelection['BankReference']);
         }
@@ -884,7 +975,7 @@ class ApiDebtorSelection extends Extension implements IApiInterface
             $ItemPrice = $DebtorSelection['Price'];
         }
 
-        if(!isset($DebtorSelection['BankAccount']) || $DebtorSelection['BankAccount'] == '-1'){
+        if($tblPaymentType && $tblPaymentType->getName() == 'Bar' || $DebtorSelection['BankAccount'] == '-1'){
             $tblBankAccount = false;
             $tblBankReference = false;
         } else {
@@ -899,6 +990,7 @@ class ApiDebtorSelection extends Extension implements IApiInterface
             if(($tblGroup = Group::useService()->getGroupByMetaTable(TblGroup::META_TABLE_DEBTOR))){
                 Group::useService()->addGroupPerson($tblGroup, $tblPerson);
             }
+
             $IsChange = Debtor::useService()->changeDebtorSelection($tblDebtorSelection, $tblPerson, $tblPaymentType,
                 $tblDebtorPeriodType, $FromDate, $ToDate, ($tblItemVariant ? $tblItemVariant : null), $ItemPrice,
                 ($tblBankAccount ? $tblBankAccount : null), ($tblBankReference ? $tblBankReference : null)

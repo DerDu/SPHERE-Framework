@@ -81,19 +81,7 @@ class GradeInformation extends Certificate
                 )
                 ->styleMarginTop('25px')
             )
-            ->addSlice((new Slice())
-                ->addSection((new Section())
-                    ->addElementColumn((new Element())
-                        ->setContent('{% if(Content.P' . $personId . '.Input.Remark is not empty) %}
-                                    {{ Content.P' . $personId . '.Input.Remark|nl2br }}
-                                {% else %}
-                                    &nbsp;
-                                {% endif %}')
-                        ->styleHeight('100px')
-                    )
-                )
-                ->styleMarginTop('5px')
-            )
+            ->addSlice($this->getDescriptionContent($personId, '100px', '5px'))
             ->addSlice((new Slice())
                 ->addSection((new Section())
                     ->addElementColumn((new Element())

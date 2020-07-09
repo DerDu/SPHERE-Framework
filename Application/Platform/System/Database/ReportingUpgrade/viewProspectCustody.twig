@@ -1,468 +1,467 @@
-select
-    vP.TblPerson_Id AS TblPerson_Id,
+SELECT
+    tP.Id AS TblPerson_Id,
 
     -- Person S1
     -- Definition S1 Id
-    (select vRTP.TblToPerson_serviceTblPersonTo
-        from SettingConsumer_{{ ConsumerAcronym }}.viewRelationshipToPerson vRTP
-        where vP.TblPerson_Id = vRTP.TblToPerson_serviceTblPersonFrom
-        and vRTP.TblType_Name = 'Sorgeberechtigt'
-        and vRTP.TblToPerson_Ranking = 1
+    (SELECT vRTP.TblToPerson_serviceTblPersonTo
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewRelationshipToPerson vRTP
+        WHERE tP.Id = vRTP.TblToPerson_serviceTblPersonFROM
+        AND vRTP.TblType_Name = 'Sorgeberechtigt'
+        AND vRTP.TblToPerson_Ranking = 1
         limit 0,1
-        -- limit 0,1
     ) TblPerson_S1_Id,
 
-    if ((select vRTP.TblToPerson_IsSingleParent
-        from SettingConsumer_{{ ConsumerAcronym }}.viewRelationshipToPerson vRTP
-        where vP.TblPerson_Id = vRTP.TblToPerson_serviceTblPersonFrom
-        and vRTP.TblType_Name = 'Sorgeberechtigt'
-        and vRTP.TblToPerson_Ranking = 1
+    if ((SELECT vRTP.TblToPerson_IsSingleParent
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewRelationshipToPerson vRTP
+        WHERE tP.Id = vRTP.TblToPerson_serviceTblPersonFROM
+        AND vRTP.TblType_Name = 'Sorgeberechtigt'
+        AND vRTP.TblToPerson_Ranking = 1
         limit 0,1
     ), 'Ja', 'Nein') TblToPerson_IsSingleParent_S1,
 
-    (select vP.TblSalutation_Salutation
-        from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-        where vP.TblPerson_Id = TblPerson_S1_Id
+    (SELECT tS.Salutation
+        FROM PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP
+        LEFT JOIN PeoplePerson_{{ ConsumerAcronym }}.tblSalutation tS ON tS.Id = tP.tblSalutation
+        WHERE tP.Id = TblPerson_S1_Id
     ) TblSalutation_Salutation_S1,
 
-    (select vP.TblPerson_Title
-        from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-        where vP.TblPerson_Id = TblPerson_S1_Id
+    (SELECT tP.Title
+        FROM PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP
+        WHERE tP.Id = TblPerson_S1_Id
     ) TblPerson_Title_S1,
 
-    (select vP.TblPerson_FirstName
-        from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-        where vP.TblPerson_Id = TblPerson_S1_Id
+    (SELECT tP.FirstName
+        FROM PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP
+        WHERE tP.Id = TblPerson_S1_Id
     ) TblPerson_FirstName_S1,
 
-    (select vP.TblPerson_SecondName
-        from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-        where vP.TblPerson_Id = TblPerson_S1_Id
+    (SELECT tP.SecondName
+        FROM PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP
+        WHERE tP.Id = TblPerson_S1_Id
     ) TblPerson_SecondName_S1,
 
-    (select vP.TblPerson_CallName
-        from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-        where vP.TblPerson_Id = TblPerson_S1_Id
+    (SELECT tP.CallName
+        FROM PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP
+        WHERE tP.Id = TblPerson_S1_Id
     ) TblPerson_CallName_S1,
 
-    (select vP.TblPerson_LastName
-        from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-        where vP.TblPerson_Id = TblPerson_S1_Id
+    (SELECT tP.LastName
+        FROM PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP
+        WHERE tP.Id = TblPerson_S1_Id
     ) TblPerson_LastName_S1,
 
-    (select vP.TblPerson_BirthName
-        from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-        where vP.TblPerson_Id = TblPerson_S1_Id
+    (SELECT tP.BirthName
+        FROM PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP
+        WHERE tP.Id = TblPerson_S1_Id
     ) TblPerson_BirthName_S1,
 
-    (select vP.TblCommonBirthDates_Birthday
-        from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-        where vP.TblPerson_Id = TblPerson_S1_Id
+    (SELECT DATE_FORMAT( tCBD.Birthday, '%d.%m.%Y')
+        FROM PeopleMeta_{{ ConsumerAcronym }}.tblCommon tC
+			LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblCommonBirthDates tCBD ON tCBD.Id = tC.tblCommonBirthDates
+        WHERE tC.serviceTblPerson = TblPerson_S1_Id
     ) TblPerson_Birthday_S1,
 
     -- Address
-    (select vCA.TblAddress_StreetName
-        from SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
-        where vCA.TblPerson_Id = TblPerson_S1_Id
-        and vCA.TblType_Name = 'Hauptadresse'
+    (SELECT vCA.TblAddress_StreetName
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
+        WHERE vCA.TblPerson_Id = TblPerson_S1_Id
+        AND vCA.TblType_Name = 'Hauptadresse'
     ) TblAddress_StreetName_S1,
 
-    (select vCA.TblAddress_StreetNumber
-        from SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
-        where vCA.TblPerson_Id = TblPerson_S1_Id
-        and vCA.TblType_Name = 'Hauptadresse'
+    (SELECT vCA.TblAddress_StreetNumber
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
+        WHERE vCA.TblPerson_Id = TblPerson_S1_Id
+        AND vCA.TblType_Name = 'Hauptadresse'
     ) TblAddress_StreetNumber_S1,
 
-    (select vCA.TblCity_Code
-        from SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
-        where vCA.TblPerson_Id = TblPerson_S1_Id
-        and vCA.TblType_Name = 'Hauptadresse'
+    (SELECT vCA.TblCity_Code
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
+        WHERE vCA.TblPerson_Id = TblPerson_S1_Id
+        AND vCA.TblType_Name = 'Hauptadresse'
     ) TblCity_Code_S1,
 
-    (select vCA.TblCity_Name
-        from SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
-        where vCA.TblPerson_Id = TblPerson_S1_Id
-        and vCA.TblType_Name = 'Hauptadresse'
-    ) TblCity_City_S1,
+    (SELECT vCA.TblCity_Name
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
+        WHERE vCA.TblPerson_Id = TblPerson_S1_Id
+        AND vCA.TblType_Name = 'Hauptadresse'
+    ) TblCity_Name_S1,
 
-    (select vCA.TblCity_District
-        from SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
-        where vCA.TblPerson_Id = TblPerson_S1_Id
-        and vCA.TblType_Name = 'Hauptadresse'
+    (SELECT vCA.TblCity_District
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
+        WHERE vCA.TblPerson_Id = TblPerson_S1_Id
+        AND vCA.TblType_Name = 'Hauptadresse'
     ) TblCity_District_S1,
 
-    (select vCA.TblAddress_County
-        from SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
-        where vCA.TblPerson_Id = TblPerson_S1_Id
-        and vCA.TblType_Name = 'Hauptadresse'
+    (SELECT vCA.TblAddress_County
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
+        WHERE vCA.TblPerson_Id = TblPerson_S1_Id
+        AND vCA.TblType_Name = 'Hauptadresse'
     ) TblAddress_County_S1,
 
-    (select vCA.TblState_Name
-        from SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
-        where vCA.TblPerson_Id = TblPerson_S1_Id
-        and vCA.TblType_Name = 'Hauptadresse'
+    (SELECT vCA.TblState_Name
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
+        WHERE vCA.TblPerson_Id = TblPerson_S1_Id
+        AND vCA.TblType_Name = 'Hauptadresse'
     ) TblState_Name_S1,
 
-    (select vCA.TblAddress_Nation
-        from SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
-        where vCA.TblPerson_Id = TblPerson_S1_Id
-        and vCA.TblType_Name = 'Hauptadresse'
+    (SELECT vCA.TblAddress_Nation
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
+        WHERE vCA.TblPerson_Id = TblPerson_S1_Id
+        AND vCA.TblType_Name = 'Hauptadresse'
     ) TblAddress_Nation_S1,
 
-    (select
+    (SELECT
         group_concat(
             concat(
-            vCP.TblType_Name,
-            ': ',
-            vCP.TblPhone_Number,
-            ' - ',
-            vCP.TblToPerson_Remark
-            ) separator '\n\r'
-        ) from SettingConsumer_{{ ConsumerAcronym }}.viewContactPhone vCP
-        where vCP.TblPerson_Id = TblPerson_S1_Id
+                vCP.TblType_Name,
+                ': ',
+                vCP.TblPhone_Number,
+                ' - ',
+                vCP.TblToPerson_Remark
+            ) separator '\n'
+        ) FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactPhone vCP
+        WHERE vCP.TblPerson_Id = TblPerson_S1_Id
     ) TblPhone_Number_S1,
 
-    (select
+    (SELECT
         group_concat(
             concat(
-            vCM.TblType_Name,
-            ': ',
-            vCM.TblMail_Address,
-            case when vCM.TblToPerson_Remark <> '' then ' - ' else '' end,
-            vCM.TblToPerson_Remark
-            ) separator '\n\r'
-        ) from SettingConsumer_{{ ConsumerAcronym }}.viewContactMail vCM
-        where vCM.TblPerson_Id = TblPerson_S1_Id
+                vCM.TblType_Name,
+                ': ',
+                vCM.TblMail_Address,
+                case when vCM.TblToPerson_Remark <> '' then ' - ' else '' end,
+                vCM.TblToPerson_Remark
+            ) separator '\n'
+        ) FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactMail vCM
+        WHERE vCM.TblPerson_Id = TblPerson_S1_Id
     ) TblMail_Address_S1,
 
-    (select
+    (SELECT
         group_concat(
             concat(
-            vCM.TblMail_Address
+                vCM.TblMail_Address
             ) separator '; '
-        ) from SettingConsumer_{{ ConsumerAcronym }}.viewContactMail vCM
-        where TblPerson_S1_Id = vCM.TblPerson_Id
-        and vCM.TblType_Name = 'Privat'
+        ) FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactMail vCM
+        WHERE TblPerson_S1_Id = vCM.TblPerson_Id
+        AND vCM.TblType_Name = 'Privat'
     ) TblMail_AddressPrivate_S1,
 
-    (select
+    (SELECT
         group_concat(
             concat(
-            vCM.TblMail_Address
+                vCM.TblMail_Address
             ) separator '; '
-        ) from SettingConsumer_{{ ConsumerAcronym }}.viewContactMail vCM
-        where TblPerson_S1_Id = vCM.TblPerson_Id
-        and vCM.TblType_Name like 'Gesch%ftlich'
+        ) FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactMail vCM
+        WHERE TblPerson_S1_Id = vCM.TblPerson_Id
+        AND vCM.TblType_Name LIKE 'Gesch%ftlich'
     ) TblMail_AddressCompany_S1,
 
     -- Person S2
     -- Definition S2 Id
-    (select vRTP.TblToPerson_serviceTblPersonTo
-        from SettingConsumer_{{ ConsumerAcronym }}.viewRelationshipToPerson vRTP
-        where vP.TblPerson_Id = vRTP.TblToPerson_serviceTblPersonFrom
-        and vRTP.TblType_Name = 'Sorgeberechtigt'
-        and vRTP.TblToPerson_Ranking = 2
+    (SELECT vRTP.TblToPerson_serviceTblPersonTo
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewRelationshipToPerson vRTP
+        WHERE tP.Id = vRTP.TblToPerson_serviceTblPersonFROM
+        AND vRTP.TblType_Name = 'Sorgeberechtigt'
+        AND vRTP.TblToPerson_Ranking = 2
         limit 0,1
         -- limit 1,1
     ) TblPerson_S2_Id,
 
-    if ((select vRTP.TblToPerson_IsSingleParent
-        from SettingConsumer_{{ ConsumerAcronym }}.viewRelationshipToPerson vRTP
-        where vP.TblPerson_Id = vRTP.TblToPerson_serviceTblPersonFrom
-        and vRTP.TblType_Name = 'Sorgeberechtigt'
-        and vRTP.TblToPerson_Ranking = 2
+    if ((SELECT vRTP.TblToPerson_IsSingleParent
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewRelationshipToPerson vRTP
+        WHERE tP.Id = vRTP.TblToPerson_serviceTblPersonFROM
+        AND vRTP.TblType_Name = 'Sorgeberechtigt'
+        AND vRTP.TblToPerson_Ranking = 2
         limit 0,1
     ), 'Ja', 'Nein') TblToPerson_IsSingleParent_S2,
 
-    (select vP.TblSalutation_Salutation
-        from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-        where vP.TblPerson_Id = TblPerson_S2_Id
+    (SELECT tS.Salutation
+        FROM PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP
+        LEFT JOIN PeoplePerson_{{ ConsumerAcronym }}.tblSalutation tS ON tS.Id = tP.tblSalutation
+        WHERE tP.Id = TblPerson_S2_Id
     ) TblSalutation_Salutation_S2,
 
-    (select vP.TblPerson_Title
-        from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-        where vP.TblPerson_Id = TblPerson_S2_Id
+    (SELECT tP.Title
+        FROM PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP
+        WHERE tP.Id = TblPerson_S2_Id
     ) TblPerson_Title_S2,
 
-    (select vP.TblPerson_FirstName
-        from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-        where vP.TblPerson_Id = TblPerson_S2_Id
+    (SELECT tP.FirstName
+        FROM PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP
+        WHERE tP.Id = TblPerson_S2_Id
     ) TblPerson_FirstName_S2,
 
-    (select vP.TblPerson_SecondName
-        from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-        where vP.TblPerson_Id = TblPerson_S2_Id
+    (SELECT tP.SecondName
+        FROM PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP
+        WHERE tP.Id = TblPerson_S2_Id
     ) TblPerson_SecondName_S2,
 
-    (select vP.TblPerson_CallName
-        from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-        where vP.TblPerson_Id = TblPerson_S2_Id
+    (SELECT tP.CallName
+        FROM PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP
+        WHERE tP.Id = TblPerson_S2_Id
     ) TblPerson_CallName_S2,
 
-    (select vP.TblPerson_LastName
-        from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-        where vP.TblPerson_Id = TblPerson_S2_Id
+    (SELECT tP.LastName
+        FROM PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP
+        WHERE tP.Id = TblPerson_S2_Id
     ) TblPerson_LastName_S2,
 
-    (select vP.TblPerson_BirthName
-        from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-        where vP.TblPerson_Id = TblPerson_S2_Id
+    (SELECT tP.BirthName
+        FROM PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP
+        WHERE tP.Id = TblPerson_S2_Id
     ) TblPerson_BirthName_S2,
 
-    (select vP.TblCommonBirthDates_Birthday
-        from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-        where vP.TblPerson_Id = TblPerson_S2_Id
-    ) TblPerson_Birthday_S2,
-
     -- Address
-    (select vCA.TblAddress_StreetName
-        from SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
-        where vCA.TblPerson_Id = TblPerson_S2_Id
-        and vCA.TblType_Name = 'Hauptadresse'
+    (SELECT vCA.TblAddress_StreetName
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
+        WHERE vCA.TblPerson_Id = TblPerson_S2_Id
+        AND vCA.TblType_Name = 'Hauptadresse'
     ) TblAddress_StreetName_S2,
 
-    (select vCA.TblAddress_StreetNumber
-        from SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
-        where vCA.TblPerson_Id = TblPerson_S2_Id
-        and vCA.TblType_Name = 'Hauptadresse'
+    (SELECT vCA.TblAddress_StreetNumber
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
+        WHERE vCA.TblPerson_Id = TblPerson_S2_Id
+        AND vCA.TblType_Name = 'Hauptadresse'
     ) TblAddress_StreetNumber_S2,
 
-    (select vCA.TblCity_Code
-        from SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
-        where vCA.TblPerson_Id = TblPerson_S2_Id
-        and vCA.TblType_Name = 'Hauptadresse'
+    (SELECT vCA.TblCity_Code
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
+        WHERE vCA.TblPerson_Id = TblPerson_S2_Id
+        AND vCA.TblType_Name = 'Hauptadresse'
     ) TblCity_Code_S2,
 
-    (select vCA.TblCity_Name
-        from SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
-        where vCA.TblPerson_Id = TblPerson_S2_Id
-        and vCA.TblType_Name = 'Hauptadresse'
-    ) TblCity_City_S2,
+    (SELECT vCA.TblCity_Name
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
+        WHERE vCA.TblPerson_Id = TblPerson_S2_Id
+        AND vCA.TblType_Name = 'Hauptadresse'
+    ) TblCity_Name_S2,
 
-    (select vCA.TblCity_District
-        from SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
-        where vCA.TblPerson_Id = TblPerson_S2_Id
-        and vCA.TblType_Name = 'Hauptadresse'
+    (SELECT vCA.TblCity_District
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
+        WHERE vCA.TblPerson_Id = TblPerson_S2_Id
+        AND vCA.TblType_Name = 'Hauptadresse'
     ) TblCity_District_S2,
 
-    (select vCA.TblAddress_County
-        from SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
-        where vCA.TblPerson_Id = TblPerson_S2_Id
-        and vCA.TblType_Name = 'Hauptadresse'
+    (SELECT vCA.TblAddress_County
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
+        WHERE vCA.TblPerson_Id = TblPerson_S2_Id
+        AND vCA.TblType_Name = 'Hauptadresse'
     ) TblAddress_County_S2,
 
-    (select vCA.TblState_Name
-        from SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
-        where vCA.TblPerson_Id = TblPerson_S2_Id
-        and vCA.TblType_Name = 'Hauptadresse'
+    (SELECT vCA.TblState_Name
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
+        WHERE vCA.TblPerson_Id = TblPerson_S2_Id
+        AND vCA.TblType_Name = 'Hauptadresse'
     ) TblState_Name_S2,
 
-    (select vCA.TblAddress_Nation
-        from SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
-        where vCA.TblPerson_Id = TblPerson_S2_Id
-        and vCA.TblType_Name = 'Hauptadresse'
+    (SELECT vCA.TblAddress_Nation
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
+        WHERE vCA.TblPerson_Id = TblPerson_S2_Id
+        AND vCA.TblType_Name = 'Hauptadresse'
     ) TblAddress_Nation_S2,
 
-    (select
+    (SELECT
         group_concat(
             concat(
-            vCP.TblType_Name,
-            ': ',
-            vCP.TblPhone_Number,
-            ' - ',
-            vCP.TblToPerson_Remark
-            ) separator '\n\r'
-        ) from SettingConsumer_{{ ConsumerAcronym }}.viewContactPhone vCP
-        where vCP.TblPerson_Id = TblPerson_S2_Id
+                vCP.TblType_Name,
+                ': ',
+                vCP.TblPhone_Number,
+                ' - ',
+                vCP.TblToPerson_Remark
+            ) separator '\n'
+        ) FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactPhone vCP
+        WHERE vCP.TblPerson_Id = TblPerson_S2_Id
     ) TblPhone_Number_S2,
 
-    (select
+    (SELECT
         group_concat(
             concat(
-            vCM.TblType_Name,
-            ': ',
-            vCM.TblMail_Address,
-            case when vCM.TblToPerson_Remark <> '' then ' - ' else '' end,
-            vCM.TblToPerson_Remark
-            ) separator '\n\r'
-        ) from SettingConsumer_{{ ConsumerAcronym }}.viewContactMail vCM
-        where vCM.TblPerson_Id = TblPerson_S2_Id
+                vCM.TblType_Name,
+                ': ',
+                vCM.TblMail_Address,
+                case when vCM.TblToPerson_Remark <> '' then ' - ' else '' end,
+                vCM.TblToPerson_Remark
+            ) separator '\n'
+        ) FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactMail vCM
+        WHERE vCM.TblPerson_Id = TblPerson_S2_Id
     ) TblMail_Address_S2,
 
-    (select
+    (SELECT
         group_concat(
             concat(
-            vCM.TblMail_Address
+                vCM.TblMail_Address
             ) separator '; '
-        ) from SettingConsumer_{{ ConsumerAcronym }}.viewContactMail vCM
-        where TblPerson_S2_Id = vCM.TblPerson_Id
-        and vCM.TblType_Name = 'Privat'
+        ) FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactMail vCM
+        WHERE TblPerson_S2_Id = vCM.TblPerson_Id
+        AND vCM.TblType_Name = 'Privat'
     ) TblMail_AddressPrivate_S2,
 
-    (select
+    (SELECT
         group_concat(
             concat(
-            vCM.TblMail_Address
+                vCM.TblMail_Address
             ) separator '; '
-        ) from SettingConsumer_{{ ConsumerAcronym }}.viewContactMail vCM
-        where TblPerson_S2_Id = vCM.TblPerson_Id
-        and vCM.TblType_Name like 'Gesch%ftlich'
+        ) FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactMail vCM
+        WHERE TblPerson_S2_Id = vCM.TblPerson_Id
+        AND vCM.TblType_Name LIKE 'Gesch%ftlich'
     ) TblMail_AddressCompany_S2,
 
     -- Person S3
     -- Definition S3 Id
-    (select vRTP.TblToPerson_serviceTblPersonTo
-        from SettingConsumer_{{ ConsumerAcronym }}.viewRelationshipToPerson vRTP
-        where vP.TblPerson_Id = vRTP.TblToPerson_serviceTblPersonFrom
-        and vRTP.TblType_Name = 'Sorgeberechtigt'
-        and vRTP.TblToPerson_Ranking = 3
+    (SELECT vRTP.TblToPerson_serviceTblPersonTo
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewRelationshipToPerson vRTP
+        WHERE tP.Id = vRTP.TblToPerson_serviceTblPersonFROM
+        AND vRTP.TblType_Name = 'Sorgeberechtigt'
+        AND vRTP.TblToPerson_Ranking = 3
         limit 0,1
         -- limit 2,1
     ) TblPerson_S3_Id,
 
-    if ((select vRTP.TblToPerson_IsSingleParent
-        from SettingConsumer_{{ ConsumerAcronym }}.viewRelationshipToPerson vRTP
-        where vP.TblPerson_Id = vRTP.TblToPerson_serviceTblPersonFrom
-        and vRTP.TblType_Name = 'Sorgeberechtigt'
-        and vRTP.TblToPerson_Ranking = 3
+    if ((SELECT vRTP.TblToPerson_IsSingleParent
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewRelationshipToPerson vRTP
+        WHERE tP.Id = vRTP.TblToPerson_serviceTblPersonFROM
+        AND vRTP.TblType_Name = 'Sorgeberechtigt'
+        AND vRTP.TblToPerson_Ranking = 3
         limit 0,1
     ), 'Ja', 'Nein') TblToPerson_IsSingleParent_S3,
 
-    (select vP.TblSalutation_Salutation
-        from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-        where vP.TblPerson_Id = TblPerson_S3_Id
+    (SELECT tS.Salutation
+        FROM PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP
+        LEFT JOIN PeoplePerson_{{ ConsumerAcronym }}.tblSalutation tS ON tS.Id = tP.tblSalutation
+        WHERE tP.Id = TblPerson_S3_Id
     ) TblSalutation_Salutation_S3,
 
-    (select vP.TblPerson_Title
-        from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-        where vP.TblPerson_Id = TblPerson_S3_Id
+    (SELECT tP.Title
+        FROM PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP
+        WHERE tP.Id = TblPerson_S3_Id
     ) TblPerson_Title_S3,
 
-    (select vP.TblPerson_FirstName
-        from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-        where vP.TblPerson_Id = TblPerson_S3_Id
+    (SELECT tP.FirstName
+        FROM PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP
+        WHERE tP.Id = TblPerson_S3_Id
     ) TblPerson_FirstName_S3,
 
-    (select vP.TblPerson_SecondName
-        from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-        where vP.TblPerson_Id = TblPerson_S3_Id
+    (SELECT tP.SecondName
+        FROM PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP
+        WHERE tP.Id = TblPerson_S3_Id
     ) TblPerson_SecondName_S3,
 
-    (select vP.TblPerson_CallName
-        from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-        where vP.TblPerson_Id = TblPerson_S3_Id
+    (SELECT tP.CallName
+        FROM PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP
+        WHERE tP.Id = TblPerson_S3_Id
     ) TblPerson_CallName_S3,
 
-    (select vP.TblPerson_LastName
-        from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-        where vP.TblPerson_Id = TblPerson_S3_Id
+    (SELECT tP.LastName
+        FROM PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP
+        WHERE tP.Id = TblPerson_S3_Id
     ) TblPerson_LastName_S3,
 
-    (select vP.TblPerson_BirthName
-        from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-        where vP.TblPerson_Id = TblPerson_S3_Id
+    (SELECT tP.BirthName
+        FROM PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP
+        WHERE tP.Id = TblPerson_S3_Id
     ) TblPerson_BirthName_S3,
 
-    (select vP.TblCommonBirthDates_Birthday
-        from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-        where vP.TblPerson_Id = TblPerson_S3_Id
+    (SELECT DATE_FORMAT( tCBD.Birthday, '%d.%m.%Y')
+        FROM PeopleMeta_{{ ConsumerAcronym }}.tblCommon tC
+			LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblCommonBirthDates tCBD ON tCBD.Id = tC.tblCommonBirthDates
+        WHERE tC.serviceTblPerson = TblPerson_S1_Id
     ) TblPerson_Birthday_S3,
 
     -- Address
-    (select vCA.TblAddress_StreetName
-        from SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
-        where vCA.TblPerson_Id = TblPerson_S3_Id
-        and vCA.TblType_Name = 'Hauptadresse'
+    (SELECT vCA.TblAddress_StreetName
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
+        WHERE vCA.TblPerson_Id = TblPerson_S3_Id
+        AND vCA.TblType_Name = 'Hauptadresse'
     ) TblAddress_StreetName_S3,
 
-    (select vCA.TblAddress_StreetNumber
-        from SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
-        where vCA.TblPerson_Id = TblPerson_S3_Id
-        and vCA.TblType_Name = 'Hauptadresse'
+    (SELECT vCA.TblAddress_StreetNumber
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
+        WHERE vCA.TblPerson_Id = TblPerson_S3_Id
+        AND vCA.TblType_Name = 'Hauptadresse'
     ) TblAddress_StreetNumber_S3,
 
-    (select vCA.TblCity_Code
-        from SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
-        where vCA.TblPerson_Id = TblPerson_S3_Id
-        and vCA.TblType_Name = 'Hauptadresse'
+    (SELECT vCA.TblCity_Code
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
+        WHERE vCA.TblPerson_Id = TblPerson_S3_Id
+        AND vCA.TblType_Name = 'Hauptadresse'
     ) TblCity_Code_S3,
 
-    (select vCA.TblCity_Name
-        from SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
-        where vCA.TblPerson_Id = TblPerson_S3_Id
-        and vCA.TblType_Name = 'Hauptadresse'
-    ) TblCity_City_S3,
+    (SELECT vCA.TblCity_Name
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
+        WHERE vCA.TblPerson_Id = TblPerson_S3_Id
+        AND vCA.TblType_Name = 'Hauptadresse'
+    ) TblCity_Name_S3,
 
-    (select vCA.TblCity_District
-        from SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
-        where vCA.TblPerson_Id = TblPerson_S3_Id
-        and vCA.TblType_Name = 'Hauptadresse'
+    (SELECT vCA.TblCity_District
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
+        WHERE vCA.TblPerson_Id = TblPerson_S3_Id
+        AND vCA.TblType_Name = 'Hauptadresse'
     ) TblCity_District_S3,
 
-    (select vCA.TblAddress_County
-        from SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
-        where vCA.TblPerson_Id = TblPerson_S3_Id
-        and vCA.TblType_Name = 'Hauptadresse'
+    (SELECT vCA.TblAddress_County
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
+        WHERE vCA.TblPerson_Id = TblPerson_S3_Id
+        AND vCA.TblType_Name = 'Hauptadresse'
     ) TblAddress_County_S3,
 
-    (select vCA.TblState_Name
-        from SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
-        where vCA.TblPerson_Id = TblPerson_S3_Id
-        and vCA.TblType_Name = 'Hauptadresse'
+    (SELECT vCA.TblState_Name
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
+        WHERE vCA.TblPerson_Id = TblPerson_S3_Id
+        AND vCA.TblType_Name = 'Hauptadresse'
     ) TblState_Name_S3,
 
-    (select vCA.TblAddress_Nation
-        from SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
-        where vCA.TblPerson_Id = TblPerson_S3_Id
-        and vCA.TblType_Name = 'Hauptadresse'
+    (SELECT vCA.TblAddress_Nation
+        FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactAddress vCA
+        WHERE vCA.TblPerson_Id = TblPerson_S3_Id
+        AND vCA.TblType_Name = 'Hauptadresse'
     ) TblAddress_Nation_S3,
 
-    (select
+    (SELECT
         group_concat(
             concat(
-            vCP.TblType_Name,
-            ': ',
-            vCP.TblPhone_Number,
-            ' - ',
-            vCP.TblToPerson_Remark
-            ) separator '\n\r'
-        ) from SettingConsumer_{{ ConsumerAcronym }}.viewContactPhone vCP
-        where vCP.TblPerson_Id = TblPerson_S3_Id
+                vCP.TblType_Name,
+                ': ',
+                vCP.TblPhone_Number,
+                ' - ',
+                vCP.TblToPerson_Remark
+            ) separator '\n'
+        ) FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactPhone vCP
+        WHERE vCP.TblPerson_Id = TblPerson_S3_Id
     ) TblPhone_Number_S3,
 
-    (select
+    (SELECT
         group_concat(
             concat(
-            vCM.TblType_Name,
-            ': ',
-            vCM.TblMail_Address,
-            case when vCM.TblToPerson_Remark <> '' then ' - ' else '' end,
-            vCM.TblToPerson_Remark
-            ) separator '\n\r'
-        ) from SettingConsumer_{{ ConsumerAcronym }}.viewContactMail vCM
-        where vCM.TblPerson_Id = TblPerson_S3_Id
+                vCM.TblType_Name,
+                ': ',
+                vCM.TblMail_Address,
+                case when vCM.TblToPerson_Remark <> '' then ' - ' else '' end,
+                vCM.TblToPerson_Remark
+            ) separator '\n'
+        ) FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactMail vCM
+        WHERE vCM.TblPerson_Id = TblPerson_S3_Id
     ) TblMail_Address_S3,
 
-    (select
+    (SELECT
         group_concat(
             concat(
-            vCM.TblMail_Address
+                vCM.TblMail_Address
             ) separator '; '
-        ) from SettingConsumer_{{ ConsumerAcronym }}.viewContactMail vCM
-        where TblPerson_S3_Id = vCM.TblPerson_Id
-        and vCM.TblType_Name = 'Privat'
+        ) FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactMail vCM
+        WHERE TblPerson_S3_Id = vCM.TblPerson_Id
+        AND vCM.TblType_Name = 'Privat'
     ) TblMail_AddressPrivate_S3,
 
-    (select
+    (SELECT
         group_concat(
             concat(
-            vCM.TblMail_Address
+                vCM.TblMail_Address
             ) separator '; '
-        ) from SettingConsumer_{{ ConsumerAcronym }}.viewContactMail vCM
-        where TblPerson_S3_Id = vCM.TblPerson_Id
-        and vCM.TblType_Name like 'Gesch%ftlich'
+        ) FROM SettingConsumer_{{ ConsumerAcronym }}.viewContactMail vCM
+        WHERE TblPerson_S3_Id = vCM.TblPerson_Id
+        AND vCM.TblType_Name LIKE 'Gesch%ftlich'
     ) TblMail_AddressCompany_S3
 
-from SettingConsumer_{{ ConsumerAcronym }}.viewPerson vP
-    JOIN SettingConsumer_{{ ConsumerAcronym }}.viewGroup vG ON vG.TblPerson_Id = vP.TblPerson_Id
-where vG.TblGroup_MetaTable = 'PROSPECT'
+FROM PeoplePerson_{{ ConsumerAcronym }}.tblPerson tP
+    JOIN SettingConsumer_{{ ConsumerAcronym }}.viewGroup vG ON vG.TblPerson_Id = tP.Id
+WHERE vG.TblGroup_MetaTable = 'PROSPECT'

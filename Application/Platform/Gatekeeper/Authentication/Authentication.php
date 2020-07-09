@@ -34,10 +34,21 @@ class Authentication implements IModuleInterface
             __NAMESPACE__.'/Offline', __NAMESPACE__.'\Frontend::frontendDestroySession'
         ));
 
+//        Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+//            __NAMESPACE__.'/SLO', __NAMESPACE__.'\Frontend::frontendSLO'
+//        ));
+
         if (Account::useService()->getAccountBySession()) {
             Main::getDispatcher()->registerRoute(
                 Main::getDispatcher()->createRoute('', __NAMESPACE__.'\Frontend::frontendWelcome')
             );
+            Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+                __NAMESPACE__.'/Saml/EVSSN', __NAMESPACE__.'\Frontend::frontendIdentificationSamlEVSSN'
+            ));
+//            // EKM -> Beispiel kann für zukünftige IDP's verwendet werden
+//            Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+//                __NAMESPACE__.'/Saml/EKM', __NAMESPACE__.'\Frontend::frontendIdentificationSamlEKM'
+//            ));
         } else {
             Main::getDispatcher()->registerRoute(
                 Main::getDispatcher()->createRoute('', __NAMESPACE__.'\Frontend::frontendIdentificationCredential')
@@ -46,9 +57,19 @@ class Authentication implements IModuleInterface
             Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
                 __NAMESPACE__, __NAMESPACE__.'\Frontend::frontendIdentificationCredential'
             ));
+//            Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+//                __NAMESPACE__.'/Univention', __NAMESPACE__.'\Frontend::frontendIdentificationUnivention'
+//            ));
             Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
                 __NAMESPACE__.'/Token', __NAMESPACE__.'\Frontend::frontendIdentificationToken'
             ));
+            Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+                __NAMESPACE__.'/Saml/EVSSN', __NAMESPACE__.'\Frontend::frontendIdentificationSamlEVSSN'
+            ));
+//            // EKM -> Beispiel kann für zukünftige IDP's verwendet werden
+//            Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
+//                __NAMESPACE__.'/Saml/EKM', __NAMESPACE__.'\Frontend::frontendIdentificationSamlEKM'
+//            ));
             Main::getDispatcher()->registerRoute(Main::getDispatcher()->createRoute(
                 __NAMESPACE__.'/Agb', __NAMESPACE__.'\Frontend::frontendIdentificationAgb'
             ));

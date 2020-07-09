@@ -98,7 +98,7 @@ class MsAbsHsQ extends Certificate
                 ->addSection((new Section())
                     ->addElementColumn((new Element())
                         ->setContent('wohnhaft in')
-                    )
+                        , '22%')
                     ->addElementColumn((new Element())
                         ->setContent('{% if(Content.P' . $personId . '.Person.Address.City.Name) %}
                                     {{ Content.P' . $personId . '.Person.Address.Street.Name }}

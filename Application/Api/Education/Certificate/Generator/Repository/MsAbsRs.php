@@ -662,25 +662,25 @@ class MsAbsRs extends Certificate
                     $Header = (new Slice())
                         ->addSection((new Section())
                             ->addElementColumn((new Element\Image($pictureAddress, 'auto', $pictureHeight))
-                                ->styleAlignCenter()
-                                , '25%')
+                                , '39%')
                             ->addElementColumn((new Element\Sample())
                                 ->styleTextSize('30px')
                             )
                             ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
-                                '165px', '50px'))
-                                , '25%')
+                                '214px', '66px'))
+                                ->styleAlignRight()
+                                , '39%')
                         );
                 } else {
                     $Header = (new Slice())
                         ->addSection((new Section())
                             ->addElementColumn((new Element\Image($pictureAddress, 'auto', $pictureHeight))
-                                ->styleAlignCenter()
-                                , '25%')
-                            ->addElementColumn((new Element()), '50%')
+                                , '39%')
+                            ->addElementColumn((new Element()), '22%')
                             ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
-                                '165px', '50px'))
-                                , '25%')
+                                '214px', '66px'))
+                                ->styleAlignRight()
+                                , '39%')
                         );
                 }
 
@@ -692,24 +692,29 @@ class MsAbsRs extends Certificate
             $Header = (new Slice())
                 ->addSection((new Section())
                     ->addElementColumn((new Element())
-                        , '25%'
+                        , '39%'
                     )
                     ->addElementColumn((new Element\Sample())
                         ->styleTextSize('30px')
                     )
                     ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
-                        '165px', '50px'))
-                        , '25%')
+                        '214px', '66px'))
+                        ->styleAlignRight()
+                        , '39%')
                 );
         } else {
             $Header = (new Slice())
                 ->addSection((new Section())
-                    ->addElementColumn((new Element()), '75%')
+                    ->addElementColumn((new Element()), '61%')
                     ->addElementColumn((new Element\Image('/Common/Style/Resource/Logo/ClaimFreistaatSachsen.jpg',
-                        '165px', '50px'))
-                        , '25%')
+                        '214px', '66px'))
+                        ->styleAlignRight()
+                        , '39%')
                 );
         }
+
+        $Header->stylePaddingTop('24px');
+        $Header->styleHeight('100px');
 
         return $Header;
     }

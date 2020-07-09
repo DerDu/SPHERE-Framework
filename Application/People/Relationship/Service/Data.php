@@ -111,6 +111,9 @@ class Data extends AbstractData
         $this->createType('Inhaber', '', $tblGroupCompany);
         $this->createType('Kuratoriumsmitglied', '', $tblGroupCompany);
         $this->createType('Partner', '', $tblGroupCompany);
+        $this->createType('Verwaltungsleiter', '', $tblGroupCompany);
+        $this->createType('Auszubildender', '', $tblGroupCompany);
+        $this->createType('Praktikant', '', $tblGroupCompany);
 
         $this->createSiblingRank('1. Geschwisterkind');
         $this->createSiblingRank('2. Geschwisterkind');
@@ -410,6 +413,37 @@ class Data extends AbstractData
         return $this->getCachedEntityListBy(__METHOD__, $this->getEntityManager(), 'TblToPerson', array(
              TblToPerson::ATTR_TBL_TYPE => $tblType->getId()
         ));
+    }
+
+    /**
+     * @param TblType $tblType
+     *
+     * @return array array[PersonFromId[PersonToId]]
+     */
+    public function getPersonRelationshipArrayByType(TblType $tblType)
+    {
+
+        $Manager = $this->getConnection()->getEntityManager();
+        $queryBuilder = $Manager->getQueryBuilder();
+        $tblToPerson = new TblToPerson();
+
+        $query = $queryBuilder->select('tTP.serviceTblPersonFrom, tTP.serviceTblPersonTo')
+            ->from($tblToPerson->getEntityFullName(), 'tTP')
+            ->where($queryBuilder->expr()->eq('tTP.tblType', '?1'))
+            ->setParameter(1, $tblType->getId())
+            ->getQuery();
+
+        $FromToList = $query->getResult();
+
+        // Combined "fromPerson" with multiple "toPerson"
+        $resultList = array();
+        if(!empty($FromToList)){
+            foreach($FromToList as $Value){
+                $resultList[$Value['serviceTblPersonFrom']][$Value['serviceTblPersonTo']] = $Value['serviceTblPersonTo'];
+            }
+        }
+
+        return $resultList;
     }
 
     /**

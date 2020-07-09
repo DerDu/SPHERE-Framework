@@ -9,6 +9,10 @@ use SPHERE\Application\People\Person\FrontendReadOnly;
 use SPHERE\Application\People\Person\Person;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\People\Relationship\Relationship;
+use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Account;
+use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Consumer;
+use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Service\Entity\TblConsumerLogin;
+use SPHERE\Common\Frontend\Form\Repository\Field\CheckBox;
 use SPHERE\Common\Frontend\Form\Repository\Field\MailField;
 use SPHERE\Common\Frontend\Form\Repository\Field\SelectBox;
 use SPHERE\Common\Frontend\Form\Repository\Field\TextArea;
@@ -16,6 +20,7 @@ use SPHERE\Common\Frontend\Form\Structure\Form;
 use SPHERE\Common\Frontend\Form\Structure\FormColumn;
 use SPHERE\Common\Frontend\Form\Structure\FormGroup;
 use SPHERE\Common\Frontend\Form\Structure\FormRow;
+use SPHERE\Common\Frontend\Icon\Repository\Check;
 use SPHERE\Common\Frontend\Icon\Repository\Edit;
 use SPHERE\Common\Frontend\Icon\Repository\Envelope;
 use SPHERE\Common\Frontend\Icon\Repository\Mail as MailIcon;
@@ -34,6 +39,7 @@ use SPHERE\Common\Frontend\Link\Repository\Mailto;
 use SPHERE\Common\Frontend\Message\Repository\Warning;
 use SPHERE\Common\Frontend\Text\Repository\Muted;
 use SPHERE\Common\Frontend\Text\Repository\Small;
+use SPHERE\Common\Frontend\Text\Repository\ToolTip;
 use SPHERE\System\Extension\Extension;
 use SPHERE\Common\Frontend\Link\Repository\Primary as PrimaryLink;
 
@@ -59,7 +65,8 @@ class Frontend extends Extension implements IFrontendInterface
             // beim Checken der Inputfeldern darf der Post nicht gesetzt werden
             if ($setPost) {
                 $Global = $this->getGlobal();
-                $Global->POST['Address'] = $tblToPerson->getTblMail()->getAddress();
+                $Global->POST['Address']['Mail'] = $tblToPerson->getTblMail()->getAddress();
+                $Global->POST['Address']['Alias'] = $tblToPerson->isAccountUserAlias();
                 $Global->POST['Type']['Type'] = $tblToPerson->getTblType()->getId();
                 $Global->POST['Type']['Remark'] = $tblToPerson->getRemark();
                 $Global->savePost();
@@ -76,6 +83,27 @@ class Frontend extends Extension implements IFrontendInterface
 
         $tblTypeAll = Mail::useService()->getTypeAll();
 
+        // Account exist?
+        $isConnexion = false;
+        if(($tblConsumer = Consumer::useService()->getConsumerBySession())){
+            if(($tblConsumerLogin = Consumer::useService()->getConsumerLoginByConsumer($tblConsumer))){
+                if($tblConsumerLogin->getSystemName() == TblConsumerLogin::VALUE_SYSTEM_UCS){
+                    $isConnexion = true;
+                }
+            }
+        }
+
+        $CheckBox = '';
+        if($isConnexion){
+            $tblPerson = Person::useService()->getPersonById($PersonId);
+            if(($tblAccountList = Account::useService()->getAccountAllByPerson($tblPerson))){
+                $CheckBox = new CheckBox('Address[Alias]', 'E-Mail als CONNEXION Benutzername verwenden', 1);
+            } else {
+                $CheckBox = new ToolTip((new CheckBox('Address[Alias]', 'E-Mail als CONNEXION Benutzername verwenden', 1))
+                    ->setDisabled(), 'Person benötigt ein Benutzerkonto');
+            }
+        }
+
         return (new Form(
             new FormGroup(array(
                 new FormRow(array(
@@ -85,7 +113,8 @@ class Frontend extends Extension implements IFrontendInterface
                                 (new SelectBox('Type[Type]', 'Typ',
                                     array('{{ Name }} {{ Description }}' => $tblTypeAll), new TileBig()
                                 ))->setRequired(),
-                                (new MailField('Address', 'E-Mail Adresse', 'E-Mail Adresse', new MailIcon() ))->setRequired()
+                                (new MailField('Address[Mail]', 'E-Mail Adresse', 'E-Mail Adresse', new MailIcon() ))->setRequired(),
+                                $CheckBox
                             ), Panel::PANEL_TYPE_INFO
                         ), 6),
                     new FormColumn(
@@ -240,6 +269,16 @@ class Frontend extends Extension implements IFrontendInterface
                             }
 
                             $content[] = new Mailto($tblMail->getAddress(), $tblMail->getAddress(), new Envelope());
+
+                            if (isset($personArray[$tblPerson->getId()])) {
+                                if(($tblToPersonCurrent =  $personArray[$tblPerson->getId()])){
+                                    /** @var $tblToPersonCurrent TblToPerson */
+                                    if($tblToPersonCurrent->isAccountUserAlias()){
+                                        $content[] = new Check().' CONNEXION Benutzername';
+                                    }
+                                }
+                            }
+
                             /**
                              * @var TblToPerson $tblToPerson
                              */

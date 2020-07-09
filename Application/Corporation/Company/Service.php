@@ -104,13 +104,14 @@ class Service extends AbstractService
      * @param string $Name
      * @param string $Description
      * @param string $ExtendedName
+     * @param string $ImportId
      *
      * @return TblCompany
      */
-    public function insertCompany($Name, $Description = '', $ExtendedName = '')
+    public function insertCompany($Name, $Description = '', $ExtendedName = '', $ImportId = '')
     {
 
-        return (new Data($this->getBinding()))->createCompany($Name, $ExtendedName, $Description);
+        return (new Data($this->getBinding()))->createCompany($Name, $ExtendedName, $Description, $ImportId);
     }
 
     /**
@@ -258,5 +259,15 @@ class Service extends AbstractService
     {
 
         return (new Data($this->getBinding()))->getCompanyListLike($Name);
+    }
+
+    /**
+     * @param integer $ImportId
+     *
+     * @return bool|TblCompany
+     */
+    public function getCompanyByImportId($ImportId)
+    {
+        return (new Data($this->getBinding()))->getCompanyByImportId($ImportId);
     }
 }

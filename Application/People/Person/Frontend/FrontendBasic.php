@@ -366,7 +366,7 @@ class FrontendBasic extends FrontendReadOnly
                     default:
                         $tblGroup = (new CheckBox(
                             'Person[Group][' . $tblGroup->getId() . ']',
-                            $tblGroup->getName() . ' ' . new Muted(new Small($tblGroup->getDescription())),
+                            $tblGroup->getName() . ' ' . new Muted(new Small($tblGroup->getDescription(true))),
                             $tblGroup->getId()
                         ))->setTabIndex($tabIndex++);
                 }

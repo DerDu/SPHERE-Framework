@@ -74,6 +74,7 @@ class Setup extends AbstractSetup
         if (!$this->getConnection()->hasColumn('tblGroup', 'MetaTable')) {
             $Table->addColumn('MetaTable', 'string');
         }
+        $this->createColumn($Table, 'IsCoreGroup', self::FIELD_TYPE_BOOLEAN, false, false);
         return $Table;
     }
 

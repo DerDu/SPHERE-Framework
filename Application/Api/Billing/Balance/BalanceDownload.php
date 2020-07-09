@@ -2,6 +2,8 @@
 namespace SPHERE\Application\Api\Billing\Balance;
 
 use SPHERE\Application\Billing\Bookkeeping\Balance\Balance;
+use SPHERE\Application\Billing\Bookkeeping\Basket\Basket;
+use SPHERE\Application\Billing\Bookkeeping\Basket\Service\Entity\TblBasketType;
 use SPHERE\Application\Billing\Bookkeeping\Invoice\Invoice;
 use SPHERE\Application\Billing\Inventory\Item\Item;
 use SPHERE\Application\Billing\Inventory\Item\Service\Entity\TblItem;
@@ -54,10 +56,11 @@ class BalanceDownload implements IModuleInterface
      * @param string $DivisionId
      * @param string $GroupId
      * @param string $PersonId
+     * @param string $BasketTypeId
      *
      * @return bool|string
      */
-    public function downloadBalanceList($ItemIdString = '', $Year = '', $From = '', $To = '', $DivisionId = '', $GroupId = '', $PersonId = '')
+    public function downloadBalanceList($ItemIdString = '', $Year = '', $From = '', $To = '', $DivisionId = '', $GroupId = '', $PersonId = '', $BasketTypeId = '')
     {
 
         if($ItemIdString){
@@ -97,13 +100,29 @@ class BalanceDownload implements IModuleInterface
                 $FileName = $tblPerson->getLastName().'_';
             }
             $PriceList = array();
+            $BasketTypeName = '';
             if($tblPersonList){
                 foreach($tblPersonList as $tblPerson){
                     /** @var TblItem $tblItem */
                     foreach($tblItemList as $tblItem){
+                        if('' === $BasketTypeId){
+                            // Standard
+                            $tblBasketType = Basket::useService()->getBasketTypeByName(TblBasketType::IDENT_ABRECHNUNG);
+                            $BasketTypeId = $tblBasketType->getId();
+                        }
                         // Rechnungen zusammengefasst (je Beitragsart)
                         $PriceList = Balance::useService()->getPriceListByItemAndPerson($tblItem, $Year,
-                            $From, $To, $tblPerson, $PriceList);
+                            $From, $To, $tblPerson, $BasketTypeId, $PriceList);
+
+                        if('-1' == $BasketTypeId){
+                            $tblBasketType = Basket::useService()->getBasketTypeByName(TblBasketType::IDENT_ABRECHNUNG);
+                        }
+                        if(!isset($tblBasketType)){
+                            $tblBasketType = Basket::useService()->getBasketTypeById($BasketTypeId);
+                        }
+                        if($tblBasketType){
+                            $BasketTypeName = $tblBasketType->getName();
+                        }
                     }
                 }
                 // Summe der einzelnen Beiträge erstellen
@@ -116,7 +135,7 @@ class BalanceDownload implements IModuleInterface
                 $ToMonth = $MonthList[$To];
 
                 return FileSystem::getDownload($fileLocation->getRealPath(),
-                    $FileName.$Year.'-'.$StartMonth.'-'.$ToMonth.'.xlsx')->__toString();
+                    $BasketTypeName.'_'.$FileName.$Year.'-'.$StartMonth.'-'.$ToMonth.'.xlsx')->__toString();
             }
         }
 

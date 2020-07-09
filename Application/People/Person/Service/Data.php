@@ -289,7 +289,8 @@ class Data extends AbstractData
 
         return $this->getForceEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblPerson', array(
             TblPerson::ATTR_FIRST_NAME => $FirstName,
-            TblPerson::ATTR_LAST_NAME  => $LastName
+            TblPerson::ATTR_LAST_NAME  => $LastName,
+            TblPerson::ENTITY_REMOVE => null
         ));
     }
 
@@ -321,6 +322,37 @@ class Data extends AbstractData
 
             $queryBuilder->setParameter($count, '%' . $item . '%');
         }
+
+        $queryBuilder->select('t')
+            ->from(__NAMESPACE__ . '\Entity\TblPerson', 't')
+            ->where($and);
+
+        $query = $queryBuilder->getQuery();
+        $result = $query->getResult();
+
+        return empty($result) ? false : $result;
+    }
+
+    /**
+     * @param string $firstName
+     * @param string $lastName
+     *
+     * @return false|TblPerson[]
+     */
+    public function getPersonListLikeFirstNameAndLastName($firstName, $lastName)
+    {
+        $queryBuilder = $this->getConnection()->getEntityManager()->getQueryBuilder();
+        $and = $queryBuilder->expr()->andX();
+
+        $or = $queryBuilder->expr()->orX();
+        $or->add($queryBuilder->expr()->like('t.FirstName', '?' . 1));
+        $or->add($queryBuilder->expr()->like('t.SecondName', '?' . 1));
+        $and->add($or);
+        $and->add($queryBuilder->expr()->like('t.LastName', '?' . 2));
+        // keine gelöschten Personen anzeigen
+        $and->add($queryBuilder->expr()->isNull('t.EntityRemove'));
+        $queryBuilder->setParameter(1, '%' . $firstName . '%');
+        $queryBuilder->setParameter(2, '%' . $lastName . '%');
 
         $queryBuilder->select('t')
             ->from(__NAMESPACE__ . '\Entity\TblPerson', 't')

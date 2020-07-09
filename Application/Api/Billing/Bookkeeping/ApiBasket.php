@@ -118,12 +118,13 @@ class ApiBasket extends Extension implements IApiInterface
 
     /**
      * @param string $Identifier
+     * @param string $Type
      * @param array  $Basket
      * @param array  $ErrorHelp
      *
      * @return Pipeline
      */
-    public static function pipelineOpenAddBasketModal($Identifier = '', $Basket = array(), $ErrorHelp = array())
+    public static function pipelineOpenAddBasketModal($Identifier = '', $Type = '', $Basket = array(), $ErrorHelp = array())
     {
 
         $Receiver = self::receiverModal(null, $Identifier);
@@ -133,9 +134,10 @@ class ApiBasket extends Extension implements IApiInterface
             self::API_TARGET => 'showAddBasket'
         ));
         $Emitter->setPostPayload(array(
-            'Identifier'    => $Identifier,
-            'Basket'        => $Basket,
-            'ErrorHelp'       => $ErrorHelp
+            'Identifier' => $Identifier,
+            'Type'       => $Type,
+            'Basket'     => $Basket,
+            'ErrorHelp'  => $ErrorHelp
         ));
         $Pipeline->appendEmitter($Emitter);
 
@@ -144,10 +146,11 @@ class ApiBasket extends Extension implements IApiInterface
 
     /**
      * @param string $Identifier
+     * @param string $Type
      *
      * @return Pipeline
      */
-    public static function pipelineSaveAddBasket($Identifier = '')
+    public static function pipelineSaveAddBasket($Identifier = '', $Type = '')
     {
 
         $Receiver = self::receiverModal(null, $Identifier);
@@ -159,6 +162,7 @@ class ApiBasket extends Extension implements IApiInterface
         ));
         $Emitter->setPostPayload(array(
             'Identifier' => $Identifier,
+            'Type'       => $Type,
         ));
         $Pipeline->appendEmitter($Emitter);
 
@@ -167,6 +171,7 @@ class ApiBasket extends Extension implements IApiInterface
 
     /**
      * @param string     $Identifier
+     * @param string     $Type
      * @param int|string $BasketId
      * @param array      $Basket
      *
@@ -174,6 +179,7 @@ class ApiBasket extends Extension implements IApiInterface
      */
     public static function pipelineOpenEditBasketModal(
         $Identifier = '',
+        $Type = '',
         $BasketId = '',
         $Basket = array()
     ){
@@ -186,6 +192,7 @@ class ApiBasket extends Extension implements IApiInterface
         ));
         $Emitter->setPostPayload(array(
             'Identifier' => $Identifier,
+            'Type' => $Type,
             'BasketId'   => $BasketId,
             'Basket'     => $Basket
         ));
@@ -196,11 +203,12 @@ class ApiBasket extends Extension implements IApiInterface
 
     /**
      * @param string     $Identifier
+     * @param string     $Type
      * @param int|string $BasketId
      *
      * @return Pipeline
      */
-    public static function pipelineSaveEditBasket($Identifier = '', $BasketId = '')
+    public static function pipelineSaveEditBasket($Identifier = '', $Type = '', $BasketId = '')
     {
 
         $Receiver = self::receiverModal(null, $Identifier);
@@ -211,6 +219,7 @@ class ApiBasket extends Extension implements IApiInterface
         ));
         $Emitter->setPostPayload(array(
             'Identifier' => $Identifier,
+            'Type'       => $Type,
             'BasketId'   => $BasketId
         ));
         $Pipeline->appendEmitter($Emitter);
@@ -341,11 +350,12 @@ class ApiBasket extends Extension implements IApiInterface
 
     /**
      * @param string     $Identifier
+     * @param string     $Type
      * @param int|string $BasketId
      *
      * @return IFormInterface $Form
      */
-    public function formBasket($Identifier = '', $BasketId = '')
+    public function formBasket($Identifier = '', $Type = '', $BasketId = '')
     {
 
         // SelectBox content
@@ -376,16 +386,23 @@ class ApiBasket extends Extension implements IApiInterface
 
         // choose between Add and Edit
         $SaveButton = new Primary('Speichern', self::getEndpoint(), new Save());
+
+
         if('' !== $BasketId){
-            $SaveButton->ajaxPipelineOnClick(self::pipelineSaveEditBasket($Identifier,
-                $BasketId));
+            $SaveButton->ajaxPipelineOnClick(self::pipelineSaveEditBasket($Identifier, $Type, $BasketId));
+
+            // zusatzinhalt nur bei Gutschriften
+            $rightForm = new Layout(new LayoutGroup(new LayoutRow(new LayoutColumn(''))));
+            if($Type == TblBasketType::IDENT_GUTSCHRIFT){
+                $rightForm = $this->getRightFormColumn($Type);
+            }
 
             $Content = (new Form(new FormGroup(new FormRow(array(
                 new FormColumn(
-                    new Panel('Abrechnung', $FormContentLeft)
+                    new Panel($Type, $FormContentLeft, Panel::PANEL_TYPE_INFO)
                     , 6),
                 new FormColumn(
-                    new Layout(new LayoutGroup(new LayoutRow(new LayoutColumn(''))))
+                    $rightForm
                     , 6),
                 new FormColumn(
                     $SaveButton
@@ -401,15 +418,58 @@ class ApiBasket extends Extension implements IApiInterface
             if(!isset($_POST['Basket']['Month'])){
                 $_POST['Basket']['Month'] = $Month;
             }
-            if(!isset($_POST['Basket']['DebtorPeriodType'])){
-                if($tblDebtorPeriodType = Debtor::useService()->getDebtorPeriodTypeByName('Monatlich')){
-                    $_POST['Basket']['DebtorPeriodType'] = $tblDebtorPeriodType->getId();
-                } else {
-                    $_POST['Basket']['DebtorPeriodType'] = '1';
+            // Monatlich oder Jährlich gibt es nur Bei Abrechnungen oder Auszahlungen
+            if($Type == TblBasketType::IDENT_ABRECHNUNG || $Type == TblBasketType::IDENT_AUSZAHLUNG){
+                if(!isset($_POST['Basket']['DebtorPeriodType'])){
+                    if($tblDebtorPeriodType = Debtor::useService()->getDebtorPeriodTypeByName('Monatlich')){
+                        $_POST['Basket']['DebtorPeriodType'] = $tblDebtorPeriodType->getId();
+                    } else {
+                        $_POST['Basket']['DebtorPeriodType'] = '1';
+                    }
                 }
             }
 
-            $SaveButton->ajaxPipelineOnClick(self::pipelineSaveAddBasket($Identifier));
+            $FormContentLeft[] = (new SelectBox('Basket[Year]', 'Jahr', $YearList))->setRequired();
+            $FormContentLeft[] = (new SelectBox('Basket[Month]', 'Monat', $MonthList, null, true, null))->setRequired();
+
+            $SaveButton->ajaxPipelineOnClick(self::pipelineSaveAddBasket($Identifier, $Type));
+            $Content = (new Form(new FormGroup(new FormRow(array(
+                new FormColumn(
+                    new Panel($Type, $FormContentLeft, Panel::PANEL_TYPE_INFO)
+                    , 6),
+                new FormColumn(
+                    $this->getRightFormColumn($Type)
+                    , 6),
+                new FormColumn(
+                    $SaveButton
+                )
+            )))))->disableSubmitAction();
+        }
+        /* @var Form $Content */
+        return $Content;
+    }
+
+    /**
+     * @return array
+     */
+    private function getRightFormColumn($Type)
+    {
+        if($Type == TblBasketType::IDENT_GUTSCHRIFT){
+            $Account = '(Standard) ';
+            $ToAccount = '(Standard) ';
+            if(($tblSettingAccount = Setting::useService()->getSettingByIdentifier(TblSetting::IDENT_FIBU_ACCOUNT))){
+                $Account .= $tblSettingAccount->getValue();
+            }
+            if(($tblSettingToAccount = Setting::useService()->getSettingByIdentifier(TblSetting::IDENT_FIBU_TO_ACCOUNT))){
+                $ToAccount .= $tblSettingToAccount->getValue();
+            }
+
+            return array(new Panel('Fibu'.new DangerText('*'), array(
+                new TextField('Basket[FibuAccount]', $Account, 'Konto'),
+                new TextField('Basket[FibuToAccount]', $ToAccount, 'Gegenkonto'),
+            ), Panel::PANEL_TYPE_INFO));
+
+        } else {
             $CheckboxList = '';
             if(($tblItemList = Item::useService()->getItemAll())){
                 foreach($tblItemList as $tblItem) {
@@ -440,9 +500,6 @@ class ApiBasket extends Extension implements IApiInterface
                 $tblTypeList[] = Type::useService()->getTypeByName('Gymnasium');
             }
 
-            $FormContentLeft[] = (new SelectBox('Basket[Year]', 'Jahr', $YearList))->setRequired();
-            $FormContentLeft[] = (new SelectBox('Basket[Month]', 'Monat', $MonthList, null, true, null))->setRequired();
-
             $PeriodRadioBox = array();
             if(($tblDebtorPeriodTypeAll = Debtor::useService()->getDebtorPeriodTypeAll())){
                 foreach($tblDebtorPeriodTypeAll as $tblDebtorPeriodType){
@@ -450,35 +507,21 @@ class ApiBasket extends Extension implements IApiInterface
                 }
             }
 
-            $tblBasketType = Basket::useService()->getBasketTypeByName(TblBasketType::IDENT_AUSZAHLUNG);
-
-            $Content = (new Form(new FormGroup(new FormRow(array(
-                new FormColumn(
-                    new Panel('Abrechnung', $FormContentLeft)
-                    , 6),
-                new FormColumn(array(
-                    new Panel('Beitragsarten '.new DangerText('*'), $CheckboxList),
-                    new Panel('Erweiterte Personenfilterung', array(
-                        new SelectBox('Basket[Division]', 'Klasse', array('{{ DisplayName }}' => $tblDivisionList)),
-                        new SelectBox('Basket[SchoolType]', 'Schulart', array('{{ Name }}' => $tblTypeList))
-                    )),
-                    new Bold('Zahlungszeitraum '.new DangerText('*')),
-                    new Panel('', $PeriodRadioBox),
-                    new Panel('Auszahlung',
-                        new CheckBox('Basket[BasketTypeId]', 'Auszahlung an Debitoren', $tblBasketType->getId())
-                    ),
-                ), 6),
-                new FormColumn(
-                    $SaveButton
-                )
-            )))))->disableSubmitAction();
+            return array(
+                new Panel('Beitragsarten '.new DangerText('*'), $CheckboxList, Panel::PANEL_TYPE_INFO),
+                new Panel('Erweiterte Personenfilterung', array(
+                    new SelectBox('Basket[Division]', 'Klasse', array('{{ DisplayName }}' => $tblDivisionList)),
+                    new SelectBox('Basket[SchoolType]', 'Schulart', array('{{ Name }}' => $tblTypeList))
+                ), Panel::PANEL_TYPE_INFO),
+                new Bold('Zahlungszeitraum '.new DangerText('*')),
+                new Panel('', $PeriodRadioBox, Panel::PANEL_TYPE_INFO),
+            );
         }
-        /* @var Form $Content */
-        return $Content;
     }
 
     /**
      * @param string $Identifier
+     * @param string $Type
      * @param string $BasketId
      * @param array  $Basket
      *
@@ -486,13 +529,14 @@ class ApiBasket extends Extension implements IApiInterface
      */
     private function checkInputBasket(
         $Identifier = '',
+        $Type = '',
         $BasketId = '',
         $Basket = array()
     ){
 
         $Error = false;
         $Warning = array();
-        $form = $this->formBasket($Identifier, $BasketId);
+        $form = $this->formBasket($Identifier, $Type, $BasketId);
         if(isset($Basket['Name']) && empty($Basket['Name'])){
             $form->setError('Basket[Name]', 'Bitte geben Sie einen Namen der Abrechnung an');
             $Error = true;
@@ -547,8 +591,8 @@ class ApiBasket extends Extension implements IApiInterface
             $form->setError('Basket[Creditor]', 'Bitte geben Sie einen Gläubiger an');
             $Error = true;
         }
+        // Abrechnung Auszahlung mit Checkboxen (mehrere)
         if($BasketId == '' && !isset($Basket['Item'])){
-            $form->setError('Basket[Item][2]', 'Test');
             $Warning[] = 'Es wird mindestens eine Beitragsart benötigt';
             $Error = true;
         }
@@ -567,11 +611,12 @@ class ApiBasket extends Extension implements IApiInterface
 
     /**
      * @param string $Identifier
-     * @param array $ErrorHelp
+     * @param string $Type
+     * @param array  $ErrorHelp
      *
      * @return string
      */
-    public function showAddBasket($Identifier = '', $ErrorHelp = array())
+    public function showAddBasket($Identifier = '', $Type = '', $ErrorHelp = array())
     {
 
         if(!empty($ErrorHelp)){
@@ -580,20 +625,21 @@ class ApiBasket extends Extension implements IApiInterface
             $ErrorHelp = '';
         }
 
-        return $ErrorHelp.new Well($this->formBasket($Identifier));
+        return $ErrorHelp.new Well($this->formBasket($Identifier, $Type));
     }
 
     /**
      * @param string $Identifier
+     * @param string $Type
      * @param array  $Basket
      *
      * @return string
      */
-    public function saveAddBasket($Identifier = '', $Basket = array())
+    public function saveAddBasket($Identifier = '', $Type = '', $Basket = array())
     {
 
         // Handle error's
-        if($form = $this->checkInputBasket($Identifier, '', $Basket)){
+        if($form = $this->checkInputBasket($Identifier, $Type, '', $Basket)){
 
             // display Errors on form
             $Global = $this->getGlobal();
@@ -607,10 +653,7 @@ class ApiBasket extends Extension implements IApiInterface
             $Global->POST['Basket']['Division'] = (isset($Basket['Division']) ? $Basket['Division'] : '');
             $Global->POST['Basket']['SchoolType'] = $Basket['SchoolType'];
             $Global->POST['Basket']['DebtorPeriodType'] = $Basket['DebtorPeriodType'];
-            if(isset($Basket['BasketTypeId'])){
-                $Global->POST['Basket']['BasketTypeId'] = $Basket['BasketTypeId'];
-            }
-            if(isset($Basket['Description']) && !empty($Basket['Description'])){
+            if(isset($Basket['Item']) && is_array($Basket['Item'])){
                 foreach($Basket['Item'] as $ItemId) {
                     $Global->POST['Basket']['Item'][$ItemId] = $ItemId;
                 }
@@ -618,6 +661,10 @@ class ApiBasket extends Extension implements IApiInterface
             $Global->savePost();
             return $form;
         }
+
+        $tblBasketType = Basket::useService()->getBasketTypeByName($Type);
+
+
         if(!isset($Basket['Division'])
             || !$Basket['Division']
             || !($tblDivision = Division::useService()->getDivisionById($Basket['Division']))){
@@ -631,22 +678,18 @@ class ApiBasket extends Extension implements IApiInterface
         if(!($tblDebtorPeriodType = Debtor::useService()->getDebtorPeriodTypeById($Basket['DebtorPeriodType']))){
             $tblDebtorPeriodType = null;
         }
-        if(isset($Basket['BasketTypeId'])){
-            $tblBasketType = Basket::useService()->getBasketTypeById($Basket['BasketTypeId']);
-        } else {
-            $tblBasketType = Basket::useService()->getBasketTypeById(1);
-        }
-
         $tblBasket = Basket::useService()->createBasket($Basket['Name'], $Basket['Description'], $Basket['Year']
             , $Basket['Month'], $Basket['TargetTime'], $Basket['BillTime'], $tblBasketType, $Basket['Creditor'], $tblDivision, $tblType,
             $tblDebtorPeriodType);
-        $tblItemList = array();
+
+
         foreach($Basket['Item'] as $ItemId) {
             if(($tblItem = Item::useService()->getItemById($ItemId))){
                 $tblItemList[] = $tblItem;
-                $tblBasketItemList[] = Basket::useService()->createBasketItem($tblBasket, $tblItem);
+                Basket::useService()->createBasketItem($tblBasket, $tblItem);
             }
         }
+
         $ItemPriceFound = true;
         $MissingItemPriceList = array('Es existieren Preis-Varianten denen für das Fälligkeitsdatum '.$Basket['TargetTime']
             .' kein Preis hinterlegt ist.');
@@ -658,7 +701,7 @@ class ApiBasket extends Extension implements IApiInterface
         if(!empty($tblItemList)){
 
             // Kontrolle, ob alle Varianten zum Fälligkeitsdatum ein gültigen Preis haben
-            $DateNow = new \DateTime('now');
+            $TargetTime = new \DateTime($Basket['TargetTime']);
             /** @var TblItem $tblItemPriceControl */
             foreach($tblItemList as $tblItemPriceControl) {
                 if(($tblItemVariantList = Item::useService()->getItemVariantByItem($tblItemPriceControl))){
@@ -667,10 +710,10 @@ class ApiBasket extends Extension implements IApiInterface
                             $IsCalculationTest = false;
                             foreach($tblItemCalculationList as $tblItemCalculation){
                                 if($tblItemCalculation->getDateTo()
-                                    && $tblItemCalculation->getDateFrom(true) <= $DateNow
-                                    && $tblItemCalculation->getDateTo(true) >= $DateNow
+                                    && $tblItemCalculation->getDateFrom(true) <= $TargetTime
+                                    && $tblItemCalculation->getDateTo(true) >= $TargetTime
                                     || !$tblItemCalculation->getDateTo()
-                                    && $tblItemCalculation->getDateFrom(true) <= $DateNow
+                                    && $tblItemCalculation->getDateFrom(true) <= $TargetTime
                                 ){
                                     $IsCalculationTest = true;
                                     break;
@@ -687,7 +730,7 @@ class ApiBasket extends Extension implements IApiInterface
             // ungültige Preise hindern die Erstellung einer Abrechnung
             if(!$ItemPriceFound){
                 Basket::useService()->destroyBasket($tblBasket);
-                return self::pipelineOpenAddBasketModal($Identifier, $Basket, $MissingItemPriceList);
+                return self::pipelineOpenAddBasketModal($Identifier, $Type, $Basket, $MissingItemPriceList);
             }
 
             /** @var TblItem $tblItem */
@@ -720,7 +763,7 @@ class ApiBasket extends Extension implements IApiInterface
                 $ErrorHelp = array_merge($ErrorHelp, $PersonMissing);
             }
 
-            return self::pipelineOpenAddBasketModal($Identifier, $Basket, $ErrorHelp);
+            return self::pipelineOpenAddBasketModal($Identifier, $Type, $Basket, $ErrorHelp);
         }
 
         if($tblBasket){
@@ -739,6 +782,7 @@ class ApiBasket extends Extension implements IApiInterface
 
     /**
      * @param string     $Identifier
+     * @param string     $Type
      * @param int|string $BasketId
      * @param array      $Basket
      *
@@ -746,12 +790,13 @@ class ApiBasket extends Extension implements IApiInterface
      */
     public function saveEditBasket(
         $Identifier = '',
+        $Type = '',
         $BasketId = '',
         $Basket = array()
     ){
 
         // Handle error's
-        if($form = $this->checkInputBasket($Identifier, $BasketId, $Basket)){
+        if($form = $this->checkInputBasket($Identifier, $Type, $BasketId, $Basket)){
             // display Errors on form
             $Global = $this->getGlobal();
             $Global->POST['Basket']['Name'] = $Basket['Name'];
@@ -759,14 +804,28 @@ class ApiBasket extends Extension implements IApiInterface
             $Global->POST['Basket']['TargetTime'] = $Basket['TargetTime'];
             $Global->POST['Basket']['BillTime'] = $Basket['BillTime'];
             $Global->POST['Basket']['Creditor'] = $Basket['Creditor'];
+            if($Type == TblBasketType::IDENT_GUTSCHRIFT){
+                $Global->POST['Basket']['FibuAccount'] = $Basket['FibuAccount'];
+                $Global->POST['Basket']['FibuToAccount'] = $Basket['FibuToAccount'];
+            }
             $Global->savePost();
             return $form;
+        }
+        $FibuAccount = $FibuToAccount = '';
+        if( $Type == TblBasketType::IDENT_GUTSCHRIFT){
+            // Fibu Daten durch eingaben (wenn getätigt) ersetzen
+            if(isset($Basket['FibuAccount']) && $Basket['FibuAccount']) {
+                $FibuAccount = $Basket['FibuAccount'];
+            }
+            if(isset($Basket['FibuToAccount']) && $Basket['FibuToAccount']) {
+                $FibuToAccount = $Basket['FibuToAccount'];
+            }
         }
 
         $IsChange = false;
         if(($tblBasket = Basket::useService()->getBasketById($BasketId))){
             $IsChange = Basket::useService()->changeBasket($tblBasket, $Basket['Name'], $Basket['Description']
-                , $Basket['TargetTime'], $Basket['BillTime'], $Basket['Creditor']);
+                , $Basket['TargetTime'], $Basket['BillTime'], $Basket['Creditor'], $FibuAccount, $FibuToAccount);
         }
 
         return ($IsChange
@@ -776,11 +835,12 @@ class ApiBasket extends Extension implements IApiInterface
 
     /**
      * @param string     $Identifier
+     * @param string     $Type
      * @param int|string $BasketId
      *
      * @return string
      */
-    public function showEditBasket($Identifier = '', $BasketId = '')
+    public function showEditBasket($Identifier = '', $Type = '', $BasketId = '')
     {
 
         if('' !== $BasketId && ($tblBasket = Basket::useService()->getBasketById($BasketId))){
@@ -792,10 +852,14 @@ class ApiBasket extends Extension implements IApiInterface
             $Global->POST['Basket']['TargetTime'] = $tblBasket->getTargetTime();
             $Global->POST['Basket']['BillTime'] = $tblBasket->getBillTime();
             $Global->POST['Basket']['Creditor'] = ($tblBasket->getServiceTblCreditor() ? $tblBasket->getServiceTblCreditor()->getId() : '');
+            if($Type == TblBasketType::IDENT_GUTSCHRIFT){
+                $Global->POST['Basket']['FibuAccount'] = $tblBasket->getFibuAccount(false);
+                $Global->POST['Basket']['FibuToAccount'] = $tblBasket->getFibuToAccount(false);
+            }
             $Global->savePost();
         }
 
-        return new Well(self::formBasket($Identifier, $BasketId));
+        return new Well($this->formBasket($Identifier, $Type, $BasketId));
     }
 
     /**

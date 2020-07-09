@@ -33,6 +33,9 @@ class Account implements IModuleInterface
             Main::getDispatcher()->createRoute(__NAMESPACE__.'/Edit', __NAMESPACE__.'\Frontend::frontendUpdateAccount')
         );
         Main::getDispatcher()->registerRoute(
+            Main::getDispatcher()->createRoute(__NAMESPACE__.'/Edit/Confirm', __NAMESPACE__.'\Frontend::frontendConfirmChange')
+        );
+        Main::getDispatcher()->registerRoute(
             Main::getDispatcher()->createRoute(__NAMESPACE__.'/Destroy',
                 __NAMESPACE__.'\Frontend::frontendDestroyAccount')
         );

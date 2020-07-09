@@ -11,6 +11,9 @@ use SPHERE\Application\Contact\Mail\Service\Entity\ViewMailToPerson;
 use SPHERE\Application\Contact\Mail\Service\Setup;
 use SPHERE\Application\Corporation\Company\Service\Entity\TblCompany;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
+use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Account;
+use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Service\Entity\TblAccount;
+use SPHERE\Common\Frontend\Text\Repository\Bold;
 use SPHERE\System\Database\Binding\AbstractService;
 
 /**
@@ -134,7 +137,8 @@ class Service extends AbstractService
         TblPerson $tblPerson,
         $Address,
         $Type,
-        TblToPerson $tblToPerson = null
+        TblToPerson $tblToPerson = null,
+        $Alias = null
     ) {
 
         $error = false;
@@ -152,6 +156,33 @@ class Service extends AbstractService
             $error = true;
         } else {
             $form->setSuccess('Type[Type]');
+        }
+        if($Alias !== null){
+            if(($tblAccountList = Account::useService()->getAccountAllByPerson($tblPerson))){
+                /** @var TblAccount $tblAccount */
+                $tblAccount = current($tblAccountList);
+                // prüfen ob Alias eineindeutig ist
+                if (($tblAccountList = Account::useService()->getAccountAllByUserAlias($Address))) {
+                    foreach ($tblAccountList as $item) {
+                        if ($tblAccount->getId() != $item->getId()) {
+                            if($tblAccount->getServiceTblConsumer()->getId() == $item->getServiceTblConsumer()->getId()){
+                                $PersonString = 'Person nicht gefunden';
+                                if(($tblPersonList = Account::useService()->getPersonAllByAccount($item))){
+                                    $foundPerson = current($tblPersonList);
+                                    /** @var TblPerson $foundPerson */
+                                    $PersonString = $foundPerson->getLastFirstName();
+                                }
+                                $form->setError('Alias', 'E-Mail Adresse wird bereits verwendet. ('.$item->getUsername().' - '.$PersonString.')');
+                            } else {
+                                $form->setError('Alias', 'E-Mail Adresse wird bereits verwendet.');
+                            }
+                            $error = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
         }
 
         return $error ? $form : false;
@@ -194,15 +225,19 @@ class Service extends AbstractService
 
     /**
      * @param TblPerson $tblPerson
-     * @param $Address
-     * @param $Type
+     * @param           $Address
+     * @param           $Type
+     * @param bool      $IsAccountUserAlias
+     * @param string    $ErrorString
      *
      * @return bool
      */
     public function createMailToPerson(
         TblPerson $tblPerson,
         $Address,
-        $Type
+        $Type,
+        $IsAccountUserAlias = false,
+        &$ErrorString = ''
     ) {
 
         $tblType = $this->getTypeById($Type['Type']);
@@ -215,8 +250,45 @@ class Service extends AbstractService
             return false;
         }
 
-        if ((new Data($this->getBinding()))->addMailToPerson($tblPerson, $tblMail, $tblType, $Type['Remark'])
-        ) {
+        if (($tblToPerson = (new Data($this->getBinding()))->addMailToPerson($tblPerson, $tblMail, $tblType, $Type['Remark']))) {
+            if($IsAccountUserAlias){
+                if(($tblAccountList = Account::useService()->getAccountAllByPerson($tblPerson))){
+                    $tblAccount = current($tblAccountList);
+                    // remove existing entry's
+                    if(($tblToPersonList = Mail::useService()->getMailAllByPerson($tblPerson))){
+                        foreach($tblToPersonList as $tblToPersonTemp){
+                            if($tblToPerson->getId() != $tblToPersonTemp->getId() && $tblToPersonTemp->isAccountUserAlias()){
+                                Account::useService()->changeUserAlias($tblAccount,'');
+                                Mail::useService()->updateMailToPersonAlias($tblToPersonTemp, false);
+                            }
+                        }
+                    }
+
+                    // prüfen ob Alias eineindeutig ist
+                    if (($tblAccountList = Account::useService()->getAccountAllByUserAlias($Address))) {
+                        foreach ($tblAccountList as $item) {
+                            if ($tblAccount->getId() != $item->getId()) {
+                                if($tblAccount->getServiceTblConsumer()->getId() == $item->getServiceTblConsumer()->getId()){
+                                    $PersonString = 'Person nicht gefunden';
+                                    if(($tblPersonList = Account::useService()->getPersonAllByAccount($item))){
+                                        $foundPerson = current($tblPersonList);
+                                        /** @var TblPerson $foundPerson */
+                                        $PersonString = $foundPerson->getFirstName().', '.$foundPerson->getLastName();
+                                    }
+                                    $ErrorString = 'E-Mail '.new Bold($Address).' bereits verwendet. ('.($item->getUsername().' - '.$PersonString.')');
+                                } else {
+                                    $ErrorString = 'E-Mail '.new Bold($Address).' bereits verwendet.';
+                                }
+                            }
+                        }
+                    }
+                    if((Account::useService()->changeUserAlias($tblAccount, $Address))){
+                        Mail::useService()->updateMailToPersonAlias($tblToPerson, $IsAccountUserAlias);
+                    }
+                } else {
+                    $ErrorString = 'Person hat keinen Benutzeraccount';
+                }
+            }
             return true;
         } else {
             return false;
@@ -257,8 +329,9 @@ class Service extends AbstractService
     /**
      * @param TblPerson $tblPerson
      * @param           $Address
-     * @param TblType   $tblType
+     * @param TblType $tblType
      * @param           $Remark
+     * @param bool $IsUserAlias
      *
      * @return TblToPerson
      */
@@ -266,11 +339,23 @@ class Service extends AbstractService
         TblPerson $tblPerson,
         $Address,
         TblType $tblType,
-        $Remark
+        $Remark,
+        $IsUserAlias = false
     ) {
 
         $tblMail = (new Data($this->getBinding()))->createMail($Address);
-        return (new Data($this->getBinding()))->addMailToPerson($tblPerson, $tblMail, $tblType, $Remark);
+        // falls die Emailadresse bereits vorhanden ist, diese überschreiben
+        if (($tblToPersonList = $this->getMailAllByPerson($tblPerson))) {
+            foreach ($tblToPersonList as $tblToPerson) {
+                if (($tblMailTemp = $tblToPerson->getTblMail())
+                    && $tblMail->getId() == $tblMailTemp->getId()
+                ) {
+                    return (new Data($this->getBinding()))->updateMailToPerson($tblToPerson, $tblMail, $tblType, $Remark, $IsUserAlias);
+                }
+            }
+        }
+
+        return (new Data($this->getBinding()))->addMailToPerson($tblPerson, $tblMail, $tblType, $Remark, $IsUserAlias);
     }
 
     /**
@@ -294,36 +379,150 @@ class Service extends AbstractService
 
     /**
      * @param TblToPerson $tblToPerson
-     * @param $Address
-     * @param $Type
+     * @param             $Address
+     * @param             $Type
+     * @param bool        $IsAccountUserAlias
+     * @param string      $ErrorString
      *
      * @return bool
      */
     public function updateMailToPerson(
         TblToPerson $tblToPerson,
         $Address,
-        $Type
+        $Type,
+        $IsAccountUserAlias = false,
+        &$ErrorString = ''
     ) {
 
         $tblMail = (new Data($this->getBinding()))->createMail($Address);
-        // Remove current
-        (new Data($this->getBinding()))->removeMailToPerson($tblToPerson);
+//        // Remove current
+//        (new Data($this->getBinding()))->removeMailToPerson($tblToPerson);
 
         if ($tblToPerson->getServiceTblPerson()
             && ($tblType = $this->getTypeById($Type['Type']))
         ) {
-            // Add new
-            if ((new Data($this->getBinding()))->addMailToPerson($tblToPerson->getServiceTblPerson(), $tblMail,
-                $tblType, $Type['Remark'])
-            ) {
-                return true;
-            } else {
-                return false;
+            if(!$IsAccountUserAlias){
+                if(($tblAccountList = Account::useService()->getAccountAllByPerson($tblToPerson->getServiceTblPerson()))){
+                    $tblAccount = current($tblAccountList);
+                    Account::useService()->changeUserAlias($tblAccount, '');
+                }
+                return (new Data($this->getBinding()))->updateMailToPerson($tblToPerson, $tblMail,
+                    $tblType, $Type['Remark'], $IsAccountUserAlias);
             }
+            // update
+            if ((new Data($this->getBinding()))->updateMailToPerson($tblToPerson, $tblMail,
+                $tblType, $Type['Remark'], $IsAccountUserAlias)
+            ){
+                $this->updateAlias($tblToPerson, $Address, $ErrorString);
+                if($ErrorString){
+                    // bei Fehlern den Aliasflag entfernen
+                    (new Data($this->getBinding()))->updateMailToPerson($tblToPerson, $tblMail,
+                        $tblType, $Type['Remark'], false);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param TblToPerson $tblToPerson
+     * @param string      $Alias
+     * @param string      $ErrorString
+     *
+     * @return bool
+     */
+    private function updateAlias(TblToPerson $tblToPerson, $Alias, &$ErrorString)
+    {
+        $isAlias = false;
+        if($Alias){
+            $isAlias = true;
+        }
+
+        if (($tblPerson = $tblToPerson->getServiceTblPerson())
+            && ($tblAccountList = Account::useService()->getAccountAllByPerson($tblPerson))){
+            $tblAccount = current($tblAccountList);
+            // remove existing entry's
+            if(($tblToPersonList = Mail::useService()->getMailAllByPerson($tblToPerson->getServiceTblPerson()))){
+                foreach($tblToPersonList as $tblToPersonTemp){
+                    if($tblToPerson->getId() != $tblToPersonTemp->getId() && $tblToPersonTemp->isAccountUserAlias()){
+                        Account::useService()->changeUserAlias($tblAccount,'');
+                        Mail::useService()->updateMailToPersonAlias($tblToPersonTemp, false);
+                    }
+                }
+            }
+            // prüfen ob Alias eineindeutig ist
+            if (($tblAccountList = Account::useService()->getAccountAllByUserAlias($Alias))){
+                foreach ($tblAccountList as $item) {
+                    if ($tblAccount->getId() != $item->getId()){
+                        if ($tblAccount->getServiceTblConsumer()->getId() == $item->getServiceTblConsumer()->getId()){
+                            $PersonString = 'Person nicht gefunden';
+                            if (($tblPersonList = Account::useService()->getPersonAllByAccount($item))){
+                                $foundPerson = current($tblPersonList);
+                                /** @var TblPerson $foundPerson */
+                                $PersonString = $foundPerson->getFirstName().', '.$foundPerson->getLastName();
+                            }
+                            $ErrorString = 'E-Mail '.new Bold($Alias).' bereits verwendet. ('.($item->getUsername().' - '.$PersonString.')');
+                        } else {
+                            $ErrorString = 'E-Mail '.new Bold($Alias).' bereits verwendet.';
+                        }
+                    }
+                }
+            }
+            if ((Account::useService()->changeUserAlias($tblAccount, $Alias))){
+                return Mail::useService()->updateMailToPersonAlias($tblToPerson, $isAlias);
+            }
+        } else {
+            $ErrorString = 'Person hat keinen Benutzeraccount';
+        }
+        return $ErrorString;
+    }
+
+    /**
+     * @param TblToPerson $tblToPerson
+     * @param bool $IsAccountUserAlias
+     *
+     * @return bool
+     */
+    public function updateMailToPersonAlias(
+        TblToPerson $tblToPerson,
+        $IsAccountUserAlias = false
+    ) {
+
+        if ((new Data($this->getBinding()))->updateMailToPersonAlias($tblToPerson, $IsAccountUserAlias)
+        ) {
+            return true;
         } else {
             return false;
         }
     }
+
+    /**
+     * @param TblToPerson $tblToPerson
+     * @param $Address
+     * @param TblType $tblType
+     * @param $Remark
+     * @param bool $IsAccountUserAlias
+     *
+     * @return bool
+     */
+    public function updateMailToPersonService(
+        TblToPerson $tblToPerson,
+        $Address,
+        TblType $tblType,
+        $Remark,
+        $IsAccountUserAlias = false
+    ) {
+
+        $tblMail = (new Data($this->getBinding()))->createMail($Address);
+
+        if ($tblToPerson->getServiceTblPerson()) {
+            return (new Data($this->getBinding()))->updateMailToPerson($tblToPerson, $tblMail, $tblType, $Remark, $IsAccountUserAlias);
+        } else {
+            return false;
+        }
+    }
+
 
     /**
      * @param TblToCompany $tblToCompany
@@ -390,6 +589,12 @@ class Service extends AbstractService
     public function removeMailToPerson(TblToPerson $tblToPerson, $IsSoftRemove = false)
     {
 
+        if($tblToPerson->isAccountUserAlias()){
+            if(($tblAccountList = Account::useService()->getAccountAllByPerson($tblToPerson->getServiceTblPerson()))){
+                $tblAccount = current($tblAccountList);
+                Account::useService()->changeUserAlias($tblAccount, '');
+            }
+        }
         return (new Data($this->getBinding()))->removeMailToPerson($tblToPerson, $IsSoftRemove);
     }
 

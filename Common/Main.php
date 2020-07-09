@@ -51,6 +51,8 @@ use SPHERE\System\Cache\Handler\MemoryHandler;
 use SPHERE\System\Cache\Handler\OpCacheHandler;
 use SPHERE\System\Cache\Handler\SmartyHandler;
 use SPHERE\System\Cache\Handler\TwigHandler;
+use SPHERE\System\Debugger\DebuggerFactory;
+use SPHERE\System\Debugger\Logger\FileLogger;
 use SPHERE\System\Extension\Extension;
 
 /**
@@ -302,6 +304,9 @@ class Main extends Extension
      */
     public static function runSelfHeal(\Exception $Exception = null)
     {
+
+//        Fehlerfunde nicht der gesuchte Fehler
+//        (new DebuggerFactory())->createLogger(new FileLogger())->addLog('runSelfHeal Error: '.$Exception->getMessage());
 
         $Protocol = (new System\Database\Database())->frontendSetup(false, true);
 

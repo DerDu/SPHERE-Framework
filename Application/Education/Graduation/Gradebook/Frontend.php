@@ -494,6 +494,14 @@ class Frontend extends FrontendScoreRule
             $studentViewLinkButton = false;
         }
 
+        $BackwardInfo = false;
+        if($IsAllYears){
+            $BackwardInfo = 'IsAllYears';
+        }
+        if($YearId){
+            $BackwardInfo = $YearId;
+        }
+
         if (!empty($divisionSubjectList)) {
             foreach ($divisionSubjectList as $divisionId => $subjectList) {
                 $tblDivision = Division::useService()->getDivisionById($divisionId);
@@ -518,7 +526,8 @@ class Frontend extends FrontendScoreRule
                                             '', '/Education/Graduation/Gradebook/Gradebook/Teacher/Selected',
                                             new Select(),
                                             array(
-                                                'DivisionSubjectId' => $subValue
+                                                'DivisionSubjectId' => $subValue,
+                                                'BackwardInfo' => $BackwardInfo
                                             ),
                                             'Auswählen'
                                         )
@@ -537,7 +546,8 @@ class Frontend extends FrontendScoreRule
                                     'Option' => new Standard(
                                         '', '/Education/Graduation/Gradebook/Gradebook/Teacher/Selected', new Select(),
                                         array(
-                                            'DivisionSubjectId' => $value
+                                            'DivisionSubjectId' => $value,
+                                            'BackwardInfo' => $BackwardInfo
                                         ),
                                         'Auswählen'
                                     )
@@ -668,6 +678,14 @@ class Frontend extends FrontendScoreRule
             }
         }
 
+        $BackwardInfo = false;
+        if($IsAllYears){
+            $BackwardInfo = 'IsAllYears';
+        }
+        if($YearId){
+            $BackwardInfo = $YearId;
+        }
+
         if (!empty($divisionSubjectList)) {
             foreach ($divisionSubjectList as $divisionId => $subjectList) {
                 $tblDivision = Division::useService()->getDivisionById($divisionId);
@@ -692,7 +710,8 @@ class Frontend extends FrontendScoreRule
                                             '', '/Education/Graduation/Gradebook/Gradebook/Headmaster/Selected',
                                             new Select(),
                                             array(
-                                                'DivisionSubjectId' => $subValue
+                                                'DivisionSubjectId' => $subValue,
+                                                'BackwardInfo' => $BackwardInfo
                                             ),
                                             'Auswählen'
                                         )
@@ -712,7 +731,8 @@ class Frontend extends FrontendScoreRule
                                         '', '/Education/Graduation/Gradebook/Gradebook/Headmaster/Selected',
                                         new Select(),
                                         array(
-                                            'DivisionSubjectId' => $value
+                                            'DivisionSubjectId' => $value,
+                                            'BackwardInfo' => $BackwardInfo
                                         ),
                                         'Auswählen'
                                     )
@@ -783,10 +803,11 @@ class Frontend extends FrontendScoreRule
 
     /**
      * @param null $DivisionSubjectId
+     * @param bool|string $BackwardInfo
      *
      * @return Stage|string
      */
-    public function frontendTeacherSelectedGradebook($DivisionSubjectId = null)
+    public function frontendTeacherSelectedGradebook($DivisionSubjectId = null, $BackwardInfo = false)
     {
 
         $Stage = new Stage('Notenbuch', 'Anzeigen');
@@ -797,24 +818,34 @@ class Frontend extends FrontendScoreRule
         }
 
         $this->contentSelectedGradeBook($Stage, $tblDivisionSubject,
-            '/Education/Graduation/Gradebook/Gradebook/Teacher');
+            '/Education/Graduation/Gradebook/Gradebook/Teacher', $BackwardInfo);
 
         return $Stage;
     }
 
     /**
-     * @param Stage $Stage
+     * @param Stage              $Stage
      * @param TblDivisionSubject $tblDivisionSubject
-     * @param $BasicRoute
+     * @param string             $BasicRoute
+     * @param bool|string         $BackwardInfo
+     *
      * @return Stage
      */
     private function contentSelectedGradeBook(
         Stage $Stage,
         TblDivisionSubject $tblDivisionSubject,
-        $BasicRoute
+        $BasicRoute,
+        $BackwardInfo = false
     ) {
 
-        $Stage->addButton(new Standard('Zurück', $BasicRoute, new ChevronLeft(), array()));
+        $linkArray = array();
+        if($BackwardInfo == 'IsAllYears'){
+            $linkArray = array('IsAllYears' => 1);
+        } elseif($BackwardInfo){
+            $linkArray = array('YearId' => $BackwardInfo);
+        }
+
+        $Stage->addButton(new Standard('Zurück', $BasicRoute, new ChevronLeft(), $linkArray));
         $Stage->addButton(
             new External(
                 'Notenbuch herunterladen',
@@ -924,8 +955,10 @@ class Frontend extends FrontendScoreRule
 
         $errorRowList = array();
 
+        $YearString = '';
         $tblYear = $tblDivision->getServiceTblYear();
         if ($tblYear) {
+            $YearString = $tblYear->getYear();
             $tblPeriodList = Term::useService()->getPeriodAllByYear($tblYear, $tblLevel && $tblLevel->getName() == '12');
         } else {
             $tblPeriodList = false;
@@ -964,10 +997,20 @@ class Frontend extends FrontendScoreRule
         }
         $countPeriod = 0;
         $countMinimumGradeCount = 1;
+        $TestCount = 0;
+        // Positionsermittlung
+        $DisplayStudentNameCount = false;
+        $IsDisplayStudentInUse = false;
+        if($tblSetting = Consumer::useService()->getSetting('Education', 'Graduation', 'Gradebook', 'AddNameRowAtCount')){
+            $DisplayStudentNameCount = $tblSetting->getValue();
+        }
+
         // Tabellenkopf mit Test-Code und Datum erstellen
         if ($tblPeriodList) {
+            $PeriodCount = 1;
             /** @var TblPeriod $tblPeriod */
             foreach ($tblPeriodList as $tblPeriod) {
+                $PeriodWithExtraName = false;
                 $count = 0;
                 if ($gradeListFromAnotherDivision && isset($gradeListFromAnotherDivision[$tblPeriod->getId()])) {
                     $count++;
@@ -984,6 +1027,11 @@ class Frontend extends FrontendScoreRule
                         $tblDivisionSubject->getTblSubjectGroup() ? $tblDivisionSubject->getTblSubjectGroup() : null
                     );
                     if ($tblTestList) {
+                        $TestCount += count($tblTestList);
+                        // wird der Name erneut angezeigt muss auch der richtige 2.te Header breiter werden.
+                        if($DisplayStudentNameCount && $DisplayStudentNameCount <= $TestCount){
+                            $PeriodWithExtraName = true;
+                        }
 
                         $tblTestList = Evaluation::useService()->sortTestList($tblTestList);
 
@@ -1023,7 +1071,7 @@ class Frontend extends FrontendScoreRule
                         $columnDefinition['Period' . $tblPeriod->getId()] = "";
                     }
 
-                    $columnDefinition['PeriodAverage' . $tblPeriod->getId()] = '&#216;';
+                    $columnDefinition['PeriodAverage' . $tblPeriod->getId()] = '&#216; '.$PeriodCount++.'. HJ';
                     $count++;
                     if (isset($MinimumGradeCountSortedList[$countPeriod])) {
                         /**@var TblMinimumGradeCount $tblMinimumGradeCount **/
@@ -1031,6 +1079,12 @@ class Frontend extends FrontendScoreRule
                             $columnDefinition['MinimumGradeCount' . $tblMinimumGradeCount->getId()] = '#' . $countMinimumGradeCount++;
                             $count++;
                         }
+                    }
+                    // Anpassung des zweiten Headers
+                    // Header wird nur einmal erweitert.
+                    if($PeriodWithExtraName && !$IsDisplayStudentInUse){
+                        $count++;
+                        $IsDisplayStudentInUse = true;
                     }
                     $periodListCount[$tblPeriod->getId()] = $count;
                 }
@@ -1053,7 +1107,6 @@ class Frontend extends FrontendScoreRule
         }
 
         $averages = array();
-
         // Tabellen-Inhalt erstellen
         if ($tblStudentList) {
             $studentCount = 0;
@@ -1065,7 +1118,7 @@ class Frontend extends FrontendScoreRule
                 $data = array();
                 $number = $studentCount % 5 == 0 ? new Bold($studentCount) : $studentCount;
                 $data['Number'] = $isStrikeThrough ? new Strikethrough($number) : $number;
-                $data['Student'] = $isStrikeThrough
+                $data['againStudent'] = $data['Student'] = $isStrikeThrough
                     ? new Strikethrough($tblPerson->getLastFirstName()) : $tblPerson->getLastFirstName();
                 if(Student::useService()->getIsSupportByPerson($tblPerson)) {
                     $Integration = (new Standard('', ApiSupportReadOnly::getEndpoint(), new EyeOpen()))
@@ -1257,6 +1310,12 @@ class Frontend extends FrontendScoreRule
             $dataList[] = $data;
         }
 
+        // Anzeige des Namen's nur bei mehr als "AddNameRowAtCount" Tests
+        if($DisplayStudentNameCount && $DisplayStudentNameCount <= $TestCount){
+            $columnDefinition = $this->addStudentNameColumn($columnDefinition, 4);
+        }
+
+
         $tableData = new TableData(
             $dataList, null, $columnDefinition,
             array(
@@ -1305,10 +1364,11 @@ class Frontend extends FrontendScoreRule
                             new Panel(
                                 'Fach-Klasse',
                                 array(
-                                    'Klasse ' . $tblDivision->getDisplayName() . ' - ' .
+                                    'Klasse: ' . $tblDivision->getDisplayName() . ' - ' .
                                     ($tblDivisionSubject->getServiceTblSubject() ? $tblDivisionSubject->getServiceTblSubject()->getName() : '') .
                                     ($tblDivisionSubject->getTblSubjectGroup() ? new Small(
                                         ' (Gruppe: ' . $tblDivisionSubject->getTblSubjectGroup()->getName() . ')') : ''),
+                                    'Schuljahr: '.$YearString,
                                     'Fachlehrer: ' . Division::useService()->getSubjectTeacherNameList(
                                         $tblDivision, $tblSubject, $tblDivisionSubject->getTblSubjectGroup()
                                         ? $tblDivisionSubject->getTblSubjectGroup() : null
@@ -1344,13 +1404,44 @@ class Frontend extends FrontendScoreRule
     }
 
     /**
-     * @param null $DivisionSubjectId
+     * @param array $tempColumnDefinition
+     * need "againStudent" in TableData to Display
+     * @param int $preCount
+     *
+     * @return array
+     */
+    private function addStudentNameColumn($tempColumnDefinition = array(), $preCount = 4)
+    {
+
+        // Ohne Einstellung wird der Name nicht erscheinen
+        $DisplayStudentNameCount = -1;
+        if($tblSetting = Consumer::useService()->getSetting('Education', 'Graduation', 'Gradebook', 'AddNameRowAtCount')){
+            $DisplayStudentNameCount = $tblSetting->getValue();
+            if($DisplayStudentNameCount >= 1){
+                $DisplayStudentNameCount += $preCount;
+            }
+        }
+        if($DisplayStudentNameCount != -1){
+            foreach($tempColumnDefinition as $Key => $Definition){
+                $DisplayStudentNameCount--;
+                if($DisplayStudentNameCount == 0){
+                    $columnDefinition['againStudent'] = 'Schüler';
+                }
+                $columnDefinition[$Key] = $Definition;
+            }
+        }
+
+        return ( !empty($columnDefinition) ? $columnDefinition : $tempColumnDefinition);
+    }
+
+    /**
+     * @param null        $DivisionSubjectId
+     * @param bool|string $BackwardInfo
      *
      * @return Stage|string
      */
-    public function frontendHeadmasterSelectedGradeBook(
-        $DivisionSubjectId = null
-    ) {
+    public function frontendHeadmasterSelectedGradeBook($DivisionSubjectId = null, $BackwardInfo = false)
+    {
 
         $Stage = new Stage('Notenbuch', 'Anzeigen');
 
@@ -1360,7 +1451,7 @@ class Frontend extends FrontendScoreRule
         }
 
         $this->contentSelectedGradeBook($Stage, $tblDivisionSubject,
-            '/Education/Graduation/Gradebook/Gradebook/Headmaster');
+            '/Education/Graduation/Gradebook/Gradebook/Headmaster', $BackwardInfo);
 
         return $Stage;
     }
@@ -1441,25 +1532,7 @@ class Frontend extends FrontendScoreRule
 
         $tblPersonList = $this->getPersonListForStudent();
 
-        // erlaubte Schularten:
-        $tblSetting = Consumer::useService()->getSetting('Education', 'Graduation', 'Gradebook', 'IgnoreSchoolType');
-        $tblSchoolTypeList = Consumer::useService()->getSchoolTypeBySettingString($tblSetting->getValue());
-        if($tblSchoolTypeList){
-            // erzeuge eine Id Liste, wenn Schularten blokiert werden.
-            foreach ($tblSchoolTypeList as &$tblSchoolTypeControl){
-                $tblSchoolTypeControl = $tblSchoolTypeControl->getId();
-            }
-        }
-
-        // Schuljahre Anzeigen ab:
-        $startYear = '';
-        $tblSetting = Consumer::useService()->getSetting('Education', 'Graduation', 'Gradebook', 'YearOfUserView');
-        if($tblSetting){
-            $YearTempId = $tblSetting->getValue();
-            if ($YearTempId && ($tblYearTemp = Term::useService()->getYearById($YearTempId))){
-                $startYear = ($tblYearTemp->getYear() ? $tblYearTemp->getYear() : $tblYearTemp->getName());
-            }
-        }
+        list($isShownAverage, $hasScore, $tblSchoolTypeList, $startYear) = $this->getConsumerSettingsForGradeOverview();
 
         $BlockedList = array();
         // Jahre ermitteln, in denen Schüler in einer Klasse ist
@@ -1525,26 +1598,6 @@ class Frontend extends FrontendScoreRule
         }
 
         if (($tblYear = Term::useService()->getYearById($YearId))) {
-            if (($tblSetting = Consumer::useService()->getSetting(
-                    'Education', 'Graduation', 'Gradebook', 'IsShownAverageInStudentOverview'
-                ))
-                && $tblSetting->getValue()
-            ) {
-                $isShownAverage = true;
-            } else {
-                $isShownAverage = false;
-            }
-
-            if (($tblSetting = Consumer::useService()->getSetting(
-                    'Education', 'Graduation', 'Gradebook', 'IsShownScoreInStudentOverview'
-                ))
-                && $tblSetting->getValue()
-            ) {
-                $hasScore = true;
-            } else {
-                $hasScore = false;
-            }
-
             if (!empty($data)) {
                 if (isset($data[$tblYear->getId()])) {
                     foreach ($data[$tblYear->getId()] as $personId => $divisionList) {
@@ -2669,6 +2722,12 @@ class Frontend extends FrontendScoreRule
                     $tblDivisionSubjectList = Division::useService()->getDivisionSubjectByDivision($tblDivision);
                     if ($tblDivisionSubjectList) {
                         foreach ($tblDivisionSubjectList as $tblDivisionSubject) {
+                            // Fächer ohne Benotung ignorieren
+                            if (!$tblDivisionSubject->getHasGrading()) {
+                                continue;
+                            }
+
+                            $yearGradeList = array();
                             if (($tblSubject = $tblDivisionSubject->getServiceTblSubject()) && $tblDivisionSubject->getTblDivision()) {
                                 $tblScoreRule = Gradebook::useService()->getScoreRuleByDivisionAndSubjectAndGroup(
                                     $tblDivisionSubject->getTblDivision(),
@@ -2708,8 +2767,6 @@ class Frontend extends FrontendScoreRule
                                             } else {
                                                 $tblTaskList = false;
                                             }
-
-                                            $yearGradeList = array();
 
                                             /**@var TblPeriod $tblPeriod **/
                                             foreach ($tblPeriodList as $tblPeriod) {
@@ -2957,7 +3014,7 @@ class Frontend extends FrontendScoreRule
                                             Evaluation::useService()->getTestTypeByIdentifier('TEST'),
                                             $tblScoreRule ? $tblScoreRule : null, null,
                                             $tblDivisionSubject->getTblSubjectGroup() ? $tblDivisionSubject->getTblSubjectGroup() : null,
-                                            false, false, empty($yearGradeList) ? false : $yearGradeList
+                                            false, false, $yearGradeList
                                         );
 
                                         if (is_array($average)) {
@@ -3410,6 +3467,15 @@ class Frontend extends FrontendScoreRule
                 ->ajaxPipelineOnClick(ApiSupportReadOnly::pipelineOpenOverViewModal($tblPerson->getId())));
         }
 
+        if ($IsParentView) {
+            list($isShownAverage, $hasScore, $tblSchoolTypeList, $startYear) = $this->getConsumerSettingsForGradeOverview();
+        } else {
+            $isShownAverage = true;
+            $hasScore = true;
+            $tblSchoolTypeList = false;
+            $startYear = '';
+        }
+
         $columnDefinition = array();
         $columnDefinition['Subject'] = 'Fach';
         if (($tblYear = $tblDivision->getServiceTblYear())) {
@@ -3421,7 +3487,10 @@ class Frontend extends FrontendScoreRule
                 foreach ($tblPeriodList as $tblPeriod) {
                     $tableHeaderList['Period' . $tblPeriod->getId()] = new Bold($tblPeriod->getDisplayName());
                 }
-                $tableHeaderList['Average'] = '&#216;';
+
+                if ($isShownAverage) {
+                    $tableHeaderList['Average'] = '&#216;';
+                }
             }
 
             if ($tblDivisionStudentList = Division::useService()->getDivisionStudentAllByPerson($tblPerson)) {
@@ -3431,8 +3500,22 @@ class Frontend extends FrontendScoreRule
                         && ($tblDivisionTemp = $tblDivisionStudent->getTblDivision())
                         && ($tblYearTemp = $tblDivisionTemp->getServiceTblYear())
                     ) {
-                        $tblDisplayYearList[$tblYearTemp->getId()] = $tblYearTemp;
-                        $data[$tblYearTemp->getId()][$tblPerson->getId()][$tblDivisionTemp->getId()] = $tblDivisionTemp;
+                        // Schulart Prüfung nur, wenn auch Schularten in den Einstellungen erlaubt werden.
+                        if($tblSchoolTypeList && ($tblLevelTemp = $tblDivisionTemp->getTblLevel())){
+                            if(($tblSchoolType = $tblLevelTemp->getServiceTblType())){
+                                if(!in_array($tblSchoolType->getId(), $tblSchoolTypeList)){
+                                    // Klassen werden nicht angezeigt, wenn die Schulart nicht freigeben ist.
+                                    continue;
+                                }
+                            }
+                        }
+                        if ($tblDivisionTemp && ($tblYearTemp = $tblDivisionTemp->getServiceTblYear())) {
+                            // Anzeige nur für Schuljahre die nach dem "Startschuljahr"(Veröffentlichung) liegen
+                            if($tblYearTemp->getYear() >= $startYear){
+                                $tblDisplayYearList[$tblYearTemp->getId()] = $tblYearTemp;
+                                $data[$tblYearTemp->getId()][$tblPerson->getId()][$tblDivisionTemp->getId()] = $tblDivisionTemp;
+                            }
+                        }
                     }
                 }
             }
@@ -3444,7 +3527,7 @@ class Frontend extends FrontendScoreRule
                         if ($tblPerson && is_array($divisionList)) {
 
                             $this->setGradeOverview($tblYear, $tblPerson, $divisionList, $rowList, $tblPeriodList,
-                                $tblTestType, true, true, $tableHeaderList, $IsParentView);
+                                $tblTestType, $isShownAverage, $hasScore, $tableHeaderList, $IsParentView);
                         }
                     }
                 }
@@ -3459,5 +3542,56 @@ class Frontend extends FrontendScoreRule
         );
 
         return $Stage;
+    }
+
+    /**
+     * @return array
+     */
+    private function getConsumerSettingsForGradeOverview()
+    {
+        // Mandateneinstellung für Notenübersicht (Schüler/Eltern) und Schülerübersicht (Ansicht: Eltern/Schüler)
+        // !!!! wichtig: immer beide anpassen bei einer neuen Einstellung !!!!!!
+
+        if (($tblSetting = Consumer::useService()->getSetting(
+                'Education', 'Graduation', 'Gradebook', 'IsShownAverageInStudentOverview'
+            ))
+            && $tblSetting->getValue()
+        ) {
+            $isShownAverage = true;
+        } else {
+            $isShownAverage = false;
+        }
+
+        if (($tblSetting = Consumer::useService()->getSetting(
+                'Education', 'Graduation', 'Gradebook', 'IsShownScoreInStudentOverview'
+            ))
+            && $tblSetting->getValue()
+        ) {
+            $hasScore = true;
+        } else {
+            $hasScore = false;
+        }
+
+        // erlaubte Schularten:
+        $tblSetting = Consumer::useService()->getSetting('Education', 'Graduation', 'Gradebook', 'IgnoreSchoolType');
+        $tblSchoolTypeList = Consumer::useService()->getSchoolTypeBySettingString($tblSetting->getValue());
+        if($tblSchoolTypeList){
+            // erzeuge eine Id Liste, wenn Schularten blokiert werden.
+            foreach ($tblSchoolTypeList as &$tblSchoolTypeControl){
+                $tblSchoolTypeControl = $tblSchoolTypeControl->getId();
+            }
+        }
+
+        // Schuljahre Anzeigen ab:
+        $startYear = '';
+        $tblSetting = Consumer::useService()->getSetting('Education', 'Graduation', 'Gradebook', 'YearOfUserView');
+        if($tblSetting){
+            $YearTempId = $tblSetting->getValue();
+            if ($YearTempId && ($tblYearTemp = Term::useService()->getYearById($YearTempId))){
+                $startYear = ($tblYearTemp->getYear() ? $tblYearTemp->getYear() : $tblYearTemp->getName());
+            }
+        }
+
+        return array($isShownAverage, $hasScore, $tblSchoolTypeList, $startYear);
     }
 }

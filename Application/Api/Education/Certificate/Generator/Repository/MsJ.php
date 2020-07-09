@@ -4,7 +4,6 @@ namespace SPHERE\Application\Api\Education\Certificate\Generator\Repository;
 use SPHERE\Application\Api\Education\Certificate\Generator\Certificate;
 use SPHERE\Application\Education\Certificate\Generator\Repository\Element;
 use SPHERE\Application\Education\Certificate\Generator\Repository\Page;
-use SPHERE\Application\Education\Certificate\Generator\Repository\Section;
 use SPHERE\Application\Education\Certificate\Generator\Repository\Slice;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 
@@ -38,7 +37,7 @@ class MsJ extends Certificate
 
         $personId = $tblPerson ? $tblPerson->getId() : 0;
 
-        $Header = $this->getHead($this->isSample(), true, 'auto', '50px');
+        $Header = $this->getHead($this->isSample());
 
         return (new Page())
             ->addSlice(
@@ -57,28 +56,17 @@ class MsJ extends Certificate
                     ->styleMarginTop('8px')
                 )
             )
-            ->addSlice($this->getGradeLanes($personId))
-            ->addSlice((new Slice())
-                ->addSection((new Section())
-                    ->addElementColumn((new Element())
-                        ->setContent('Einschätzung: {% if(Content.P'.$personId.'.Input.Rating is not empty) %}
-                                {{ Content.P'.$personId.'.Input.Rating|nl2br }}
-                            {% else %}
-                                &nbsp;
-                            {% endif %}')
-                        ->styleHeight('50px')
-                    )
-                )
-                ->styleMarginTop('15px')
-            )
+            ->addSlice($this->getGradeLanesSmall($personId))
+            ->addSlice($this->getRatingContent($personId))
             ->addSlice((new Slice())
                 ->addElement((new Element())
                     ->setContent('Leistungen in den einzelnen Fächern:')
                     ->styleMarginTop('15px')
+                    ->styleMarginBottom('5px')
                     ->styleTextBold()
                 )
             )
-            ->addSlice($this->getSubjectLanes(
+            ->addSlice($this->getSubjectLanesSmall(
                 $personId,
                 true,
                 array(),
@@ -86,15 +74,15 @@ class MsJ extends Certificate
                 false,
                 false,
                 true
-            )->styleHeight('290px'))
+            )->styleHeight('220px'))
 //            ->addSlice($this->getOrientationStandard($personId))
             ->addSlice($this->getDescriptionHead($personId, true))
             ->addSlice($this->getDescriptionContent($personId, '70px', '8px'))
             ->addSlice($this->getTransfer($personId, '13px'))
-            ->addSlice($this->getDateLine($personId, '15px'))
-            ->addSlice($this->getSignPart($personId, true, '15px'))
-            ->addSlice($this->getParentSign('15px'))
-            ->addSlice($this->getInfo('15px',
+            ->addSlice($this->getDateLine($personId))
+            ->addSlice($this->getSignPart($personId))
+            ->addSlice($this->getParentSign())
+            ->addSlice($this->getInfo('4px',
                 'Notenerläuterung:',
                 '1 = sehr gut; 2 = gut; 3 = befriedigend; 4 = ausreichend; 5 = mangelhaft; 6 = ungenügend 
                 (6 = ungenügend nur bei der Bewertung der Leistungen)')

@@ -1,9 +1,19 @@
 SELECT
-    vMTP.TblToPerson_serviceTblPerson AS TblPerson_Id,
-    vMTP.TblToPerson_Remark AS TblToPerson_Remark,
-    vMTP.TblType_Name AS TblType_Name,
-    vMTP.TblType_Description AS TblType_Description,
-    vMTP.TblMail_Address AS TblMail_Address
-FROM ContactMail_{{ ConsumerAcronym }}.viewMailToPerson vMTP
---     (PeoplePerson_{{ ConsumerAcronym }}.viewPerson
---     LEFT JOIN ContactMail_{{ ConsumerAcronym }}.viewMailToPerson vMTP ON ((PeoplePerson_{{ ConsumerAcronym }}.viewPerson.TblPerson_Id = vMTP.TblToPerson_serviceTblPerson)))
+
+-- PersonId to match with all View's // tblToPerson
+    tTP.serviceTblPerson AS TblPerson_Id,
+    tTP.Remark AS TblToPerson_Remark,
+-- tblType
+    tT.Name AS TblType_Name,
+    tT.Description AS TblType_Description,
+-- tblMail
+    -- tM.Address AS TblMail_Address
+    tM.Address AS TblMail_Address
+
+    FROM ContactMail_{{ ConsumerAcronym }}.tblToPerson tTP
+        LEFT JOIN ContactMail_{{ ConsumerAcronym }}.tblType tT ON tT.Id = tTP.tblType
+        LEFT JOIN ContactMail_{{ ConsumerAcronym }}.tblMail as tM on tM.Id = tTP.tblMail
+
+    WHERE tTP.EntityRemove IS NULL
+
+    group by tTP.serviceTblPerson, tT.Name, tM.Address

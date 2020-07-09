@@ -49,7 +49,9 @@ class Setup extends AbstractSetup
          * Table
          */
         $Schema = clone $this->getConnection()->getSchema();
+        $this->setTableStudentInsuranceState($Schema);
         $tblStudentMedicalRecord = $this->setTableStudentMedicalRecord($Schema);
+        $this->setTableStudentMasernInfo($Schema);
         $tblStudentTransport = $this->setTableStudentTransport($Schema);
         $tblStudentBilling = $this->setTableStudentBilling($Schema);
         $tblStudentLocker = $this->setTableStudentLocker($Schema);
@@ -170,6 +172,21 @@ class Setup extends AbstractSetup
         return $this->getConnection()->getProtocol($Simulate);
     }
 
+
+    /**
+     * @param Schema $Schema
+     *
+     * @return Table
+     */
+    private function setTableStudentInsuranceState(Schema &$Schema)
+    {
+        $Table = $this->createTable($Schema, 'tblStudentInsuranceState');
+        $this->createColumn($Table, 'Name', self::FIELD_TYPE_STRING);
+        $this->createColumn($Table, 'Description', self::FIELD_TYPE_TEXT);
+
+        return $Table;
+    }
+
     /**
      * @param Schema $Schema
      *
@@ -194,12 +211,32 @@ class Setup extends AbstractSetup
         if (!$this->getConnection()->hasColumn('tblStudentMedicalRecord', 'Insurance')) {
             $Table->addColumn('Insurance', 'string');
         }
-
-        // entfernen alter Rückstände
-        if ($this->getConnection()->hasColumn('tblStudentMedicalRecord', 'serviceTblPersonAttendingDoctor')) {
-            $Table->dropColumn('serviceTblPersonAttendingDoctor');
+        if (!$this->getConnection()->hasColumn('tblStudentMedicalRecord', 'MasernDate')) {
+            $Table->addColumn('MasernDate', 'datetime', array('notnull' => false));
+        }
+        if (!$this->getConnection()->hasColumn('tblStudentMedicalRecord', 'MasernDocumentType')) {
+            $Table->addColumn('MasernDocumentType', 'bigint', array('notnull' => false));
+        }
+        if (!$this->getConnection()->hasColumn('tblStudentMedicalRecord', 'MasernCreatorType')) {
+            $Table->addColumn('MasernCreatorType', 'bigint', array('notnull' => false));
         }
 
+//        // entfernen alter Rückstände
+//        if ($this->getConnection()->hasColumn('tblStudentMedicalRecord', 'serviceTblPersonAttendingDoctor')) {
+//            $Table->dropColumn('serviceTblPersonAttendingDoctor');
+//        }
+
+        return $Table;
+    }
+
+    private function setTableStudentMasernInfo(Schema $Schema)
+    {
+
+        $Table = $this->createTable($Schema, 'tblStudentMasernInfo');
+        $this->createColumn($Table, 'Meta', self::FIELD_TYPE_STRING);
+        $this->createColumn($Table, 'Type', self::FIELD_TYPE_STRING);
+        $this->createColumn($Table, 'TextShort', self::FIELD_TYPE_STRING);
+        $this->createColumn($Table, 'TextLong', self::FIELD_TYPE_TEXT);
         return $Table;
     }
 

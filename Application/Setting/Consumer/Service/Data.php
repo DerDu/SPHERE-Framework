@@ -89,12 +89,12 @@ class Data extends AbstractData
         if (($tblSetting = $this->createSetting('Api', 'Document', 'Standard', 'Billing_PictureAddress',
             TblSetting::TYPE_STRING, ''))) {
             $this->updateSettingDescription($tblSetting, 'Dokumente',
-                'Für den Belegdruck der Fakturierung kann ein Bild (Logo) hinterlegt werden. Adresse des Bildes: [Standard: ]');
+                'Für den Bescheinigung der Fakturierung kann ein Bild (Logo) hinterlegt werden. Adresse des Bildes: [Standard: ]');
         }
         if (($tblSetting = $this->createSetting('Api', 'Document', 'Standard', 'Billing_PictureHeight',
             TblSetting::TYPE_STRING, ''))) {
             $this->updateSettingDescription($tblSetting, 'Dokumente',
-                'Für den Belegdruck der Fakturierung kann ein Bild (Logo) hinterlegt werden. Höhe des Bildes (Maximal 150px): [Standard: 90px]');
+                'Für den Bescheinigung der Fakturierung kann ein Bild (Logo) hinterlegt werden. Höhe des Bildes (Maximal 150px): [Standard: 90px]');
         }
         if (($tblSetting = $this->createSetting('Api', 'Document', 'StudentCard_PrimarySchool', 'ShowSchoolName',
             TblSetting::TYPE_BOOLEAN, '1'))) {
@@ -106,14 +106,14 @@ class Data extends AbstractData
         if (($tblSetting = $this->createSetting('Education', 'Certificate', 'Generate', 'PictureAddress',
             TblSetting::TYPE_STRING, ''))) {
             $this->updateSettingDescription($tblSetting, 'Zeugnisse',
-                'Für die Standard-Zeugnisse kann ein Bild (Logo) hinterlegt werden. Logo für das Zeugnis darf skalliert 
-                nicht breiter sein als 182px (bei einer höhe von 50px [Bsp.: 546 * 150 ist noch ok]). Adresse des Bildes: [Standard: ]');
+                'Für die Standard-Zeugnisse kann ein Bild (Logo) hinterlegt werden. Logo Maximalmaße 100 x 250.
+                Adresse des Bildes: [Standard: ]');
         }
         if (($tblSetting = $this->createSetting('Education', 'Certificate', 'Generate', 'PictureHeight',
             TblSetting::TYPE_STRING, ''))) {
             $this->updateSettingDescription($tblSetting, 'Zeugnisse',
-                'Für die Standard-Zeugnisse kann ein Bild (Logo) hinterlegt werden. Logo für das Zeugnis darf skalliert 
-                nicht breiter sein als 182px (bei einer höhe von 50px [Bsp.: 546 * 150 ist noch ok]). Höhe des Bildes: [Standard: ]');
+                'Für die Standard-Zeugnisse kann ein Bild (Logo) hinterlegt werden. Logo Maximalmaße 100 x 250. Das Bild
+                ist ohne Einstellung 66px Hoch, wie das Sachsenlogo. Höhe des Bildes: [Standard: ]');
         }
         if (($tblSetting = $this->createSetting('Education', 'Certificate', 'Generate', 'PictureAddressForDiplomaCertificate', TblSetting::TYPE_STRING, ''))) {
             $this->updateSettingDescription($tblSetting, 'Zeugnisse', 'Für die Standard-Abschluss-Zeugnisse kann ein Bild (Logo) hinterlegt werden. Adresse des Bildes: []');
@@ -123,6 +123,11 @@ class Data extends AbstractData
         }
         if (($tblSetting = $this->createSetting('Education', 'Certificate', 'Generate', 'PictureDisplayLocationForDiplomaCertificate', TblSetting::TYPE_BOOLEAN, '1'))) {
             $this->updateSettingDescription($tblSetting, 'Zeugnisse', 'Für die Standard-Abschluss-Zeugnisse wird das Logo auf der 2. Seite unter dem Abschluss angezeigt (ansonsten auf dem Cover oben links): [Ja]');
+        }
+        if (($tblSetting = $this->createSetting('Education', 'Certificate', 'Generate', 'DocumentBorder', TblSetting::TYPE_INTEGER, '2'))) {
+
+            $this->updateSettingDescription($tblSetting, 'Zeugnisse', 'Festlegung der seitlichen Ränder für Zeugnisse
+            mittels Zahleneingabe (1=mittlerer Rand, 2=breiter Rand): [Standard: 2]', true);
         }
         if (($tblSetting = $this->createSetting('Api', 'Education', 'Certificate', 'OrientationAcronym',
             TblSetting::TYPE_STRING, ''))) {
@@ -187,13 +192,20 @@ class Data extends AbstractData
         $this->createSetting('Education', 'Certificate', 'Diploma', 'ShowExtendedSchoolName', TblSetting::TYPE_BOOLEAN,
             '', 'Zeugnisse', 'Schul-Zusatz-Name von der Institution auf Abschlusszeugnissen und Abgangszeugnissen anzeigen [Standard: Nein]'
             , true);
-
         if (($tblSetting = $this->createSetting('Education', 'Certificate', 'Prepare', 'HasRemarkBlocking',
             TblSetting::TYPE_BOOLEAN, '1'))
         ) {
             $this->updateSettingDescription($tblSetting, 'Zeugnisse',
                 'Sollen leere Bemerkungsfelder auf Zeugnissen gesperrt werden ("---"). [Standard: Ja]',
                 true);
+        }
+
+        if (($tblSetting = $this->createSetting('Education', 'Certificate', 'Generator', 'IsDescriptionAsJustify', // "Blocksatz"
+            TblSetting::TYPE_BOOLEAN, '1'))
+        ) {
+            $this->updateSettingDescription($tblSetting, 'Zeugnisse',
+                'die Schülereinschätzung als Blocksatz dargestellen [Standard: Ja]',
+                false);
         }
 
         if (($tblSetting = $this->createSetting('Education', 'Graduation', 'Gradebook',
@@ -209,7 +221,7 @@ class Data extends AbstractData
         }
         if (($tblSetting = $this->createSetting('Education', 'Graduation', 'Gradebook', 'ShowHighlightedTestsInGradeOverview', TblSetting::TYPE_BOOLEAN, '1'))) {
             $this->updateSettingDescription($tblSetting, 'Notenbücher',
-                'Anzeige der geplanten Großen Noten (fettmarkiert, z.B. Klassenarbeiten) in der Notenübersicht für Schüler/Eltern und in der Schülerübersicht [Ja]', true);
+                'Anzeige der geplanten Großen Noten (fettmarkiert, z.B. Klassenarbeiten) in der Notenübersicht für Schüler/Eltern und in der Schülerübersicht [Standard: Ja]', true);
         }
         if (($tblSetting = $this->createSetting('Education', 'Graduation', 'Gradebook', 'SortHighlighted',
             TblSetting::TYPE_BOOLEAN, '0'))) {
@@ -239,11 +251,14 @@ class Data extends AbstractData
                 'Anzeige der Noten in der Eltern/Schüler-Übersicht ab folgenden Schuljahr (z.B. 2019/20).
                 Wenn leer werden Noten aller Schuljahre angezeigt [Standard: ]', true);
         }
-
         $this->createSetting('Education', 'Graduation', 'Gradebook', 'IgnoreSchoolType',
             TblSetting::TYPE_STRING, '', 'Notenbücher',
             'Eingrenzung der Schüler- und Elternzugänge nach Schulart(en). Festlegung der Zugänge mittels Zahleneingabe.
              Mehrere Schularten sind mit Komma zu trennen. 1=GS, 2=OS, 3=GYM [Standard: ]'
+            , true);
+        $this->createSetting('Education', 'Graduation', 'Gradebook', 'AddNameRowAtCount',
+            TblSetting::TYPE_INTEGER, 10, 'Notenbücher',
+            'Anzeige zusätzliche Namensspalte im Notenbuch bei mehr als (Anzahl) Noten im gesamten Schuljahr [Standard: 10]'
             , true);
 
         if (($tblSetting = $this->createSetting('Reporting', 'KamenzReport', 'Validation', 'FirstForeignLanguageLevel',
@@ -274,7 +289,7 @@ class Data extends AbstractData
         if (($tblSetting = $this->createSetting('Education', 'Graduation', 'Evaluation',
             'HasBehaviorGradesForSubjectsWithNoGrading', TblSetting::TYPE_BOOLEAN, '0'))) {
             $this->updateSettingDescription($tblSetting, 'Leistungsüberprüfungen',
-                'Bei Kopfnotenaufträgen können auch Kopfnoten für Fächer vergebenen werden, welche nicht benotet werden. [Standard: Nein]',
+                'Bei Kopfnotenaufträgen können auch Kopfnoten für Fächer vergeben werden, welche nicht benotet werden. [Standard: Nein]',
                 true);
         }
         if (($tblSetting = $this->createSetting('Education', 'Graduation', 'Evaluation',
@@ -307,13 +322,18 @@ class Data extends AbstractData
                 'Bei der alphabetischen Sortierung von Namen werden Präpositionen (z.B. von, de, etc.) für die Sortierung berücksichtigt [Standard: Ja]',
                 true);
         }
+
+        // Fehlzeiten
+        $this->createSetting('Education', 'ClassRegister', 'Absence', 'UseClassRegisterForAbsence', TblSetting::TYPE_BOOLEAN,
+            '1', 'Fehlzeiten', 'Automatische Übernahme der Fehlzeiten aus dem Klassenbuch [Standard: Ja]'
+            , true);
     }
 
     /**
-     * @param      $Cluster
-     * @param      $Application
-     * @param null $Module
-     * @param      $Identifier
+     * @param        $Cluster
+     * @param        $Application
+     * @param null   $Module
+     * @param string $Identifier
      *
      * @return false|TblSetting
      */
@@ -321,7 +341,7 @@ class Data extends AbstractData
         $Cluster,
         $Application,
         $Module = null,
-        $Identifier
+        $Identifier = ''
     ) {
 
         return $this->getCachedEntityBy(

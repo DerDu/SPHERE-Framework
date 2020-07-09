@@ -100,6 +100,16 @@ class Service extends AbstractService
     }
 
     /**
+     * @param TblType $tblType
+     *
+     * @return array array[PersonFromId[PersonToId]]
+     */
+    public function getPersonRelationshipArrayByType(TblType $tblType)
+    {
+        return (new Data($this->getBinding()))->getPersonRelationshipArrayByType($tblType);
+    }
+
+    /**
      * @param TblToPerson[] $tblToPersonList
      *
      * @return array|TblPerson[]
@@ -334,6 +344,28 @@ class Service extends AbstractService
                         $error = true;
                         $messageOptions = new Danger(implode('<br>', $warnings));
                     }
+                }
+            }
+        }
+
+        // SSw-718 Prüfung ob es die Beziehung zu dieser Person bereits existiert
+        if ($tblPersonGuardian
+            && $tblPersonChild
+            && $tblType
+            && ($tblRelationshipList = Relationship::useService()->getPersonRelationshipAllByPerson($tblPersonGuardian, $tblType))
+        ) {
+            foreach ($tblRelationshipList as $tblRelationship) {
+                // aktuelle Beziehung ignorieren
+                if ($tblToPerson && $tblToPerson->getId() == $tblRelationship->getId()) {
+                    continue;
+                }
+
+                if (($tblPersonRelationshipTo = $tblRelationship->getServiceTblPersonTo())
+                    && $tblPersonRelationshipTo->getId() == $tblPersonChild->getId()
+                ) {
+                    $error = true;
+                    $messageOptions = new Danger('Diese Personenbeziehung existiert bereits, bitte wählen Sie eine andere Person aus.',
+                        new Exclamation());
                 }
             }
         }
@@ -645,8 +677,9 @@ class Service extends AbstractService
      * @param TblPerson $tblPersonTo
      * @param TblType $tblType
      * @param string $Remark
-     *
      * @param integer|null $Ranking
+     * @param bool $IsSingleParent
+     *
      * @return bool
      */
     public function insertRelationshipToPerson(
@@ -654,11 +687,12 @@ class Service extends AbstractService
         TblPerson $tblPersonTo,
         TblType $tblType,
         $Remark,
-        $Ranking = null
+        $Ranking = null,
+        $IsSingleParent = false
     ) {
 
         if ((new Data($this->getBinding()))->addPersonRelationshipToPerson($tblPersonFrom, $tblPersonTo, $tblType,
-            $Remark, $Ranking)
+            $Remark, $Ranking, $IsSingleParent)
         ) {
             return true;
         } else {

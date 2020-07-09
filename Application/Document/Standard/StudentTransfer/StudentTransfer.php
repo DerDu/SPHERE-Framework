@@ -169,53 +169,47 @@ class StudentTransfer extends Extension
             $tblStudent = Student::useService()->getStudentByPerson($tblPerson);
             if ($tblStudent) {
                 // Schuldaten der Schule des Schülers
-                $tblStudentTransferType = Student::useService()->getStudentTransferTypeByIdentifier('PROCESS');
-                $tblStudentTransfer = Student::useService()->getStudentTransferByType($tblStudent,
-                    $tblStudentTransferType);
-                if ($tblStudentTransfer) {
-                    $tblCompanySchool = $tblStudentTransfer->getServiceTblCompany();
-                    if ($tblCompanySchool) {
-                        $Global->POST['Data']['LeaveSchool'] = $tblCompanySchool->getDisplayName();
-                        $tblAddressSchool = Address::useService()->getAddressByCompany($tblCompanySchool);
-                        if ($tblAddressSchool) {
-                            $Global->POST['Data']['AddressStreet'] = $tblAddressSchool->getStreetName().' '.$tblAddressSchool->getStreetNumber();
-                            $tblCitySchool = $tblAddressSchool->getTblCity();
-                            if ($tblCitySchool) {
-                                $Global->POST['Data']['AddressCity'] = $tblCitySchool->getCode().', '.$tblCitySchool->getName();
+                if (($tblCompanySchool = Student::useService()->getCurrentSchoolByPerson($tblPerson))) {
+                    $Global->POST['Data']['LeaveSchool'] = $tblCompanySchool->getDisplayName();
+                    $tblAddressSchool = Address::useService()->getAddressByCompany($tblCompanySchool);
+                    if ($tblAddressSchool) {
+                        $Global->POST['Data']['AddressStreet'] = $tblAddressSchool->getStreetName().' '.$tblAddressSchool->getStreetNumber();
+                        $tblCitySchool = $tblAddressSchool->getTblCity();
+                        if ($tblCitySchool) {
+                            $Global->POST['Data']['AddressCity'] = $tblCitySchool->getCode().', '.$tblCitySchool->getName();
+                        }
+                    }
+
+                    $tblToPersonList = Phone::useService()->getPhoneAllByCompany($tblCompanySchool);
+                    $tblToPersonPhoneList = array();
+                    $tblToPersonFaxList = array();
+                    if ($tblToPersonList) {
+                        foreach ($tblToPersonList as $tblToPerson) {
+                            if ($tblType = $tblToPerson->getTblType()) {
+                                $TypeName = $tblType->getName();
+                                $TypeDescription = $tblType->getDescription();
+                                if (($TypeName == 'Privat' || $TypeName == 'Geschäftlich') && $TypeDescription == 'Festnetz') {
+                                    $tblToPersonPhoneList[] = $tblToPerson;
+                                }
+                                if ($TypeName == 'Fax') {
+                                    $tblToPersonFaxList[] = $tblToPerson;
+                                }
                             }
                         }
-
-                        $tblToPersonList = Phone::useService()->getPhoneAllByCompany($tblCompanySchool);
-                        $tblToPersonPhoneList = array();
-                        $tblToPersonFaxList = array();
-                        if ($tblToPersonList) {
-                            foreach ($tblToPersonList as $tblToPerson) {
-                                if ($tblType = $tblToPerson->getTblType()) {
-                                    $TypeName = $tblType->getName();
-                                    $TypeDescription = $tblType->getDescription();
-                                    if (($TypeName == 'Privat' || $TypeName == 'Geschäftlich') && $TypeDescription == 'Festnetz') {
-                                        $tblToPersonPhoneList[] = $tblToPerson;
-                                    }
-                                    if ($TypeName == 'Fax') {
-                                        $tblToPersonFaxList[] = $tblToPerson;
-                                    }
-                                }
+                        if (!empty($tblToPersonPhoneList)) {
+                            /** @var TblToPersonPhone $tblPersonToPhone */
+                            $tblPersonToPhone = current($tblToPersonPhoneList);
+                            $tblPhone = $tblPersonToPhone->getTblPhone();
+                            if ($tblPhone) {
+                                $Global->POST['Data']['Phone'] = $tblPhone->getNumber();
                             }
-                            if (!empty($tblToPersonPhoneList)) {
-                                /** @var TblToPersonPhone $tblPersonToPhone */
-                                $tblPersonToPhone = current($tblToPersonPhoneList);
-                                $tblPhone = $tblPersonToPhone->getTblPhone();
-                                if ($tblPhone) {
-                                    $Global->POST['Data']['Phone'] = $tblPhone->getNumber();
-                                }
-                            }
-                            if (!empty($tblToPersonFaxList)) {
-                                /** @var TblToPersonPhone $tblPersonToFax */
-                                $tblPersonToFax = current($tblToPersonFaxList);
-                                $tblPhoneFax = $tblPersonToFax->getTblPhone();
-                                if ($tblPhoneFax) {
-                                    $Global->POST['Data']['Fax'] = $tblPhoneFax->getNumber();
-                                }
+                        }
+                        if (!empty($tblToPersonFaxList)) {
+                            /** @var TblToPersonPhone $tblPersonToFax */
+                            $tblPersonToFax = current($tblToPersonFaxList);
+                            $tblPhoneFax = $tblPersonToFax->getTblPhone();
+                            if ($tblPhoneFax) {
+                                $Global->POST['Data']['Fax'] = $tblPhoneFax->getNumber();
                             }
                         }
                     }

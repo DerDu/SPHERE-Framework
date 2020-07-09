@@ -233,6 +233,13 @@ class Data extends AbstractData
             'TblCommonBirthDates');
     }
 
+    public function getViewPeopleMetaCommonAll()
+    {
+
+        return $this->getCachedEntityList(__METHOD__, $this->getConnection()->getEntityManager(),
+            'ViewPeopleMetaCommon');
+    }
+
     /**
      * @param TblCommonBirthDates $tblCommonBirthDates
      * @param string              $Birthday

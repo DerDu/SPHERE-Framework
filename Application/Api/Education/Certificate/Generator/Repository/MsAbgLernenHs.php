@@ -34,7 +34,7 @@ class MsAbgLernenHs extends Certificate
 
         $personId = $tblPerson ? $tblPerson->getId() : 0;
 
-        $Header = $this->getHead($this->isSample(), true, 'auto', '50px');
+        $Header = $this->getHead($this->isSample());
 
         // leere Seite
         $pageList[] = new Page();
@@ -192,16 +192,9 @@ class MsAbgLernenHs extends Certificate
                         für den Hauptschulbildungsgang der Oberschule unterrichtet. 
                     ')
                 )
-                ->addElement((new Element())
-                    ->setContent('{% if(Content.P' . $personId . '.Input.Remark is not empty) %}
-                        {{ Content.P' . $personId . '.Input.Remark|nl2br }}
-                    {% else %}
-                        &nbsp;
-                    {% endif %}')
-                )
-                ->styleHeight('200px')
                 ->styleMarginTop('15px')
             )
+            ->addSlice($this->getDescriptionContent($personId, '165px'))
             ->addSlice($this->getDateLine($personId))
             ->addSlice($this->getSignPart($personId, true, '30px'))
             ->addSlice($this->getInfo('220px',

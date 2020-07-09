@@ -49,9 +49,11 @@ class TblCommonBirthDates extends Element
     protected $tblCommonGender;
 
     /**
+     * @param string $format
+     *
      * @return string
      */
-    public function getBirthday()
+    public function getBirthday($format = 'd.m.Y')
     {
 
         if (null === $this->Birthday) {
@@ -60,7 +62,7 @@ class TblCommonBirthDates extends Element
         /** @var \DateTime $Birthday */
         $Birthday = $this->Birthday;
         if ($Birthday instanceof \DateTime) {
-            return $Birthday->format('d.m.Y');
+            return $Birthday->format($format);
         } else {
             return (string)$Birthday;
         }

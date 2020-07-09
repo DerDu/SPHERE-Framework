@@ -1,8 +1,16 @@
 SELECT
-    vPGM.TblMember_serviceTblPerson AS TblPerson_Id,
-    vPGM.TblGroup_Id AS TblGroup_Id,
-    vPGM.TblGroup_Name AS TblGroup_Name,
-    vPGM.TblGroup_Description AS TblGroup_Description,
-    vPGM.TblGroup_Remark AS TblGroup_Remark,
-    vPGM.TblGroup_MetaTable AS TblGroup_MetaTable
-FROM PeopleGroup_{{ ConsumerAcronym }}.viewPeopleGroupMember vPGM
+
+-- PersonId to match with all View's // tblMember
+    tM.serviceTblPerson AS TblPerson_Id,
+-- tblGroup
+    tG.Id AS TblGroup_Id,
+    tG.Name AS TblGroup_Name,
+    tG.Description AS TblGroup_Description,
+    tG.Remark AS TblGroup_Remark,
+    tG.MetaTable AS TblGroup_MetaTable
+
+FROM PeopleGroup_{{ ConsumerAcronym }}.tblMember tM
+    LEFT JOIN PeopleGroup_{{ ConsumerAcronym }}.tblGroup tG ON tG.Id = tM.TblGroup
+        AND tG.EntityRemove IS NULL
+
+WHERE tM.EntityRemove IS NULL

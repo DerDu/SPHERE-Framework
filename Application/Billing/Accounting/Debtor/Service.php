@@ -516,11 +516,18 @@ class Service extends AbstractService
         } else {
             $ToDate = new \DateTime($ToDate);
         }
+
         // nicht benötigte Informationen entfernen
-        if($tblPaymentType->getName() != 'SEPA-Lastschrift'){
-            $tblBankAccount = null;
-            $tblBankReference = null;
+        switch($tblPaymentType->getName()){
+            case 'Bar':
+                $tblBankAccount = null;
+                $tblBankReference = null;
+            break;
+            case 'SEPA-Überweisung':
+                $tblBankReference = null;
         }
+
+
         return (new Data($this->getBinding()))->updateDebtorSelection($tblDebtorSelection, $tblPerson, $tblPaymentType,
             $tblDebtorPeriodType, $FromDate, $ToDate, $tblItemVariant, $Value, $tblBankAccount, $tblBankReference);
     }

@@ -187,31 +187,56 @@ abstract class Data extends AbstractData
                     if (isset($MinimumGradeCount['Subjects'])) {
                         foreach ($MinimumGradeCount['Subjects'] as $subjectId => $subValue) {
                             if (($tblSubject = Subject::useService()->getSubjectById($subjectId))) {
-                                $Entity = new TblMinimumGradeCount();
-                                $Entity->setCount($MinimumGradeCount['Count']);
-                                $Entity->setServiceTblLevel($tblLevel);
-                                $Entity->setServiceTblSubject($tblSubject);
-                                $Entity->setTblGradeType($tblGradeType);
-                                $Entity->setPeriod($MinimumGradeCount['Period']);
-                                $Entity->setHighlighted($highlighted);
-                                $Entity->setCourse($MinimumGradeCount['Course']);
 
-                                $Manager->bulkSaveEntity($Entity);
-                                Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(), $Entity, true);
+                                $Entity = $Manager->getEntity('TblMinimumGradeCount')
+                                    ->findOneBy(array(
+                                        TblMinimumGradeCount::ATTR_SERVICE_TBL_LEVEL => $tblLevel->getId(),
+                                        TblMinimumGradeCount::ATTR_SERVICE_TBL_SUBJECT => $tblSubject ? $tblSubject->getId() : null,
+                                        TblMinimumGradeCount::ATTR_TBL_GRADE_TYPE => $tblGradeType ? $tblGradeType->getId() : null,
+                                        TblMinimumGradeCount::ATTR_PERIOD => $MinimumGradeCount['Period'],
+                                        TblMinimumGradeCount::ATTR_HIGHLIGHTED => $highlighted,
+                                        TblMinimumGradeCount::ATTR_COURSE => $MinimumGradeCount['Course']
+                                    ));
+
+                                if (null === $Entity) {
+                                    $Entity = new TblMinimumGradeCount();
+                                    $Entity->setCount($MinimumGradeCount['Count']);
+                                    $Entity->setServiceTblLevel($tblLevel);
+                                    $Entity->setServiceTblSubject($tblSubject ? $tblSubject : null);
+                                    $Entity->setTblGradeType($tblGradeType ? $tblGradeType : null);
+                                    $Entity->setPeriod($MinimumGradeCount['Period']);
+                                    $Entity->setHighlighted($highlighted);
+                                    $Entity->setCourse($MinimumGradeCount['Course']);
+
+                                    $Manager->bulkSaveEntity($Entity);
+                                    Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(), $Entity, true);
+                                }
                             }
                         }
                     } else {
-                        $Entity = new TblMinimumGradeCount();
-                        $Entity->setCount($MinimumGradeCount['Count']);
-                        $Entity->setServiceTblLevel($tblLevel);
-                        $Entity->setServiceTblSubject(null);
-                        $Entity->setTblGradeType($tblGradeType);
-                        $Entity->setPeriod($MinimumGradeCount['Period']);
-                        $Entity->setHighlighted($highlighted);
-                        $Entity->setCourse($MinimumGradeCount['Course']);
+                        $Entity = $Manager->getEntity('TblMinimumGradeCount')
+                            ->findOneBy(array(
+                                TblMinimumGradeCount::ATTR_SERVICE_TBL_LEVEL => $tblLevel->getId(),
+                                TblMinimumGradeCount::ATTR_SERVICE_TBL_SUBJECT => null,
+                                TblMinimumGradeCount::ATTR_TBL_GRADE_TYPE => $tblGradeType ? $tblGradeType->getId() : null,
+                                TblMinimumGradeCount::ATTR_PERIOD => $MinimumGradeCount['Period'],
+                                TblMinimumGradeCount::ATTR_HIGHLIGHTED => $highlighted,
+                                TblMinimumGradeCount::ATTR_COURSE => $MinimumGradeCount['Course']
+                            ));
 
-                        $Manager->bulkSaveEntity($Entity);
-                        Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(), $Entity, true);
+                        if (null === $Entity) {
+                            $Entity = new TblMinimumGradeCount();
+                            $Entity->setCount($MinimumGradeCount['Count']);
+                            $Entity->setServiceTblLevel($tblLevel);
+                            $Entity->setServiceTblSubject(null);
+                            $Entity->setTblGradeType($tblGradeType);
+                            $Entity->setPeriod($MinimumGradeCount['Period']);
+                            $Entity->setHighlighted($highlighted);
+                            $Entity->setCourse($MinimumGradeCount['Course']);
+
+                            $Manager->bulkSaveEntity($Entity);
+                            Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(), $Entity, true);
+                        }
                     }
                 }
             }

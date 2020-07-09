@@ -11,6 +11,7 @@ use SPHERE\Application\Document\Generator\Repository\Section;
 use SPHERE\Application\Document\Generator\Repository\Slice;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Setting\Consumer\Consumer;
+use SPHERE\Library\NumberToWord\NumberToWord;
 
 /**
  * Class DocumentWarning Mahnung
@@ -79,6 +80,63 @@ class DocumentWarning
     }
 
     /**
+     * @param $Text
+     * @param $InvoiceNumber
+     * @param $BillTime
+     * @param $BillName
+     * @param $TargetTime
+     * @param $ItemName
+     * @param $Count
+     * @param $Price
+     * @param $SummaryPrice
+     * @param $DebtorSalutation
+     * @param $DebtorFirstName
+     * @param $DebtorLastName
+     * @param $CauserSalutation
+     * @param $CauserFirstName
+     * @param $CauserLastName
+     * @param $Birthday
+     * @param $Date
+     * @param $Location
+     * @param $CompanyName
+     * @param $CompanyExtendedName
+     * @param $CompanyAddress
+     *
+     * @return mixed
+     */
+    private function setPlaceholders ($Text, $InvoiceNumber, $BillTime, $BillName, $TargetTime, $ItemName, $Count,
+        $Price, $SummaryPrice, $DebtorSalutation, $DebtorFirstName, $DebtorLastName, $CauserSalutation, $CauserFirstName,
+        $CauserLastName, $Birthday, $Date, $Location, $CompanyName, $CompanyExtendedName, $CompanyAddress)
+    {
+
+        $Text = str_replace('[Rechnungsnummer]', $InvoiceNumber, $Text);
+        $Text = str_replace('[Abrechnungszeitraum]', $BillTime, $Text);
+        $Text = str_replace('[Name der Abrechnung]', $BillName, $Text);
+        $Text = str_replace('[Fälligkeit]', $TargetTime, $Text);
+        $Text = str_replace('[Beitragsart]', $ItemName, $Text);
+        $Text = str_replace('[Anzahl]', $Count, $Text);
+        $Text = str_replace('[Einzelpreis]', $Price, $Text);
+        $Price2Word = NumberToWord::float2Text($Price, true);
+        $Text = str_replace('[Einzelpreis als Wort]', $Price2Word, $Text);
+        $Text = str_replace('[Gesamtpreis]', $SummaryPrice, $Text);
+        $SummaryPrice2Word = NumberToWord::float2Text($SummaryPrice, true);
+        $Text = str_replace('[Gesamtpreis als Wort]', $SummaryPrice2Word, $Text);
+        $Text = str_replace('[Beitragszahler Anrede]', $DebtorSalutation, $Text);
+        $Text = str_replace('[Beitragszahler Vorname]', $DebtorFirstName, $Text);
+        $Text = str_replace('[Beitragszahler Nachname]', $DebtorLastName, $Text);
+        $Text = str_replace('[Beitragsverursacher Anrede]', $CauserSalutation, $Text);
+        $Text = str_replace('[Beitragsverursacher Vorname]', $CauserFirstName, $Text);
+        $Text = str_replace('[Beitragsverursacher Nachname]', $CauserLastName, $Text);
+        $Text = str_replace('[Beitragsverursacher Geburtstag]', $Birthday, $Text);
+        $Text = str_replace('[Datum]', $Date, $Text);
+        $Text = str_replace('[Ort]', $Location, $Text);
+        $Text = str_replace('[Trägername]', $CompanyName, $Text);
+        $Text = str_replace('[Trägerzusatz]', $CompanyExtendedName, $Text);
+        $Text = str_replace('[Trägeradresse]', $CompanyAddress, $Text);
+        return $Text;
+    }
+
+    /**
      * @param TblPerson $tblPersonDebtor
      * @param TblPerson $tblPersonCauser
      *
@@ -141,47 +199,13 @@ class DocumentWarning
         $CauserLastName = $this->setEmptyString($CauserLastName);
         $Birthday = $this->setEmptyString($Birthday);
 
-        $Subject = str_replace('[Rechnungsnummer]', $InvoiceNumber, $Subject);
-        $Subject = str_replace('[Abrechnungszeitraum]', $BillTime, $Subject);
-        $Subject = str_replace('[Name der Abrechnung]', $BillName, $Subject);
-        $Subject = str_replace('[Fälligkeit]', $TargetTime, $Subject);
-        $Subject = str_replace('[Beitragsart]', $ItemName, $Subject);
-        $Subject = str_replace('[Anzahl]', $Count, $Subject);
-        $Subject = str_replace('[Einzelpreis]', $Price, $Subject);
-        $Subject = str_replace('[Gesamtpreis]', $SummaryPrice, $Subject);
-        $Subject = str_replace('[Beitragszahler Anrede]', $DebtorSalutation, $Subject);
-        $Subject = str_replace('[Beitragszahler Vorname]', $DebtorFirstName, $Subject);
-        $Subject = str_replace('[Beitragszahler Nachname]', $DebtorLastName, $Subject);
-        $Subject = str_replace('[Beitragsverursacher Anrede]', $CauserSalutation, $Subject);
-        $Subject = str_replace('[Beitragsverursacher Vorname]', $CauserFirstName, $Subject);
-        $Subject = str_replace('[Beitragsverursacher Nachname]', $CauserLastName, $Subject);
-        $Subject = str_replace('[Beitragsverursacher Geburtstag]', $Birthday, $Subject);
-        $Subject = str_replace('[Datum]', $Date, $Subject);
-        $Subject = str_replace('[Ort]', $Location, $Subject);
-        $Subject = str_replace('[Trägername]', $CompanyName, $Subject);
-        $Subject = str_replace('[Trägerzusatz]', $CompanyExtendedName, $Subject);
-        $Subject = str_replace('[Trägeradresse]', $CompanyAddress, $Subject);
+        $Subject = self::setPlaceholders($Subject, $InvoiceNumber, $BillTime, $BillName, $TargetTime, $ItemName,
+            $Count, $Price, $SummaryPrice, $DebtorSalutation, $DebtorFirstName, $DebtorLastName, $CauserSalutation,
+            $CauserFirstName, $CauserLastName, $Birthday, $Date, $Location, $CompanyName, $CompanyExtendedName, $CompanyAddress);
 
-        $Content = str_replace('[Rechnungsnummer]', $InvoiceNumber, $Content);
-        $Content = str_replace('[Abrechnungszeitraum]', $BillTime, $Content);
-        $Content = str_replace('[Name der Abrechnung]', $BillName, $Content);
-        $Content = str_replace('[Fälligkeit]', $TargetTime, $Content);
-        $Content = str_replace('[Beitragsart]', $ItemName, $Content);
-        $Content = str_replace('[Anzahl]', $Count, $Content);
-        $Content = str_replace('[Einzelpreis]', $Price, $Content);
-        $Content = str_replace('[Gesamtpreis]', $SummaryPrice, $Content);
-        $Content = str_replace('[Beitragszahler Anrede]', $DebtorSalutation, $Content);
-        $Content = str_replace('[Beitragszahler Vorname]', $DebtorFirstName, $Content);
-        $Content = str_replace('[Beitragszahler Nachname]', $DebtorLastName, $Content);
-        $Content = str_replace('[Beitragsverursacher Anrede]', $CauserSalutation, $Content);
-        $Content = str_replace('[Beitragsverursacher Vorname]', $CauserFirstName, $Content);
-        $Content = str_replace('[Beitragsverursacher Nachname]', $CauserLastName, $Content);
-        $Content = str_replace('[Beitragsverursacher Geburtstag]', $Birthday, $Content);
-        $Content = str_replace('[Datum]', $Date, $Content);
-        $Content = str_replace('[Ort]', $Location, $Content);
-        $Content = str_replace('[Trägername]', $CompanyName, $Content);
-        $Content = str_replace('[Trägerzusatz]', $CompanyExtendedName, $Content);
-        $Content = str_replace('[Trägeradresse]', $CompanyAddress, $Content);
+        $Content = self::setPlaceholders($Content, $InvoiceNumber, $BillTime, $BillName, $TargetTime, $ItemName,
+            $Count, $Price, $SummaryPrice, $DebtorSalutation, $DebtorFirstName, $DebtorLastName, $CauserSalutation,
+            $CauserFirstName, $CauserLastName, $Birthday, $Date, $Location, $CompanyName, $CompanyExtendedName, $CompanyAddress);
 
         return (new Page())
             ->addSlice($this->getHeaderSlice('150px'))

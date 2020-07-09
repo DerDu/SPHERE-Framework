@@ -1004,10 +1004,13 @@ class Data extends AbstractData
         if (null === $tblAccount) {
             $tblAccount = $this->getAccountBySession();
         }
-        $Manager = $this->getConnection()->getEntityManager();
-        /** @var TblAccount $Entity */
-        $Entity = $Manager->getEntityById('TblAccount', $tblAccount->getId());
+
+        $Entity = $this->getForceEntityById(__Method__, $this->getConnection()->getEntityManager(),
+            'TblAccount', $tblAccount->getId());
+
         $Protocol = clone $Entity;
+
+        $Manager = $this->getConnection()->getEntityManager();
         if (null !== $Entity) {
             $Entity->setServiceTblConsumer($tblConsumer);
             $Manager->saveEntity($Entity);
@@ -1111,6 +1114,22 @@ class Data extends AbstractData
     }
 
     /**
+     * @param TblConsumer       $tblConsumer
+     *
+     * @return bool|TblAccount[]
+     */
+    public function getAccountListByConumser(TblConsumer $tblConsumer)
+    {
+
+        $EntityList = $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(),
+            'TblAccount',
+            array(
+                TblAccount::SERVICE_TBL_CONSUMER => $tblConsumer->getId(),
+            ));
+        return (!empty($EntityList) ? $EntityList : false);
+    }
+
+    /**
      * @param TblAccount $tblAccount
      *
      * @return bool|TblUser[]
@@ -1179,5 +1198,55 @@ class Data extends AbstractData
     {
 
         return $this->getConnection()->getEntityManager()->getEntity('TblSession')->count();
+    }
+
+    /**
+     * @param TblAccount $tblAccount
+     * @param string     $userAlias
+     *
+     * @return bool
+     */
+    public function changeUserAlias(TblAccount $tblAccount, $userAlias)
+    {
+
+        if($userAlias === ''){
+            $userAlias = null;
+        } else {
+            // prüfen ob Alias eineindeutig ist
+            if (($tblAccountList = $this->getAccountAllByUserAlias($userAlias))) {
+                foreach ($tblAccountList as $item) {
+                    if ($tblAccount->getId() != $item->getId()) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        $Manager = $this->getConnection()->getEntityManager();
+        /**
+         * @var TblAccount $Protocol
+         * @var TblAccount $Entity
+         */
+        $Entity = $Manager->getEntityById('TblAccount', $tblAccount->getId());
+        $Protocol = clone $Entity;
+        if (null !== $Entity) {
+            $Entity->setUserAlias($userAlias);
+            $Manager->saveEntity($Entity);
+            Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(), $Protocol, $Entity);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param $userAlias
+     *
+     * @return false|TblAccount[]
+     */
+    public function getAccountAllByUserAlias($userAlias)
+    {
+        return $this->getForceEntityListBy(__METHOD__, $this->getEntityManager(), 'TblAccount', array(
+            TblAccount::ATTR_USER_ALIAS => $userAlias
+        ));
     }
 }

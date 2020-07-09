@@ -18,6 +18,9 @@ class TblType extends Element
     const ATTR_NAME = 'Name';
     const ATTR_DESCRIPTION = 'Description';
 
+    const VALUE_PRIVATE = 'Privat';
+    const VALUE_BUSINESS = 'Geschäftlich';
+
     /**
      * @Column(type="string")
      */

@@ -37,6 +37,7 @@ use SPHERE\Common\Frontend\Layout\Structure\LayoutRow;
 use SPHERE\Common\Frontend\Link\Repository\Standard;
 use SPHERE\Common\Frontend\Message\Repository\Danger;
 use SPHERE\Common\Frontend\Message\Repository\Success;
+use SPHERE\Common\Frontend\Message\Repository\Warning;
 use SPHERE\Common\Frontend\Text\Repository\Bold;
 use SPHERE\Common\Frontend\Text\Repository\Muted;
 use SPHERE\Common\Frontend\Text\Repository\Small;
@@ -402,25 +403,36 @@ class ApiMailToPerson extends Extension implements IApiInterface
             return new Danger('Die Person wurde nicht gefunden', new Exclamation());
         }
 
-        if (($form = Mail::useService()->checkFormMailToPerson($tblPerson, $Address, $Type))) {
+        $mailAddress = str_replace(' ', '', $Address['Mail']);
+        if (($form = Mail::useService()->checkFormMailToPerson($tblPerson, $mailAddress, $Type))) {
             // display Errors on form
             return $this->getMailToPersonModal($form, $tblPerson);
         }
+        $Alias = false;
+        if(isset($Address['Alias'])){
+            $Alias = true;
+        }
 
-        if (Mail::useService()->createMailToPerson($tblPerson, $Address, $Type)) {
+        $ErrorString = '';
+        if (Mail::useService()->createMailToPerson($tblPerson, $mailAddress, $Type, $Alias, $ErrorString)) {
+            if($ErrorString){
+                return new Success('Die E-Mail Adresse wurde erfolgreich gespeichert.')
+                    . new Warning($ErrorString)
+                    . self::pipelineLoadMailToPersonContent($PersonId);
+            }
             return new Success('Die E-Mail Adresse wurde erfolgreich gespeichert.')
                 . self::pipelineLoadMailToPersonContent($PersonId)
                 . self::pipelineClose();
         } else {
-            return new Danger('Die E-Mail Adresse konnte nicht gespeichert werden.') . self::pipelineClose();
+            return new Danger('Die E-Mail Adresse konnte nicht gespeichert werden.'); // . self::pipelineClose();
         }
     }
 
     /**
-     * @param $PersonId
-     * @param $ToPersonId
-     * @param $Address
-     * @param $Type
+     * @param      $PersonId
+     * @param      $ToPersonId
+     * @param      $Address
+     * @param      $Type
      *
      * @return Danger|string
      */
@@ -435,17 +447,28 @@ class ApiMailToPerson extends Extension implements IApiInterface
             return new Danger('Die E-Mail Adresse wurde nicht gefunden', new Exclamation());
         }
 
-        if (($form = Mail::useService()->checkFormMailToPerson($tblPerson, $Address, $Type, $tblToPerson))) {
+        $mailAddress = str_replace(' ', '', $Address['Mail']);
+        if (($form = Mail::useService()->checkFormMailToPerson($tblPerson, $mailAddress, $Type, $tblToPerson))) {
             // display Errors on form
             return $this->getMailToPersonModal($form, $tblPerson, $ToPersonId);
         }
+        $Alias = false;
+        if(isset($Address['Alias'])){
+            $Alias = true;
+        }
 
-        if (Mail::useService()->updateMailToPerson($tblToPerson, $Address, $Type)) {
+        $ErrorString = '';
+        if (Mail::useService()->updateMailToPerson($tblToPerson, $mailAddress, $Type, $Alias, $ErrorString)) {
+            if($ErrorString){
+                return new Success('Die E-Mail Adresse wurde erfolgreich gespeichert.')
+                    . new Warning($ErrorString)
+                    . self::pipelineLoadMailToPersonContent($PersonId);
+            }
             return new Success('Die E-Mail Adresse wurde erfolgreich gespeichert.')
                 . self::pipelineLoadMailToPersonContent($PersonId)
                 . self::pipelineClose();
         } else {
-            return new Danger('Die E-Mail Adresse konnte nicht gespeichert werden.') . self::pipelineClose();
+            return new Danger('Die E-Mail Adresse konnte nicht gespeichert werden.'); // . self::pipelineClose();
         }
     }
 

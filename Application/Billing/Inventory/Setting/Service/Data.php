@@ -51,6 +51,7 @@ class Data extends AbstractData
         }
         $this->createSetting(TblSetting::IDENT_DATEV_REMARK, '', TblSetting::TYPE_STRING, TblSetting::CATEGORY_DATEV);
         $this->createSetting(TblSetting::IDENT_FIBU_ACCOUNT, '', TblSetting::TYPE_STRING, TblSetting::CATEGORY_DATEV);
+        $this->createSetting(TblSetting::IDENT_FIBU_ACCOUNT_AS_DEBTOR, '0', TblSetting::TYPE_BOOLEAN, TblSetting::CATEGORY_DATEV);
         $this->createSetting(TblSetting::IDENT_FIBU_TO_ACCOUNT, '', TblSetting::TYPE_STRING, TblSetting::CATEGORY_DATEV);
         $this->createSetting(TblSetting::IDENT_CONSULT_NUMBER, '', TblSetting::TYPE_STRING, TblSetting::CATEGORY_DATEV);
         $this->createSetting(TblSetting::IDENT_CLIENT_NUMBER, '', TblSetting::TYPE_STRING, TblSetting::CATEGORY_DATEV);

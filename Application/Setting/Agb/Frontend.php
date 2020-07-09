@@ -268,7 +268,7 @@ class Frontend extends Extension implements IFrontendInterface
                         new DangerMessage('Die Allgemeinen Geschäftsbedingungen wurden abgelehnt.')
                     ),
                     new LayoutColumn(Account::useService()->destroySession(
-                            new Redirect('/Platform/Gatekeeper/Authentication', Redirect::TIMEOUT_WAIT)
+                            new Redirect('/Platform/Gatekeeper/Authentication', Redirect::TIMEOUT_SUCCESS)
                         ) . $this->getCleanLocalStorage())
                 ))
             )

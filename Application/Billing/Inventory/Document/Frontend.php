@@ -55,9 +55,9 @@ class Frontend extends Extension implements IFrontendInterface
      */
     public function frontendDocument()
     {
-        $Stage = new Stage('Belegdruck', 'Übersicht');
+        $Stage = new Stage('Bescheinigung', 'Übersicht');
 
-        $Stage->addButton((new Primary('Beleg hinzufügen', ApiDocument::getEndpoint(), new Plus()))
+        $Stage->addButton((new Primary('Bescheinigung hinzufügen', ApiDocument::getEndpoint(), new Plus()))
             ->ajaxPipelineOnClick(ApiDocument::pipelineOpenCreateDocumentModal()));
 
         $Stage->setContent(
@@ -102,7 +102,7 @@ class Frontend extends Extension implements IFrontendInterface
                             '/Billing/Inventory/Document/EditInformation',
                             new ListingTable(),
                             array('DocumentId' => $tblDocument->getId()),
-                            'Inhalt des Belegs bearbeiten'
+                            'Inhalt der Bescheinigung bearbeiten'
                         ))
                         .(new Standard(
                             '', '',
@@ -122,7 +122,7 @@ class Frontend extends Extension implements IFrontendInterface
                             '/Billing/Inventory/Document/EditInformation',
                             new ListingTable(),
                             array('DocumentId' => $tblDocument->getId()),
-                            'Inhalt des Belegs bearbeiten'
+                            'Inhalt der Bescheinigung bearbeiten'
                         ))
                         . (new Standard(
                             '',
@@ -153,7 +153,7 @@ class Frontend extends Extension implements IFrontendInterface
                 )
             );
         } else {
-            $content = new Warning('Es wurden noch keine Belege angelegt.', new Ban());
+            $content = new Warning('Es wurden noch keine Bescheinigung angelegt.', new Ban());
         }
 
         return $content;
@@ -206,10 +206,10 @@ class Frontend extends Extension implements IFrontendInterface
                 new FormRow(array(
                     new FormColumn(
                         new Panel(
-                            'Beleg',
+                            'Bescheinigung',
                             array(
-                                (new TextField('Data[Name]', 'Name des Belegs', 'Name'))->setRequired(),
-                                (new TextArea('Data[Description]', 'Beschreibung des Belegs', 'Beschreibung'))
+                                (new TextField('Data[Name]', 'Name der Bescheinigung', 'Name'))->setRequired(),
+                                (new TextArea('Data[Description]', 'Beschreibung der Bescheinigung', 'Beschreibung'))
                             ),
                             Panel::PANEL_TYPE_INFO
                         ), 12
@@ -237,13 +237,13 @@ class Frontend extends Extension implements IFrontendInterface
      */
     public function frontendEditDocumentInformation($DocumentId = null, $Data = null)
     {
-        $Stage = new Stage('Belegdruck', 'Inhalt bearbeiten');
+        $Stage = new Stage('Bescheinigung', 'Inhalt bearbeiten');
         $Stage->addButton(new Standard(
             'Zurück', '/Billing/Inventory/Document', new ChevronLeft()
         ));
 
         if (!($tblDocument = Document::useService()->getDocumentById($DocumentId))) {
-            return $Stage . new Danger('Der Beleg wurde nicht gefunden', new Exclamation())
+            return $Stage . new Danger('Die Bescheinigung wurde nicht gefunden', new Exclamation())
                 . new Redirect('/Billing/Inventory/Document', Redirect::TIMEOUT_ERROR);
         }
 
@@ -260,7 +260,7 @@ class Frontend extends Extension implements IFrontendInterface
         $form = new Form(new FormGroup(array(
             new FormRow(new FormColumn(array(
                 new TextField('Data[Subject]', 'z.B. Schulgeldbescheinigung für das Kalenderjahr [Jahr]', 'Betreff'),
-                new TextArea('Data[Content]', 'Inhalt des Belegs', 'Inhalt', null, 17)
+                new TextArea('Data[Content]', 'Inhalt der Bescheinigung', 'Inhalt', null, 17)
             )))
         )));
         $form->appendFormButton(new \SPHERE\Common\Frontend\Form\Repository\Button\Primary('Speichern', new Save()));
@@ -275,7 +275,7 @@ class Frontend extends Extension implements IFrontendInterface
             new LayoutRow(array(
                 new LayoutColumn(
                     new Panel(
-                        'Beleg',
+                        'Bescheinigung',
                         array(
                             $tblDocument->getName(),
                             $tblDocument->getDescription()
@@ -310,7 +310,9 @@ class Frontend extends Extension implements IFrontendInterface
                 '[Beitragsart]',
                 '[Anzahl]',
                 '[Einzelpreis]',
+                '[Einzelpreis als Wort]',
                 '[Gesamtpreis]',
+                '[Gesamtpreis als Wort]',
                 '[Beitragszahler Anrede]',
                 '[Beitragszahler Vorname]',
                 '[Beitragszahler Nachname]',
@@ -331,6 +333,7 @@ class Frontend extends Extension implements IFrontendInterface
             '[Zeitraum bis]',
             '[Beitragsart]',
             '[Beitragssumme]',
+            '[Beitragssumme als Wort]',
             '[Beitragszahler Anrede]',
             '[Beitragszahler Vorname]',
             '[Beitragszahler Nachname]',
@@ -338,6 +341,7 @@ class Frontend extends Extension implements IFrontendInterface
             '[Beitragsverursacher Vorname]',
             '[Beitragsverursacher Nachname]',
             '[Beitragsverursacher Geburtstag]',
+            '[Schülernummer]',
             '[Datum]',
             '[Ort]',
             '[Trägername]',

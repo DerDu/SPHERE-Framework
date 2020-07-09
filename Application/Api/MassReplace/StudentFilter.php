@@ -23,6 +23,7 @@ use SPHERE\Common\Frontend\Form\Structure\FormColumn;
 use SPHERE\Common\Frontend\Form\Structure\FormGroup;
 use SPHERE\Common\Frontend\Form\Structure\FormRow;
 use SPHERE\Common\Frontend\Icon\Repository\Info;
+use SPHERE\Common\Frontend\Icon\Repository\Save;
 use SPHERE\Common\Frontend\Layout\Repository\Panel;
 use SPHERE\Common\Frontend\Layout\Repository\Well;
 use SPHERE\Common\Frontend\Layout\Structure\Layout;
@@ -34,6 +35,7 @@ use SPHERE\Common\Frontend\Link\Repository\ToggleCheckbox;
 use SPHERE\Common\Frontend\Message\Repository\Danger;
 use SPHERE\Common\Frontend\Message\Repository\Warning;
 use SPHERE\Common\Frontend\Table\Structure\TableData;
+use SPHERE\Common\Frontend\Text\Repository\Bold;
 use SPHERE\Common\Frontend\Text\Repository\Danger as DangerText;
 use SPHERE\Common\Frontend\Text\Repository\Muted;
 use SPHERE\Common\Frontend\Text\Repository\Small;
@@ -167,7 +169,7 @@ class StudentFilter extends Extension
                             new FormGroup(array(
                                 new FormRow(array(
                                     new FormColumn(
-                                        new Panel('Weitere Personen:',
+                                        new Panel('Weitere Personen ('.new Bold(count($TableContent)).' nach Filterung):',
                                             (!empty($TableContent)
                                                 ? new ToggleCheckbox('Alle wählen/abwählen', $Table).$Table
                                                 : new Warning('Keine Personen gefunden '.
@@ -181,8 +183,7 @@ class StudentFilter extends Extension
                                 )),
                                 new FormRow(
                                     new FormColumn(
-                                        (new Primary('Ändern', ApiMassReplace::getEndpoint(),
-                                            null,
+                                        (new Primary('Speichern', ApiMassReplace::getEndpoint(), new Save(),
                                             $this->getGlobal()->POST))->ajaxPipelineOnClick(ApiMassReplace::pipelineSave($Field))
                                     )
                                 )
@@ -432,7 +433,7 @@ class StudentFilter extends Extension
                                 $DataPerson['Edit'] = new Muted('('.$tblSubject->getAcronym().') ').$tblSubject->getName();
                             }
                         }
-                        for ($i = 1; $i < 5; $i++){
+                        for ($i = 1; $i < 6; $i++){
                             if ($Label == $i . '. Fremdsprache'){
                                 $tblStudentSubjectType = Student::useService()->getStudentSubjectTypeByIdentifier('FOREIGN_LANGUAGE');
                                 $tblStudentSubjectRanking = Student::useService()->getStudentSubjectRankingByIdentifier($i);

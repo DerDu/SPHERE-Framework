@@ -236,19 +236,9 @@ class FrontendCommon extends FrontendReadOnly
      */
     public function getCommonFormRow($genderId = 0)
     {
-        $tblCommonBirthDatesAll = Common::useService()->getCommonBirthDatesAll();
-        $tblBirthplaceAll = array();
-        if ($tblCommonBirthDatesAll) {
-            array_walk($tblCommonBirthDatesAll,
-                function (TblCommonBirthDates &$tblCommonBirthDates) use (&$tblBirthplaceAll) {
 
-                    if ($tblCommonBirthDates->getBirthplace()) {
-                        if (!in_array($tblCommonBirthDates->getBirthplace(), $tblBirthplaceAll)) {
-                            array_push($tblBirthplaceAll, $tblCommonBirthDates->getBirthplace());
-                        }
-                    }
-                });
-        }
+        // get all existing City names (without deleted Person's)
+        $viewPeopleMetaCommonAll = Common::useService()->getViewPeopleMetaCommonAll();
 
         $tblCommonInformationAll = Common::useService()->getCommonInformationAll();
         $tblNationalityAll = array();
@@ -296,7 +286,7 @@ class FrontendCommon extends FrontendReadOnly
                     new DatePicker('Meta[BirthDates][Birthday]', 'Geburtstag', 'Geburtstag',
                         new Calendar()),
                     new AutoCompleter('Meta[BirthDates][Birthplace]', 'Geburtsort', 'Geburtsort',
-                        $tblBirthplaceAll,
+                        array('Birthplace' => $viewPeopleMetaCommonAll),
                         new MapMarker()),
                     $genderReceiver,
                 ), Panel::PANEL_TYPE_INFO),

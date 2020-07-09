@@ -9,17 +9,23 @@ use SPHERE\Application\Transfer\Import\Braeunsdorf\Braeunsdorf;
 use SPHERE\Application\Transfer\Import\Chemnitz\Chemnitz;
 use SPHERE\Application\Transfer\Import\Coswig\Coswig;
 use SPHERE\Application\Transfer\Import\Dresden\Dresden;
+use SPHERE\Application\Transfer\Import\EMSP\EMSP;
+use SPHERE\Application\Transfer\Import\EVMS\EVMS;
+use SPHERE\Application\Transfer\Import\FSE\FSE;
 use SPHERE\Application\Transfer\Import\FuxMedia\FuxSchool;
 use SPHERE\Application\Transfer\Import\Herrnhut\Herrnhut;
 use SPHERE\Application\Transfer\Import\Hormersdorf\Hormersdorf;
 use SPHERE\Application\Transfer\Import\LebensweltZwenkau\Zwenkau;
 use SPHERE\Application\Transfer\Import\Meerane\Meerane;
+use SPHERE\Application\Transfer\Import\MLS\MLS;
 use SPHERE\Application\Transfer\Import\Muldental\Muldental;
 use SPHERE\Application\Transfer\Import\Naundorf\Naundorf;
 use SPHERE\Application\Transfer\Import\Radebeul\Radebeul;
 use SPHERE\Application\Transfer\Import\Schneeberg\Schneeberg;
 use SPHERE\Application\Transfer\Import\Schulstiftung\Schulstiftung;
 use SPHERE\Application\Transfer\Import\Seelitz\Seelitz;
+use SPHERE\Application\Transfer\Import\Standard\ImportStandard;
+use SPHERE\Application\Transfer\Import\Standard\Mail\Mail;
 use SPHERE\Application\Transfer\Import\Tharandt\Tharandt;
 use SPHERE\Application\Transfer\Import\Zwickau\Zwickau;
 use SPHERE\Common\Frontend\Layout\Structure\Layout;
@@ -97,6 +103,20 @@ class Import implements IApplicationInterface
         if ($consumerAcronym === 'EVSB') {
             Braeunsdorf::registerModule();
         }
+        if ($consumerAcronym === 'EVMS') {
+            EVMS::registerModule();
+        }
+        if ($consumerAcronym === 'FSE') {
+            FSE::registerModule();
+        }
+        if ($consumerAcronym === 'EMSP') {
+            EMSP::registerModule();
+        }
+        if ($consumerAcronym === 'MLS') {
+            MLS::registerModule();
+        }
+        ImportStandard::registerModule();
+        Mail::registerModule();
 
         Main::getDisplay()->addApplicationNavigation(
             new Link(new Link\Route(__NAMESPACE__), new Link\Name('Daten importieren'))
@@ -141,10 +161,25 @@ class Import implements IApplicationInterface
         if ($consumerAcronym === 'EVSB') {
             $dataList = Braeunsdorf::setLinks($dataList);
         }
+        if ($consumerAcronym === 'EVMS') {
+            $dataList = EVMS::setLinks($dataList);
+        }
+        if ($consumerAcronym === 'FSE') {
+            $dataList = FSE::setLinks($dataList);
+        }
+        if ($consumerAcronym === 'EMSP') {
+            $dataList = EMSP::setLinks($dataList);
+        }
+        if ($consumerAcronym === 'MLS') {
+            $dataList = MLS::setLinks($dataList);
+        }
+
+        $dataList = Mail::setLinks($dataList);
 
         if(empty($dataList)){
             $Stage->setContent(
-                Main::getDispatcher()->fetchDashboard('Import')
+                new Layout(ImportStandard::getStandardLink())
+                .Main::getDispatcher()->fetchDashboard('Import')
             );
             return $Stage;
         }
@@ -167,6 +202,7 @@ class Import implements IApplicationInterface
 
         $Stage->setContent(
             new Layout(array(
+                ImportStandard::getStandardLink(),
                 new LayoutGroup(array(
                     new LayoutRow(array(
                         new LayoutColumn(array(

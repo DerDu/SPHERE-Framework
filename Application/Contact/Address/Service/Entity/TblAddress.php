@@ -149,19 +149,56 @@ class TblAddress extends Element
     }
 
     /**
+     * @param bool $Extended
+     *
      * @return string
      */
-    public function getGuiTwoRowString()
+    public function getGuiTwoRowString($Extended = true)
     {
 
         $Cache = $this->getCache(new MemcachedHandler());
         if (null === ($Return = $Cache->getValue($this->getId(), __METHOD__))) {
 
-            $Return = $this->getStreetName()
-                . ' ' . $this->getStreetNumber()
-                . ',<br>' . $this->getTblCity()->getCode()
-                . ' ' . $this->getTblCity()->getDisplayName()
-                . ($this->getLocation() ? ' (' . $this->getLocation() . ')' : '');
+            // 0 as Default
+            $Value = '0';
+            $tblSetting = Consumer::useService()->getSetting('Contact', 'Address', 'Address', 'Format_GuiString');
+            if ($tblSetting) {
+                $Value = $tblSetting->getValue();
+            }
+            switch ($Value) {
+                case $this::VALUE_PLZ_ORT_OT_STR_NR:
+                    $Return =
+                        $this->getTblCity()->getCode()
+                        .' '.$this->getTblCity()->getName()
+                        .($this->getTblCity()->getDisplayDistrict() !== '' ? ' '.($this->getTblCity()->getDisplayDistrict()) : '')
+                        .',<br>'.$this->getStreetName()
+                        .' '.$this->getStreetNumber()
+                        .($Extended
+                            ? ($this->getLocation() ? ' ('.$this->getLocation().')' : '')
+                            : ''
+                        );
+                    break;
+                case $this::VALUE_OT_STR_NR_PLZ_ORT:
+                    $Return =
+                        ($this->getTblCity()->getDisplayDistrict() !== '' ? ' '.($this->getTblCity()->getDisplayDistrict()) : '')
+                        .' '.$this->getStreetName()
+                        .' '.$this->getStreetNumber()
+                        .',<br>'.$this->getTblCity()->getCode()
+                        .' '.$this->getTblCity()->getName()
+                        .($Extended
+                            ? ($this->getLocation() ? ' ('.$this->getLocation().')' : '')
+                            : ''
+                        );
+                    break;
+                default:
+                    $Return =
+                        $this->getTblCity()->getCode()
+                        .' '.$this->getTblCity()->getName()
+                        .($this->getTblCity()->getDisplayDistrict() !== '' ? ' '.($this->getTblCity()->getDisplayDistrict()) : '')
+                        .',<br>'.$this->getStreetName()
+                        .' '.$this->getStreetNumber()
+                        .($this->getLocation() ? ' ('.$this->getLocation().')' : '');
+            }
 
             $Cache->setValue($this->getId(), $Return, 0, __METHOD__);
         }

@@ -332,8 +332,8 @@ class Service extends AbstractService
                                     $value = 'ne';
                                 } elseif ($value == 'teilgenommen') {
                                     $value = 't';
-                                } elseif ($value == 'Keine Benotung') {
-                                    $value = 'KB';
+                                } elseif ($value == 'Keine Benotung' || $value == 'keine Benotung') {
+                                    $value = 'kB';
                                 } elseif ($value == 'befreit') {
                                     $value = 'b';
                                 }
@@ -363,7 +363,6 @@ class Service extends AbstractService
 
                 $date = new \DateTime($tblPrepare->getDate());
                 $Data['Certificate'][$typeId]['Data' . $count]['CertificateDate'] = $date->format('d.m.y');
-                // ToDo weitere Versetzungsvermerke
                 $transferRemark = '&ndash;';
                 if (($tblPrepareInformation = Prepare::useService()->getPrepareInformationBy($tblPrepare, $tblPerson,
                     'Transfer'))
@@ -430,8 +429,8 @@ class Service extends AbstractService
                                 $value = 'ne';
                             } elseif ($value == 'teilgenommen') {
                                 $value = 't';
-                            } elseif ($value == 'Keine Benotung') {
-                                $value = 'KB';
+                            } elseif ($value == 'Keine Benotung' || $value == 'keine Benotung') {
+                                $value = 'kB';
                             } elseif ($value == 'befreit') {
                                 $value = 'b';
                             }

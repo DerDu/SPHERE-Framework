@@ -46,14 +46,14 @@ class F01
                 ->addElementColumn((new Element())
                     ->setContent('Förderschwerpunkt(e)')
                     ->styleBorderRight()
-                    ->stylePaddingTop('34.7px')
-                    ->stylePaddingBottom('34.7px'), '20%'
+                    ->stylePaddingTop('43.35px')
+                    ->stylePaddingBottom('43.35px'), '20%'
                 )
                 ->addElementColumn((new Element())
                     ->setContent('Klassenstufe')
                     ->styleBorderRight()
-                    ->stylePaddingTop('34.7px')
-                    ->stylePaddingBottom('34.7px'), '30%'
+                    ->stylePaddingTop('43.35px')
+                    ->stylePaddingBottom('43.35px'), '15%'
                 )
                 ->addSliceColumn((new Slice())
                     ->addSection((new Section())
@@ -61,8 +61,8 @@ class F01
                             ->setContent('Schüler')
                             ->styleBorderBottom()
                             ->styleBorderRight()
-                            ->stylePaddingTop('25.6px')
-                            ->stylePaddingBottom('25.6px'), '30%'
+                            ->stylePaddingTop('34.25px')
+                            ->stylePaddingBottom('34.25px'), '30%'
                         )
                     )
                     ->addSection((new Section())
@@ -74,7 +74,7 @@ class F01
                             ->setContent('w')
                             ->styleBorderRight(), '50%'
                         )
-                    ), '16.66%'
+                    ), '21.66%'
                 )
                 ->addSliceColumn((new Slice())
                     ->addSection((new Section())
@@ -84,12 +84,12 @@ class F01
                     )
                     ->addSection((new Section())
                         ->addElementColumn((new Element())
-                            ->setContent('Schüler mit<br/>Migrations-<br/>hintergrund')
+                            ->setContent('Schüler, deren<br/>Herkunftssprache nicht<br/>oder nicht ausschl.<br/>Deutsch ist')
                             ->styleBorderBottom()
                             ->styleBorderRight(), '50%'
                         )
                         ->addElementColumn((new Element())
-                            ->setContent('Schüler mit<br/>gutachterl.<br/>best. Autismus')
+                            ->setContent('Schüler mit<br/>gutachterl.<br/>best. Autismus<br/>&nbsp;')
                             ->styleBorderBottom(), '50%'
                         )
                     )
@@ -110,7 +110,7 @@ class F01
                             ->setContent('w'), '25%'
                         )
                     )
-                    , '33.34%'
+                    , '43.34%'
                 )
             );
 
@@ -166,7 +166,7 @@ class F01
                     ->styleBackgroundColor('lightgrey')
                     ->styleBorderRight()
                     ->addSectionList($lineSectionList)
-                    , '30%'
+                    , '15%'
                 );
 
             // Schüler
@@ -194,10 +194,11 @@ class F01
     }
 
     /**
-     * @param $section
+     * @param Section $section
      * @param $text
      * @param $identifier
      * @param $gender
+     * @param string $width
      */
     private static function setColumn(Section $section, $text, $identifier, $gender)
     {
@@ -250,7 +251,7 @@ class F01
             ->addSliceColumn((new Slice())
                 ->styleBorderRight()
                 ->addSectionList($lineSectionList)
-                , '8.333%'
+                , '10.833%'
             );
     }
 }

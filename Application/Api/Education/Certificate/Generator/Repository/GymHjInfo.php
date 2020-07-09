@@ -26,7 +26,7 @@ class GymHjInfo extends Certificate
 
         $personId = $tblPerson ? $tblPerson->getId() : 0;
 
-        $Header = $this->getHead($this->isSample(), true, 'auto', '50px');
+        $Header = $this->getHead($this->isSample());
 
         return (new Page())
             ->addSlice(
@@ -36,16 +36,17 @@ class GymHjInfo extends Certificate
             ->addSlice($this->getCertificateHead('Halbjahresinformation des Gymnasiums'))
             ->addSlice($this->getDivisionAndYear($personId, '20px', '1. Schulhalbjahr'))
             ->addSlice($this->getStudentName($personId))
-            ->addSlice($this->getGradeLanes($personId, '14px', false, '5px'))
+            ->addSlice($this->getGradeLanesSmall($personId, '14px', false, '5px'))
             ->addSlice((new Slice())
                 ->addElement((new Element())
                     ->setContent('Leistungen in den einzelnen Fächern:')
                     ->styleMarginTop('15px')
+                    ->styleMarginBottom('5px')
                     ->styleTextBold()
                 )
             )
-            ->addSlice($this->getSubjectLanes($personId, true, array('Lane' => 1, 'Rank' => 3))->styleHeight('270px'))
-            ->addSlice($this->getProfileStandardNew($personId))
+            ->addSlice($this->getSubjectLanesSmall($personId, true, array('Lane' => 1, 'Rank' => 3))->styleHeight('220px'))
+            ->addSlice($this->getProfileStandardNew($personId, '14px', false, true))
             ->addSlice($this->getDescriptionHead($personId, true))
             ->addSlice($this->getDescriptionContent($personId, '110px', '15px'))
             ->addSlice($this->getDateLine($personId))

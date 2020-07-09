@@ -126,6 +126,8 @@ class Setup extends AbstractSetup
         if (!$this->getConnection()->hasColumn('tblDivision', 'serviceTblYear')) {
             $Table->addColumn('serviceTblYear', 'bigint', array('notnull' => false));
         }
+        $this->createColumn($Table, 'serviceTblCompany', self::FIELD_TYPE_BIGINT, true);
+
         $this->getConnection()->addForeignKey($Table, $tblLevel);
         return $Table;
     }

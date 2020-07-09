@@ -55,6 +55,8 @@ class KamenzReportGym extends AbstractDocument
                 ->addSliceArray(E01::getContent())
                 ->addSliceArray(E02::getContent())
                 ->addSliceArray(E02_1::getContent())
+            )
+            ->addPage((new Page())
                 ->addSliceArray(E03::getContent())
             )
             ->addPage((new Page())

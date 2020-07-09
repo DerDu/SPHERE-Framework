@@ -269,10 +269,11 @@ class Frontend extends Extension implements IFrontendInterface
                             'CauserPerson'  => 'Beitragsverursacher',
                             'DebtorPerson'  => 'Beitragszahler',
                             'Item'          => 'Beitragsart',
+                            'PaymentType'   => 'Zahlungsart',
                             'ItemQuantity'  => 'Anzahl',
                             'ItemPrice'     => 'Einzelpreis',
                             'ItemSumPrice'  => 'Gesamtpreis',
-                            'IsPaid'        => 'Offene Posten'
+                            'IsPaid'        => 'Offene&nbsp;Posten'
                         ), array(
                             'columnDefs' => array(
                                 array('type' => 'natural', 'targets' => array(0, 6, 7, 8)),

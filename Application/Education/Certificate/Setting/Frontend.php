@@ -23,6 +23,7 @@ use SPHERE\Common\Frontend\Icon\Repository\ChevronLeft;
 use SPHERE\Common\Frontend\Icon\Repository\Document;
 use SPHERE\Common\Frontend\Icon\Repository\Edit;
 use SPHERE\Common\Frontend\Icon\Repository\Exclamation;
+use SPHERE\Common\Frontend\Icon\Repository\Ok;
 use SPHERE\Common\Frontend\Icon\Repository\Save;
 use SPHERE\Common\Frontend\Icon\Repository\Select;
 use SPHERE\Common\Frontend\Icon\Repository\Star;
@@ -35,6 +36,7 @@ use SPHERE\Common\Frontend\Layout\Structure\LayoutColumn;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutGroup;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutRow;
 use SPHERE\Common\Frontend\Link\Repository\Standard;
+use SPHERE\Common\Frontend\Link\Repository\Success as SuccessLink;
 use SPHERE\Common\Frontend\Message\Repository\Danger;
 use SPHERE\Common\Frontend\Table\Structure\TableData;
 use SPHERE\Common\Frontend\Text\Repository\Muted;
@@ -107,6 +109,91 @@ class Frontend extends Extension implements IFrontendInterface
                     . new Well(Generator::useService()->updateCertificateReferenceForLanguages($form, $tblCertificate, $Data))
                 );
 
+            } elseif(preg_match('!Berufsfachschule!', $tblCertificate->getName())) {
+
+                // Fach-Noten-Definition
+                $tblSubjectAll = Subject::useService()->getSubjectAll();
+                // Erstmal bis 20
+                $haveToAcrossSubject = 4; // (4 * 2) = 8 Fächer (3 Zusatzplatzhalter füü z.B. Religion auf der rechten Seite)
+                $haveToBaseSubject = 12; // (8 * 2) = 16 LF (14 Ist Standard, 15 passen auf das Zeugnis)
+                $chosenSubject = 14; // (2 * 2) = 4 Wahlfächer (3 Wahlfächer passen auf das Zeugnis)
+                $praktSubject = 15; // (2 * 2) = 4 Berufspraktische Ausbildung (1 Fach)
+
+                // Berufsübergreifende Pflichtfächer
+                $SubjectLaneAcrossLeft = array();
+                $SubjectLaneAcrossRight = array();
+                for ($Run = 1; $Run <= $haveToAcrossSubject; $Run++) {
+                    array_push($SubjectLaneAcrossLeft,
+                        $this->getSubject($tblCertificate, $tblSubjectAll, 1, $Run,
+                            ($Run == 1 ? 'Linke Zeugnis-Spalte' : ''))
+                    );
+                    array_push($SubjectLaneAcrossRight,
+                        $this->getSubject($tblCertificate, $tblSubjectAll, 2, $Run,
+                            ($Run == 1 ? 'Rechte Zeugnis-Spalte' : ''))
+                    );
+                }
+                // Berufsbezogene Pflichtfächer
+                $SubjectLaneBaseLeft = array();
+                $SubjectLaneBaseRight = array();
+                $countLF = 1;
+                for ($Run = ($haveToAcrossSubject + 1); $Run <= $haveToBaseSubject; $Run++) {
+                    array_push($SubjectLaneBaseLeft,
+                        $this->getSubject($tblCertificate, $tblSubjectAll, 1, $Run, '', 'Subject', 'LF'.$countLF++)
+                    );
+                    array_push($SubjectLaneBaseRight,
+                        $this->getSubject($tblCertificate, $tblSubjectAll, 2, $Run, '', 'Subject', 'LF'.$countLF++)
+                    );
+                }
+                // Wahlfächer
+                $SubjectLaneChosenLeft = array();
+                $SubjectLaneChosenRight = array();
+                for ($Run = ($haveToBaseSubject + 1); $Run <= $chosenSubject; $Run++) {
+                    array_push($SubjectLaneChosenLeft,
+                        $this->getSubject($tblCertificate, $tblSubjectAll, 1, $Run)
+                    );
+                    array_push($SubjectLaneChosenRight,
+                        $this->getSubject($tblCertificate, $tblSubjectAll, 2, $Run)
+                    );
+                }
+                // Wahlfächer
+                $SubjectPrakt = array();
+                for ($Run = ($chosenSubject + 1); $Run <= $praktSubject; $Run++) {
+                    array_push($SubjectPrakt,
+                        $this->getSubject($tblCertificate, $tblSubjectAll, 1, $Run)
+                    );
+                }
+
+
+                $Stage->setContent(
+                    new Panel('Zeugnisvorlage', array($tblCertificate->getName(), $tblCertificate->getDescription()),
+                        Panel::PANEL_TYPE_INFO)
+                    . Generator::useService()->createCertificateSetting(
+                        new Form(array(
+                            new FormGroup(array(
+                                new FormRow(array(
+                                    new FormColumn($SubjectLaneAcrossLeft, 6),
+                                    new FormColumn($SubjectLaneAcrossRight, 6),
+                                )),
+                            ), new FormTitle('Pflicht Berufsübergreifender Bereich')),
+                            new FormGroup(array(
+                                new FormRow(array(
+                                    new FormColumn($SubjectLaneBaseLeft, 6),
+                                    new FormColumn($SubjectLaneBaseRight, 6),
+                                )),
+                            ), new FormTitle('Pflicht Berufsbezogener Bereich (LF Sortiert auf dem Zeugnis untereinander)')),
+                            new FormGroup(array(
+                                new FormRow(array(
+                                    new FormColumn($SubjectLaneChosenLeft, 6),
+                                    new FormColumn($SubjectLaneChosenRight, 6),
+                                )),
+                            ), new FormTitle('Wahlpflichtbereich (Reihenfolge Links -> Rechts)')),
+                            new FormGroup(array(
+                                new FormRow(array(
+                                    new FormColumn($SubjectPrakt, 6)
+                                )),
+                            ), new FormTitle('Berufspraktische Ausbildung')),
+                        ), new Primary('Speichern')), $tblCertificate, $Grade, $Subject)
+                );
             } else {
 
                 // Kopf-Noten-Definition
@@ -185,6 +272,7 @@ class Frontend extends Extension implements IFrontendInterface
      * @param int            $LaneRanking [1..n]
      * @param string         $LaneTitle
      * @param string         $FieldName
+     * @param string         $PreFach
      *
      * @return Panel
      */
@@ -194,7 +282,8 @@ class Frontend extends Extension implements IFrontendInterface
         $LaneIndex,
         $LaneRanking,
         $LaneTitle = '',
-        $FieldName = 'Subject'
+        $FieldName = 'Subject',
+        $PreFach = ''
     ) {
 
         $Global = $this->getGlobal();
@@ -208,11 +297,6 @@ class Frontend extends Extension implements IFrontendInterface
                         ? $tblCertificateSubject->getServiceTblSubject()->getId()
                         : 0
                     );
-//                $Global->POST[$FieldName][$LaneIndex][$LaneRanking]['Liberation'] =
-//                    ( $tblCertificateSubject->getServiceTblStudentLiberationCategory()
-//                        ? $tblCertificateSubject->getServiceTblStudentLiberationCategory()->getId()
-//                        : 0
-//                    );
                 $Global->POST[$FieldName][$LaneIndex][$LaneRanking]['IsEssential'] =
                     ( $tblCertificateSubject->isEssential()
                         ? 1
@@ -222,17 +306,12 @@ class Frontend extends Extension implements IFrontendInterface
             $Global->savePost();
         }
 
-//        $tblStudentLiberationCategoryAll = Student::useService()->getStudentLiberationCategoryAll();
-
         return new Panel($LaneTitle, array(
-            new SelectBox($FieldName.'['.$LaneIndex.']['.$LaneRanking.'][Subject]', 'Fach',
+            new SelectBox($FieldName.'['.$LaneIndex.']['.$LaneRanking.'][Subject]', ($PreFach? $PreFach.' ' : '').'Fach',
                 array('{{ Acronym }} - {{ Name }}' => $tblSubjectAll)
             ),
             new CheckBox($FieldName.'['.$LaneIndex.']['.$LaneRanking.'][IsEssential]',
                 'Muss immer ausgewiesen werden', 1),
-//            new SelectBox($FieldName.'['.$LaneIndex.']['.$LaneRanking.'][Liberation]', 'Befreiung',
-//                array('{{ Name }}' => $tblStudentLiberationCategoryAll)
-//            ),
         ));
     }
 
@@ -286,11 +365,12 @@ class Frontend extends Extension implements IFrontendInterface
 
         // Find Certificate-Templates
         $tblConsumer = Consumer::useService()->getConsumerBySession();
-        if ($tblConsumer && $tblConsumer->getAcronym() == 'DEMO') {
-            $tblTemplateAll = Generator::useService()->getTemplateAll();
-        } else {
-            $tblTemplateAll = Generator::useService()->getTemplateAllByConsumer();
-        }
+//        if ($tblConsumer && $tblConsumer->getAcronym() == 'DEMO') {
+//            $tblTemplateAll = Generator::useService()->getTemplateAll();
+//        } else {
+        // holt alle ohne Mandant
+        $tblTemplateAll = Generator::useService()->getTemplateAllByConsumer(null);
+//        }
         if ($tblConsumer) {
             if (!$tblTemplateAll){
                 $tblTemplateAll = array();
@@ -399,6 +479,60 @@ class Frontend extends Extension implements IFrontendInterface
         return $Stage;
     }
 
+    public function frontendImplement()
+    {
+
+        $Stage = new Stage('Einstellungen', 'Zeugnisvorlagen installieren');
+        $Stage = self::setSettingMenue($Stage, '');
+
+        $Stage->setContent(
+            new Layout(
+                new LayoutGroup(array(
+                    new LayoutRow(array(
+                        new LayoutColumn(new Title('Auswahl'))
+                    )),
+                    new LayoutRow(array(
+                        new LayoutColumn(
+                            $this->getCertificateInstallButton(TblCertificate::CERTIFICATE_TYPE_PRIMARY, 'Zeugnisse Grundschule', 'GsJa')
+                            .$this->getCertificateInstallButton(TblCertificate::CERTIFICATE_TYPE_SECONDARY, 'Zeugnisse Oberschule', 'MsJ')
+                            .$this->getCertificateInstallButton(TblCertificate::CERTIFICATE_TYPE_GYM, 'Zeugnisse Gymnasium', 'GymJ')
+                            .$this->getCertificateInstallButton(TblCertificate::CERTIFICATE_TYPE_BERUFSFACHSCHULE, 'Zeugnisse Berufsfachschule', 'BfsHj')
+                        )
+                    ))
+                ))
+            )
+        );
+
+        return $Stage;
+    }
+
+    /**
+     * @param string $Type
+     * @param string $Name
+     * @param string $CertificateClass
+     *
+     * @return Standard|SuccessLink
+     */
+    private function getCertificateInstallButton($Type, $Name, $CertificateClass)
+    {
+
+        $Button = new Standard($Name, '/Education/Certificate/Setting/ImplementCertificate',
+            new Save(), array('Type' => $Type));
+        // Installation schon vorhanden? Test an einem Zeugnis
+        if(Generator::useService()->getCertificateByCertificateClassName($CertificateClass)){
+            $Button = new SuccessLink($Name,'/Education/Certificate/Setting/ImplementCertificate',
+                new Ok(), array('Type' => $Type),
+                'Erneut Installieren (eventuell fehlende/neue ergänzen)');
+        }
+        return $Button;
+    }
+
+    public function frontendImplementCertificate($Type = '')
+    {
+
+        return Generator::useService()->insertCertificate($Type);
+    }
+
     public function frontendDashboard()
     {
 
@@ -426,6 +560,11 @@ class Frontend extends Extension implements IFrontendInterface
         $Stage->addButton(new Standard($Route == 'Approval' ? new Edit() . ' ' . $text : $text,
             '/Education/Certificate/Setting/Approval', null, null,
             'Automatische Freigaben setzen'));
+
+        $text = 'Zeugnisvorlagen installieren';
+        $Stage->addButton(new Standard($Route == 'Implement' ? new Edit() . ' ' . $text : $text,
+            '/Education/Certificate/Setting/Implement', null, null,
+            'Standardzeugnisse hinzufügen'));
 
         return $Stage;
     }

@@ -30,7 +30,9 @@ use SPHERE\Application\People\Group\Service\Entity\TblGroup;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Account\Account;
 use SPHERE\Common\Frontend\Form\IFormInterface;
+use SPHERE\Common\Frontend\Message\Repository\Success;
 use SPHERE\Common\Frontend\Text\Repository\Bold;
+use SPHERE\Common\Window\Redirect;
 use SPHERE\System\Database\Binding\AbstractService;
 
 /**
@@ -259,13 +261,15 @@ class Service extends AbstractService
      * @param TblDivision|null    $tblDivision
      * @param TblType|null        $tblType
      * @param TblDebtorPeriodType $tblDebtorPeriodType
+     * @param string              $FibuAccount
+     * @param string              $FibuToAccount
      *
      * @return TblBasket
      * @throws \Exception
      */
     public function createBasket($Name = '', $Description = '', $Year = '', $Month = '', $TargetTime = '', $BillTime = '',
         TblBasketType $tblBasketType = null, $CreditorId = '', TblDivision $tblDivision = null, TblType $tblType = null,
-        TblDebtorPeriodType $tblDebtorPeriodType = null)
+        TblDebtorPeriodType $tblDebtorPeriodType = null, $FibuAccount = '', $FibuToAccount = '')
     {
 
         if($TargetTime){
@@ -289,7 +293,7 @@ class Service extends AbstractService
             $tblCreditor = null;
         }
         return (new Data($this->getBinding()))->createBasket($Name, $Description, $Year, $Month, $TargetTime, $BillTime,
-            $tblBasketType, $tblCreditor, $tblDivision, $tblType, $tblDebtorPeriodType);
+            $tblBasketType, $tblCreditor, $tblDivision, $tblType, $tblDebtorPeriodType, $FibuAccount, $FibuToAccount);
     }
 
     /**
@@ -334,12 +338,58 @@ class Service extends AbstractService
             foreach($tblGroupList as $tblGroup) {
                 if($tblPersonFromGroup = Group::useService()->getPersonAllByGroup($tblGroup)){
                     foreach($tblPersonFromGroup as $tblPersonFrom) {
-                        $tblPersonList[] = $tblPersonFrom;
+                        $tblPersonList[$tblPersonFrom->getId()] = $tblPersonFrom;
                     }
                 }
             }
         }
         return (!empty($tblPersonList) ? $tblPersonList : false);
+    }
+
+    /**
+     * @param $BasketId
+     *
+     * @return float
+     */
+    public function getItemAllSummery($BasketId)
+    {
+
+        $Summary = 0;
+        if(($tblBasket = Basket::useService()->getBasketById($BasketId))){
+            if(($tblBasketVerificationList = Basket::useService()->getBasketVerificationAllByBasket($tblBasket))){
+                foreach($tblBasketVerificationList as $tblBasketVerification){#
+                    if(($ItemSum = $tblBasketVerification->getValue() * $tblBasketVerification->getQuantity())){
+                        $Summary += $ItemSum;
+                    }
+                }
+            }
+        }
+
+        return number_format($Summary, 2, ',', '.');
+    }
+
+    /**
+     * @param TblBasket          $tblBasket
+     * @param TblDebtorSelection $tblDebtorSelection
+     * @param float              $Value
+     *
+     * @return TblBasketVerification
+     */
+    public function createBasketVerification(TblBasket $tblBasket, TblDebtorSelection $tblDebtorSelection, $Value = 0.00)
+    {
+
+        $tblItem = $tblDebtorSelection->getServiceTblItem();
+        $tblPersonCauser = $tblDebtorSelection->getServiceTblPersonCauser();
+        $tblPersonDebtor = $tblDebtorSelection->getServiceTblPersonDebtor();
+        if(!($tblBankAccount = $tblDebtorSelection->getTblBankAccount())){
+            $tblBankAccount = null;
+        }
+        if(!($tblBankReference = $tblDebtorSelection->getTblBankReference())){
+            $tblBankReference = null;
+        }
+        $tblPaymentType = $tblDebtorSelection->getServiceTblPaymentType();
+        return (new Data($this->getBinding()))->createBasketVerification($tblBasket, $tblItem, $Value, $tblPersonCauser
+            , $tblPersonDebtor, null, $tblBankAccount, $tblBankReference, $tblPaymentType, $tblDebtorSelection);
     }
 
     /**
@@ -412,10 +462,10 @@ class Service extends AbstractService
                             $Item['Causer'] = $tblDebtorSelection->getServiceTblPersonCauser()->getId();
                         }
                         // entfernen aller DebtorSelection zu welchen es schon in der aktuellen Rechnungsphase Rechnungen gibt.
-                        if(Invoice::useService()->getInvoiceByPersonCauserAndItemAndYearAndMonth($tblPerson, $tblItem,
+                        if(Invoice::useService()->getInvoiceByPersonCauserAndItemAndYearAndMonth($tblBasket, $tblPerson, $tblItem,
                             $tblBasket->getYear(), $tblBasket->getMonth())){
                             // vorhandene Rechnung -> keine Zahlungszuweisung erstellen!
-                            $PersonExclude[$tblPerson->getId()][] = 'Rechnung für '.$tblItem->getName().' diesen Monat
+                            $PersonExclude[$tblPerson->getId()][] = ' Rechnung für '.$tblItem->getName().' diesen Monat
                             ('.$tblBasket->getMonth(true).'.'.$tblBasket->getYear().') bereits erstellt';
                             continue;
                         }
@@ -479,7 +529,7 @@ class Service extends AbstractService
                 } else {
                     $Error = false;
                     // entfernen aller DebtorSelection zu welchen es schon in der aktuellen Rechnungsphase Rechnungen gibt.
-                    if(Invoice::useService()->getInvoiceByPersonCauserAndItemAndYearAndMonth($tblPerson, $tblItem,
+                    if(Invoice::useService()->getInvoiceByPersonCauserAndItemAndYearAndMonth($tblBasket, $tblPerson, $tblItem,
                         $tblBasket->getYear(), $tblBasket->getMonth())){
                         // vorhandene Rechnung -> keine Zahlungszuweisung erstellen!
                         $Error = true;
@@ -576,10 +626,13 @@ class Service extends AbstractService
      * @param string    $TargetTime
      * @param string    $BillTime
      * @param string    $CreditorId
+     * @param string    $FibuAccount
+     * @param string    $FibuToAccount
      *
      * @return IFormInterface|string
      */
-    public function changeBasket(TblBasket $tblBasket, $Name, $Description, $TargetTime, $BillTime, $CreditorId = '')
+    public function changeBasket(TblBasket $tblBasket, $Name, $Description, $TargetTime, $BillTime, $CreditorId = '',
+        $FibuAccount = '', $FibuToAccount = '')
     {
 
         // String to DateTime object
@@ -599,7 +652,8 @@ class Service extends AbstractService
             $tblCreditor = null;
         }
 
-        return (new Data($this->getBinding()))->updateBasket($tblBasket, $Name, $Description, $TargetTime, $BillTime, $tblCreditor);
+        return (new Data($this->getBinding()))->updateBasket($tblBasket, $Name, $Description, $TargetTime, $BillTime,
+            $tblCreditor, $FibuAccount, $FibuToAccount);
     }
 
     /**
@@ -680,6 +734,18 @@ class Service extends AbstractService
 
     /**
      * @param TblBasketVerification $tblBasketVerification
+     * @param string                $Price
+     *
+     * @return bool
+     */
+    public function changeBasketVerificationInPrice(TblBasketVerification $tblBasketVerification, $Price)
+    {
+
+        return (new Data($this->getBinding()))->changeBasketVerificationInPrice($tblBasketVerification, $Price);
+    }
+
+    /**
+     * @param TblBasketVerification $tblBasketVerification
      * @param TblDebtorSelection    $tblDebtorSelection
      *
      * @return bool
@@ -713,9 +779,44 @@ class Service extends AbstractService
 
     ){
 
+        // nicht benötigte Informationen entfernen
+        switch($tblPaymentType->getName()){
+            case 'Bar':
+                $tblBankAccount = null;
+                $tblBankReference = null;
+                break;
+            case 'SEPA-Überweisung':
+                $tblBankReference = null;
+        }
+
         $Value = str_replace(',', '.', $Value);
         return (new Data($this->getBinding()))->updateBasketVerificationDebtor($tblBasketVerification, $tblPersonDebtor,
             $tblPaymentType, $Value, $tblItemVariant, $tblBankAccount, $tblBankReference);
+    }
+
+    /**
+     * @param IFormInterface $Form
+     * @param TblBasket      $tblBasket
+     * @param array|null     $VerificationList
+     *
+     * @return string
+     */
+    public function removeBasketVerificationList(IFormInterface $Form, TblBasket $tblBasket, $VerificationList = null)
+    {
+
+        /**
+         * Skip to Frontend
+         */
+        if (null === $VerificationList){
+            return $Form;
+        }
+
+        foreach ($VerificationList as $VerificationId) {
+            $tblBasketVerifivation = Basket::useService()->getBasketVerificationById($VerificationId);
+            Basket::useService()->destroyBasketVerification($tblBasketVerifivation);
+        }
+        return new Success('Zahlungen wurden erfolgreich entfernt.')
+            .new Redirect('/Billing/Bookkeeping/Basket/View', Redirect::TIMEOUT_SUCCESS, array('BasketId' => $tblBasket->getId()));
     }
 
     /**

@@ -120,6 +120,18 @@ class LegalNotice implements IClusterInterface, IApplicationInterface, IModuleIn
                         'Kontakt:'
                     )
                 ),
+                new LayoutGroup(
+                    new LayoutRow(
+                        new LayoutColumn(array(
+                            new Listing(array(
+                                'Bitte wenden Sie sich für den Support der Schulsoftware direkt an die entsprechenden
+                                Ansprechpartner in Ihrer Schule.',
+                            )),
+                        ))
+                    ), new Title(
+                        'Support:'
+                    )
+                ),
             ))
         );
         return $Stage;

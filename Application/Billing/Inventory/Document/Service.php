@@ -121,7 +121,7 @@ class Service extends AbstractService
         $error = false;
         $form = Document::useFrontend()->formDocument($tblDocument ? $tblDocument->getId() : null);
         if (isset($Data['Name']) && empty($Data['Name'])) {
-            $form->setError('Data[Name]', 'Bitte geben Sie einen Name für den Beleg an');
+            $form->setError('Data[Name]', 'Bitte geben Sie einen Name für die Bescheinigung an');
             $error = true;
         } else {
             $form->setSuccess('Data[Name]');
@@ -242,7 +242,7 @@ class Service extends AbstractService
             }
         }
 
-        return new Success('Der Beleginhalt wurde gespeichert', new \SPHERE\Common\Frontend\Icon\Repository\Success())
+        return new Success('Der Bescheinigungsinhalt wurde gespeichert', new \SPHERE\Common\Frontend\Icon\Repository\Success())
             . new Redirect('/Billing/Inventory/Document', Redirect::TIMEOUT_SUCCESS);
     }
 }

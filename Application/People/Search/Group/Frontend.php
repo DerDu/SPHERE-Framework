@@ -1,26 +1,18 @@
 <?php
 namespace SPHERE\Application\People\Search\Group;
 
-use SPHERE\Application\Api\Education\Division\ValidationFilter;
-use SPHERE\Application\Contact\Address\Service\Entity\TblAddress;
-use SPHERE\Application\Contact\Address\Service\Entity\TblToPerson;
-use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivision;
-use SPHERE\Application\Education\Lesson\Division\Service\Entity\TblDivisionStudent;
 use SPHERE\Application\Education\Lesson\Term\Term;
 use SPHERE\Application\People\Group\Service\Entity\TblGroup;
-use SPHERE\Application\People\Group\Service\Entity\TblMember;
-use SPHERE\Application\People\Meta\Common\Common;
-use SPHERE\Application\People\Meta\Prospect\Prospect;
-use SPHERE\Application\People\Meta\Prospect\Service\Entity\TblProspect;
-use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudent;
 use SPHERE\Application\People\Meta\Student\Student;
-use SPHERE\Application\People\Person\Service\Entity\TblPerson;
+use SPHERE\Application\People\Person\Person;
 use SPHERE\Application\People\Relationship\Relationship;
+use SPHERE\Application\People\Relationship\Service\Entity\TblType;
 use SPHERE\Application\Platform\Gatekeeper\Authorization\Consumer\Consumer;
+use SPHERE\Application\Reporting\Individual\Individual;
 use SPHERE\Application\Setting\Consumer\Consumer as ConsumerSetting;
 use SPHERE\Common\Frontend\Icon\Repository\ChevronLeft;
 use SPHERE\Common\Frontend\Icon\Repository\Edit;
-use SPHERE\Common\Frontend\Icon\Repository\Person;
+use SPHERE\Common\Frontend\Icon\Repository\Person as PersonIcon;
 use SPHERE\Common\Frontend\Icon\Repository\PersonGroup;
 use SPHERE\Common\Frontend\Icon\Repository\Remove;
 use SPHERE\Common\Frontend\IFrontendInterface;
@@ -41,7 +33,6 @@ use SPHERE\Common\Frontend\Text\Repository\Small;
 use SPHERE\Common\Frontend\Text\Repository\Warning;
 use SPHERE\Common\Window\Navigation\Link\Route;
 use SPHERE\Common\Window\Stage;
-use SPHERE\System\Cache\Handler\DataCacheHandler;
 use SPHERE\System\Extension\Extension;
 
 /**
@@ -66,130 +57,116 @@ class Frontend extends Extension implements IFrontendInterface
 
         $tblGroup = Group::useService()->getGroupById($Id);
         if ($tblGroup) {
-
-            $tblPersonAll = Group::useService()->getPersonAllByGroup($tblGroup);
-
-            // Consumer + Group Cache
+            // result by Views
+            $ContentArray = Individual::useService()->getPersonListByGroup($tblGroup);
             $Acronym = Consumer::useService()->getConsumerBySession()->getAcronym();
-
-            $Cache = new DataCacheHandler($Acronym . ':' . $Id . ':' . $tblGroup->getMetaTable(), array(
-                new TblPerson(),
-                new TblMember(),
-                new TblAddress(),
-                new TblToPerson(),
-                new TblProspect(),
-                new TblStudent(),
-                new TblDivision(),
-                new TblDivisionStudent(),
-            ));
-
             $filterWarning = false;
-            if ($tblGroup->getMetaTable() == 'STUDENT') {
-                $tblYearList = Term::useService()->getYearByNow();
 
-                $filterWarning = ValidationFilter::receiverUsed(ValidationFilter::getContent());
-            } else {
-                $tblYearList = false;
+            $tableContent = array();
+            if ($ContentArray){
+
+                $tblRelationshipType = Relationship::useService()->getTypeByName(TblType::IDENTIFIER_GUARDIAN);
+                // relationship array group by FromPerson
+                $tblRelationshipList = Relationship::useService()->getPersonRelationshipArrayByType($tblRelationshipType);
+
+                array_walk($ContentArray, function($contentRow) use (&$tableContent, $tblGroup, $Acronym, $tblRelationshipList){
+
+//                    // Custody
+                    $childrenList = array();
+                    if ($tblGroup->getMetaTable() == 'CUSTODY') {
+                        if(isset($tblRelationshipList[$contentRow['TblPerson_Id']])){
+                            $CustodyChildList = $tblRelationshipList[$contentRow['TblPerson_Id']];
+                            foreach($CustodyChildList as $childId) {
+                                $tblPersonChild = Person::useService()->getPersonById($childId);
+                                // Personen müssen noch im Tool vorhanden sein
+                                if($tblPersonChild){
+                                    $childrenList[$childId]
+                                        = new Standard('', '/People/Person', new PersonIcon(),
+                                            array(
+                                                'Id' => $childId,
+                                                'Group' => $tblGroup->getId()
+                                            ),
+                                            'zur Person wechseln'
+                                        )
+                                        . $tblPersonChild->getFirstSecondName(); //if necessary hole name
+                                }
+                            }
+                        }
+//                        // Old Logic
+//                        $tblRelationshipType = Relationship::useService()->getTypeByName(TblType::IDENTIFIER_GUARDIAN);
+//                        $tblPerson = \SPHERE\Application\People\Person\Person::useService()->getPersonById($contentRow['TblPerson_Id']);
+//
+//                        if (($tblRelationshipList = Relationship::useService()->getPersonRelationshipAllByPerson($tblPerson, $tblRelationshipType))) {
+//                            foreach ($tblRelationshipList as $tblToPerson) {
+//                                if ($tblToPerson->getTblType()->getName() == "Sorgeberechtigt"
+//                                    && ($tblPersonFrom = $tblToPerson->getServiceTblPersonFrom())
+//                                    && ($tblPersonTo = $tblToPerson->getServiceTblPersonTo())
+//                                    && $tblPersonFrom->getId() == $tblPerson->getId()
+//                                ) {
+//                                    $childrenList[$tblPersonTo->getId()]
+//                                        = new Standard('', '/People/Person', new PersonIcon(),
+//                                            array(
+//                                                'Id' => $tblPersonTo->getId(),
+//                                                'Group' => $tblGroup->getId()
+//                                            ),
+//                                            'zur Person wechseln'
+//                                        )
+//                                        . ($tblPerson->getLastName() != $tblPersonTo->getLastName()
+//                                            ? $tblPersonTo->getLastFirstName() : $tblPersonTo->getFirstSecondName());
+//                                }
+//                            }
+//                        }
+                    }
+
+                    $displayDivisionList = '';
+                    if ($tblGroup->getMetaTable() == 'STUDENT') {
+                        if(($tblPerson = Person::useService()->getPersonById($contentRow['TblPerson_Id']))){
+                            $displayDivisionList = Student::useService()->getDisplayCurrentDivisionListByPerson($tblPerson, '');
+                        }
+                    }
+
+                    $item['FullName'] = $contentRow['TblPerson_LastFirstName'];
+                    $item['Remark'] = $contentRow['TblCommon_Remark'];
+
+                    $item['Address'] = (trim($contentRow['Address'])
+                        ? $contentRow['Address']
+                        : new Warning('Keine Adresse hinterlegt')
+                    );
+                    // Student
+                    $item['Division'] = $displayDivisionList;
+                    $item['Identifier'] = trim($contentRow['Identifier']);
+                    // Custody
+                    $item['Custody'] = (empty($childrenList) ? '' : (string)new Listing($childrenList));
+                    // Prospect
+                    $item['Year'] = $contentRow['Year'];
+                    $item['Level'] = $contentRow['Level'];
+                    $item['SchoolOption'] = $contentRow['SchoolOption'];
+
+                    $item['Option'] = new Standard('', '/People/Person', new Edit(),
+                            array(
+                            'Id'    => $contentRow['TblPerson_Id'],
+                            'Group' => $tblGroup->getId())
+                        , 'Bearbeiten')
+                    .new Standard('',
+                        '/People/Person/Destroy', new Remove(),
+                        array('Id' => $contentRow['TblPerson_Id'],
+                              'Group' => $tblGroup->getId())
+                        , 'Person löschen');
+
+                    // CSW fast reaction
+                    if($item['Division'] == 'Achat'
+                    || $item['Division'] == 'Bergkristall'
+                    || $item['Division'] == 'Opal'
+                    || $item['Division'] == 'Saphir'
+                    || $item['Division'] == 'Topas'){
+                        $item = array();
+                    }
+
+                    array_push($tableContent, $item);
+                });
             }
 
-            if (null === ($Result = $Cache->getData())) {
-                $Result = array();
-                if ($tblPersonAll) {
-                    array_walk($tblPersonAll,
-                        function (TblPerson &$tblPerson) use ($tblGroup, &$Result, $Acronym, $tblYearList, &$validationTable) {
-
-                            // Division && Identification
-                            $displayDivisionList = false;
-                            $identification = '';
-                            if ($tblGroup->getMetaTable() == 'STUDENT') {
-                                $displayDivisionList = Student::useService()->getDisplayCurrentDivisionListByPerson($tblPerson);
-
-                                $tblStudent = Student::useService()->getStudentByPerson($tblPerson);
-                                if ($tblStudent) {
-                                    $identification = $tblStudent->getIdentifierComplete();
-                                }
-
-                            }
-
-                            // Prospect
-                            $level = false;
-                            $year = false;
-                            $option = false;
-                            if ($tblGroup->getMetaTable() == 'PROSPECT') {
-                                $tblProspect = Prospect::useService()->getProspectByPerson($tblPerson);
-                                if ($tblProspect) {
-                                    $tblProspectReservation = $tblProspect->getTblProspectReservation();
-                                    if ($tblProspectReservation) {
-                                        $level = $tblProspectReservation->getReservationDivision();
-                                        $year = $tblProspectReservation->getReservationYear();
-                                        $optionA = $tblProspectReservation->getServiceTblTypeOptionA();
-                                        $optionB = $tblProspectReservation->getServiceTblTypeOptionB();
-                                        if ($optionA && $optionB) {
-                                            $option = $optionA->getName() . ', ' . $optionB->getName();
-                                        } elseif ($optionA) {
-                                            $option = $optionA->getName();
-                                        } elseif ($optionB) {
-                                            $option = $optionB->getName();
-                                        }
-                                    }
-                                }
-                            }
-
-                            // Custody
-                            $childrenList = array();
-                            if ($tblGroup->getMetaTable() == 'CUSTODY') {
-                                if (($tblRelationshipList = Relationship::useService()->getPersonRelationshipAllByPerson($tblPerson))) {
-                                    foreach ($tblRelationshipList as $tblToPerson) {
-                                        if ($tblToPerson->getTblType()->getName() == "Sorgeberechtigt"
-                                            && ($tblPersonFrom = $tblToPerson->getServiceTblPersonFrom())
-                                            && ($tblPersonTo = $tblToPerson->getServiceTblPersonTo())
-                                            && $tblPersonFrom->getId() == $tblPerson->getId()
-                                        ) {
-                                            $childrenList[$tblPersonTo->getId()]
-                                                = new Standard('', '/People/Person', new Person(),
-                                                    array(
-                                                        'Id' => $tblPersonTo->getId(),
-                                                        'Group' => $tblGroup->getId()
-                                                    ),
-                                                    'zur Person wechseln'
-                                                )
-                                                . ($tblPerson->getLastName() != $tblPersonTo->getLastName()
-                                                    ? $tblPersonTo->getLastFirstName() : $tblPersonTo->getFirstSecondName());
-                                        }
-                                    }
-                                }
-                            }
-
-                            array_push($Result, array(
-                                'FullName' => $tblPerson->getLastFirstName(),
-                                'Address' => ($tblPerson->fetchMainAddress()
-                                    ? $tblPerson->fetchMainAddress()->getGuiString()
-                                    : new Warning('Keine Adresse hinterlegt')
-                                ),
-                                'Option' => (new Standard('', '/People/Person', new Edit(), array(
-                                        'Id' => $tblPerson->getId(),
-                                        'Group' => $tblGroup->getId()
-                                    ), 'Bearbeiten'))
-                                    . (new Standard('',
-                                        '/People/Person/Destroy', new Remove(),
-                                        array('Id' => $tblPerson->getId(), 'Group' => $tblGroup->getId()),
-                                        'Person löschen')),
-                                'Remark' => (
-                                $Acronym == 'ESZC' && $tblGroup->getMetaTable() == 'CUSTODY'
-                                    ? (($Common = Common::useService()->getCommonByPerson($tblPerson)) ? $Common->getRemark() : '')
-                                    : ''
-                                ),
-                                'Division' => ($displayDivisionList ? $displayDivisionList : ''),
-                                'Identification' => $identification,
-                                'Year' => ($year ? $year : ''),
-                                'Level' => ($level ? $level : ''),
-                                'SchoolOption' => ($option ? $option : ''),
-                                'Custody' => (empty($childrenList) ? '' : (string)new Listing($childrenList))
-                            ));
-                        });
-                }
-                $Cache->setData($Result);
-            }
+            $tableContent = array_filter($tableContent);
 
             $YearNow = '';
             if (($YearList = Term::useService()->getYearByNow())) {
@@ -219,7 +196,7 @@ class Frontend extends Extension implements IFrontendInterface
                     'FullName' => 'Name',
                     'Address' => 'Adresse',
                     'Division' => 'Klasse (SJ ' . $YearNow . ')',
-                    'Identification' => 'Schülernummer',
+                    'Identifier' => 'Schülernummer',
                     'Option' => '',
                 );
             } elseif ($tblGroup->getMetaTable() == 'PROSPECT') {
@@ -247,14 +224,14 @@ class Frontend extends Extension implements IFrontendInterface
                     new LayoutRow(new LayoutColumn(
                         new Panel(new PersonGroup() . ' Gruppe', array(
                             new Bold($tblGroup->getName()),
-                            ($tblGroup->getDescription() ? new Small($tblGroup->getDescription()) : ''),
+                            ($tblGroup->getDescription(true) ? new Small($tblGroup->getDescription(true)) : ''),
                             ($tblGroup->getRemark() ? new Danger(new Italic(nl2br($tblGroup->getRemark()))) : '')
                         ), Panel::PANEL_TYPE_INFO
                         )
                     )),
                     new LayoutRow(new LayoutColumn(array(
                         new Headline('Verfügbare Personen', 'in dieser Gruppe'),
-                        new TableData($Result, null, $ColumnArray, array(
+                        new TableData($tableContent, null, $ColumnArray, array(
                             'order' => array(
                                 array(0, 'asc')
                             ),

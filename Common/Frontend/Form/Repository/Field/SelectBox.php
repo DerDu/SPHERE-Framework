@@ -18,7 +18,7 @@ class SelectBox extends AbstractField implements IFieldInterface
     const LIBRARY_SELECT2 = 1;
 
     /** @var int $Library */
-    private $Library = 0;
+    private $Library = 1;
     /** @var string $Label */
     private $Label = '';
     /** @var array $Data */
@@ -27,6 +27,11 @@ class SelectBox extends AbstractField implements IFieldInterface
     private $Icon = null;
     /** @var array $Configuration */
     private $Configuration = array();
+    /**
+     * @var int $minimumResultsForSearch
+     * Alle Einträge werden berücksichtigt, auch -[ Nicht ausgewählt ]-
+     */
+    private $minimumResultsForSearch = 9;
 
     /**
      * @param string $Name
@@ -180,6 +185,16 @@ class SelectBox extends AbstractField implements IFieldInterface
     }
 
     /**
+     * @param int $minimumResultsForSearch
+     * @return SelectBox
+     */
+    public function setMinimumResultForSerach($minimumResultsForSearch = 8)
+    {
+        $this->minimumResultsForSearch = $minimumResultsForSearch;
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getContent()
@@ -187,6 +202,8 @@ class SelectBox extends AbstractField implements IFieldInterface
 
         switch ($this->getLibrary()) {
             case 1:
+                // Icon disabled in Selectbox2
+                $this->Icon = null;
                 $this->Template = $this->getTemplate(__DIR__ . '/SelectBox.Select2.twig');
                 break;
             default:
@@ -200,6 +217,11 @@ class SelectBox extends AbstractField implements IFieldInterface
         foreach ($this->SuccessMessage as $Key => $Value) {
             $this->Template->setVariable($Key, $Value);
         }
+
+        // Erweitern der Configuration, wenn bereits eine mitgegeben wird
+        $ConfigurationArray = json_decode($this->Configuration, true);
+        $ConfigurationArray = array_merge($ConfigurationArray, array('minimumResultsForSearch' => $this->minimumResultsForSearch));
+        $this->Configuration = json_encode($ConfigurationArray);
 
         $this->Template->setVariable('ElementName', $this->Name);
         $this->Template->setVariable('ElementLabel', $this->Label);

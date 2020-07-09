@@ -3,6 +3,7 @@
 
 namespace SPHERE\Application\Reporting\CheckList\Service;
 
+use Doctrine\ORM\AbstractQuery;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
 use SPHERE\Application\Reporting\CheckList\Service\Entity\TblElementType;
 use SPHERE\Application\Reporting\CheckList\Service\Entity\TblList;
@@ -363,6 +364,28 @@ class Data extends AbstractData
     /**
      * @param TblList $tblList
      *
+     * @return array|bool
+     */
+    public function getListObjectListContentByList(TblList $tblList)
+    {
+
+        $Manager = $this->getConnection()->getEntityManager();
+        $queryBuilder = $Manager->getQueryBuilder();
+        $tblListElementList = new TblListObjectElementList();
+
+        $query = $queryBuilder->select('lel.serviceTblObject as ObjectId, lel.tblListElementList as ListElementListId, lel.Value as Value')
+            ->from($tblListElementList->getEntityFullName(), 'lel')
+            ->where($queryBuilder->expr()->eq('lel.tblList', '?1'))
+            ->setParameter(1, $tblList->getId())
+            ->getQuery();
+        $ListObjectList = $query->getResult(AbstractQuery::HYDRATE_ARRAY);
+
+        return !empty($ListObjectList) ? $ListObjectList : false;
+    }
+
+    /**
+     * @param TblList $tblList
+     *
      * @return bool|TblListObjectElementList[]
      */
     public function getListObjectElementListByList(TblList $tblList)
@@ -371,6 +394,24 @@ class Data extends AbstractData
         return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(),
             'TblListObjectElementList',
             array(TblListObjectElementList::ATTR_TBL_LIST => $tblList->getId()));
+    }
+
+    /**
+     * @param TblList $tblList
+     * @param int     $ObjectId
+     *
+     * @return bool|TblListObjectElementList[]
+     */
+    public function getListObjectElementListByListAndObjectId(TblList $tblList, $ObjectId)
+    {
+
+        return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(),
+            'TblListObjectElementList',
+            array(
+                TblListObjectElementList::ATTR_TBL_LIST => $tblList->getId(),
+                TblListObjectElementList::ATTR_SERVICE_TBL_OBJECT => $ObjectId
+            )
+        );
     }
 
     /**

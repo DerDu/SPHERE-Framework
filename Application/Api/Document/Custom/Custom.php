@@ -9,6 +9,7 @@
 namespace SPHERE\Application\Api\Document\Custom;
 
 use SPHERE\Application\Api\Document\Custom\Lebenswelt\Lebenswelt;
+use SPHERE\Application\Api\Document\Custom\Limbach\Limbach;
 use SPHERE\Application\Api\Document\Custom\Radebeul\Radebeul;
 use SPHERE\Application\Api\Document\Custom\Zwickau\Zwickau;
 use SPHERE\Application\IModuleInterface;
@@ -30,16 +31,20 @@ class Custom extends Extension implements IModuleInterface
 
         $consumerAcronym = ( Consumer::useService()->getConsumerBySession() ? Consumer::useService()->getConsumerBySession()->getAcronym() : '' );
         // Lebenswelt
-        if ($consumerAcronym === 'LWSZ' || $consumerAcronym === 'DEMO') {
+        if ($consumerAcronym === 'LWSZ') {
             Lebenswelt::registerModule();
         }
         // Radebeul
-        if ($consumerAcronym === 'EVSR' || $consumerAcronym === 'DEMO') {
+        if ($consumerAcronym === 'EVSR') {
             Radebeul::registerModule();
         }
         // Zwickau
-        if ($consumerAcronym === 'CMS' || $consumerAcronym === 'DEMO') {
+        if ($consumerAcronym === 'CMS') {
             Zwickau::registerModule();
+        }
+        // Zwickau
+        if ($consumerAcronym === 'FELS') { // local test || $consumerAcronym === 'REF'
+            Limbach::registerModule();
         }
     }
 

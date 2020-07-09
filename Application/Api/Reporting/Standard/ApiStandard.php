@@ -8,6 +8,7 @@ use SPHERE\Application\Education\ClassRegister\Absence\Absence;
 use SPHERE\Application\Education\Lesson\Division\Division;
 use SPHERE\Application\Education\School\Type\Type;
 use SPHERE\Application\IApiInterface;
+use SPHERE\Application\People\Group\Group;
 use SPHERE\Common\Frontend\Ajax\Emitter\ServerEmitter;
 use SPHERE\Common\Frontend\Ajax\Pipeline;
 use SPHERE\Common\Frontend\Ajax\Receiver\AbstractReceiver;
@@ -93,6 +94,8 @@ class ApiStandard extends Extension implements IApiInterface
         }
 
         $divisionName = $Data['DivisionName'];
+        $groupName = $Data['GroupName'];
+        $isGroup = false;
         if ($divisionName != '') {
             $divisionList = Division::useService()->getDivisionAllByName($divisionName);
             if (empty($divisionList)) {
@@ -100,6 +103,14 @@ class ApiStandard extends Extension implements IApiInterface
             }
 
             $absenceList = Absence::useService()->getAbsenceAllByDay($dateTime, $tblType ? $tblType : null, $divisionList);
+        } elseif ($groupName != '') {
+            $isGroup = true;
+            $groupList = Group::useService()->getGroupListLike($groupName);
+            if (empty($groupList)) {
+                return new Warning('Gruppe nicht gefunden', new Exclamation());
+            }
+
+            $absenceList = Absence::useService()->getAbsenceAllByDay($dateTime, $tblType ? $tblType : null, array(), $groupList);
         } else {
             $absenceList = Absence::useService()->getAbsenceAllByDay($dateTime, $tblType ? $tblType : null);
         }
@@ -108,7 +119,28 @@ class ApiStandard extends Extension implements IApiInterface
             'Fehlzeiten für den ' . $dateTime->format('d.m.Y')
             . ($tblType ? ', Schulart: ' . $tblType->getName() : '')
         );
+
         if (!empty($absenceList)) {
+            if ($isGroup) {
+                $columns = array(
+                    'Type' => 'Schulart',
+                    'Group' => 'Gruppe',
+                    'Person' => 'Schüler',
+                    'DateSpan' => 'Zeitraum',
+                    'Status' => 'Status',
+                    'Remark' => 'Bemerkung'
+                );
+            } else {
+                $columns = array(
+                    'Type' => 'Schulart',
+                    'Division' => 'Klasse',
+                    'Person' => 'Schüler',
+                    'DateSpan' => 'Zeitraum',
+                    'Status' => 'Status',
+                    'Remark' => 'Bemerkung'
+                );
+            }
+
             return new Layout(new LayoutGroup(array(
                 new LayoutRow(
                     new LayoutColumn(
@@ -118,7 +150,8 @@ class ApiStandard extends Extension implements IApiInterface
                             array(
                                 'Date' => $Data['Date'],
                                 'Type' => $Data['Type'],
-                                'DivisionName' => $Data['DivisionName']
+                                'DivisionName' => $Data['DivisionName'],
+                                'GroupName' => $Data['GroupName']
                             )
                         )
                     )
@@ -129,14 +162,7 @@ class ApiStandard extends Extension implements IApiInterface
                         . new TableData(
                             $absenceList,
                             null,
-                            array(
-                                'Type' => 'Schulart',
-                                'Division' => 'Klasse',
-                                'Person' => 'Schüler',
-                                'DateSpan' => 'Zeitraum',
-                                'Status' => 'Status',
-                                'Remark' => 'Bemerkung'
-                            ),
+                            $columns,
                             array(
                                 'order' => array(
                                     array('0', 'asc'),

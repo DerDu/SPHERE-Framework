@@ -64,6 +64,8 @@ class Setup extends AbstractSetup
         if (!$this->getConnection()->hasColumn('tblCompany', 'Description')) {
             $Table->addColumn('Description', 'string');
         }
+        $this->createColumn($Table, 'ImportId', self::FIELD_TYPE_STRING, false, '');
+
         return $Table;
     }
 }

@@ -9,6 +9,8 @@ use SPHERE\Application\Api\Billing\Accounting\ApiDebtor;
 use SPHERE\Application\Api\Billing\Accounting\ApiDebtorSelection;
 use SPHERE\Application\Api\Billing\Balance\BalanceDownload;
 use SPHERE\Application\Api\Billing\Bookkeeping\ApiBasket;
+use SPHERE\Application\Api\Billing\Bookkeeping\ApiBasketRepayment;
+use SPHERE\Application\Api\Billing\Bookkeeping\ApiBasketRepaymentAddPerson;
 use SPHERE\Application\Api\Billing\Bookkeeping\ApiBasketVerification;
 use SPHERE\Application\Api\Billing\Datev\Datev;
 use SPHERE\Application\Api\Billing\Inventory\ApiDocument;
@@ -41,6 +43,8 @@ class Billing implements IApplicationInterface
         ApiBankAccount::registerApi();
         ApiBankReference::registerApi();
         ApiBasket::registerApi();
+        ApiBasketRepayment::registerApi();
+        ApiBasketRepaymentAddPerson::registerApi();
         ApiBasketVerification::registerApi();
         ApiInvoiceIsPaid::registerApi();
         BalanceDownload::registerModule();

@@ -1,26 +1,28 @@
--- viewGroupProspect
 SELECT DISTINCT
-    vPGM.TblMember_serviceTblPerson AS TblPerson_Id,
---     vP.TblSalutation_Salutation,
---     vP.TblPerson_FirstName,
---     vP.TblPerson_SecondName,
---     vP.TblPerson_LastName,
---     vPMC.TblCommonGender_Name,
-    DATE_FORMAT( vPMP.TblProspectAppointment_ReservationDate, '%d.%m.%Y' ) AS TblProspectAppointment_ReservationDate,
-    DATE_FORMAT( vPMP.TblProspectAppointment_InterviewDate, '%d.%m.%Y' ) AS TblProspectAppointment_InterviewDate,
-    DATE_FORMAT( vPMP.TblProspectAppointment_TrialDate, '%d.%m.%Y' ) AS TblProspectAppointment_TrialDate,
-    vPMP.TblProspectReservation_ReservationYear,
-    vPMP.TblProspectReservation_ReservationDivision,
-    vSTA.TblType_Name AS TblType_NameA,
-    vSTB.TblType_Name AS TblType_NameB,
-    vPMP.TblProspect_Remark
 
-FROM
-    PeopleGroup_{{ ConsumerAcronym }}.viewPeopleGroupMember vPGM
-    LEFT JOIN PeoplePerson_{{ ConsumerAcronym }}.viewPerson vP ON vP.TblPerson_Id = vPGM.TblMember_serviceTblPerson
-    LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.viewPeopleMetaProspect vPMP ON vPMP.TblProspect_serviceTblPerson = vPGM.TblMember_serviceTblPerson
-    LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.viewPeopleMetaCommon vPMC ON vPMC.TblCommon_serviceTblPerson = vPGM.TblMember_serviceTblPerson
-    LEFT JOIN EducationSchoolType_{{ ConsumerAcronym }}.viewSchoolType vSTA ON vSTA.TblType_Id = vPMP.TblProspectReservation_serviceTblTypeOptionA
-    LEFT JOIN EducationSchoolType_{{ ConsumerAcronym }}.viewSchoolType vSTB ON vSTB.TblType_Id = vPMP.TblProspectReservation_serviceTblTypeOptionB
-WHERE
-    vPGM.TblGroup_MetaTable = 'PROSPECT'
+-- PersonId to match with all View's // viewPeopleGroupMember
+    tM.serviceTblPerson AS TblPerson_Id,
+-- TblProspectAppointment
+    DATE_FORMAT( tPA.ReservationDate, '%d.%m.%Y' ) AS TblProspectAppointment_ReservationDate,
+    DATE_FORMAT( tPA.InterviewDate, '%d.%m.%Y' ) AS TblProspectAppointment_InterviewDate,
+    DATE_FORMAT( tPA.TrialDate, '%d.%m.%Y' ) AS TblProspectAppointment_TrialDate,
+-- TblProspectReservation
+    tPR.ReservationYear AS TblProspectReservation_ReservationYear,
+    tPR.ReservationDivision AS TblProspectReservation_ReservationDivision,
+-- TblType
+    tTA.Name AS TblType_NameA,
+    tTB.Name AS TblType_NameB,
+-- TblProspect
+    tP.Remark AS TblProspect_Remark
+
+FROM PeopleGroup_{{ ConsumerAcronym }}.tblMember tM
+	LEFT JOIN PeopleGroup_{{ ConsumerAcronym }}.tblGroup tG ON tG.Id = tM.TblGroup
+		AND tG.EntityRemove IS NULL
+    LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblProspect tP ON tP.serviceTblPerson = tM.serviceTblPerson
+    LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblProspectAppointment tPA ON tPA.Id = tP.tblProspectAppointment
+    LEFT JOIN PeopleMeta_{{ ConsumerAcronym }}.tblProspectReservation tPR ON tPR.Id = tP.tblProspectReservation
+    LEFT JOIN EducationSchoolType_{{ ConsumerAcronym }}.tblType tTA ON tTA.Id = tPR.serviceTblTypeOptionA
+    LEFT JOIN EducationSchoolType_{{ ConsumerAcronym }}.tblType tTB ON tTB.Id = tPR.serviceTblTypeOptionB
+
+WHERE tG.MetaTable = 'PROSPECT'
+	AND tM.EntityRemove IS NULL

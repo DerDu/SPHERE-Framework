@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Kauschke
- * Date: 21.01.2019
- * Time: 14:11
- */
-
 namespace SPHERE\Application\Api\Education\Certificate\Generator\Repository\EVGSM;
 
 use SPHERE\Application\Api\Education\Certificate\Generator\Certificate;
@@ -33,7 +26,7 @@ class GsHjInfo extends Certificate
 
         $personId = $tblPerson ? $tblPerson->getId() : 0;
 
-        $Header = $this->getHead($this->isSample(), true, 'auto', '50px');
+        $Header = $this->getHead($this->isSample());
 
         return (new Page())
             ->addSlice(
@@ -43,7 +36,7 @@ class GsHjInfo extends Certificate
             ->addSlice($this->getCertificateHead('Halbjahresinformation der Grundschule'))
             ->addSlice(self::getDivisionAndYearIndividuell($personId, '20px', '1. Schulhalbjahr'))
             ->addSlice($this->getStudentName($personId))
-            ->addSlice($this->getDescriptionContent($personId, '600px', '20px'))
+            ->addSlice($this->getDescriptionContent($personId, '530px', '20px'))
             ->addSlice((new Slice())
                 ->addSection((new Section())
                     ->addElementColumn((new Element())
