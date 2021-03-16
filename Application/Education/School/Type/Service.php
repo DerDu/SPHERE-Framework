@@ -78,6 +78,16 @@ class Service extends AbstractService
     }
 
     /**
+     * @param string $ShortName
+     *
+     * @return bool|TblType
+     */
+    public function getTypeByShortName($ShortName)
+    {
+        return (new Data($this->getBinding()))->getTypeByShortName($ShortName);
+    }
+
+    /**
      * @deprecated use ShortName
      *
      * @param TblType $tblType

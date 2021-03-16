@@ -163,6 +163,19 @@ class Data extends AbstractData
     }
 
     /**
+     * @param string $ShortName
+     *
+     * @return bool|TblType
+     */
+    public function getTypeByShortName($ShortName)
+    {
+        /** @var TblType $Entity */
+        $Entity = $this->getConnection()->getEntityManager()->getEntity('TblType')
+            ->findOneBy(array(TblType::ATTR_SHORT_NAME => $ShortName));
+        return ( null === $Entity ? false : $Entity );
+    }
+
+    /**
      * @return bool|TblType[]
      */
     public function getTypeBasicAll()

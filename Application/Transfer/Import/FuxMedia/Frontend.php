@@ -109,24 +109,22 @@ class Frontend extends Extension implements IFrontendInterface
                 new LayoutColumn(
                     new Panel('Schulart:', $tblType ? $tblType->getName() : '',
                         Panel::PANEL_TYPE_INFO), 6),
-                new LayoutColumn(array(
-                        new Well(
-                            FuxSchool::useService()->createStudentsFromFile(
-                                new Form(
-                                    new FormGroup(
-                                        new FormRow(
-                                            new FormColumn(
-                                                new FileUpload('File', 'Datei auswählen', 'Datei auswählen', null,
-                                                    array('showPreview' => false))
-                                            )
+                new LayoutColumn(
+                    new Well(
+                        FuxSchool::useService()->createStudentsFromFile(
+                            new Form(
+                                new FormGroup(
+                                    new FormRow(
+                                        new FormColumn(
+                                            new FileUpload('File', 'Datei auswählen', 'Datei auswählen', null,
+                                                array('showPreview' => false))
                                         )
                                     )
-                                    , new Primary('Hochladen')
-                                ), $File, $TypeId, $YearId
-                            )
-                            ,
-                            new Warning('Erlaubte Dateitypen: Excel (XLS,XLSX)')
+                                )
+                                , new Primary('Hochladen')
+                            ), $File, $TypeId, $YearId
                         )
+                        . new Warning('Erlaubte Dateitypen: Excel (XLS,XLSX)')
                     )
                 )
             ))))
@@ -150,27 +148,26 @@ class Frontend extends Extension implements IFrontendInterface
             new Layout(
                 new LayoutGroup(
                     new LayoutRow(
-                        new LayoutColumn(array(
-                                new Well(
-                                    FuxSchool::useService()->createTeachersFromFile(
-                                        new Form(
-                                            new FormGroup(
-                                                new FormRow(
-                                                    new FormColumn(
-                                                        new FileUpload('File', 'Datei auswählen', 'Datei auswählen',
-                                                            null,
-                                                            array('showPreview' => false))
-                                                    )
+                        new LayoutColumn(
+                            new Well(
+                                FuxSchool::useService()->createTeachersFromFile(
+                                    new Form(
+                                        new FormGroup(
+                                            new FormRow(
+                                                new FormColumn(
+                                                    new FileUpload('File', 'Datei auswählen', 'Datei auswählen',
+                                                        null,
+                                                        array('showPreview' => false))
                                                 )
                                             )
-                                            , new Primary('Hochladen')
-                                        ), $File
-                                    )
-                                    ,
-                                    new Warning('Erlaubte Dateitypen: Excel (XLS,XLSX)')
+                                        )
+                                        , new Primary('Hochladen')
+                                    ), $File
                                 )
+                                . new Warning('Erlaubte Dateitypen: Excel (XLS,XLSX)')
                             )
-                        ))
+                        )
+                    )
                 )
             )
         );
@@ -255,24 +252,22 @@ class Frontend extends Extension implements IFrontendInterface
                 new LayoutColumn(
                     new Panel('Schulart:', $tblType ? $tblType->getName() : '',
                         Panel::PANEL_TYPE_INFO), 6),
-                new LayoutColumn(array(
-                        new Well(
-                            FuxSchool::useService()->createDivisionsFromFile(
-                                new Form(
-                                    new FormGroup(
-                                        new FormRow(
-                                            new FormColumn(
-                                                new FileUpload('File', 'Datei auswählen', 'Datei auswählen', null,
-                                                    array('showPreview' => false))
-                                            )
+                new LayoutColumn(
+                    new Well(
+                        FuxSchool::useService()->createDivisionsFromFile(
+                            new Form(
+                                new FormGroup(
+                                    new FormRow(
+                                        new FormColumn(
+                                            new FileUpload('File', 'Datei auswählen', 'Datei auswählen', null,
+                                                array('showPreview' => false))
                                         )
                                     )
-                                    , new Primary('Hochladen')
-                                ), $File, $TypeId, $YearId
-                            )
-                            ,
-                            new Warning('Erlaubte Dateitypen: Excel (XLS,XLSX)')
+                                )
+                                , new Primary('Hochladen')
+                            ), $File, $TypeId, $YearId
                         )
+                        . new Warning('Erlaubte Dateitypen: Excel (XLS,XLSX)')
                     )
                 )
             ))))
@@ -296,27 +291,26 @@ class Frontend extends Extension implements IFrontendInterface
             new Layout(
                 new LayoutGroup(
                     new LayoutRow(
-                        new LayoutColumn(array(
-                                new Well(
-                                    FuxSchool::useService()->createCompaniesFromFile(
-                                        new Form(
-                                            new FormGroup(
-                                                new FormRow(
-                                                    new FormColumn(
-                                                        new FileUpload('File', 'Datei auswählen', 'Datei auswählen',
-                                                            null,
-                                                            array('showPreview' => false))
-                                                    )
+                        new LayoutColumn(
+                            new Well(
+                                FuxSchool::useService()->createCompaniesFromFile(
+                                    new Form(
+                                        new FormGroup(
+                                            new FormRow(
+                                                new FormColumn(
+                                                    new FileUpload('File', 'Datei auswählen', 'Datei auswählen',
+                                                        null,
+                                                        array('showPreview' => false))
                                                 )
                                             )
-                                            , new Primary('Hochladen')
-                                        ), $File
-                                    )
-                                    ,
-                                    new Warning('Erlaubte Dateitypen: Excel (XLS,XLSX)')
+                                        )
+                                        , new Primary('Hochladen')
+                                    ), $File
                                 )
+                                . new Warning('Erlaubte Dateitypen: Excel (XLS,XLSX)')
                             )
-                        ))
+                        )
+                    )
                 )
             )
         );

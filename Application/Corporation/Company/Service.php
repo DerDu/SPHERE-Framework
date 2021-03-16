@@ -228,6 +228,19 @@ class Service extends AbstractService
 
     /**
      * @param TblCompany $tblCompany
+     * @param $ImportId
+     *
+     * @return bool
+     */
+    public function updateCompanyImportId(
+        TblCompany $tblCompany,
+        $ImportId
+    ) {
+        return (new Data($this->getBinding()))->updateCompanyImportId($tblCompany, $ImportId);
+    }
+
+    /**
+     * @param TblCompany $tblCompany
      * @param $Description
      *
      * @return bool
@@ -269,5 +282,15 @@ class Service extends AbstractService
     public function getCompanyByImportId($ImportId)
     {
         return (new Data($this->getBinding()))->getCompanyByImportId($ImportId);
+    }
+
+    /**
+     * @param integer $ImportId
+     *
+     * @return bool|TblCompany[]
+     */
+    public function getCompanyListByImportId($ImportId)
+    {
+        return (new Data($this->getBinding()))->getCompanyListByImportId($ImportId);
     }
 }

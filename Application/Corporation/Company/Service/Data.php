@@ -91,6 +91,32 @@ class Data extends AbstractData
 
     /**
      * @param TblCompany $tblCompany
+     * @param $ImportId
+     *
+     * @return bool
+     */
+    public function updateCompanyImportId(
+        TblCompany $tblCompany,
+        $ImportId
+    ) {
+        $Manager = $this->getConnection()->getEntityManager();
+        /** @var TblCompany $Entity */
+        $Entity = $Manager->getEntityById('TblCompany', $tblCompany->getId());
+        $Protocol = clone $Entity;
+        if (null !== $Entity) {
+            $Entity->setImportId($ImportId);
+
+            $Manager->saveEntity($Entity);
+            Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(), $Protocol, $Entity);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param TblCompany $tblCompany
      * @param $Description
      *
      * @return bool
@@ -287,6 +313,19 @@ class Data extends AbstractData
     public function getCompanyByImportId($ImportId)
     {
         return $this->getCachedEntityBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblCompany',
+            array(
+                TblCompany::ATTR_IMPORT_ID => $ImportId
+            ));
+    }
+
+    /**
+     * @param integer $ImportId
+     *
+     * @return bool|TblCompany[]
+     */
+    public function getCompanyListByImportId($ImportId)
+    {
+        return $this->getCachedEntityListBy(__METHOD__, $this->getConnection()->getEntityManager(), 'TblCompany',
             array(
                 TblCompany::ATTR_IMPORT_ID => $ImportId
             ));

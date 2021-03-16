@@ -290,14 +290,16 @@ class Service
      */
     public function formatZipCode($columnName, $RunY)
     {
-        $code = trim($this->Document->getValue($this->Document->getCell($this->Location[$columnName], $RunY)));
-        if ($code) {
-            return str_pad(
-                $code,
-                5,
-                "0",
-                STR_PAD_LEFT
-            );
+        if ($this->Location[$columnName] !== null) {
+            $code = trim($this->Document->getValue($this->Document->getCell($this->Location[$columnName], $RunY)));
+            if ($code) {
+                return str_pad(
+                    $code,
+                    5,
+                    "0",
+                    STR_PAD_LEFT
+                );
+            }
         }
 
         return '';
@@ -308,11 +310,17 @@ class Service
      * @param $RunY
      * @param TblStudent $tblStudent
      * @param TblStudentAgreementCategory $tblStudentAgreementCategory
+     * @param string $trueValue
      */
-    public function setStudentAgreement($columnName, $RunY, TblStudent $tblStudent,  TblStudentAgreementCategory $tblStudentAgreementCategory)
-    {
+    public function setStudentAgreement(
+        $columnName,
+        $RunY,
+        TblStudent $tblStudent,
+        TblStudentAgreementCategory $tblStudentAgreementCategory,
+        $trueValue = 'ja'
+    ) {
         $agreement = trim($this->Document->getValue($this->Document->getCell($this->Location[$columnName], $RunY)));
-        if ($agreement == 'ja') {
+        if ($agreement == $trueValue) {
             if (($tblStudentAgreementTypeList = Student::useService()->getStudentAgreementTypeAllByCategory($tblStudentAgreementCategory))) {
                 foreach ($tblStudentAgreementTypeList as $tblStudentAgreementType) {
                     Student::useService()->insertStudentAgreement($tblStudent, $tblStudentAgreementType);
@@ -341,5 +349,40 @@ class Service
         }
 
         return array($firstName, $lastName);
+    }
+
+    /**
+     * @param $columnName
+     * @param $RunY
+     * @param $error
+     *
+     * @return false|string
+     */
+    public function formatDateString($columnName, $RunY, $error)
+    {
+        if ($this->Location[$columnName] !== null) {
+            $date = trim($this->Document->getValue($this->Document->getCell($this->Location[$columnName], $RunY)));
+            if ($date != '') {
+                $len = strlen($date);
+                switch ($len) {
+                    case 6:
+                        $result = substr($date, 0, 2) . '.' . substr($date, 2, 2) . '.' . substr($date, 4, 2);
+                        break;
+                    case 7:
+                        $date = '0' . $date;
+                    case 8:
+                        $result = substr($date, 0, 2) . '.' . substr($date, 2, 2) . '.' . substr($date, 4, 4);
+                        break;
+                    default:
+                        $error[] = 'Zeile: ' . ($RunY + 1) . $columnName . ':' . $date
+                            . ' konnte nicht in ein Datum umgewandelt werden.';
+                        $result = '';
+                }
+
+                return $result;
+            }
+        }
+
+        return '';
     }
 }
