@@ -201,7 +201,7 @@ class Service extends AbstractService
                     // Mandant wird als Schule verwendet
                     $SchoolString = $this->getSchoolString($Acronym);
                     // Local to test it with DEMOSCHOOL
-                    if($Acronym == 'REF'){
+                    if($Acronym == 'REF' || $Acronym == 'IBH'){
                         $SchoolString = $this->getSchoolString('DEMOSCHOOL');
                     }
 
@@ -234,11 +234,11 @@ class Service extends AbstractService
                         $SchoolKeyList = array_unique($SchoolKeyList);
                         sort($SchoolKeyList);
                         foreach($SchoolKeyList as $SchoolKey){
-                            // Ref is Demoschool
-                            if($SchoolKey != 'REF'){
-                                $schools[] = $schoolList[$SchoolKey];
-                            } else {
+                            // Ref & IBH is Demoschool
+                            if($SchoolKey == 'REF' || !$SchoolKey == 'IBH'){
                                 $schools[] = $schoolList['DEMOSCHOOL'];
+                            } else {
+                                $schools[] = $schoolList[$SchoolKey];
                             }
                         }
 
@@ -330,7 +330,7 @@ class Service extends AbstractService
                         if(($tblDivisionTeacherList = Division::useService()->getSubjectTeacherByDivisionSubject($tblDivisionSubject))){
                             foreach($tblDivisionTeacherList as $tblDivisionTeacher){
                                 if(($tblPersonTeacher = $tblDivisionTeacher->getServiceTblPerson())){
-                                    if($Acronym == 'REF'){
+                                    if($Acronym == 'REF' || $Acronym == 'IBH'){
                                         $Acronym = 'DEMOSCHOOL';
                                     }
                                     $SchoolString = $Acronym;

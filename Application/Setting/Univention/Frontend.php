@@ -84,10 +84,13 @@ class Frontend extends Extension implements IFrontendInterface
             return $Stage;
         }
         $Acronym = Account::useService()->getMandantAcronym();
+        $excludeList = array('REF', 'IBH');
         // Mandant ist nicht in der Schulliste
-        if( !array_key_exists($Acronym, $schoolList) && $Acronym != 'REF'){
-            $Stage->setContent(new Warning('Ihr Schulträger ist noch nicht für UCS freigeschalten'));
-            return $Stage;
+        if( !array_key_exists($Acronym, $schoolList)){
+            if(!in_array($Acronym, $excludeList)){
+                $Stage->setContent(new Warning('Ihr Schulträger ist noch nicht für UCS freigeschalten'));
+                return $Stage;
+            }
         }
 
         $IsButtonActive = false;
@@ -96,7 +99,8 @@ class Frontend extends Extension implements IFrontendInterface
                  // Aktivierung EVSR
                 if($Acronym == 'EVSR'
                 || $Acronym == 'EVSC'
-                || $Acronym == 'REF'){ // || ($tblIdentification->getName() == TblIdentification::NAME_SYSTEM)
+                || $Acronym == 'REF'
+                || $Acronym == 'IBH'){ // || ($tblIdentification->getName() == TblIdentification::NAME_SYSTEM)
 //                    $Stage->addButton(new Standard('Benutzer komplett abgleichen', '/Setting/Univention/Api', new Upload(), array('Upload' => 'All')));
                     $Stage->addButton(new Standard('Benutzer anlegen', '/Setting/Univention/Api', new Plus(), array('Upload' => 'Create')));
                     $Stage->addButton(new Standard('Benutzer anpassen', '/Setting/Univention/Api', new Edit(), array('Upload' => 'Update')));
