@@ -213,7 +213,11 @@ class ApiSetting extends Extension implements IApiInterface
             $tblSettingGroupPersonExist = Setting::useService()->getSettingGroupPersonAll();
             foreach($tblSettingGroupPersonExist as $tblSettingGroupPerson) {
                 $tblGroup = $tblSettingGroupPerson->getServiceTblGroupPerson();
-                if(!in_array($tblGroup->getId(), $GroupIdList)){
+                // Gruppe nicht mehr vorhanden
+                if(!$tblGroup){
+                    Setting::useService()->destroySettingGroupPerson($tblSettingGroupPerson);
+                } elseif(!in_array($tblGroup->getId(), $GroupIdList)){
+                    // Gruppe nicht mehr ausgewählt
                     Setting::useService()->destroySettingGroupPerson($tblSettingGroupPerson);
                 }
             }
