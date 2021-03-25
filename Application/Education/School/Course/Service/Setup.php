@@ -31,6 +31,7 @@ class Setup extends AbstractSetup
         $this->setTableSchoolDiploma($Schema);
         $this->setTableTechnicalDiploma($Schema);
         $this->setTableTechnicalCourse($Schema);
+        $this->setTableTechnicalSubjectArea($Schema);
 
         /**
          * Migration & Protocol
@@ -103,6 +104,21 @@ class Setup extends AbstractSetup
         $this->createColumn($table, 'Name', self::FIELD_TYPE_STRING);
         $this->createColumn($table, 'GenderMaleName', self::FIELD_TYPE_STRING);
         $this->createColumn($table, 'GenderFemaleName', self::FIELD_TYPE_STRING);
+
+        return $table;
+    }
+
+    /**
+     * @param Schema $Schema
+     *
+     * @return Table
+     */
+    private function setTableTechnicalSubjectArea(Schema &$Schema)
+    {
+        $table = $this->createTable($Schema, 'tblTechnicalSubjectArea');
+
+        $this->createColumn($table, 'Name', self::FIELD_TYPE_STRING);
+        $this->createColumn($table, 'Acronym', self::FIELD_TYPE_STRING);
 
         return $table;
     }

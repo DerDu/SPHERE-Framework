@@ -20,7 +20,6 @@ class Data extends AbstractData
         $tblCategoryTechnical = $this->createCategory(TblCategory::TECHNICAL, 'Berufsbildende Schulen');
         $tblCategorySecondCourse = $this->createCategory(TblCategory::SECOND_COURSE, 'Schulen des zweiten Bildungsweges');
 
-        // todo update entfernen wenn auf allen Mandanten ausgeführt wurde
         $this->createType('Berufliches Gymnasium', 'BGy', $tblCategoryTechnical, true);
         $this->createType('Berufsfachschule', 'BFS', $tblCategoryTechnical, true);
         $this->createType('Berufsschule', 'BS', $tblCategoryTechnical, true);
@@ -37,6 +36,8 @@ class Data extends AbstractData
         $this->createType('Abendgymnasium', '', $tblCategorySecondCourse, true);
         $this->createType('Kolleg', '', $tblCategorySecondCourse, true);
 
+//        $this->createType('Hotelmanagementschule', 'HOFA', $tblCategoryTechnical, true);
+
         /**
          * Kamenz BFS, FS
          */
@@ -44,9 +45,13 @@ class Data extends AbstractData
         $this->createType('Freie Waldorfschule', '', $tblCategoryCommon, false);
 
         $this->createType('Berufsschule (berufsbildende Förderschule)', '', $tblCategoryTechnical, false);
-        $this->createType('Berufsgrundbildungsjahr', '', $tblCategoryTechnical, false);
+        if (($tblType = $this->createType('Berufsgrundbildungsjahr', 'BGJ', $tblCategoryTechnical, true))) {
+            $this->updateTypeOnce($tblType, 'BGJ', $tblCategoryTechnical, true);
+        }
         $this->createType('Berufsgrundbildungsjahr (berufsbildende Förderschule)', '', $tblCategoryTechnical, false);
-        $this->createType('Berufsvorbereitungsjahr', '', $tblCategoryTechnical, false);
+        if (($tblType = $this->createType('Berufsvorbereitungsjahr', 'BVJ', $tblCategoryTechnical, true))) {
+            $this->updateTypeOnce($tblType, 'BVJ', $tblCategoryTechnical, true);
+        }
         $this->createType('Berufsvorbereitungsjahr (berufsbildende Förderschule)', '', $tblCategoryTechnical, false);
         $this->createType('BvB', '', $tblCategoryTechnical, false);
         $this->createType('BvB – rehaspezifisch', '', $tblCategoryTechnical, false);

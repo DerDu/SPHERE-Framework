@@ -268,6 +268,7 @@ class Setup extends AbstractSetup
         if (!$this->getConnection()->hasColumn('tblStudentTransport', 'Remark')) {
             $Table->addColumn('Remark', 'text');
         }
+        $this->createColumn($Table, 'IsDriverStudent', self::FIELD_TYPE_BOOLEAN, false, false);
         return $Table;
     }
 
@@ -304,6 +305,7 @@ class Setup extends AbstractSetup
         if (!$this->getConnection()->hasColumn('tblStudentLocker', 'KeyNumber')) {
             $Table->addColumn('KeyNumber', 'string');
         }
+        $this->createColumn($Table, 'CombinationLockNumber', self::FIELD_TYPE_STRING);
         return $Table;
     }
 
@@ -985,6 +987,12 @@ class Setup extends AbstractSetup
         $this->createColumn($table, 'PraxisLessons', self::FIELD_TYPE_STRING);
         $this->createColumn($table, 'DurationOfTraining', self::FIELD_TYPE_STRING);
         $this->createColumn($table, 'Remark', self::FIELD_TYPE_TEXT);
+        $this->createColumn($table, 'YearOfSchoolDiploma', self::FIELD_TYPE_STRING);
+        $this->createColumn($table, 'YearOfTechnicalDiploma', self::FIELD_TYPE_STRING);
+        $this->createColumn($table, 'serviceTblTechnicalSubjectArea', self::FIELD_TYPE_BIGINT, true);
+        $this->createColumn($table, 'HasFinancialAid', self::FIELD_TYPE_BOOLEAN);
+        $this->createColumn($table, 'FinancialAidApplicationYear', self::FIELD_TYPE_STRING);
+        $this->createColumn($table, 'FinancialAidBureau', self::FIELD_TYPE_STRING);
 
         $this->createForeignKey($table, $tblStudentTenseOfLesson, true);
         $this->createForeignKey($table, $tblStudentTrainingStatus, true);

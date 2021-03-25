@@ -12,7 +12,11 @@ use SPHERE\Application\Education\Lesson\Subject\Subject;
 use SPHERE\Application\Education\Lesson\Term\Service\Entity\TblYear;
 use SPHERE\Application\Education\Lesson\Term\Term;
 use SPHERE\Application\Education\School\Course\Course;
+use SPHERE\Application\Education\School\Course\Service\Entity\TblSchoolDiploma;
 use SPHERE\Application\Education\School\Course\Service\Entity\TblTechnicalCourse;
+use SPHERE\Application\Education\School\Course\Service\Entity\TblTechnicalDiploma;
+use SPHERE\Application\Education\School\Course\Service\Entity\TblTechnicalSubjectArea;
+use SPHERE\Application\Education\School\Type\Service\Entity\TblType;
 use SPHERE\Application\Education\School\Type\Type;
 use SPHERE\Application\People\Group\Group;
 use SPHERE\Application\People\Meta\Student\Service\Data;
@@ -22,6 +26,7 @@ use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentBaptism;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentBilling;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentInsuranceState;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentIntegration;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentLiberationType;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentLocker;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentMasernInfo;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentMedicalRecord;
@@ -31,6 +36,8 @@ use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentSubject;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentSubjectRanking;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentSubjectType;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentTechnicalSchool;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentTenseOfLesson;
+use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentTrainingStatus;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudentTransport;
 use SPHERE\Application\People\Meta\Student\Service\Entity\ViewStudent;
 use SPHERE\Application\People\Meta\Student\Service\Entity\ViewStudentAgreement;
@@ -180,19 +187,22 @@ class Service extends Support
      * @param $LockerNumber
      * @param $LockerLocation
      * @param $KeyNumber
+     * @param string $CombinationLockNumber
      *
      * @return TblStudentLocker
      */
     public function insertStudentLocker(
         $LockerNumber,
         $LockerLocation,
-        $KeyNumber
+        $KeyNumber,
+        $CombinationLockNumber = ''
     ) {
 
         return (new Data($this->getBinding()))->createStudentLocker(
             $LockerNumber,
             $LockerLocation,
-            $KeyNumber
+            $KeyNumber,
+            $CombinationLockNumber
         );
     }
 
@@ -266,6 +276,7 @@ class Service extends Support
      * @param        $StationEntrance
      * @param        $StationExit
      * @param string $Remark
+     * @param boolean $IsDriverStudent
      *
      * @return TblStudentTransport
      */
@@ -273,14 +284,16 @@ class Service extends Support
         $Route,
         $StationEntrance,
         $StationExit,
-        $Remark = ''
+        $Remark = '',
+        $IsDriverStudent = false
     ) {
 
         return (new Data($this->getBinding()))->createStudentTransport(
             $Route,
             $StationEntrance,
             $StationExit,
-            $Remark
+            $Remark,
+            $IsDriverStudent
         );
     }
 
@@ -794,13 +807,15 @@ class Service extends Support
                     $tblStudent->getTblStudentLocker(),
                     $Meta['Additional']['Locker']['Number'],
                     $Meta['Additional']['Locker']['Location'],
-                    $Meta['Additional']['Locker']['Key']
+                    $Meta['Additional']['Locker']['Key'],
+                    $Meta['Additional']['Locker']['CombinationLockNumber']
                 );
             } else {
                 $tblStudentLocker = (new Data($this->getBinding()))->createStudentLocker(
                     $Meta['Additional']['Locker']['Number'],
                     $Meta['Additional']['Locker']['Location'],
-                    $Meta['Additional']['Locker']['Key']
+                    $Meta['Additional']['Locker']['Key'],
+                    $Meta['Additional']['Locker']['CombinationLockNumber']
                 );
             }
 
@@ -823,14 +838,16 @@ class Service extends Support
                     $Meta['Transport']['Route'],
                     $Meta['Transport']['Station']['Entrance'],
                     $Meta['Transport']['Station']['Exit'],
-                    $Meta['Transport']['Remark']
+                    $Meta['Transport']['Remark'],
+                    isset($Meta['Transport']['IsDriverStudent'])
                 );
             } else {
                 $tblStudentTransport = (new Data($this->getBinding()))->createStudentTransport(
                     $Meta['Transport']['Route'],
                     $Meta['Transport']['Station']['Entrance'],
                     $Meta['Transport']['Station']['Exit'],
-                    $Meta['Transport']['Remark']
+                    $Meta['Transport']['Remark'],
+                    isset($Meta['Transport']['IsDriverStudent'])
                 );
             }
 
@@ -1535,6 +1552,8 @@ class Service extends Support
             $tblStudentTenseOfLesson = $this->getStudentTenseOfLessonById($Meta['TechnicalSchool']['tblStudentTenseOfLesson']);
             $tblStudentTrainingStatus = $this->getStudentTrainingStatusById($Meta['TechnicalSchool']['tblStudentTrainingStatus']);
 
+            $tblTechnicalSubjectArea = Course::useService()->getTechnicalSubjectAreaById($Meta['TechnicalSchool']['serviceTblTechnicalSubjectArea']);
+
             if (($tblStudentTechnicalSchool = $tblStudent->getTblStudentTechnicalSchool())) {
                 (new Data($this->getBinding()))->updateStudentTechnicalSchool(
                     $tblStudentTechnicalSchool,
@@ -1547,7 +1566,13 @@ class Service extends Support
                     $tblTechnicalDiploma ? $tblTechnicalDiploma : null,
                     $tblTechnicalType ? $tblTechnicalType : null,
                     $tblStudentTenseOfLesson ? $tblStudentTenseOfLesson : null,
-                    $tblStudentTrainingStatus ? $tblStudentTrainingStatus : null
+                    $tblStudentTrainingStatus ? $tblStudentTrainingStatus : null,
+                    $Meta['TechnicalSchool']['YearOfSchoolDiploma'],
+                    $Meta['TechnicalSchool']['YearOfTechnicalDiploma'],
+                    $tblTechnicalSubjectArea ? $tblTechnicalSubjectArea : null,
+                    isset($Meta['TechnicalSchool']['HasFinancialAid']),
+                    $Meta['TechnicalSchool']['FinancialAidApplicationYear'],
+                    $Meta['TechnicalSchool']['FinancialAidBureau']
                 );
             } else {
 
@@ -1561,7 +1586,13 @@ class Service extends Support
                     $tblTechnicalDiploma ? $tblTechnicalDiploma : null,
                     $tblTechnicalType ? $tblTechnicalType : null,
                     $tblStudentTenseOfLesson ? $tblStudentTenseOfLesson : null,
-                    $tblStudentTrainingStatus ? $tblStudentTrainingStatus : null
+                    $tblStudentTrainingStatus ? $tblStudentTrainingStatus : null,
+                    $Meta['TechnicalSchool']['YearOfSchoolDiploma'],
+                    $Meta['TechnicalSchool']['YearOfTechnicalDiploma'],
+                    $tblTechnicalSubjectArea ? $tblTechnicalSubjectArea : null,
+                    isset($Meta['TechnicalSchool']['HasFinancialAid']),
+                    $Meta['TechnicalSchool']['FinancialAidApplicationYear'],
+                    $Meta['TechnicalSchool']['FinancialAidBureau']
                 );
 
                 if ($tblStudentTechnicalSchool) {
@@ -1616,5 +1647,76 @@ class Service extends Support
         }
 
         return '';
+    }
+
+    /**
+     * @param TblStudent $tblStudent
+     * @param TblStudentLiberationType $tblStudentLiberationType
+     *
+     * @return Service\Entity\TblStudentLiberation
+     */
+    public function addStudentLiberation(
+        TblStudent $tblStudent,
+        TblStudentLiberationType $tblStudentLiberationType
+    ) {
+        return (new Data($this->getBinding()))->addStudentLiberation($tblStudent, $tblStudentLiberationType);
+    }
+
+    /**
+     * @param $praxisLessons
+     * @param $durationOfTraining
+     * @param $remark
+     * @param TblTechnicalCourse|null $tblTechnicalCourse
+     * @param TblSchoolDiploma|null $tblSchoolDiploma
+     * @param TblType|null $tblSchoolType
+     * @param TblTechnicalDiploma|null $tblTechnicalDiploma
+     * @param TblType|null $tblTechnicalType
+     * @param TblStudentTenseOfLesson|null $tblStudentTenseOfLesson
+     * @param TblStudentTrainingStatus|null $tblStudentTrainingStatus
+     * @param string $yearOfSchoolDiploma
+     * @param string $yearOfTechnicalDiploma
+     * @param TblTechnicalSubjectArea|null $tblTechnicalSubjectArea
+     * @param bool $hasFinancialAid
+     * @param string $financialAidApplicationYear
+     * @param string $financialAidBureau
+     *
+     * @return TblStudentTechnicalSchool
+     */
+    public function insertStudentTechnicalSchool(
+        $praxisLessons,
+        $durationOfTraining,
+        $remark,
+        TblTechnicalCourse $tblTechnicalCourse = null,
+        TblSchoolDiploma $tblSchoolDiploma = null,
+        TblType $tblSchoolType = null,
+        TblTechnicalDiploma $tblTechnicalDiploma = null,
+        TblType $tblTechnicalType = null,
+        TblStudentTenseOfLesson $tblStudentTenseOfLesson = null,
+        TblStudentTrainingStatus $tblStudentTrainingStatus = null,
+        $yearOfSchoolDiploma = '',
+        $yearOfTechnicalDiploma = '',
+        TblTechnicalSubjectArea $tblTechnicalSubjectArea = null,
+        $hasFinancialAid = false,
+        $financialAidApplicationYear = '',
+        $financialAidBureau = ''
+    ) {
+        return (new Data($this->getBinding()))->createStudentTechnicalSchool(
+            $praxisLessons,
+            $durationOfTraining,
+            $remark,
+            $tblTechnicalCourse,
+            $tblSchoolDiploma,
+            $tblSchoolType,
+            $tblTechnicalDiploma,
+            $tblTechnicalType,
+            $tblStudentTenseOfLesson,
+            $tblStudentTrainingStatus,
+            $yearOfSchoolDiploma,
+            $yearOfTechnicalDiploma,
+            $tblTechnicalSubjectArea,
+            $hasFinancialAid,
+            $financialAidApplicationYear,
+            $financialAidBureau
+        );
     }
 }

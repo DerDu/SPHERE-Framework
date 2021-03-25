@@ -9,6 +9,7 @@ use SPHERE\Application\Education\School\Course\Course;
 use SPHERE\Application\Education\School\Course\Service\Entity\TblSchoolDiploma;
 use SPHERE\Application\Education\School\Course\Service\Entity\TblTechnicalCourse;
 use SPHERE\Application\Education\School\Course\Service\Entity\TblTechnicalDiploma;
+use SPHERE\Application\Education\School\Course\Service\Entity\TblTechnicalSubjectArea;
 use SPHERE\Application\Education\School\Type\Service\Entity\TblType;
 use SPHERE\Application\Education\School\Type\Type;
 use SPHERE\Application\People\Meta\Student\Student;
@@ -61,6 +62,30 @@ class TblStudentTechnicalSchool extends Element
      * @Column(type="string")
      */
     protected $Remark;
+    /**
+     * @Column(type="string")
+     */
+    protected $YearOfSchoolDiploma;
+    /**
+     * @Column(type="string")
+     */
+    protected $YearOfTechnicalDiploma;
+    /**
+     * @Column(type="bigint")
+     */
+    protected $serviceTblTechnicalSubjectArea;
+    /**
+     * @Column(type="boolean")
+     */
+    protected $HasFinancialAid;
+    /**
+     * @Column(type="string")
+     */
+    protected $FinancialAidApplicationYear;
+    /**
+     * @Column(type="string")
+     */
+    protected $FinancialAidBureau;
 
     /**
      * @return bool|TblTechnicalCourse
@@ -248,5 +273,105 @@ class TblStudentTechnicalSchool extends Element
     public function setRemark($Remark)
     {
         $this->Remark = $Remark;
+    }
+
+    /**
+     * @return string
+     */
+    public function getYearOfSchoolDiploma()
+    {
+        return $this->YearOfSchoolDiploma;
+    }
+
+    /**
+     * @param string $YearOfSchoolDiploma
+     */
+    public function setYearOfSchoolDiploma($YearOfSchoolDiploma)
+    {
+        $this->YearOfSchoolDiploma = $YearOfSchoolDiploma;
+    }
+
+    /**
+     * @return string
+     */
+    public function getYearOfTechnicalDiploma()
+    {
+        return $this->YearOfTechnicalDiploma;
+    }
+
+    /**
+     * @param string $YearOfTechnicalDiploma
+     */
+    public function setYearOfTechnicalDiploma($YearOfTechnicalDiploma)
+    {
+        $this->YearOfTechnicalDiploma = $YearOfTechnicalDiploma;
+    }
+
+    /**
+     * @return bool|TblTechnicalSubjectArea
+     */
+    public function getServiceTblTechnicalSubjectArea()
+    {
+        if (null === $this->serviceTblTechnicalSubjectArea) {
+            return false;
+        } else {
+            return Course::useService()->getTechnicalSubjectAreaById($this->serviceTblTechnicalSubjectArea);
+        }
+    }
+
+    /**
+     * @param TblTechnicalSubjectArea|null $tblTechnicalSubjectArea
+     */
+    public function setServiceTblTechnicalSubjectArea(TblTechnicalSubjectArea $tblTechnicalSubjectArea = null)
+    {
+        $this->serviceTblTechnicalSubjectArea = ( null === $tblTechnicalSubjectArea ? null : $tblTechnicalSubjectArea->getId() );
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getHasFinancialAid()
+    {
+        return $this->HasFinancialAid;
+    }
+
+    /**
+     * @param boolean $HasFinancialAid
+     */
+    public function setHasFinancialAid($HasFinancialAid)
+    {
+        $this->HasFinancialAid = (boolean) $HasFinancialAid;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFinancialAidApplicationYear()
+    {
+        return $this->FinancialAidApplicationYear;
+    }
+
+    /**
+     * @param string $FinancialAidApplicationYear
+     */
+    public function setFinancialAidApplicationYear($FinancialAidApplicationYear)
+    {
+        $this->FinancialAidApplicationYear = $FinancialAidApplicationYear;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFinancialAidBureau()
+    {
+        return $this->FinancialAidBureau;
+    }
+
+    /**
+     * @param string $FinancialAidBureau
+     */
+    public function setFinancialAidBureau($FinancialAidBureau)
+    {
+        $this->FinancialAidBureau = $FinancialAidBureau;
     }
 }

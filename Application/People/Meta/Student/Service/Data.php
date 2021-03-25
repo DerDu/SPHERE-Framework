@@ -5,6 +5,7 @@ use DateTime;
 use SPHERE\Application\Education\School\Course\Service\Entity\TblSchoolDiploma;
 use SPHERE\Application\Education\School\Course\Service\Entity\TblTechnicalCourse;
 use SPHERE\Application\Education\School\Course\Service\Entity\TblTechnicalDiploma;
+use SPHERE\Application\Education\School\Course\Service\Entity\TblTechnicalSubjectArea;
 use SPHERE\Application\Education\School\Type\Service\Entity\TblType;
 use SPHERE\Application\People\Meta\Student\Service\Data\Support;
 use SPHERE\Application\People\Meta\Student\Service\Entity\TblStudent;
@@ -791,13 +792,15 @@ class Data extends Support
      * @param string $LockerNumber
      * @param string $LockerLocation
      * @param string $KeyNumber
+     * @param string $CombinationLockNumber
      *
      * @return TblStudentLocker
      */
     public function createStudentLocker(
         $LockerNumber,
         $LockerLocation,
-        $KeyNumber
+        $KeyNumber,
+        $CombinationLockNumber
     ) {
 
         $Manager = $this->getConnection()->getEntityManager();
@@ -806,6 +809,8 @@ class Data extends Support
         $Entity->setLockerNumber($LockerNumber);
         $Entity->setLockerLocation($LockerLocation);
         $Entity->setKeyNumber($KeyNumber);
+        $Entity->setCombinationLockNumber($CombinationLockNumber);
+
         $Manager->saveEntity($Entity);
         Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(), $Entity);
 
@@ -817,6 +822,7 @@ class Data extends Support
      * @param string           $LockerNumber
      * @param string           $LockerLocation
      * @param string           $KeyNumber
+     * @param string           $CombinationLockNumber
      *
      * @return bool
      */
@@ -824,7 +830,8 @@ class Data extends Support
         TblStudentLocker $tblStudentLocker,
         $LockerNumber,
         $LockerLocation,
-        $KeyNumber
+        $KeyNumber,
+        $CombinationLockNumber
     ) {
 
         $Manager = $this->getConnection()->getEntityManager();
@@ -835,6 +842,8 @@ class Data extends Support
             $Entity->setLockerNumber($LockerNumber);
             $Entity->setLockerLocation($LockerLocation);
             $Entity->setKeyNumber($KeyNumber);
+            $Entity->setCombinationLockNumber($CombinationLockNumber);
+
             $Manager->saveEntity($Entity);
             Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(), $Protocol, $Entity);
             return true;
@@ -860,6 +869,7 @@ class Data extends Support
      * @param string $StationEntrance
      * @param string $StationExit
      * @param string $Remark
+     * @param boolean $IsDriverStudent
      *
      * @return TblStudentTransport
      */
@@ -867,7 +877,8 @@ class Data extends Support
         $Route,
         $StationEntrance,
         $StationExit,
-        $Remark
+        $Remark,
+        $IsDriverStudent
     ) {
 
         $Manager = $this->getConnection()->getEntityManager();
@@ -877,6 +888,8 @@ class Data extends Support
         $Entity->setStationEntrance($StationEntrance);
         $Entity->setStationExit($StationExit);
         $Entity->setRemark($Remark);
+        $Entity->setIsDriverStudent($IsDriverStudent);
+
         $Manager->saveEntity($Entity);
         Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(), $Entity);
 
@@ -889,6 +902,7 @@ class Data extends Support
      * @param string              $StationEntrance
      * @param string              $StationExit
      * @param string              $Remark
+     * @param boolean             $IsDriverStudent
      *
      * @return bool
      */
@@ -897,7 +911,8 @@ class Data extends Support
         $Route,
         $StationEntrance,
         $StationExit,
-        $Remark
+        $Remark,
+        $IsDriverStudent
     ) {
 
         $Manager = $this->getConnection()->getEntityManager();
@@ -909,6 +924,8 @@ class Data extends Support
             $Entity->setStationEntrance($StationEntrance);
             $Entity->setStationExit($StationExit);
             $Entity->setRemark($Remark);
+            $Entity->setIsDriverStudent($IsDriverStudent);
+
             $Manager->saveEntity($Entity);
             Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(), $Protocol, $Entity);
             return true;
@@ -1113,6 +1130,12 @@ class Data extends Support
      * @param TblType|null $tblTechnicalType
      * @param TblStudentTenseOfLesson|null $tblStudentTenseOfLesson
      * @param TblStudentTrainingStatus|null $tblStudentTrainingStatus
+     * @param string $yearOfSchoolDiploma
+     * @param string $yearOfTechnicalDiploma
+     * @param TblTechnicalSubjectArea|null $tblTechnicalSubjectArea
+     * @param bool $hasFinancialAid
+     * @param string $financialAidApplicationYear
+     * @param string $financialAidBureau
      *
      * @return TblStudentTechnicalSchool
      */
@@ -1126,7 +1149,13 @@ class Data extends Support
         TblTechnicalDiploma $tblTechnicalDiploma = null,
         TblType $tblTechnicalType = null,
         TblStudentTenseOfLesson $tblStudentTenseOfLesson = null,
-        TblStudentTrainingStatus $tblStudentTrainingStatus = null
+        TblStudentTrainingStatus $tblStudentTrainingStatus = null,
+        $yearOfSchoolDiploma = '',
+        $yearOfTechnicalDiploma = '',
+        TblTechnicalSubjectArea $tblTechnicalSubjectArea = null,
+        $hasFinancialAid = false,
+        $financialAidApplicationYear = '',
+        $financialAidBureau = ''
     ) {
         $Manager = $this->getEntityManager();
 
@@ -1141,6 +1170,12 @@ class Data extends Support
         $Entity->setServiceTblTechnicalType($tblTechnicalType);
         $Entity->setTblStudentTenseOfLesson($tblStudentTenseOfLesson);
         $Entity->setTblStudentTrainingStatus($tblStudentTrainingStatus);
+        $Entity->setYearOfSchoolDiploma($yearOfSchoolDiploma);
+        $Entity->setYearOfTechnicalDiploma($yearOfTechnicalDiploma);
+        $Entity->setServiceTblTechnicalSubjectArea($tblTechnicalSubjectArea);
+        $Entity->setHasFinancialAid($hasFinancialAid);
+        $Entity->setFinancialAidApplicationYear($financialAidApplicationYear);
+        $Entity->setFinancialAidBureau($financialAidBureau);
 
         $Manager->saveEntity($Entity);
         Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(), $Entity);
@@ -1160,6 +1195,12 @@ class Data extends Support
      * @param TblType|null $tblTechnicalType
      * @param TblStudentTenseOfLesson|null $tblStudentTenseOfLesson
      * @param TblStudentTrainingStatus|null $tblStudentTrainingStatus
+     * @param string $yearOfSchoolDiploma
+     * @param string $yearOfTechnicalDiploma
+     * @param TblTechnicalSubjectArea|null $tblTechnicalSubjectArea
+     * @param bool $hasFinancialAid
+     * @param string $financialAidApplicationYear
+     * @param string $financialAidBureau
      *
      * @return bool
      */
@@ -1174,7 +1215,13 @@ class Data extends Support
         TblTechnicalDiploma $tblTechnicalDiploma = null,
         TblType $tblTechnicalType = null,
         TblStudentTenseOfLesson $tblStudentTenseOfLesson = null,
-        TblStudentTrainingStatus $tblStudentTrainingStatus = null
+        TblStudentTrainingStatus $tblStudentTrainingStatus = null,
+        $yearOfSchoolDiploma = '',
+        $yearOfTechnicalDiploma = '',
+        TblTechnicalSubjectArea $tblTechnicalSubjectArea = null,
+        $hasFinancialAid = false,
+        $financialAidApplicationYear = '',
+        $financialAidBureau = ''
     ) {
 
         $Manager = $this->getEntityManager();
@@ -1193,6 +1240,12 @@ class Data extends Support
             $Entity->setServiceTblTechnicalType($tblTechnicalType);
             $Entity->setTblStudentTenseOfLesson($tblStudentTenseOfLesson);
             $Entity->setTblStudentTrainingStatus($tblStudentTrainingStatus);
+            $Entity->setYearOfSchoolDiploma($yearOfSchoolDiploma);
+            $Entity->setYearOfTechnicalDiploma($yearOfTechnicalDiploma);
+            $Entity->setServiceTblTechnicalSubjectArea($tblTechnicalSubjectArea);
+            $Entity->setHasFinancialAid($hasFinancialAid);
+            $Entity->setFinancialAidApplicationYear($financialAidApplicationYear);
+            $Entity->setFinancialAidBureau($financialAidBureau);
 
             $Manager->saveEntity($Entity);
             Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(), $Protocol, $Entity);

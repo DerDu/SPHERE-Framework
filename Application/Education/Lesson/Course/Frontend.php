@@ -32,7 +32,7 @@ class Frontend extends Extension implements IFrontendInterface
     /**
      * @return Stage
      */
-    public function frontendDashboard()
+    public function frontendCourse()
     {
 
         $Stage = new Stage('Berufsbildende Schulen', 'Bildungsgang / Berufsbezeichnung / Ausbildung');
@@ -162,6 +162,133 @@ class Frontend extends Extension implements IFrontendInterface
                     new FormColumn(
                         new TextField('Data[GenderFemaleName]', 'Ergotherapeutin', 'Weiblicher Name')
                     ),
+                )),
+                new FormRow(array(
+                    new FormColumn(
+                        $saveButton
+                    )
+                )),
+            ))
+        ))->disableSubmitAction();
+    }
+
+    /**
+     * @return Stage
+     */
+    public function frontendSubjectArea()
+    {
+
+        $Stage = new Stage('Berufsbildende Schulen', 'Fachrichtung');
+
+        $receiver = ApiCourse::receiverBlock($this->loadTechnicalSubjectAreaTable(), 'TechnicalSubjectAreaContent');
+        $Stage->setContent(
+            new Layout(array(
+                new LayoutGroup(array(
+                    new LayoutRow(array(
+                        new LayoutColumn(array(
+                            ApiCourse::receiverModal(),
+                            (new Primary(
+                                new Plus() . ' Fachrichtung hinzufügen',
+                                ApiCourse::getEndpoint()
+                            ))->ajaxPipelineOnClick(ApiCourse::pipelineOpenCreateTechnicalSubjectAreaModal())
+                        ))
+                    )),
+                    new LayoutRow(array(
+                        new LayoutColumn(
+                            '&nbsp;'
+                        )
+                    )),
+                    new LayoutRow(array(
+                        new LayoutColumn(
+                            $receiver
+                        )
+                    ))
+                ))
+            ))
+        );
+
+        return $Stage;
+    }
+
+    /**
+     * @return TableData
+     */
+    public function loadTechnicalSubjectAreaTable()
+    {
+        $dataList = array();
+        if (($tblTechnicalSubjectAreaAll = Course::useService()->getTechnicalSubjectAreaAll())) {
+            foreach ($tblTechnicalSubjectAreaAll as $tblTechnicalSubjectArea) {
+                $dataList[] = array(
+                    'Acronym' => $tblTechnicalSubjectArea->getAcronym(),
+                    'Name' => $tblTechnicalSubjectArea->getName(),
+                    'Options' => (new Standard(
+                        '',
+                        ApiCourse::getEndpoint(),
+                        new Edit(),
+                        array(),
+                        'Bearbeiten'
+                    ))->ajaxPipelineOnClick(ApiCourse::pipelineOpenEditTechnicalSubjectAreaModal($tblTechnicalSubjectArea->getId()))
+                );
+            }
+        }
+
+        $columns = array(
+            'Acronym' => 'Kürzel',
+            'Name' => 'Name',
+            'Options' => ' '
+        );
+
+        return new TableData(
+            $dataList,
+            null,
+            $columns,
+            array(
+                'columnDefs' => array(
+                    array('orderable' => false, 'width' => '30px', 'targets' => -1),
+                ),
+                'order' => array(
+                    array(0, 'asc')
+                ),
+            )
+        );
+    }
+
+    /**
+     * @param null $TechnicalSubjectAreaId
+     * @param false $setPost
+     *
+     * @return Form
+     */
+    public function formTechnicalSubjectArea($TechnicalSubjectAreaId = null, $setPost = false)
+    {
+        if ($TechnicalSubjectAreaId && ($tblTechnicalSubjectArea = Course::useService()->getTechnicalSubjectAreaById($TechnicalSubjectAreaId))) {
+            // beim Checken der Inputfeldern darf der Post nicht gesetzt werden
+            if ($setPost) {
+                $Global = $this->getGlobal();
+                $Global->POST['Data']['Acronym'] = $tblTechnicalSubjectArea->getAcronym();
+                $Global->POST['Data']['Name'] = $tblTechnicalSubjectArea->getName();
+
+                $Global->savePost();
+            }
+        }
+
+        if ($TechnicalSubjectAreaId) {
+            $saveButton = (new Primary('Speichern', ApiCourse::getEndpoint(), new Save()))
+                ->ajaxPipelineOnClick(ApiCourse::pipelineEditTechnicalSubjectAreaSave($TechnicalSubjectAreaId));
+        } else {
+            $saveButton = (new Primary('Speichern', ApiCourse::getEndpoint(), new Save()))
+                ->ajaxPipelineOnClick(ApiCourse::pipelineCreateTechnicalSubjectAreaSave());
+        }
+
+        return (new Form(
+            new FormGroup(array(
+                new FormRow(array(
+                    new FormColumn(
+                        new TextField('Data[Acronym]', '', 'Kürzel')
+                        , 4),
+                    new FormColumn(
+                        new TextField('Data[Name]', '', 'Name')
+                        , 8),
                 )),
                 new FormRow(array(
                     new FormColumn(

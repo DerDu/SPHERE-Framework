@@ -27,6 +27,10 @@ class TblStudentLocker extends Element
      * @Column(type="string")
      */
     protected $KeyNumber;
+    /**
+     * @Column(type="string")
+     */
+    protected $CombinationLockNumber;
 
     /**
      * @return string
@@ -80,5 +84,21 @@ class TblStudentLocker extends Element
     {
 
         $this->KeyNumber = $KeyNumber;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCombinationLockNumber()
+    {
+        return $this->CombinationLockNumber;
+    }
+
+    /**
+     * @param string $CombinationLockNumber
+     */
+    public function setCombinationLockNumber($CombinationLockNumber)
+    {
+        $this->CombinationLockNumber = $CombinationLockNumber;
     }
 }

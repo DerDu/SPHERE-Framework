@@ -5,6 +5,7 @@ use SPHERE\Application\Education\School\Course\Service\Entity\TblCourse;
 use SPHERE\Application\Education\School\Course\Service\Entity\TblSchoolDiploma;
 use SPHERE\Application\Education\School\Course\Service\Entity\TblTechnicalCourse;
 use SPHERE\Application\Education\School\Course\Service\Entity\TblTechnicalDiploma;
+use SPHERE\Application\Education\School\Course\Service\Entity\TblTechnicalSubjectArea;
 use SPHERE\Application\Platform\System\Protocol\Protocol;
 use SPHERE\System\Database\Binding\AbstractData;
 
@@ -251,6 +252,93 @@ class Data extends AbstractData
             $Entity->setName($Name);
             $Entity->setGenderMaleName($GenderMaleName);
             $Entity->setGenderFemaleName($GenderFemaleName);
+
+            $Manager->saveEntity($Entity);
+            Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(), $Protocol, $Entity);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param string $Acronym
+     * @param string $Name
+     *
+     * @return TblTechnicalSubjectArea
+     */
+    public function createTechnicalSubjectArea($Acronym, $Name)
+    {
+        $Manager = $this->getConnection()->getEntityManager();
+
+        $Entity = $Manager->getEntity('TblTechnicalSubjectArea')
+            ->findOneBy(array(TblTechnicalSubjectArea::ATTR_ACRONYM => $Acronym));
+
+        if (null === $Entity) {
+            $Entity = new TblTechnicalSubjectArea();
+            $Entity->setAcronym($Acronym);
+            $Entity->setName($Name);
+
+            $Manager->saveEntity($Entity);
+            Protocol::useService()->createInsertEntry($this->getConnection()->getDatabase(), $Entity);
+        }
+        return $Entity;
+    }
+
+    /**
+     * @param $Id
+     *
+     * @return bool|TblTechnicalSubjectArea
+     */
+    public function getTechnicalSubjectAreaById($Id)
+    {
+        /** @var TblTechnicalSubjectArea $Entity */
+        $Entity = $this->getEntityManager()->getEntityById('TblTechnicalSubjectArea', $Id);
+        return ( null === $Entity ? false : $Entity );
+    }
+
+    /**
+     * @param $Acronym
+     *
+     * @return false|TblTechnicalSubjectArea
+     */
+    public function getTechnicalSubjectAreaByAcronym($Acronym)
+    {
+        return $this->getCachedEntityBy(__METHOD__, $this->getEntityManager(), 'TblTechnicalSubjectArea', array(
+            TblTechnicalSubjectArea::ATTR_ACRONYM => $Acronym
+        ));
+    }
+
+    /**
+     * @return bool|TblTechnicalSubjectArea[]
+     */
+    public function getTechnicalSubjectAreaAll()
+    {
+        return $this->getCachedEntityList(__METHOD__, $this->getEntityManager(), 'TblTechnicalSubjectArea');
+    }
+
+    /**
+     * @param TblTechnicalSubjectArea $tblTechnicalSubjectArea
+     * @param string $Acronym
+     * @param string $Name
+     *
+     * @return bool
+     */
+    public function updateTechnicalSubjectArea(
+        TblTechnicalSubjectArea $tblTechnicalSubjectArea,
+        $Acronym,
+        $Name
+    ) {
+        $Manager = $this->getConnection()->getEntityManager();
+
+        /** @var TblTechnicalSubjectArea $Entity */
+        $Entity = $Manager->getEntityById('TblTechnicalSubjectArea', $tblTechnicalSubjectArea->getId());
+
+        if (null !== $Entity) {
+            $Protocol = clone $Entity;
+            $Entity->setAcronym($Acronym);
+            $Entity->setName($Name);
 
             $Manager->saveEntity($Entity);
             Protocol::useService()->createUpdateEntry($this->getConnection()->getDatabase(), $Protocol, $Entity);

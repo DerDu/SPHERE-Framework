@@ -31,6 +31,10 @@ class TblStudentTransport extends Element
      * @Column(type="text")
      */
     protected $Remark;
+    /**
+     * @Column(type="boolean")
+     */
+    protected $IsDriverStudent;
 
     /**
      * @return string
@@ -102,5 +106,21 @@ class TblStudentTransport extends Element
     {
 
         $this->Remark = $Remark;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getIsDriverStudent()
+    {
+        return $this->IsDriverStudent;
+    }
+
+    /**
+     * @param boolean $IsDriverStudent
+     */
+    public function setIsDriverStudent($IsDriverStudent)
+    {
+        $this->IsDriverStudent = (boolean) $IsDriverStudent;
     }
 }

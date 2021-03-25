@@ -5,6 +5,7 @@ namespace SPHERE\Application\Transfer\Import\FuxMedia;
 use SPHERE\Application\Education\Lesson\Term\Term;
 use SPHERE\Application\Education\School\Type\Type;
 use SPHERE\Common\Frontend\Form\Repository\Button\Primary;
+use SPHERE\Common\Frontend\Form\Repository\Field\CheckBox;
 use SPHERE\Common\Frontend\Form\Repository\Field\FileUpload;
 use SPHERE\Common\Frontend\Form\Repository\Field\SelectBox;
 use SPHERE\Common\Frontend\Form\Structure\Form;
@@ -58,12 +59,16 @@ class Frontend extends Extension implements IFrontendInterface
                                             new FormColumn(
                                                 new SelectBox('Select[Year]', 'Schuljahr',
                                                     array('{{Name}}' => $tblYearAll)),
-                                                6
+                                                4
                                             ),
                                             new FormColumn(
-                                                new SelectBox('Select[Type]', 'Schulart',
+                                                new SelectBox('Select[Type]', 'Schulart auswählen',
                                                     array('{{Name}}' => $tblTypeAll)),
-                                                6
+                                                4
+                                            ),
+                                            new FormColumn(
+                                                new CheckBox('Select[UseTypeFromImport]', 'oder Schulart aus Spalte: Schüler_Schulart verwenden', 1),
+                                                4
                                             )
                                         )),
                                     ))
@@ -81,12 +86,13 @@ class Frontend extends Extension implements IFrontendInterface
 
     /**
      * @param UploadedFile|null $File
-     * @param null              $TypeId
-     * @param null              $YearId
+     * @param null $TypeId
+     * @param null $YearId
+     * @param null $UseTypeFromImport
      *
      * @return Stage
      */
-    public function frontendStudentImport(UploadedFile $File = null, $TypeId = null, $YearId = null)
+    public function frontendStudentImport(UploadedFile $File = null, $TypeId = null, $YearId = null, $UseTypeFromImport = null)
     {
 
         $View = new Stage();
@@ -107,7 +113,7 @@ class Frontend extends Extension implements IFrontendInterface
                     new Panel('Schuljahr:', $tblYear ? $tblYear->getDisplayName() : '',
                         Panel::PANEL_TYPE_INFO), 6),
                 new LayoutColumn(
-                    new Panel('Schulart:', $tblType ? $tblType->getName() : '',
+                    new Panel('Schulart:', $tblType ? $tblType->getName() : 'Schulart wird aus Spalte: Schüler_Schulart verwendet',
                         Panel::PANEL_TYPE_INFO), 6),
                 new LayoutColumn(
                     new Well(
@@ -122,7 +128,7 @@ class Frontend extends Extension implements IFrontendInterface
                                     )
                                 )
                                 , new Primary('Hochladen')
-                            ), $File, $TypeId, $YearId
+                            ), $File, $TypeId, $YearId, $UseTypeFromImport
                         )
                         . new Warning('Erlaubte Dateitypen: Excel (XLS,XLSX)')
                     )

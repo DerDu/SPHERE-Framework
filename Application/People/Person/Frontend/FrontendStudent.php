@@ -8,6 +8,8 @@
 
 namespace SPHERE\Application\People\Person\Frontend;
 
+use DateInterval;
+use DateTime;
 use SPHERE\Application\Api\MassReplace\ApiMassReplace;
 use SPHERE\Application\Api\MassReplace\StudentFilter;
 use SPHERE\Application\Api\People\Meta\Student\ApiStudent;
@@ -189,14 +191,36 @@ class FrontendStudent extends FrontendReadOnly
                 $hasMigrationBackground = '';
             }
 
+            if (($tblCommon = $tblPerson->getCommon())
+                && ($tblCommonBirthDates = $tblCommon->getTblCommonBirthDates())
+                && ($birthday = $tblCommonBirthDates->getBirthday())
+            ) {
+                $birthday = new DateTime($birthday);
+                $schoolAttendanceDate = $birthday->add(new DateInterval("P18Y"));
+                $now = new DateTime('now');
+                $hasSchoolAttendance = $now > $schoolAttendanceDate ? 'Ja' : 'Nein';
+            } else {
+                $hasSchoolAttendance = '';
+            }
+
             $content = new Layout(new LayoutGroup(array(
                 new LayoutRow(array(
                     self::getLayoutColumnLabel('Identifikation'),
                     self::getLayoutColumnValue($identifier),
-                    self::getLayoutColumnLabel('Schulpflichtbeginn'),
-                    self::getLayoutColumnValue($schoolAttendanceStartDate),
+                    new LayoutColumn(
+                        new Layout(new LayoutGroup(array(
+                            new LayoutRow(array(
+                                self::getLayoutColumnLabel('Schulpflichtbeginn', 6),
+                                self::getLayoutColumnValue($schoolAttendanceStartDate, 6),
+                            )),
+                            new LayoutRow(array(
+                                self::getLayoutColumnLabel('Schulpflicht erfüllt', 6),
+                                self::getLayoutColumnValue($hasSchoolAttendance, 6),
+                            )),
+                        )))
+                    ,4),
                     self::getLayoutColumnLabel('Herkunftssprache ist nicht oder nicht ausschließlich Deutsch'),
-                    self::getLayoutColumnValue($hasMigrationBackground)
+                    self::getLayoutColumnValue($hasMigrationBackground),
                 )),
             )));
 

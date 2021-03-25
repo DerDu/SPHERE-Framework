@@ -482,6 +482,21 @@ class StudentFilter extends Extension
                                 }
                             }
                         }
+
+                        // TechnicalSchool
+                        if (($tblStudentTechnicalSchool = $tblStudent->getTblStudentTechnicalSchool())) {
+                            if ($Label == 'Bildungsgang / Berufsbezeichnung / Ausbildung') {
+                                if (($tblTechnicalCourse = $tblStudentTechnicalSchool->getServiceTblTechnicalCourse())) {
+                                    $DataPerson['Edit'] = $tblTechnicalCourse->getName();
+                                }
+                            }
+                            if ($Label == 'Fachrichtung') {
+                                if (($tblTechnicalSubjectArea = $tblStudentTechnicalSchool->getServiceTblTechnicalSubjectArea())) {
+                                    $DataPerson['Edit'] = $tblTechnicalSubjectArea->getName();
+                                }
+                            }
+                        }
+
                     }
                 }
                 $DataPerson['Division'] = '';

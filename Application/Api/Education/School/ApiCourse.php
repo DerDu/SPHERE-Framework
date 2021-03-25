@@ -48,12 +48,16 @@ class ApiCourse  extends Extension implements IApiInterface
         $Dispatcher = new Dispatcher(__CLASS__);
 
         $Dispatcher->registerMethod('loadTechnicalCourseContent');
-
         $Dispatcher->registerMethod('openCreateTechnicalCourseModal');
         $Dispatcher->registerMethod('saveCreateTechnicalCourseModal');
-
         $Dispatcher->registerMethod('openEditTechnicalCourseModal');
         $Dispatcher->registerMethod('saveEditTechnicalCourseModal');
+
+        $Dispatcher->registerMethod('loadTechnicalSubjectAreaContent');
+        $Dispatcher->registerMethod('openCreateTechnicalSubjectAreaModal');
+        $Dispatcher->registerMethod('saveCreateTechnicalSubjectAreaModal');
+        $Dispatcher->registerMethod('openEditTechnicalSubjectAreaModal');
+        $Dispatcher->registerMethod('saveEditTechnicalSubjectAreaModal');
 
         return $Dispatcher->callMethod($Method);
     }
@@ -181,7 +185,7 @@ class ApiCourse  extends Extension implements IApiInterface
      */
     public function loadTechnicalCourseContent()
     {
-        return Course::useFrontend()->loadTechnicalCourseTable();
+        return \SPHERE\Application\Education\Lesson\Course\Course::useFrontend()->loadTechnicalCourseTable();
     }
 
     /**
@@ -189,7 +193,7 @@ class ApiCourse  extends Extension implements IApiInterface
      */
     public function openCreateTechnicalCourseModal()
     {
-        return $this->getTechnicalCourseModal(Course::useFrontend()->formTechnicalCourse());
+        return $this->getTechnicalCourseModal(\SPHERE\Application\Education\Lesson\Course\Course::useFrontend()->formTechnicalCourse());
     }
 
     /**
@@ -252,7 +256,7 @@ class ApiCourse  extends Extension implements IApiInterface
             return new Danger('Der berufsbildende Bildungsgang wurde nicht gefunden', new Exclamation());
         }
 
-        return $this->getTechnicalCourseModal(Course::useFrontend()->formTechnicalCourse(
+        return $this->getTechnicalCourseModal(\SPHERE\Application\Education\Lesson\Course\Course::useFrontend()->formTechnicalCourse(
             $TechnicalCourseId, true
         ), $TechnicalCourseId);
     }
@@ -280,6 +284,202 @@ class ApiCourse  extends Extension implements IApiInterface
                 . self::pipelineClose();
         } else {
             return new Danger('Der berufsbildende Bildungsgang konnte nicht gespeichert werden.') . self::pipelineClose();
+        }
+    }
+
+    /**
+     * @return Pipeline
+     */
+    public static function pipelineLoadTechnicalSubjectAreaContent()
+    {
+        $Pipeline = new Pipeline(false);
+        $ModalEmitter = new ServerEmitter(self::receiverBlock('', 'TechnicalSubjectAreaContent'), self::getEndpoint());
+        $ModalEmitter->setGetPayload(array(
+            self::API_TARGET => 'loadTechnicalSubjectAreaContent',
+        ));
+
+        $Pipeline->appendEmitter($ModalEmitter);
+
+        return $Pipeline;
+    }
+
+    /**
+     * @return Danger|TableData
+     */
+    public function loadTechnicalSubjectAreaContent()
+    {
+        return \SPHERE\Application\Education\Lesson\Course\Course::useFrontend()->loadTechnicalSubjectAreaTable();
+    }
+
+    /**
+     * @return Pipeline
+     */
+    public static function pipelineOpenCreateTechnicalSubjectAreaModal()
+    {
+        $Pipeline = new Pipeline(false);
+        $ModalEmitter = new ServerEmitter(self::receiverModal(), self::getEndpoint());
+        $ModalEmitter->setGetPayload(array(
+            self::API_TARGET => 'openCreateTechnicalSubjectAreaModal',
+        ));
+        $Pipeline->appendEmitter($ModalEmitter);
+
+        return $Pipeline;
+    }
+
+    /**
+     * @return Danger|string
+     */
+    public function openCreateTechnicalSubjectAreaModal()
+    {
+        return $this->getTechnicalSubjectAreaModal(\SPHERE\Application\Education\Lesson\Course\Course::useFrontend()->formTechnicalSubjectArea());
+    }
+
+    /**
+     * @param $form
+     * @param null $TechnicalSubjectAreaId
+     *
+     * @return string
+     */
+    private function getTechnicalSubjectAreaModal($form, $TechnicalSubjectAreaId = null)
+    {
+        if ($TechnicalSubjectAreaId) {
+            $title = new Title(new Edit() . ' Fachrichtung bearbeiten');
+        } else {
+            $title = new Title(new Plus() . ' Fachrichtung hinzufügen');
+        }
+
+        return $title
+            . new Layout(array(
+                    new LayoutGroup(
+                        new LayoutRow(
+                            new LayoutColumn(
+                                new Well(
+                                    $form
+                                )
+                            )
+                        )
+                    ))
+            );
+    }
+
+    /**
+     * @return Pipeline
+     */
+    public static function pipelineCreateTechnicalSubjectAreaSave()
+    {
+        $Pipeline = new Pipeline();
+        $ModalEmitter = new ServerEmitter(self::receiverModal(), self::getEndpoint());
+        $ModalEmitter->setGetPayload(array(
+            self::API_TARGET => 'saveCreateTechnicalSubjectAreaModal'
+        ));
+        $ModalEmitter->setLoadingMessage('Wird bearbeitet');
+        $Pipeline->appendEmitter($ModalEmitter);
+
+        return $Pipeline;
+    }
+
+    /**
+     * @param array $Data
+     *
+     * @return Danger|string
+     */
+    public function saveCreateTechnicalSubjectAreaModal($Data = null)
+    {
+        if (($form = Course::useService()->checkFormTechnicalSubjectArea($Data))) {
+            // display Errors on form
+            return $this->getTechnicalSubjectAreaModal($form);
+        }
+
+        if (Course::useService()->createTechnicalSubjectArea($Data['Acronym'], $Data['Name'])) {
+            return new Success('Die Fachrichtung wurde erfolgreich gespeichert.')
+                . self::pipelineLoadTechnicalSubjectAreaContent()
+                . self::pipelineClose();
+        } else {
+            return new Danger('Die Fachrichtung konnte nicht gespeichert werden.') . self::pipelineClose();
+        }
+    }
+
+    /**
+     * @param int $TechnicalSubjectAreaId
+     *
+     * @return Pipeline
+     */
+    public static function pipelineOpenEditTechnicalSubjectAreaModal($TechnicalSubjectAreaId)
+    {
+        $Pipeline = new Pipeline(false);
+        $ModalEmitter = new ServerEmitter(self::receiverModal(), self::getEndpoint());
+        $ModalEmitter->setGetPayload(array(
+            self::API_TARGET => 'openEditTechnicalSubjectAreaModal',
+        ));
+        $ModalEmitter->setPostPayload(array(
+            'TechnicalSubjectAreaId' => $TechnicalSubjectAreaId
+        ));
+        $Pipeline->appendEmitter($ModalEmitter);
+
+        return $Pipeline;
+    }
+
+    /**
+     * @param $TechnicalSubjectAreaId
+     *
+     * @return string
+     */
+    public function openEditTechnicalSubjectAreaModal($TechnicalSubjectAreaId)
+    {
+        if (!($tblTechnicalSubjectArea = Course::useService()->getTechnicalSubjectAreaById($TechnicalSubjectAreaId))) {
+            return new Danger('Die Fachrichtung wurde nicht gefunden', new Exclamation());
+        }
+
+        return $this->getTechnicalSubjectAreaModal(\SPHERE\Application\Education\Lesson\Course\Course::useFrontend()->formTechnicalSubjectArea(
+            $TechnicalSubjectAreaId, true
+        ), $TechnicalSubjectAreaId);
+    }
+
+
+    /**
+     * @param $TechnicalSubjectAreaId
+     *
+     * @return Pipeline
+     */
+    public static function pipelineEditTechnicalSubjectAreaSave($TechnicalSubjectAreaId)
+    {
+        $Pipeline = new Pipeline();
+        $ModalEmitter = new ServerEmitter(self::receiverModal(), self::getEndpoint());
+        $ModalEmitter->setGetPayload(array(
+            self::API_TARGET => 'saveEditTechnicalSubjectAreaModal'
+        ));
+        $ModalEmitter->setPostPayload(array(
+            'TechnicalSubjectAreaId' => $TechnicalSubjectAreaId
+        ));
+        $ModalEmitter->setLoadingMessage('Wird bearbeitet');
+        $Pipeline->appendEmitter($ModalEmitter);
+
+        return $Pipeline;
+    }
+
+    /**
+     * @param $TechnicalSubjectAreaId
+     * @param $Data
+     *
+     * @return Danger|string
+     */
+    public function saveEditTechnicalSubjectAreaModal($TechnicalSubjectAreaId, $Data)
+    {
+        if (!($tblTechnicalSubjectArea = Course::useService()->getTechnicalSubjectAreaById($TechnicalSubjectAreaId))) {
+            return new Danger('Die Fachrichtung wurde nicht gefunden', new Exclamation());
+        }
+
+        if (($form = Course::useService()->checkFormTechnicalSubjectArea($Data, $tblTechnicalSubjectArea))) {
+            // display Errors on form
+            return $this->getTechnicalSubjectAreaModal($form, $TechnicalSubjectAreaId);
+        }
+
+        if (Course::useService()->updateTechnicalSubjectArea($tblTechnicalSubjectArea, $Data['Acronym'], $Data['Name'])) {
+            return new Success('Die Fachrichtung wurde erfolgreich gespeichert.')
+                . self::pipelineLoadTechnicalSubjectAreaContent()
+                . self::pipelineClose();
+        } else {
+            return new Danger('Die Fachrichtung konnte nicht gespeichert werden.') . self::pipelineClose();
         }
     }
 }

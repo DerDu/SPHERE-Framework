@@ -1,7 +1,13 @@
 <?php
 namespace SPHERE\Application\People\Person\Frontend;
 
+use SPHERE\Application\Api\MassReplace\ApiMassReplace;
+use SPHERE\Application\Api\MassReplace\StudentFilter;
+use SPHERE\Application\Api\People\Meta\TechnicalSchool\MassReplaceTechnicalSchool;
 use SPHERE\Application\Api\People\Person\ApiPersonEdit;
+use SPHERE\Application\Education\Lesson\Division\Service\Entity\ViewDivisionStudent;
+use SPHERE\Application\Education\Lesson\Term\Service\Entity\ViewYear;
+use SPHERE\Application\Education\Lesson\Term\Term;
 use SPHERE\Application\Education\School\Course\Course;
 use SPHERE\Application\Education\School\Type\Service\Entity\TblCategory;
 use SPHERE\Application\Education\School\Type\Type;
@@ -10,6 +16,8 @@ use SPHERE\Application\People\Person\FrontendReadOnly;
 use SPHERE\Application\People\Person\Person;
 use SPHERE\Application\People\Person\Service\Entity\TblPerson;
 use SPHERE\Application\People\Person\TemplateReadOnly;
+use SPHERE\Common\Frontend\Form\Repository\Field\AutoCompleter;
+use SPHERE\Common\Frontend\Form\Repository\Field\CheckBox;
 use SPHERE\Common\Frontend\Form\Repository\Field\SelectBox;
 use SPHERE\Common\Frontend\Form\Repository\Field\TextArea;
 use SPHERE\Common\Frontend\Form\Repository\Field\TextField;
@@ -23,6 +31,7 @@ use SPHERE\Common\Frontend\Icon\Repository\Disable;
 use SPHERE\Common\Frontend\Icon\Repository\Edit;
 use SPHERE\Common\Frontend\Icon\Repository\Save;
 use SPHERE\Common\Frontend\Layout\Repository\Panel;
+use SPHERE\Common\Frontend\Layout\Repository\PullRight;
 use SPHERE\Common\Frontend\Layout\Repository\Well;
 use SPHERE\Common\Frontend\Layout\Structure\Layout;
 use SPHERE\Common\Frontend\Layout\Structure\LayoutColumn;
@@ -71,6 +80,13 @@ class FrontendStudentTechnicalSchool extends FrontendReadOnly
                     ? $tblStudentTenseOfLessons->getName() : '';
                 $studentTrainingStatus = ($tblStudentTrainingStatus = $tblStudentTechnicalSchool->getTblStudentTrainingStatus())
                     ? $tblStudentTrainingStatus->getName() : '';
+                $yearOfSchoolDiploma = $tblStudentTechnicalSchool->getYearOfSchoolDiploma();
+                $yearOfTechnicalDiploma = $tblStudentTechnicalSchool->getYearOfTechnicalDiploma();
+                $technicalSubjectArea = ($tblTechnicalSubjectArea = $tblStudentTechnicalSchool->getServiceTblTechnicalSubjectArea())
+                    ? $tblTechnicalSubjectArea->getAcronym() . ' - ' . $tblTechnicalSubjectArea->getName() : '';
+                $hasFinancialAid = $tblStudentTechnicalSchool->getHasFinancialAid() ? 'Ja' : 'Nein';
+                $financialAidApplicationYear = $tblStudentTechnicalSchool->getFinancialAidApplicationYear();
+                $financialAidBureau = $tblStudentTechnicalSchool->getFinancialAidBureau();
             } else {
                 $technicalCourse = '';
                 $schoolDiploma = '';
@@ -83,6 +99,12 @@ class FrontendStudentTechnicalSchool extends FrontendReadOnly
                 $remark = '';
                 $studentTenseOfLessons = '';
                 $studentTrainingStatus = '';
+                $yearOfSchoolDiploma = '';
+                $yearOfTechnicalDiploma = '';
+                $technicalSubjectArea = '';
+                $hasFinancialAid = '';
+                $financialAidApplicationYear = '';
+                $financialAidBureau = '';
             }
 
             $content = new Layout(new LayoutGroup(array(
@@ -96,12 +118,16 @@ class FrontendStudentTechnicalSchool extends FrontendReadOnly
                                     self::getLayoutColumnValue($schoolDiploma, 3),
                                     self::getLayoutColumnLabel('An der allgemeinbildenden Schulart', 3),
                                     self::getLayoutColumnValue($schoolType, 3),
+                                    self::getLayoutColumnLabel('Abschlussjahr (allgemeinbildend)', 3),
+                                    self::getLayoutColumnValue($yearOfSchoolDiploma, 3),
                                 )),
                                 new LayoutRow(array(
                                     self::getLayoutColumnLabel('Berufsbildender Abschluss', 3),
                                     self::getLayoutColumnValue($technicalDiploma, 3),
                                     self::getLayoutColumnLabel('An der berufsbildenden Schulart', 3),
                                     self::getLayoutColumnValue($technicalType, 3),
+                                    self::getLayoutColumnLabel('Abschlussjahr (berufsbildenden)', 3),
+                                    self::getLayoutColumnValue($yearOfTechnicalDiploma, 3),
                                 )),
                             )))
                         ),
@@ -115,6 +141,10 @@ class FrontendStudentTechnicalSchool extends FrontendReadOnly
                                 new LayoutRow(array(
                                     self::getLayoutColumnLabel('Bildungsgang / Berufsbezeichnung / Ausbildung', 5),
                                     self::getLayoutColumnValue($technicalCourse, 7),
+                                )),
+                                new LayoutRow(array(
+                                    self::getLayoutColumnLabel('Fachrichtung', 5),
+                                    self::getLayoutColumnValue($technicalSubjectArea, 7),
                                 )),
                                 new LayoutRow(array(
                                     self::getLayoutColumnLabel('Zeitform des Unterrichts', 3),
@@ -131,6 +161,23 @@ class FrontendStudentTechnicalSchool extends FrontendReadOnly
                                 new LayoutRow(array(
                                     self::getLayoutColumnLabel('Bemerkungen', 3),
                                     self::getLayoutColumnValue($remark, 9),
+                                )),
+                            )))
+                        ),
+                    )),
+                )),
+                new LayoutRow(array(
+                    new LayoutColumn(array(
+                        FrontendReadOnly::getSubContent(
+                            'Bafög',
+                            new Layout(new LayoutGroup(array(
+                                new LayoutRow(array(
+                                    self::getLayoutColumnLabel('Bafög'),
+                                    self::getLayoutColumnValue($hasFinancialAid),
+                                    self::getLayoutColumnLabel('Beantragungsjahr'),
+                                    self::getLayoutColumnValue($financialAidApplicationYear),
+                                    self::getLayoutColumnLabel('Amt'),
+                                    self::getLayoutColumnValue($financialAidBureau),
                                 )),
                             )))
                         ),
@@ -184,6 +231,13 @@ class FrontendStudentTechnicalSchool extends FrontendReadOnly
                     ? $tblStudentTenseOfLessons->getId() : 0;
                 $Global->POST['Meta']['TechnicalSchool']['tblStudentTrainingStatus'] = ($tblStudentTrainingStatus = $tblStudentTechnicalSchool->getTblStudentTrainingStatus())
                     ? $tblStudentTrainingStatus->getId() : 0;
+                $Global->POST['Meta']['TechnicalSchool']['YearOfSchoolDiploma'] = $tblStudentTechnicalSchool->getYearOfSchoolDiploma();
+                $Global->POST['Meta']['TechnicalSchool']['YearOfTechnicalDiploma'] = $tblStudentTechnicalSchool->getYearOfTechnicalDiploma();
+                $Global->POST['Meta']['TechnicalSchool']['serviceTblTechnicalSubjectArea'] = ($tblTechnicalSubjectArea = $tblStudentTechnicalSchool->getServiceTblTechnicalSubjectArea())
+                    ? $tblTechnicalSubjectArea->getId() : 0;
+                $Global->POST['Meta']['TechnicalSchool']['HasFinancialAid'] = $tblStudentTechnicalSchool->getHasFinancialAid() ? 1 : 0;
+                $Global->POST['Meta']['TechnicalSchool']['FinancialAidApplicationYear'] = $tblStudentTechnicalSchool->getFinancialAidApplicationYear();
+                $Global->POST['Meta']['TechnicalSchool']['FinancialAidBureau'] = $tblStudentTechnicalSchool->getFinancialAidBureau();
 
                 $Global->savePost();
             }
@@ -211,7 +265,10 @@ class FrontendStudentTechnicalSchool extends FrontendReadOnly
      */
     private function getEditStudentTechnicalSchoolForm(TblPerson $tblPerson = null)
     {
+        FrontendStudent::setYearAndDivisionForMassReplace($tblPerson, $Year, $Division);
+
         $tblTechnicalCourseAll = Course::useService()->getTechnicalCourseAll();
+        $tblTechnicalSubjectAreaAll = Course::useService()->getTechnicalSubjectAreaAll();
         $tblSchoolDiplomaAll = Course::useService()->getSchoolDiplomaAll();
         $tblTechnicalDiplomaAll = Course::useService()->getTechnicalDiplomaAll();
         $tblStudentTenseOfLessonAll = Student::useService()->getStudentTenseOfLessonAll();
@@ -224,6 +281,13 @@ class FrontendStudentTechnicalSchool extends FrontendReadOnly
             $tblTypeCommonAll = array_merge($tblTypeCommonAll, $tblTypeSecondCourseAll);
         }
 
+        $yearAll = array();
+        if (($tblYearAll = Term::useService()->getYearAll())) {
+            foreach ($tblYearAll as $tblYear) {
+                $yearAll[] = $tblYear->getName();
+            }
+        }
+
         $panelArrive = new Panel(
             'Schüler - Aufname',
             new Layout(new LayoutGroup(array(
@@ -232,37 +296,88 @@ class FrontendStudentTechnicalSchool extends FrontendReadOnly
                         (new SelectBox('Meta[TechnicalSchool][serviceTblSchoolDiploma]', 'Höchster Abschluss an einer allgemeinbildenden Schule',
                             array('{{ Name }}' => $tblSchoolDiplomaAll)))
                             ->configureLibrary(SelectBox::LIBRARY_SELECT2)
-                        , 6),
+                        , 4),
                     new LayoutColumn(
                         (new SelectBox('Meta[TechnicalSchool][serviceTblSchoolType]', 'An der allgemeinbildenden Schulart (bzw. 2. Bildungsweg)',
                             array('{{ Name }}' => $tblTypeCommonAll)))
                             ->configureLibrary(SelectBox::LIBRARY_SELECT2)
-                        , 6),
+                        , 4),
+                    new LayoutColumn(
+                        new TextField('Meta[TechnicalSchool][YearOfSchoolDiploma]', '', 'Abschlussjahr der allgemeinbildenden Schule')
+                        , 4),
                 )),
                 new LayoutRow(array(
                     new LayoutColumn(
                         (new SelectBox('Meta[TechnicalSchool][serviceTblTechnicalDiploma]', 'Höchster Abschluss an einer berufsbildenden Schule',
                             array('{{ Name }}' => $tblTechnicalDiplomaAll)))
                             ->configureLibrary(SelectBox::LIBRARY_SELECT2)
-                        , 6),
+                        , 4),
                     new LayoutColumn(
                         (new SelectBox('Meta[TechnicalSchool][serviceTblTechnicalType]', 'An der berufsbildenden Schulart',
                             array('{{ Name }}' => $tblTypeTechnicalAll)))
                             ->configureLibrary(SelectBox::LIBRARY_SELECT2)
-                        , 6),
+                        , 4),
+                    new LayoutColumn(
+                        new TextField('Meta[TechnicalSchool][YearOfTechnicalDiploma]', '', 'Abschlussjahr der berufsbildenden Schule')
+                        , 4),
                 ))
             ))),
             Panel::PANEL_TYPE_INFO
         );
+
+        $Node = 'Berufsbildende Schulen - Allgemeines';
 
         $panelTechnical = new Panel(
             'Allgemeines',
             new Layout(new LayoutGroup(array(
                 new LayoutRow(array(
                     new LayoutColumn(
-                        (new SelectBox('Meta[TechnicalSchool][serviceTblTechnicalCourse]', 'Bildungsgang / Berufsbezeichnung / Ausbildung',
+                        ApiMassReplace::receiverField((
+                        $Field = (new SelectBox('Meta[TechnicalSchool][serviceTblTechnicalCourse]', 'Bildungsgang / Berufsbezeichnung / Ausbildung',
                             array('{{ Name }}' => $tblTechnicalCourseAll)))
                             ->configureLibrary(SelectBox::LIBRARY_SELECT2)
+                        ))
+                        . ApiMassReplace::receiverModal($Field, $Node)
+
+                        . new PullRight((new Link('Massen-Änderung',
+                            ApiMassReplace::getEndpoint(), null, array(
+                                ApiMassReplace::SERVICE_CLASS                                   => MassReplaceTechnicalSchool::CLASS_MASS_REPLACE_TECHNICAL_SCHOOL,
+                                ApiMassReplace::SERVICE_METHOD                                  => MassReplaceTechnicalSchool::METHOD_REPLACE_COURSE,
+                                ApiMassReplace::USE_FILTER                                      => StudentFilter::STUDENT_FILTER,
+                                'Id'                                                            => $tblPerson->getId(),
+                                'Year['.ViewYear::TBL_YEAR_ID.']'                               => $Year[ViewYear::TBL_YEAR_ID],
+                                'Division['.ViewDivisionStudent::TBL_LEVEL_ID.']'               => $Division[ViewDivisionStudent::TBL_LEVEL_ID],
+                                'Division['.ViewDivisionStudent::TBL_DIVISION_NAME.']'          => $Division[ViewDivisionStudent::TBL_DIVISION_NAME],
+                                'Division['.ViewDivisionStudent::TBL_LEVEL_SERVICE_TBL_TYPE.']' => $Division[ViewDivisionStudent::TBL_LEVEL_SERVICE_TBL_TYPE],
+                                'Node'                                                          => $Node,
+                            )))->ajaxPipelineOnClick(
+                            ApiMassReplace::pipelineOpen($Field, $Node)
+                        ))
+                    ),
+                )),
+                new LayoutRow(array(
+                    new LayoutColumn(
+                        ApiMassReplace::receiverField((
+                        $Field = (new SelectBox('Meta[TechnicalSchool][serviceTblTechnicalSubjectArea]', 'Fachrichtung',
+                            array('{{ Name }}' => $tblTechnicalSubjectAreaAll)))
+                            ->configureLibrary(SelectBox::LIBRARY_SELECT2)
+                        ))
+                        . ApiMassReplace::receiverModal($Field, $Node)
+
+                        . new PullRight((new Link('Massen-Änderung',
+                            ApiMassReplace::getEndpoint(), null, array(
+                                ApiMassReplace::SERVICE_CLASS                                   => MassReplaceTechnicalSchool::CLASS_MASS_REPLACE_TECHNICAL_SCHOOL,
+                                ApiMassReplace::SERVICE_METHOD                                  => MassReplaceTechnicalSchool::METHOD_REPLACE_SUBJECT_AREA,
+                                ApiMassReplace::USE_FILTER                                      => StudentFilter::STUDENT_FILTER,
+                                'Id'                                                            => $tblPerson->getId(),
+                                'Year['.ViewYear::TBL_YEAR_ID.']'                               => $Year[ViewYear::TBL_YEAR_ID],
+                                'Division['.ViewDivisionStudent::TBL_LEVEL_ID.']'               => $Division[ViewDivisionStudent::TBL_LEVEL_ID],
+                                'Division['.ViewDivisionStudent::TBL_DIVISION_NAME.']'          => $Division[ViewDivisionStudent::TBL_DIVISION_NAME],
+                                'Division['.ViewDivisionStudent::TBL_LEVEL_SERVICE_TBL_TYPE.']' => $Division[ViewDivisionStudent::TBL_LEVEL_SERVICE_TBL_TYPE],
+                                'Node'                                                          => $Node,
+                            )))->ajaxPipelineOnClick(
+                            ApiMassReplace::pipelineOpen($Field, $Node)
+                        ))
                     ),
                 )),
                 new LayoutRow(array(
@@ -294,6 +409,25 @@ class FrontendStudentTechnicalSchool extends FrontendReadOnly
             Panel::PANEL_TYPE_INFO
         );
 
+        $panelFinancialAid = new Panel(
+            'Allgemeines',
+            new Layout(new LayoutGroup(array(
+                new LayoutRow(array(
+                    new LayoutColumn(
+                        new CheckBox('Meta[TechnicalSchool][HasFinancialAid]', 'Bafög', 1)
+                        , 4),
+                    new LayoutColumn(
+                        new AutoCompleter('Meta[TechnicalSchool][FinancialAidApplicationYear]', 'Beantragungsjahr', '',
+                            $yearAll)
+                        , 4),
+                    new LayoutColumn(
+                        new TextField('Meta[TechnicalSchool][FinancialAidBureau]', '', 'Amt')
+                        , 4),
+                )),
+            ))),
+            Panel::PANEL_TYPE_INFO
+        );
+
         return (new Form(array(
             new FormGroup(array(
                 new FormRow(array(
@@ -301,6 +435,9 @@ class FrontendStudentTechnicalSchool extends FrontendReadOnly
                 )),
                 new FormRow(array(
                     new FormColumn($panelTechnical),
+                )),
+                new FormRow(array(
+                    new FormColumn($panelFinancialAid),
                 )),
                 new FormRow(array(
                     new FormColumn(array(

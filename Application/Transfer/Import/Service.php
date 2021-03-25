@@ -358,13 +358,16 @@ class Service
      *
      * @return false|string
      */
-    public function formatDateString($columnName, $RunY, $error)
+    public function formatDateString($columnName, $RunY, &$error)
     {
         if ($this->Location[$columnName] !== null) {
             $date = trim($this->Document->getValue($this->Document->getCell($this->Location[$columnName], $RunY)));
             if ($date != '') {
                 $len = strlen($date);
                 switch ($len) {
+                    case 5:
+                        $result = date('d.m.Y', \PHPExcel_Shared_Date::ExcelToPHP($date));
+                        break;
                     case 6:
                         $result = substr($date, 0, 2) . '.' . substr($date, 2, 2) . '.' . substr($date, 4, 2);
                         break;

@@ -14,7 +14,6 @@ use SPHERE\Application\Education\Lesson\Division\Division;
 use SPHERE\Application\Education\Lesson\Subject\Subject;
 use SPHERE\Application\Education\Lesson\Term\Term;
 use SPHERE\Application\Education\School\Course\Course;
-use SPHERE\Application\Education\School\Type\Service\Entity\TblType;
 use SPHERE\Application\Education\School\Type\Type;
 use SPHERE\Application\People\Group\Group;
 use SPHERE\Application\People\Meta\Common\Common;
@@ -62,11 +61,11 @@ class Service
         }
 
         $Error = false;
-        if (!isset( $Select['Type'] )) {
+        if (!(Type::useService()->getTypeById($Select['Type'])) && !isset($Select['UseTypeFromImport'])) {
             $Error = true;
             $Stage .= new Warning('Schulart nicht gefunden');
         }
-        if (!isset( $Select['Year'] )) {
+        if (!(Term::useService()->getYearById($Select['Year']))) {
             $Error = true;
             $Stage .= new Warning('Schuljahr nicht gefunden');
         }
@@ -77,14 +76,16 @@ class Service
         return new Redirect($Redirect, 0, array(
             'TypeId' => $Select['Type'],
             'YearId' => $Select['Year'],
+            'UseTypeFromImport' => isset($Select['UseTypeFromImport'])
         ));
     }
 
     /**
      * @param IFormInterface|null $Form
-     * @param UploadedFile|null   $File
-     * @param null                $TypeId
-     * @param null                $YearId
+     * @param UploadedFile|null $File
+     * @param null $TypeId
+     * @param null $YearId
+     * @param null $UseTypeFromImport
      *
      * @return IFormInterface|Danger|string
      */
@@ -92,7 +93,8 @@ class Service
         IFormInterface $Form = null,
         UploadedFile $File = null,
         $TypeId = null,
-        $YearId = null
+        $YearId = null,
+        $UseTypeFromImport = null
     ) {
 
         /**
@@ -143,6 +145,7 @@ class Service
                     'Schüler_Plz'                         => null,
                     'Schüler_Wohnort'                     => null,
                     'Schüler_Ortsteil'                    => null,
+                    'Schüler_Landkreis'                   => null,
                     'Schüler_Geburtsdatum'                => null,
                     'Schüler_Geburtsort'                  => null,
                     'Schüler_Konfession'                  => null,
@@ -175,22 +178,30 @@ class Service
                     'Kommunikation_Telefon7'              => null,
                     'Kommunikation_Telefon8'              => null,
                     'Kommunikation_Telefon9'              => null,
-                    'Kommunikation_Telefon10'              => null,
-                    'Kommunikation_Telefon11'              => null,
-                    'Kommunikation_Telefon12'              => null,
+                    'Kommunikation_Telefon10'             => null,
+                    'Kommunikation_Telefon11'             => null,
+                    'Kommunikation_Telefon12'             => null,
                     'Kommunikation_Fax'                   => null,
                     'Kommunikation_Email'                 => null,
-                    'Kommunikation_Email1'                 => null,
-                    'Kommunikation_Email2'                 => null,
-                    'Kommunikation_Email3'                 => null,
-                    'Kommunikation_Email4'                 => null,
+                    'Kommunikation_Email1'                => null,
+                    'Kommunikation_Email2'                => null,
+                    'Kommunikation_Email3'                => null,
+                    'Kommunikation_Email4'                => null,
+                    'Beförderung_Fahrschüler'             => null,
                     'Beförderung_Fahrtroute'              => null,
                     'Beförderung_Einsteigestelle'         => null,
+                    'Beförderung_Verkehrsmittel'          => null,
                     'Fächer_Religionsunterricht'          => null,
                     'Fächer_Fremdsprache1'                => null,
                     'Fächer_Fremdsprache2'                => null,
                     'Fächer_Fremdsprache3'                => null,
                     'Fächer_Fremdsprache4'                => null,
+                    'Fächer_Arbeitsgemeinschaft1'         => null,
+                    'Fächer_Arbeitsgemeinschaft2'         => null,
+                    'Fächer_Arbeitsgemeinschaft3'         => null,
+                    'Fächer_Arbeitsgemeinschaft4'         => null,
+                    'Zusatzfeld1'                         => null,
+//                    'Zusatzfeld10'                        => null,
 
                     'Schüler_Fotoerlaubnis'               => null,
                     'Schüler_Geschwister'                 => null,
@@ -210,7 +221,7 @@ class Service
                     'Fächer_Fremdsprache3_bis'            => null,
                     'Fächer_Fremdsprache4_von'            => null,
                     'Fächer_Fremdsprache4_bis'            => null,
-                    'Sorgeberechtigter_Status'           => null,
+                    'Sorgeberechtigter_Status'            => null,
                     'Sorgeberechtigter1_Titel'            => null,
                     'Sorgeberechtigter1_Geschlecht'       => null,
                     'Sorgeberechtigter1_GO'               => null,
@@ -225,6 +236,14 @@ class Service
 
                     'Fächer_Bildungsgang'                 => null,
                     'Fächer_letzter_Bildungsgang'         => null,
+                    'Fächer_Sportbefreiung'               => null,
+                    'Schüler_Schulart'                    => null,
+                    'Schüler_Vorbildung'                  => null,
+                    'Schüler_Abschlussjahr_ABS'           => null,
+                    'Schüler_Bafoeg'                      => null,
+                    'Schüler_Bafoeg_Beantragungsjahr'     => null,
+                    'Schüler_Bafoeg_Amt'                  => null,
+                    'Schüler_Fachrichtung'                => null,
                 );
 
                 $OptionalLocation = array(
@@ -254,6 +273,7 @@ class Service
                     'Sorgeberechtigter4_GO'               => null,
                     'Sorgeberechtigter4_GD'               => null,
                     'Sorgeberechtigter4_Beruf'            => null,
+                    'Zusatzfeld10'                        => null,
                 );
 
                 for ($RunX = 0; $RunX < $X; $RunX++) {
@@ -279,7 +299,7 @@ class Service
                     $countCustody = 0;
                     $countCustodyExists = 0;
 
-                    $tblType = Type::useService()->getTypeById($TypeId);
+                    $tblTypeParameter = Type::useService()->getTypeById($TypeId);
                     $tblYear = Term::useService()->getYearById($YearId);
 
                     $tblStudentAgreementCategoryPhoto = Student::useService()->getStudentAgreementCategoryById(1);
@@ -297,6 +317,24 @@ class Service
                     for ($RunY = 1; $RunY < $Y; $RunY++) {
                         set_time_limit(300);
 
+                        $isHofa = false;
+                        if ($UseTypeFromImport) {
+                            $type = trim($Document->getValue($Document->getCell($Location['Schüler_Schulart'], $RunY)));
+                            switch ($type) {
+                                case 'BGY+HOFA': $isHofa = true;
+                                case 'BGY': $tblType = Type::useService()->getTypeByShortName('BGy'); break;
+                                case 'FOS2': $type = 'FOS';
+                                default:
+                                    $tblType = Type::useService()->getTypeByShortName($type); break;
+                            }
+
+                            if (!$tblType) {
+                                $error[] = 'Zeile: ' . ($RunY + 1) . ' Schüler_Schulart:' . $type . ' konnte nicht gefunden werden.';
+                            }
+                        } else {
+                            $tblType = $tblTypeParameter;
+                        }
+
                         // Student
                         $tblPerson = $this->usePeoplePerson()->insertPerson(
                             $this->usePeoplePerson()->getSalutationById(3),   //Schüler
@@ -309,11 +347,15 @@ class Service
                                 1 => Group::useService()->getGroupById(3)            //Schüler
                             ),
                             '',
-                            $tblType->getShortName() . '_Zeile_' . ($RunY + 1)
+                            ($tblType ? $tblType->getShortName() : 'XX') . '_Zeile_' . ($RunY + 1)
                         );
 
                         if ($tblPerson !== false) {
                             $countStudent++;
+
+                            if ($isHofa && ($tblGroupHofa = Group::useService()->insertGroup('Hotelmanagementschule'))) {
+                                Group::useService()->addGroupPerson($tblGroupHofa, $tblPerson);
+                            }
 
                             // Student Common
                             Common::useService()->insertMeta(
@@ -352,7 +394,9 @@ class Service
                                                 $RunY))),
                                             trim($Document->getValue($Document->getCell($Location['Schüler_Ortsteil'],
                                                 $RunY))),
-                                            ''
+                                            '',
+                                            trim($Document->getValue($Document->getCell($Location['Schüler_Landkreis'],
+                                                $RunY)))
                                         );
 
                                     }
@@ -363,24 +407,29 @@ class Service
                             if (( $Level = trim($Document->getValue($Document->getCell($Location['Schüler_Klassenstufe'],
                                     $RunY))) ) != ''
                             ) {
-                                $tblLevel = Division::useService()->insertLevel($tblType, $Level);
-                                if ($tblLevel) {
-                                    $Division = trim($Document->getValue($Document->getCell($Location['Schüler_Klasse'],
-                                        $RunY)));
-                                    if ($Division != '') {
-                                        if (( $pos = strpos($Division, $Level) ) !== false) {
-                                            if (strlen($Division) > ( ( $start = $pos + strlen($Level) ) )) {
-                                                $Division = substr($Division, $start);
-                                            } else {
-                                                $Division = '';
+                                if ($tblType) {
+                                    $tblLevel = Division::useService()->insertLevel($tblType, $Level);
+                                    if ($tblLevel) {
+                                        $Division = trim($Document->getValue($Document->getCell($Location['Schüler_Klasse'],
+                                            $RunY)));
+                                        if ($Division != '') {
+                                            if (($pos = strpos($Division, $Level)) !== false) {
+                                                if (strlen($Division) > (($start = $pos + strlen($Level)))) {
+                                                    $Division = substr($Division, $start);
+                                                } else {
+                                                    $Division = '';
+                                                }
+                                            }
+                                            $tblDivision = Division::useService()->insertDivision($tblYear, $tblLevel,
+                                                $Division);
+                                            if ($tblDivision) {
+                                                Division::useService()->insertDivisionStudent($tblDivision, $tblPerson);
                                             }
                                         }
-                                        $tblDivision = Division::useService()->insertDivision($tblYear, $tblLevel,
-                                            $Division);
-                                        if ($tblDivision) {
-                                            Division::useService()->insertDivisionStudent($tblDivision, $tblPerson);
-                                        }
                                     }
+                                } else {
+                                    $error[] = 'Zeile: ' . ($RunY + 1) . ' da kein Schulart gefunden wurde, kann die Klassestufe: '
+                                        . $Level . ' nicht angelegt werden. Der Schüler wurde keiner Klasse zugewiesen';
                                 }
                             }
 
@@ -390,13 +439,25 @@ class Service
                             $tblStudentLocker = null;
                             $LockerNumber = trim($Document->getValue($Document->getCell($Location['Schüler_Schließfachnummer'],
                                 $RunY)));
+                            if ($consumerAcronym == 'EVOSG' || $consumerAcronym == 'EVOS') {
+                                $LockerLocation = trim($Document->getValue($Document->getCell($Location['Zusatzfeld1'],
+                                    $RunY)));
+                            } else {
+                                $LockerLocation = '';
+                            }
                             $KeyNumber = trim($Document->getValue($Document->getCell($Location['Schüler_Schließfach_Schlüsselnummer'],
                                 $RunY)));
+                            if ($consumerAcronym == 'EVOSG' || $consumerAcronym == 'EVOS') {
+                                $CombinationLockNumber = $this->getValue('Zusatzfeld10', $Location, $Document, $RunY);
+                            } else {
+                                $CombinationLockNumber = '';
+                            }
                             if ($LockerNumber !== '' || $KeyNumber !== '') {
                                 $tblStudentLocker = Student::useService()->insertStudentLocker(
                                     $LockerNumber,
-                                    '',
-                                    $KeyNumber
+                                    $LockerLocation,
+                                    $KeyNumber,
+                                    $CombinationLockNumber
                                 );
                             }
 
@@ -442,16 +503,23 @@ class Service
                             $tblStudentTransport = null;
                             $route = trim($Document->getValue($Document->getCell($Location['Beförderung_Fahrtroute'],
                                 $RunY)));
+                            if ($route == '') {
+                                $route = trim($Document->getValue($Document->getCell($Location['Beförderung_Verkehrsmittel'],
+                                    $RunY)));
+                            }
                             $stationEntrance = trim($Document->getValue($Document->getCell($Location['Beförderung_Einsteigestelle'],
                                 $RunY)));
                             $transportRemark = trim($Document->getValue($Document->getCell($Location['Beförderung_Hinweise'],
+                                $RunY)));
+                            $isDriverStudent = trim($Document->getValue($Document->getCell($Location['Beförderung_Fahrschüler'],
                                 $RunY)));
                             if ($route !== '' || $stationEntrance !== '' || $transportRemark != '') {
                                 $tblStudentTransport = Student::useService()->insertStudentTransport(
                                     $route,
                                     $stationEntrance,
                                     '',
-                                    $transportRemark ? 'Beförderung Hinweise: ' . $transportRemark : ''
+                                    $transportRemark ? 'Beförderung Hinweise: ' . $transportRemark : '',
+                                    $isDriverStudent == '1'
                                 );
                             }
 
@@ -470,6 +538,56 @@ class Service
                                 $tblStudentBilling = null;
                             }
 
+                            $preDiploma = trim($Document->getValue($Document->getCell($Location['Schüler_Vorbildung'], $RunY)));
+                            switch ($preDiploma) {
+                                case '10. Klasse GYM':
+                                case '10.KlasseGYM':
+                                    $tblSchoolDiploma = Course::useService()->getSchoolDiplomaById(1);
+                                    $tblSchoolType = Type::useService()->getTypeByShortName('Gy');
+                                    break;
+                                case 'Abitur':
+                                    $tblSchoolDiploma = Course::useService()->getSchoolDiplomaById(2);
+                                    $tblSchoolType = Type::useService()->getTypeByShortName('Gy');
+                                    break;
+                                case 'Realschule':
+                                    $tblSchoolDiploma = Course::useService()->getSchoolDiplomaById(5);
+                                    $tblSchoolType = Type::useService()->getTypeByShortName('OS');
+                                    break;
+                                default:
+                                    $tblSchoolDiploma = null;
+                                    $tblSchoolType = null;
+                                    if ($preDiploma != '') {
+                                        $error[] = 'Zeile: ' . ($RunY + 1) . ' Schüler_Vorbildung:' . $preDiploma
+                                            . ' konnte nicht angelegt werden.';
+                                    }
+                            }
+
+                            $subjectArea = trim($Document->getValue($Document->getCell($Location['Schüler_Fachrichtung'], $RunY)));
+                            if ($subjectArea != '') {
+                                $tblTechnicalSubjectArea = Course::useService()->createTechnicalSubjectArea($subjectArea, $subjectArea);
+                            } else {
+                                $tblTechnicalSubjectArea = null;
+                            }
+
+                            $tblStudentTechnicalSchool = Student::useService()->insertStudentTechnicalSchool(
+                                '',
+                                '',
+                                '',
+                                null,
+                                $tblSchoolDiploma ? $tblSchoolDiploma : null,
+                                $tblSchoolType ? $tblSchoolType : null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                trim($Document->getValue($Document->getCell($Location['Schüler_Abschlussjahr_ABS'], $RunY))),
+                                '',
+                                $tblTechnicalSubjectArea ? $tblTechnicalSubjectArea : null,
+                                trim($Document->getValue($Document->getCell($Location['Schüler_Bafoeg'], $RunY))) == '1',
+                                trim($Document->getValue($Document->getCell($Location['Schüler_Bafoeg_Beantragungsjahr'], $RunY))),
+                                trim($Document->getValue($Document->getCell($Location['Schüler_Bafoeg_Amt'], $RunY)))
+                            );
+
                             $tblStudentBaptism = null;
                             $tblStudentIntegration = null;
                             $tblStudent = Student::useService()->insertStudent(
@@ -480,7 +598,12 @@ class Service
                                 $tblStudentBilling,
                                 $tblStudentLocker,
                                 $tblStudentBaptism,
-                                $tblStudentIntegration
+                                $tblStudentIntegration,
+                                null,
+                                '',
+                                false,
+                                false,
+                                $tblStudentTechnicalSchool
                             );
 
                             if ($tblStudent) {
@@ -652,7 +775,7 @@ class Service
                                 }
 
                                 // Profilfach
-                                if ($tblType->getShortName() == 'Gy') {
+                                if ($tblType && $tblType->getShortName() == 'Gy') {
                                     $profile = trim($Document->getValue($Document->getCell($Location['Fächer_Profilfach'],
                                         $RunY)));
                                     if ($profile != '') {
@@ -685,6 +808,24 @@ class Service
                                     }
                                 }
 
+                                // Arbeitsgemeinschaften
+                                for ($i = 1; $i < 5; $i++) {
+                                    $subjectTeam = trim($Document->getValue($Document->getCell($Location['Fächer_Arbeitsgemeinschaft' . $i],
+                                        $RunY)));
+                                    if ($subjectTeam != '' && $subjectTeam != '--') {
+                                        if (($tblSubjectTeam = Subject::useService()->insertSubject($subjectTeam, $subjectTeam))) {
+                                            Student::useService()->addStudentSubject(
+                                                $tblStudent,
+                                                Student::useService()->getStudentSubjectTypeByIdentifier('TEAM'),
+                                                Student::useService()->getStudentSubjectRankingByIdentifier((string) $i),
+                                                $tblSubjectTeam
+                                            );
+                                        } else {
+                                            $error[] = 'Zeile: ' . ($RunY + 1) . ' Fächer_Arbeitsgemeinschaft:' . $subjectTeam . ' konnte nicht angelegt werden.';
+                                        }
+                                    }
+                                }
+
                                 for ($i = 1; $i < 5; $i++) {
                                     $subjectLanguage = trim($Document->getValue($Document->getCell($Location['Fächer_Fremdsprache'.$i],
                                         $RunY)));
@@ -696,7 +837,7 @@ class Service
                                             $tblLevelFrom = false;
                                             if ($levelFrom != '') {
                                                 $level = intval($levelFrom);
-                                                if ($level > 0 && $level < 13) {
+                                                if ($tblType && $level > 0 && $level < 13) {
                                                     $tblLevelFrom = Division::useService()->insertLevel($tblType, $level);
                                                 } else {
                                                     $error[] = 'Zeile: ' . ($RunY + 1) . ' Fächer_Fremdsprache' . $i . '_von:' . $levelFrom . ' nicht gefunden.';
@@ -708,7 +849,7 @@ class Service
                                             $tblLevelTill = false;
                                             if ($levelTill != '') {
                                                 $level = intval($levelTill);
-                                                if ($level > 0 && $level < 13) {
+                                                if ($tblType && $level > 0 && $level < 13) {
                                                     $tblLevelTill = Division::useService()->insertLevel($tblType, $level);
                                                 } else {
                                                     $error[] = 'Zeile: ' . ($RunY + 1) . ' Fächer_Fremdsprache' . $i . '_bis:' . $levelTill . ' nicht gefunden.';
@@ -728,6 +869,25 @@ class Service
                                         }
                                     }
                                 }
+
+                                $liberation = trim($Document->getValue($Document->getCell($Location['Fächer_Sportbefreiung'],
+                                    $RunY)));
+                                if ($liberation != '') {
+                                    switch ($liberation) {
+                                        case '0': // nicht befreit
+                                            $tblStudentLiberationType = Student::useService()->getStudentLiberationTypeById(1); break;
+                                        case '1': // vollbefreit
+                                            $tblStudentLiberationType = Student::useService()->getStudentLiberationTypeById(3); break;
+                                        case '2': // teilbefreit
+                                            $tblStudentLiberationType = Student::useService()->getStudentLiberationTypeById(2); break;
+                                        default: $error[] = 'Zeile: ' . ($RunY + 1) . ' Fächer_Sportbefreiung:' . $liberation . ' nicht gefunden.';
+                                            $tblStudentLiberationType = false;
+                                    }
+
+                                    if ($tblStudentLiberationType) {
+                                        Student::useService()->addStudentLiberation($tblStudent, $tblStudentLiberationType);
+                                    }
+                                }
                             }
 
                             // Sorgeberechtigte
@@ -736,7 +896,7 @@ class Service
                                 $tblPersonCustody = $this->setCustody(
                                     $i,
                                     $tblPerson,
-                                    $tblType,
+                                    $tblType ? $tblType->getShortName() : 'XX',
                                     $Document,
                                     $Location,
                                     $RunY,
@@ -837,6 +997,60 @@ class Service
                                             $error[] = 'Zeile: ' . ($RunY + 1) . ' Kommunikation_Telefon' . $i . ':' . $phoneNumber
                                                 . ' zugehöriger Sorgeberechtigter nicht vorhanden, der Kontakt wurde dem Schüler zugewiesen.';
                                         }
+                                    } elseif ($consumerAcronym == 'EVOSG' || $consumerAcronym == 'EVOS') {
+                                        switch ($i) {
+                                            case 1: $tblPersonContact = $tblPerson;
+                                                $tblPhoneType = Phone::useService()->getTypeById(1);
+                                                $remarkPhone = 'Festnetz Eltern';
+                                                break;
+                                            case 2: $tblPersonContact = $tblPerson;
+                                                $tblPhoneType = Phone::useService()->getTypeById(1);
+                                                $remarkPhone = 'Großeltern, Onkel, Tante, Geschwister usw. / oder Fax';
+                                                break;
+                                            case 3: $tblPersonContact = isset($personList['S1']) ? $personList['S1'] : false;
+                                                if (0 === strpos($phoneNumber, '01')) {
+                                                    $tblPhoneType = Phone::useService()->getTypeById(2);
+                                                } else {
+                                                    $tblPhoneType = Phone::useService()->getTypeById(3);
+                                                }
+                                                $remarkPhone = 'Festnetz Arbeit und/oder Handy';
+                                                break;
+                                            case 4: $tblPersonContact = isset($personList['S2']) ? $personList['S2'] : false;
+                                                if (0 === strpos($phoneNumber, '01')) {
+                                                    $tblPhoneType = Phone::useService()->getTypeById(2);
+                                                } else {
+                                                    $tblPhoneType = Phone::useService()->getTypeById(3);
+                                                }
+                                                $remarkPhone = 'Festnetz Arbeit und/oder Handy';
+                                                break;
+                                            case 5: $tblPersonContact = $tblPerson;
+                                                if (0 === strpos($phoneNumber, '01')) {
+                                                    $tblPhoneType = Phone::useService()->getTypeById(2);
+                                                } else {
+                                                    $tblPhoneType = Phone::useService()->getTypeById(1);
+                                                }
+                                                $remarkPhone = 'zusätzliche Nummer von Eltern oder Tante, Geschwister, …';
+                                                break;
+                                            case 6: $tblPersonContact = $tblPerson;
+                                                if (0 === strpos($phoneNumber, '01')) {
+                                                    $tblPhoneType = Phone::useService()->getTypeById(2);
+                                                } else {
+                                                    $tblPhoneType = Phone::useService()->getTypeById(1);
+                                                }
+                                                $remarkPhone = 'zusätzliche Nummer Lebensgefährte/in, Großeltern, …';
+                                                break;
+                                            default: $tblPersonContact = $tblPerson;
+                                                $tblPhoneType = Phone::useService()->getTypeById(1);
+                                                if (0 === strpos($phoneNumber, '01')) {
+                                                    $tblPhoneType = Phone::useService()->getTypeById(2);
+                                                }
+                                        }
+
+                                        if (!$tblPersonContact) {
+                                            $tblPersonContact = $tblPerson;
+                                            $error[] = 'Zeile: ' . ($RunY + 1) . ' Kommunikation_Telefon' . $i . ':' . $phoneNumber
+                                                . ' zugehöriger Sorgeberechtigter nicht vorhanden, der Kontakt wurde dem Schüler zugewiesen.';
+                                        }
                                     } else {
                                         $tblPersonContact = $tblPerson;
                                         $tblPhoneType = Phone::useService()->getTypeById(1);
@@ -904,6 +1118,26 @@ class Service
                                             $error[] = 'Zeile: ' . ($RunY + 1) . ' Kommunikation_Email' . ($i == 0 ? '' : $i) . ':' . $mailAddress
                                                 . ' zugehöriger Sorgeberechtigter nicht vorhanden, der Kontakt wurde dem Schüler zugewiesen.';
                                         }
+                                    } else if ($consumerAcronym == 'EVOSG' || $consumerAcronym == 'EVOS') {
+                                        switch ($i) {
+                                            case 1:
+                                                $tblPersonContact = isset($personList['S1']) ? $personList['S1'] : false;
+                                                break;
+                                            case 2:
+                                                $tblPersonContact = isset($personList['S2']) ? $personList['S2'] : false;
+                                                break;
+                                            case 3:
+                                                $tblPersonContact = isset($personList['S3']) ? $personList['S3'] : false;
+                                                break;
+                                            default:
+                                                $tblPersonContact = $tblPerson;
+                                        }
+
+                                        if (!$tblPersonContact) {
+                                            $tblPersonContact = $tblPerson;
+                                            $error[] = 'Zeile: ' . ($RunY + 1) . ' Kommunikation_Email' . ($i == 0 ? '' : $i) . ':' . $mailAddress
+                                                . ' zugehöriger Sorgeberechtigter nicht vorhanden, der Kontakt wurde dem Schüler zugewiesen.';
+                                        }
                                     } else {
                                         $tblPersonContact = $tblPerson;
                                     }
@@ -938,7 +1172,7 @@ class Service
     /**
      * @param $ranking
      * @param TblPerson $tblPerson
-     * @param TblType $tblType
+     * @param $typeShortName
      * @param $Document
      * @param $Location
      * @param $RunY
@@ -955,7 +1189,7 @@ class Service
     private function setCustody(
         $ranking,
         TblPerson $tblPerson,
-        TblType $tblType,
+        $typeShortName,
         $Document,
         $Location,
         $RunY,
@@ -998,6 +1232,14 @@ class Service
                     default:
                         $isSingleParent = false;
                 }
+            } elseif ($consumerAcronym == 'EVOSG' || $consumerAcronym == 'EVOS') {
+                if ($ranking < 3) {
+                    $tblRelationShipType = Relationship::useService()->getTypeByName('Sorgeberechtigt');
+                    $relationShipRanking = $ranking;
+                } else {
+                    $tblRelationShipType = Relationship::useService()->getTypeByName('Notfallkontakt');
+                    $relationShipRanking = null;
+                }
             } else {
                 $tblRelationShipType = Relationship::useService()->getTypeByName('Sorgeberechtigt');
                 $relationShipRanking = $ranking;
@@ -1032,7 +1274,7 @@ class Service
                         1 => Group::useService()->getGroupById(4)           //Sorgeberechtigt
                     ),
                     '',
-                    $tblType->getShortName() . '_Zeile_' . ($RunY + 1) . '_S' . $ranking
+                    $typeShortName . '_Zeile_' . ($RunY + 1) . '_S' . $ranking
                 );
 
                 Common::useService()->insertMeta(
@@ -1522,7 +1764,8 @@ class Service
                     'Einrichtungsname'   => null,
                     'Straße'   => null,
                     'Plz'   => null,
-                    'Ort'   => null
+                    'Ort'   => null,
+                    'Ortsteil'   => null
                 );
 
                 $OptionalLocation = array(
@@ -1589,7 +1832,7 @@ class Service
                                             $streetNumber,
                                             $cityCode,
                                             $cityName,
-                                            '',
+                                            trim($Document->getValue($Document->getCell($Location['Ortsteil'], $RunY))),
                                             ''
                                         );
                                     }

@@ -81,6 +81,7 @@ class FrontendStudentGeneral extends FrontendReadOnly
             $lockerNumber = '';
             $lockerLocation = '';
             $lockerKeyNumber = '';
+            $lockerCombinationLockNumber = '';
 
             $baptismDate = '';
             $baptismLocation = '';
@@ -89,6 +90,7 @@ class FrontendStudentGeneral extends FrontendReadOnly
             $transportStationEntrance = '';
             $transportStationExit = '';
             $transportRemark = '';
+            $transportIsDriverStudent = '';
 
             if (($tblStudent = Student::useService()->getStudentByPerson($tblPerson))) {
                 if (($tblStudentBilling = $tblStudent->getTblStudentBilling())) {
@@ -99,6 +101,7 @@ class FrontendStudentGeneral extends FrontendReadOnly
                     $lockerNumber = $tblStudentLocker->getLockerNumber();
                     $lockerLocation = $tblStudentLocker->getLockerLocation();
                     $lockerKeyNumber = $tblStudentLocker->getKeyNumber();
+                    $lockerCombinationLockNumber = $tblStudentLocker->getCombinationLockNumber();
                 }
 
                 if (($tblStudentBaptism = $tblStudent->getTblStudentBaptism())) {
@@ -107,6 +110,7 @@ class FrontendStudentGeneral extends FrontendReadOnly
                 }
 
                 if (($tblStudentTransport = $tblStudent->getTblStudentTransport())) {
+                    $transportIsDriverStudent = $tblStudentTransport->getIsDriverStudent() ? 'Ja' : 'Nein';
                     $transportRoute = $tblStudentTransport->getRoute();
                     $transportStationEntrance = $tblStudentTransport->getStationEntrance();
                     $transportStationExit = $tblStudentTransport->getStationExit();
@@ -192,6 +196,10 @@ class FrontendStudentGeneral extends FrontendReadOnly
                                     self::getLayoutColumnLabel('Schlüssel Nummer', 6),
                                     self::getLayoutColumnValue($lockerKeyNumber, 6),
                                 )),
+                                new LayoutRow(array(
+                                    self::getLayoutColumnLabel('Zahlenschloss Nummer', 6),
+                                    self::getLayoutColumnValue($lockerCombinationLockNumber, 6),
+                                )),
                             )))
                         ),
                         FrontendReadOnly::getSubContent(
@@ -212,6 +220,10 @@ class FrontendStudentGeneral extends FrontendReadOnly
                         FrontendReadOnly::getSubContent(
                             'Schulbeförderung',
                             new Layout(new LayoutGroup(array(
+                                new LayoutRow(array(
+                                    self::getLayoutColumnLabel('Fahrschüler', 6),
+                                    self::getLayoutColumnValue($transportIsDriverStudent, 6),
+                                )),
                                 new LayoutRow(array(
                                     self::getLayoutColumnLabel('Buslinie', 6),
                                     self::getLayoutColumnValue($transportRoute, 6),
@@ -270,6 +282,7 @@ class FrontendStudentGeneral extends FrontendReadOnly
                     $Global->POST['Meta']['Additional']['Locker']['Number'] = $tblStudentLocker->getLockerNumber();
                     $Global->POST['Meta']['Additional']['Locker']['Location'] = $tblStudentLocker->getLockerLocation();
                     $Global->POST['Meta']['Additional']['Locker']['Key'] = $tblStudentLocker->getKeyNumber();
+                    $Global->POST['Meta']['Additional']['Locker']['CombinationLockNumber'] = $tblStudentLocker->getCombinationLockNumber();
                 }
 
                 if (($tblStudentBaptism = $tblStudent->getTblStudentBaptism())) {
@@ -278,6 +291,7 @@ class FrontendStudentGeneral extends FrontendReadOnly
                 }
 
                 if (($tblStudentTransport = $tblStudent->getTblStudentTransport())) {
+                    $Global->POST['Meta']['Transport']['IsDriverStudent'] = $tblStudentTransport->getIsDriverStudent() ? 1 : 0;
                     $Global->POST['Meta']['Transport']['Route'] = $tblStudentTransport->getRoute();
                     $Global->POST['Meta']['Transport']['Station']['Entrance'] = $tblStudentTransport->getStationEntrance();
                     $Global->POST['Meta']['Transport']['Station']['Exit'] = $tblStudentTransport->getStationExit();
@@ -409,6 +423,8 @@ class FrontendStudentGeneral extends FrontendReadOnly
                                 'Schließfach Standort', new MapMarker()),
                             new TextField('Meta[Additional][Locker][Key]', 'Schlüssel Nummer', 'Schlüssel Nummer',
                                 new Key()),
+                            new TextField('Meta[Additional][Locker][CombinationLockNumber]', 'Zahlenschloss Nummer', 'Zahlenschloss Nummer',
+                                new Key())
                         ), Panel::PANEL_TYPE_INFO),
                         new Panel('Taufe', array(
                             new DatePicker('Meta[Additional][Baptism][Date]', 'Taufdatum', 'Taufdatum',
@@ -419,6 +435,7 @@ class FrontendStudentGeneral extends FrontendReadOnly
                     ), 4),
                     new FormColumn(array(
                         new Panel('Schulbeförderung', array(
+                            new CheckBox('Meta[Transport][IsDriverStudent]', 'Fahrschüler', 1),
                             new TextField('Meta[Transport][Route]', 'Buslinie', 'Buslinie', new Bus()),
                             new TextField('Meta[Transport][Station][Entrance]', 'Einstiegshaltestelle',
                                 'Einstiegshaltestelle', new StopSign()),
