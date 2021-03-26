@@ -40,61 +40,6 @@ class Data extends AbstractData
         $this->createIdentification('Token', 'Benutzername / Passwort & Hardware-Schlüssel', true);
         $this->createIdentification('Credential', 'Benutzername / Passwort', true);
         $this->createIdentification('UserCredential', 'Benutzername / Passwort', true);
-
-//        $tblConsumer = Consumer::useService()->getConsumerById(1);
-//        // Choose the right Identification for Authentication
-//        $tblIdentification = $this->getIdentificationByName('Credential');
-//        $tblRole = Access::useService()->getRoleByName('Administrator');
-//
-//        // Install Administrator
-//        $tblAccount = $this->createAccount('root', 'sphere', null, $tblConsumer);
-//        $this->addAccountAuthentication($tblAccount, $tblIdentification);
-//        $this->addAccountAuthorization($tblAccount, $tblRole);
-//        if (!$this->getSettingByAccount($tblAccount, 'Surface')) {
-//            $this->setSettingByAccount($tblAccount, 'Surface', 1);
-//        }
-
-/*
-                $tblConsumer = Consumer::useService()->getConsumerById(1);
-                $tblIdentification = $this->getIdentificationByName('System');
-                $tblRole = Access::useService()->getRoleByName('Administrator');
-
-                // System (Gerd)
-                $tblToken = Token::useService()->getTokenByIdentifier('ccccccdilkui');
-                $tblAccount = $this->createAccount('System', 'System', $tblToken, $tblConsumer);
-                $this->addAccountAuthentication($tblAccount, $tblIdentification);
-                $this->addAccountAuthorization($tblAccount, $tblRole);
-                if (!$this->getSettingByAccount($tblAccount, 'Surface')) {
-                    $this->setSettingByAccount($tblAccount, 'Surface', 1);
-                }
-
-                // System (Jens)
-                $tblToken = Token::useService()->getTokenByIdentifier('ccccccectjge');
-                $tblAccount = $this->createAccount('Kmiezik', 'System', $tblToken, $tblConsumer);
-                $this->addAccountAuthentication($tblAccount, $tblIdentification);
-                $this->addAccountAuthorization($tblAccount, $tblRole);
-                if (!$this->getSettingByAccount($tblAccount, 'Surface')) {
-                    $this->setSettingByAccount($tblAccount, 'Surface', 1);
-                }
-
-                // System (Sidney)
-                $tblToken = Token::useService()->getTokenByIdentifier('ccccccectjgt');
-                $tblAccount = $this->createAccount('Rackel', 'System', $tblToken, $tblConsumer);
-                $this->addAccountAuthentication($tblAccount, $tblIdentification);
-                $this->addAccountAuthorization($tblAccount, $tblRole);
-                if (!$this->getSettingByAccount($tblAccount, 'Surface')) {
-                    $this->setSettingByAccount($tblAccount, 'Surface', 1);
-                }
-
-                // System (Johannes)
-                $tblToken = Token::useService()->getTokenByIdentifier('ccccccectjgr');
-                $tblAccount = $this->createAccount('Kauschke', 'System', $tblToken, $tblConsumer);
-                $this->addAccountAuthentication($tblAccount, $tblIdentification);
-                $this->addAccountAuthorization($tblAccount, $tblRole);
-                if (!$this->getSettingByAccount($tblAccount, 'Surface')) {
-                    $this->setSettingByAccount($tblAccount, 'Surface', 1);
-                }
-        */
     }
 
     /**
