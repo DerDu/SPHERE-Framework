@@ -9,6 +9,7 @@ use SPHERE\System\Database\Link\Identifier;
 use SPHERE\System\Extension\Extension;
 
 /**
+ * @deprecated
  * Class Archive
  *
  * @package SPHERE\Application\Platform\System\Archive

@@ -3,7 +3,6 @@ namespace SPHERE\Application\Platform\System;
 
 use SPHERE\Application\IApplicationInterface;
 use SPHERE\Application\Platform\System\Anonymous\Anonymous;
-use SPHERE\Application\Platform\System\Archive\Archive;
 use SPHERE\Application\Platform\System\BasicData\BasicData;
 use SPHERE\Application\Platform\System\Cache\Cache;
 use SPHERE\Application\Platform\System\Database\Database;
@@ -34,7 +33,7 @@ class System implements IApplicationInterface
         Protocol::registerModule();
         Database::registerModule();
         Cache::registerModule();
-        Archive::registerModule();
+//        Archive::registerModule();
         Test::registerModule();
         Session::registerModule();
         DataMaintenance::registerModule();
