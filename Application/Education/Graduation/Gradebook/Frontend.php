@@ -2714,6 +2714,13 @@ class Frontend extends FrontendScoreRule
                                                 $tblPerson)
                                             ) {
                                                 $hasStudentSubject = true;
+
+                                                // Es mus die Berechnungsvorschrift der Gruppe verwendet werden
+                                                $tblScoreRule = Gradebook::useService()->getScoreRuleByDivisionAndSubjectAndGroup(
+                                                    $tblDivision,
+                                                    $tblSubject,
+                                                    $tblDivisionSubjectGroup->getTblSubjectGroup() ? $tblDivisionSubjectGroup->getTblSubjectGroup() : null
+                                                );
                                             }
                                         }
                                     } else {
