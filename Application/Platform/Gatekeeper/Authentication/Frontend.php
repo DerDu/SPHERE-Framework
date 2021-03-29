@@ -406,6 +406,16 @@ class Frontend extends Extension implements IFrontendInterface
             ))));
             return $Stage;
         }
+
+        $tblIdentificationSystem = Account::useService()->getIdentificationByName(TblIdentification::NAME_SYSTEM);
+        // Login block für System Accounts
+        if($tblAccount
+            && $tblAccount->getServiceTblIdentification()->getId() == $tblIdentificationSystem->getId()){
+            $Stage->setContent(new Layout(new LayoutGroup(new LayoutRow(
+                new LayoutColumn(new Warning('Systemaccounts dürfen keinen SSO Login erhalten'))
+            ))));
+            return $Stage;
+        }
         if(isset($_SESSION['isAuthenticated']) && $_SESSION['isAuthenticated']){
             $LoginOk = true;
         }
